@@ -30,6 +30,7 @@ i18n/
   translate.ts         按词典重写 AST 字符串节点（幂等、带语法校验）
   apply-cli-name.ts    把 omp 改名成 omp-zh 的补丁
   check-groups.ts      校验设置面板分组名是否同源翻译（CI 闸门）
+  fetch-native.ts      从 npm 拉取当前平台的预编译原生模块
   extracted.json       待翻译清单快照（本地生成，已 gitignore）
   report.json          最近一次替换的明细（本地生成，已 gitignore）
 ```
@@ -63,20 +64,42 @@ export const CLI_NAME = "omp-zh"; // 用户输入的命令名、帮助文本、-
 git clone https://github.com/OrangeNekoo/omp-zh.git
 cd omp-zh
 bun install
+bun i18n/fetch-native.ts                  # 拉取当前平台的预编译原生模块
 bun packages/coding-agent/src/cli.ts --version
 ```
 
-原生模块 `@oh-my-pi/pi-natives` 通过 `optionalDependencies` 自动拉取对应平台的预编译 `.node` 文件，无需本地编译。
+**关于原生模块。** 本仓库的 `packages/natives` 是 workspace 包，`bun install`
+不会安装 npm 上的平台二进制——那些平台包只在发布产物里生成。因此从源码
+运行时需要额外执行 `bun i18n/fetch-native.ts`：它按 `packages/natives`
+的版本从 npm 拉取对应平台的 `.node`，放到加载器查找的
+`packages/natives/native/` 下。不需要 Rust 工具链。
+
+若你修改了 `crates/**` 需要本地编译，改用
+`bun --cwd=packages/natives run build`（需要 Rust 工具链）。
+
+验证原生模块是否就绪：
+
+```sh
+bun i18n/fetch-native.ts --check
+```
 
 ### 方式二：安装全局 `omp-zh` 命令
 
 ```sh
 cd omp-zh
 bun install
+bun i18n/fetch-native.ts
 bun --cwd=packages/coding-agent link
 ```
 
-`bun link` 会按 `packages/coding-agent/package.json` 的 `bin` 字段注册命令，即 `omp-zh`。
+`bun link` 会按 `packages/coding-agent/package.json` 的 `bin` 字段把 `omp-zh`
+链接到 bun 的全局 bin 目录（通常是 `~/.bun/bin`）。
+
+如果 `omp-zh` 提示 command not found，说明该目录不在 `PATH` 里：
+
+```sh
+export PATH="$HOME/.bun/bin:$PATH"   # 写入 ~/.zshrc 或 ~/.bashrc 可持久生效
+```
 
 也可以使用仓库自带的开发包装脚本，它会规避 `bunfig.toml` 的 `preload` 污染：
 
@@ -84,18 +107,23 @@ bun --cwd=packages/coding-agent link
 sh scripts/link-omp.sh   # 把 ~/.bun/bin/omp-zh 链接到开发启动脚本
 ```
 
+> 注意：`bun link` 的链接指向源码，因此同样需要先执行
+> `bun i18n/fetch-native.ts`；源码目录被移动或删除后命令会失效，这是
+> `bun link` 的固有行为。
+
 ### 方式三：编译成独立二进制
 
 ```sh
 cd omp-zh
 bun install
+bun i18n/fetch-native.ts                    # 编译时会把 .node 内嵌进二进制
 bun run --cwd=packages/coding-agent build
 # 产物：packages/coding-agent/dist/omp
 ```
 
-把 `dist/omp` 重命名或软链为 `omp-zh` 后放进 `PATH`。二进制已内嵌当前平台的 `.node`，运行时不依赖 `node_modules`。
+把 `dist/omp` 重命名或软链为 `omp-zh` 后放进 `PATH`。二进制已内嵌当前平台的 `.node`，运行时不依赖 `node_modules`，也不需要源码目录。
 
-跨平台编译用 `CROSS_TARGET` 选择目标：
+跨平台编译用 `CROSS_TARGET` 选择目标（需要先为对应平台准备 `.node` 文件）：
 
 ```sh
 CROSS_TARGET=darwin-arm64 bun run --cwd=packages/coding-agent build

@@ -115,6 +115,13 @@ jobs:
            if: steps.check.outputs.need_sync == 'true'
            run: bun install --frozen-lockfile
 
+         - name: Fetch native addon
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # workspace 包不会安装 npm 上的平台二进制；不加这一步，
+              # 下面的 CLI 启动与类型检查都会因为缺少 .node 而失败。
+              bun i18n/fetch-native.ts
+
          - name: Apply 汉化
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/translate.ts
