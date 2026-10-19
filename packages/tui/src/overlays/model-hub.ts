@@ -302,17 +302,17 @@ const ROLE_PICKER_COLUMNS: readonly TspPickerColumn[] = [
 
 /** Kind tab labels (sentence case; acronyms stay upper). */
 const MODEL_KIND_LABELS: Record<"all" | ModelKind, string> = {
-	all: "All",
-	chat: "Chat",
-	tiny: "Tiny",
-	image: "Image",
+	all: "全部",
+	chat: "对话",
+	tiny: "微型",
+	image: "图像",
 	tts: "TTS",
 	stt: "STT",
-	search: "Search",
-	judge: "Judge",
-	embedding: "Embedding",
-	rerank: "Rerank",
-	video: "Video",
+	search: "搜索",
+	judge: "判定",
+	embedding: "嵌入",
+	rerank: "重排",
+	video: "视频",
 };
 
 const PROVIDER_REFRESH_DEBOUNCE_MS = 120;
@@ -734,10 +734,10 @@ export class ModelHubComponent implements Component {
 			{
 				id: "roles",
 				kind: "roles",
-				label: "Roles",
+				label: "角色",
 				annotation: `${assignedCount}/${visibleRoles.length}`,
 			},
-			{ id: "all", kind: "all", label: "All models", annotation: String(availableModels.length) },
+			{ id: "all", kind: "all", label: "所有模型", annotation: String(availableModels.length) },
 		];
 
 		this.#fixedEntries = fixed;
@@ -3033,7 +3033,7 @@ export class ModelHubComponent implements Component {
 					"row",
 					{ gap: "sm", align: "center" },
 					[
-						text([span("Kind:", "dim")]),
+						text([span("类型：", "dim")]),
 						node(
 							"tabs",
 							{ items: MODEL_KIND_TABS.map(kind => ({ id: kind, label: kind })), active: this.#modelKindTab },
@@ -3051,13 +3051,13 @@ export class ModelHubComponent implements Component {
 
 	#describeStatus(): NativeNode {
 		if (this.#assignmentPending) {
-			return node("spinner", { label: [span("Applying model…", "accent")] }, undefined, "status");
+			return node("spinner", { label: [span("正在应用模型…", "accent")] }, undefined, "status");
 		}
 		let spans: TspSpan[];
 		const assigning = this.#assigning;
 		if (assigning !== null) {
 			if (assigning.kind === "fallbackKey") {
-				spans = [span("New fallback chain — pick the model it protects", "accent")];
+				spans = [span("新建备用链 — 选择它保护的模型", "accent")];
 			} else {
 				const info = this.#settings.getRoleInfo(assigning.role);
 				const label = info.tag ?? info.name ?? assigning.role;
@@ -3082,7 +3082,7 @@ export class ModelHubComponent implements Component {
 				break;
 			case "roles":
 				spans = [
-					span("Model roles — ", "muted"),
+					span("模型角色 — ", "muted"),
 					span("f", "key"),
 					span(" adds a retry fallback, cleared roles fall back to auto-selection", "muted"),
 				];
@@ -3113,7 +3113,7 @@ export class ModelHubComponent implements Component {
 			"row",
 			{ gap: "sm", align: "center" },
 			[
-				text([span("Roles:", "dim")]),
+				text([span("角色：", "dim")]),
 				node(
 					"tabs",
 					{
@@ -3150,9 +3150,9 @@ export class ModelHubComponent implements Component {
 			case "separator":
 				return node("rule", undefined, undefined, key);
 			case "newRole":
-				return node("item", { label: [span("+ New role…", "dim")] }, undefined, key);
+				return node("item", { label: [span("+ 新建角色…", "dim")] }, undefined, key);
 			case "newFallback":
-				return node("item", { label: [span("+ New fallback…", "dim")] }, undefined, key);
+				return node("item", { label: [span("+ 新建备用…", "dim")] }, undefined, key);
 			case "chainKey": {
 				const slash = rowDef.role.lastIndexOf("/");
 				return node(
@@ -3258,7 +3258,7 @@ export class ModelHubComponent implements Component {
 				node(
 					"row",
 					{ gap: "sm", align: "center", actions: { click: "login" } },
-					[text([span("Log in with OAuth", "accent")]), node("kbd", { keys: ["enter"] })],
+					[text([span("使用 OAuth 登录", "accent")]), node("kbd", { keys: ["enter"] })],
 					"login",
 				),
 			);
@@ -3291,7 +3291,7 @@ export class ModelHubComponent implements Component {
 		const lockedView = entry.kind === "provider" && entry.locked === true && this.#assigning === null;
 		const strip = this.#strip;
 		const props: TspPickerProps = {
-			title: "Models",
+			title: "模型",
 			subtitle: this.#pickerSubtitle(entry, rolesView),
 			icon: "cpu",
 			noun: rolesView ? "roles" : "models",
@@ -3432,12 +3432,12 @@ export class ModelHubComponent implements Component {
 				case "separator":
 					break;
 				case "roles":
-					scopes.push({ id: entry.id, label: "Roles", icon: "sparkles", count: this.#visibleRoleIds().length });
+					scopes.push({ id: entry.id, label: "角色", icon: "sparkles", count: this.#visibleRoleIds().length });
 					break;
 				case "all":
 					scopes.push({
 						id: entry.id,
-						label: "All models",
+						label: "所有模型",
 						icon: "list",
 						count: counts ? this.#searchTotal : this.#availableItems.length,
 					});
@@ -3445,7 +3445,7 @@ export class ModelHubComponent implements Component {
 				case "recent":
 					scopes.push({
 						id: entry.id,
-						label: "Recent",
+						label: "最近",
 						icon: "clock",
 						count: counts ? this.#recentSearchCount : this.#recentItems.length,
 					});
@@ -3474,7 +3474,7 @@ export class ModelHubComponent implements Component {
 						id: entry.id,
 						label: entry.label,
 						mark,
-						group: "Providers",
+						group: "服务商",
 						count: counts ? (counts.get(providerId) ?? 0) : Number(entry.annotation ?? 0),
 						...(dot ? { dot } : {}),
 					});
@@ -3665,8 +3665,8 @@ export class ModelHubComponent implements Component {
 			// The second step of "New fallback chain…" reuses the role strip with key chips only.
 			const keyStrip = strip.chips.every(chip => chip.label.startsWith("for "));
 			label = keyStrip
-				? [span("New fallback chain", "muted")]
-				: [span("Assign ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];
+				? [span("新建备用链", "muted")]
+				: [span("分配 ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];
 		} else {
 			const info = this.#settings.getRoleInfo(strip.role ?? "");
 			const roleLabel = (info.tag ?? strip.role ?? "").toLowerCase();
@@ -3713,10 +3713,10 @@ export class ModelHubComponent implements Component {
 				case "separator":
 					return;
 				case "newRole":
-					items.push({ id, label: "New role…", icon: "plus", tone: "muted" });
+					items.push({ id, label: "新建角色…", icon: "plus", tone: "muted" });
 					return;
 				case "newFallback":
-					items.push({ id, label: "New fallback chain…", icon: "plus", tone: "muted" });
+					items.push({ id, label: "新建备用链…", icon: "plus", tone: "muted" });
 					return;
 				case "chainKey":
 					items.push({ id, label: row.role, mono: true, icon: "git-branch", detail: "fallback chain" });
@@ -3823,9 +3823,9 @@ export class ModelHubComponent implements Component {
 					children.push(
 						node("kv", {
 							items: [
-								{ k: [span("Role", "muted")], v: info.name },
+								{ k: [span("角色", "muted")], v: info.name },
 								{
-									k: [span("Thinking", "muted")],
+									k: [span("思考", "muted")],
 									v: getConfiguredThinkingLevelMetadata(assignment.thinkingLevel).label,
 								},
 								{ k: [span("Source", "muted")], v: assignment.autoSelected ? "auto-selected" : "configured" },
@@ -3835,7 +3835,7 @@ export class ModelHubComponent implements Component {
 				} else {
 					children.push(
 						text(info.name, { role: "omp.picker.title" }),
-						text([span("Not assigned; no available model fits this role.", "muted")], { wrap: "word" }),
+						text([span("未分配；没有可用模型适合此角色。", "muted")], { wrap: "word" }),
 					);
 				}
 				const chain = chainList(row.role);
@@ -3859,13 +3859,13 @@ export class ModelHubComponent implements Component {
 			case "newRole":
 				children.push(
 					text("New role", { role: "omp.picker.title" }),
-					text([span("Name a custom role, then pick the model it runs on.", "muted")], { wrap: "word" }),
+					text([span("命名自定义角色，然后选择它运行的模型。", "muted")], { wrap: "word" }),
 				);
 				break;
 			case "newFallback":
 				children.push(
-					text("New fallback chain", { role: "omp.picker.title" }),
-					text([span("Pick the model (or provider) a new retry fallback chain protects.", "muted")], {
+					text("新建备用链", { role: "omp.picker.title" }),
+					text([span("选择新重试备用链所保护的模型（或服务商）。", "muted")], {
 						wrap: "word",
 					}),
 				);
@@ -4044,7 +4044,7 @@ export class ModelHubComponent implements Component {
 				[
 					text([span(preset ? "Preset name:" : "New role name:", "accent")]),
 					col([strip.input], { grow: 1 }),
-					text([span("(letters, digits, - and _)", "dim")]),
+					text([span("（字母、数字、- 和 _）", "dim")]),
 				],
 				preset ? "presetName" : "roleName",
 			);

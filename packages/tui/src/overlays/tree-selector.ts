@@ -193,11 +193,11 @@ interface TreePickerView {
 }
 
 const FILTER_TABS: readonly { id: TreeFilterMode; label: string }[] = [
-	{ id: "default", label: "Default" },
-	{ id: "no-tools", label: "No tools" },
-	{ id: "user-only", label: "User only" },
-	{ id: "labeled-only", label: "Labeled" },
-	{ id: "all", label: "All" },
+	{ id: "default", label: "默认" },
+	{ id: "no-tools", label: "无工具" },
+	{ id: "user-only", label: "仅用户" },
+	{ id: "labeled-only", label: "已标注" },
+	{ id: "all", label: "全部" },
 ];
 
 class TreeList implements Component {
@@ -833,7 +833,7 @@ class TreeList implements Component {
 	/** The empty-state explanation from {@link render}, as spans. */
 	#emptyText(): TspText {
 		const total = this.#tree.allRows.length;
-		if (total === 0) return [span("No entries found", "muted")];
+		if (total === 0) return [span("未找到条目", "muted")];
 		const query = this.getSearchQuery();
 		if (query.length > 0) {
 			return [
@@ -1406,7 +1406,7 @@ class LabelInput implements Component {
 	/** Prompt, the label `Input`, and save/cancel hints; the Input describes its own edits. */
 	describe(_cx: DescribeContext): NativeNode {
 		this.#native ??= node("col", { gap: "xs" }, [
-			text([span("Label (empty to remove):", "muted")]),
+			text([span("标签（留空以移除）：", "muted")]),
 			this.#input,
 			hintsRow([
 				{ keys: ["enter"], label: "save" },
@@ -1418,11 +1418,7 @@ class LabelInput implements Component {
 
 	/** The picker preview while editing: the prompt and the label `Input` (save/cancel sit in the action bar). */
 	get preview(): readonly NativeChild[] {
-		this.#preview ??= [
-			text("Label", { role: "omp.picker.title" }),
-			text([span("Empty to remove", "muted")]),
-			this.#input,
-		];
+		this.#preview ??= [text("Label", { role: "omp.picker.title" }), text([span("留空以移除", "muted")]), this.#input];
 		return this.#preview;
 	}
 
@@ -1573,7 +1569,7 @@ export class TreeSelectorComponent extends OverlayPanel {
 			return memo.node;
 		}
 		const props: TspPickerProps = {
-			title: "Session tree",
+			title: "会话树",
 			...(this.sessionName ? { subtitle: this.sessionName } : {}),
 			icon: "git-branch",
 			noun: "entries",
@@ -1592,10 +1588,7 @@ export class TreeSelectorComponent extends OverlayPanel {
 			empty: view.empty,
 			focus: label ? "preview" : "list",
 			actions: label
-				? [
-						pickerAction("label-save", "Save label", "enter", { primary: true }),
-						{ ...CLOSE_ACTION, label: "Cancel" },
-					]
+				? [pickerAction("label-save", "Save label", "enter", { primary: true }), { ...CLOSE_ACTION, label: "取消" }]
 				: [
 						pickerAction("switch", "Switch", "enter", { primary: true }),
 						pickerAction("summarize", "Summarize & switch", "shift+enter"),
@@ -1676,11 +1669,11 @@ export class TreeSelectorComponent extends OverlayPanel {
 			content,
 			hintsRow([
 				{ keys: ["enter"], label: "switch" },
-				{ keys: ["alt+up", "alt+down"], label: "previous/next turn" },
+				{ keys: ["alt+up", "alt+down"], label: "上一轮/下一轮" },
 				actionHint(["app.tree.previousBranch", "app.tree.nextBranch"], "previous/next branch"),
 				actionHint(["tui.select.pageUp", "tui.select.pageDown"], "page"),
 				{ keys: ["home", "end"], label: "first/last" },
-				{ keys: ["shift+enter"], label: "summarize & switch" },
+				{ keys: ["shift+enter"], label: "总结并切换" },
 				{ keys: ["shift+l"], label: "label" },
 				{ keys: ["ctrl+o"], label: "filter" },
 			]),

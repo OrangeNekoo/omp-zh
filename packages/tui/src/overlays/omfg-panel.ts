@@ -162,7 +162,7 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "validating":
 			case "confirming":
 			case "saving":
-				return hintsRow([{ ...esc, label: "cancel /omfg" }]);
+				return hintsRow([{ ...esc, label: "取消 /omfg" }]);
 			case "saved":
 				return statusHintsRow(
 					[

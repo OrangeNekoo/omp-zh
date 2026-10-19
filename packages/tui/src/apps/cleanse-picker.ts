@@ -37,7 +37,7 @@ export async function pickCleanseTarget(checkers: readonly CleanseCheckerChoice[
 		})),
 		{
 			value: "request",
-			label: "Describe what to fix…",
+			label: "描述要修复的内容…",
 			description: "A discovery agent figures out the command to run",
 		},
 	];

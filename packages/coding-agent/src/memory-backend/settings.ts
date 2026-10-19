@@ -17,17 +17,17 @@ export const cfgMemoryBackend = register({
 	default: "off",
 	ui: {
 		tab: "memory",
-		group: "General",
-		label: "Memory Backend",
+		group: "常规",
+		label: "记忆后端",
 		description: "Off, local summary pipeline, Mnemopi SQLite, Hindsight remote memory, or Sharpshooter",
 		options: [
-			{ value: "off", label: "Off", description: "No memory subsystem runs" },
-			{ value: "local", label: "Local", description: "Local rollout summarisation pipeline (memory_summary.md)" },
+			{ value: "off", label: "关闭", description: "不运行记忆子系统" },
+			{ value: "local", label: "本地", description: "本地 rollout 摘要流水线 (memory_summary.md)" },
 			{ value: "hindsight", label: "Hindsight", description: "Vectorize Hindsight remote memory service" },
 			{
 				value: "mnemopi",
 				label: "Mnemopi",
-				description: "Local SQLite recall/retain backend with optional embeddings",
+				description: "本地 SQLite 召回/保留后端，可选嵌入",
 			},
 			{
 				value: "sharpshooter",

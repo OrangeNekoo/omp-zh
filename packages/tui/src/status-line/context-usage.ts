@@ -452,19 +452,19 @@ export function computeContextBreakdown(session: ContextUsageSession, options: C
 	}
 
 	const categories: CategoryInfo[] = [
-		{ id: "systemPrompt", label: "System prompt", tokens: systemPromptTokens, color: "accent", glyph: CELL_FILLED },
-		{ id: "systemTools", label: "System tools", tokens: toolsTokens, color: "warning", glyph: CELL_FILLED },
+		{ id: "systemPrompt", label: "系统提示词", tokens: systemPromptTokens, color: "accent", glyph: CELL_FILLED },
+		{ id: "systemTools", label: "系统工具", tokens: toolsTokens, color: "warning", glyph: CELL_FILLED },
 		{
 			id: "systemContext",
-			label: "System context",
+			label: "系统上下文",
 			tokens: systemContextTokens,
 			color: "customMessageLabel",
 			glyph: CELL_FILLED,
 		},
-		{ id: "skills", label: "Skills", tokens: skillsTokens, color: "success", glyph: CELL_FILLED },
+		{ id: "skills", label: "技能", tokens: skillsTokens, color: "success", glyph: CELL_FILLED },
 		{
 			id: "messages",
-			label: "Messages",
+			label: "消息",
 			tokens: messagesTokens,
 			color: "userMessageText",
 			glyph: CELL_FILLED_MESSAGES,
@@ -811,16 +811,16 @@ function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefine
 		lines.push(
 			tr.swapped > 0
 				? {
-						label: "Tool results",
+						label: "工具结果",
 						detail: `${tr.swapped} of ${tr.total} imaged · ${formatNumber(tr.textTokens)} text → ${tr.frames} frames ≈ ${formatNumber(tr.imageTokens)}`,
 						value: span(`−${formatNumber(tr.savedTokens)}`, "success"),
 					}
-				: { label: "Tool results", detail: `None imaged · ${tr.total} in history` },
+				: { label: "工具结果", detail: `None imaged · ${tr.total} in history` },
 		);
 	}
 	if (snap.savedTokens > 0) {
 		lines.push({
-			label: "Next request",
+			label: "下一个请求",
 			detail: "tokens on the wire",
 			value: span(`~${formatNumber(Math.max(0, breakdown.usedTokens - snap.savedTokens))}`, "strong"),
 		});
@@ -920,9 +920,9 @@ function describeContextFrame(breakdown: ContextBreakdown): NativeNode {
 
 /** The `/context` title: the model once one is selected (the body leads with its window). */
 export function contextUsageHead(breakdown: ContextBreakdown): TspText {
-	if (breakdown.contextWindow <= 0) return [span("Context usage", "strong")];
+	if (breakdown.contextWindow <= 0) return [span("上下文用量", "strong")];
 	const modelName = breakdown.model?.name ?? breakdown.model?.id ?? "no model";
-	return [span("Context", "strong"), span(` · ${modelName}`, "muted")];
+	return [span("上下文", "strong"), span(` · ${modelName}`, "muted")];
 }
 
 /**

@@ -330,7 +330,7 @@ export class LoginDialogComponent extends OverlayPanel {
 			if (auth.launchUrl) {
 				body.push(
 					keyed(
-						text([span("On this machine  ", "dim"), span(auth.launchUrl, "mono", { href: auth.launchUrl })], {
+						text([span("在此机器上  ", "dim"), span(auth.launchUrl, "mono", { href: auth.launchUrl })], {
 							role: "omp.login.shortcut",
 							truncate: "middle",
 							lines: 1,
@@ -382,12 +382,12 @@ export class LoginDialogComponent extends OverlayPanel {
 		if (status.length > 0) body.push(node("col", { role: "omp.login.status", gap: "xs" }, status, "status"));
 
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
-		const cancel = actionButton("Cancel", "cancel", cancelKey ? { keys: cancelKey } : {});
+		const cancel = actionButton("取消", "cancel", cancelKey ? { keys: cancelKey } : {});
 		const open = auth ? this.#describeOpen(auth.url, !field) : null;
 		let buttons: (NativeNode | null)[];
 		if (field) {
 			const submitKey = getKeybindings().getKeys("tui.input.submit")[0];
-			const submit = actionButton("Continue", "submit", {
+			const submit = actionButton("继续", "submit", {
 				tone: "accent",
 				...(submitKey ? { keys: submitKey } : {}),
 			});
@@ -422,7 +422,7 @@ export class LoginDialogComponent extends OverlayPanel {
 	#describeCode(code: string): NativeNode {
 		return node(
 			"row",
-			{ role: "omp.login.code", align: "center", actions: { click: "copy" }, href: code, title: "Copy code" },
+			{ role: "omp.login.code", align: "center", actions: { click: "copy" }, href: code, title: "复制代码" },
 			[keyed(text([span(code, "mono")]), "value"), node("icon", { name: "copy" }, undefined, "icon")],
 			"code",
 		);
@@ -449,9 +449,9 @@ export class LoginDialogComponent extends OverlayPanel {
 						align: "center",
 						actions: { click: "copy" },
 						href: url,
-						title: "Copy the sign-in link",
+						title: "复制登录链接",
 					},
-					[text("Copy")],
+					[text("复制")],
 					"copyLink",
 				),
 			],

@@ -11,9 +11,9 @@ export const cfgExaEnabled = register({
 	default: true,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Exa",
-		description: "Enable the Exa web search provider",
+		description: "启用 Exa 网络搜索服务商",
 	},
 });
 
@@ -23,8 +23,8 @@ export const cfgExaSearchDelayMs = register({
 	default: 1_000,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Exa Search Delay",
+		group: "服务",
+		label: "Exa 搜索延迟",
 		description: "Minimum delay between Exa web search requests in milliseconds; set 0 to disable pacing",
 	},
 });
@@ -37,8 +37,8 @@ export const cfgSearxngEndpoint = register({
 	env: { name: "SEARXNG_ENDPOINT", fallback: "blank" },
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "SearXNG Endpoint",
+		group: "服务",
+		label: "SearXNG 端点",
 		description: "Base URL of a self-hosted SearXNG instance used for web search",
 	},
 });

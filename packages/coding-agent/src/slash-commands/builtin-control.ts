@@ -8,7 +8,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "force",
 		icon: "hammer",
-		description: "Force next turn to use a specific tool",
+		description: "强制下一轮使用指定工具",
 		aliases: ["force:"],
 		inlineHint: "<tool-name> [prompt]",
 		allowArgs: true,
@@ -58,7 +58,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "live",
 		icon: "voice",
-		description: "Start Codex-backed realtime voice mode",
+		description: "启动 Codex 支持的实时语音模式",
 		handleTui: async (_command, runtime) => {
 			clearSubmittedText(runtime);
 			await runtime.ctx.handleLiveCommand();
@@ -67,7 +67,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "record",
 		icon: "export",
-		description: "Start or stop recording this screen to a replayable file (omp play)",
+		description: "开始或停止将本屏幕录制为可回放文件 (omp play)",
 		handleTui: async (_command, runtime) => {
 			clearSubmittedText(runtime);
 			await runtime.ctx.toggleRecording();
@@ -76,7 +76,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "pause",
 		icon: "pause",
-		description: "Freeze all agents (main, subagents, advisor) until resumed",
+		description: "冻结所有代理（主代理、子代理、顾问）直到恢复",
 		handleTui: async (_command, runtime) => {
 			clearSubmittedText(runtime);
 			await runPauseScreen(runtime.ctx);
@@ -86,7 +86,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "quit",
 		aliases: ["q"],
 		icon: "power",
-		description: "Quit the application",
+		description: "退出应用",
 		handleTui: shutdownHandlerTui,
 	},
 ];

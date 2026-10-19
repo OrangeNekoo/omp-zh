@@ -94,7 +94,7 @@ function describeGoalResult(result: ToolRenderResult<GoalToolDetails>, args?: Go
 		body: compact([
 			text([span(`"${goal.objective.trim()}"`, "muted")], { wrap: "word" }),
 			text([span(meta.join(" · "), "dim")], { wrap: "word" }),
-			report ? node("section", { head: [span("Report", "toolTitle")] }, [noteText(report)], "report") : undefined,
+			report ? node("section", { head: [span("报告", "toolTitle")] }, [noteText(report)], "report") : undefined,
 		]),
 	};
 }
@@ -114,7 +114,7 @@ export const goalToolRenderer = {
 		if (args.op === "create" && args.token_budget !== undefined) {
 			meta.push(`budget ${formatNumber(args.token_budget)}`);
 		}
-		return new Text(renderStatusLine({ icon: "pending", title: "Goal", description, meta }, uiTheme), 0, 0);
+		return new Text(renderStatusLine({ icon: "pending", title: "目标", description, meta }, uiTheme), 0, 0);
 	},
 
 	renderResult(
@@ -129,7 +129,7 @@ export const goalToolRenderer = {
 		const description = describeOp(op);
 
 		if (result.isError) {
-			const header = renderStatusLine({ icon: "error", title: "Goal", description }, uiTheme);
+			const header = renderStatusLine({ icon: "error", title: "目标", description }, uiTheme);
 			return framedToolCard(uiTheme, () => ({
 				header,
 				sections: [{ content: formatErrorDetail(fallbackText || "Goal tool failed", uiTheme).split("\n") }],
@@ -141,7 +141,7 @@ export const goalToolRenderer = {
 		const goal = details?.goal ?? null;
 		if (!goal) {
 			return new Text(
-				renderStatusLine({ icon: "warning", title: "Goal", description, meta: ["no active goal"] }, uiTheme),
+				renderStatusLine({ icon: "warning", title: "目标", description, meta: ["no active goal"] }, uiTheme),
 				0,
 				0,
 			);
@@ -150,7 +150,7 @@ export const goalToolRenderer = {
 		const header = renderStatusLine(
 			{
 				iconOverride: uiTheme.styledSymbol("tool.goal", "accent"),
-				title: "Goal",
+				title: "目标",
 				description,
 				badge: { label: goal.status, color: goalBadgeColor(goal.status) },
 			},
@@ -175,7 +175,7 @@ export const goalToolRenderer = {
 		const report = details?.completionBudgetReport;
 		const sections: Array<{ label?: string; content: string[] }> = [{ content: lines }];
 		if (report) {
-			sections.push({ label: "Report", content: report.split("\n").map(line => uiTheme.fg("muted", line)) });
+			sections.push({ label: "报告", content: report.split("\n").map(line => uiTheme.fg("muted", line)) });
 		}
 
 		return framedToolCard(uiTheme, () => ({

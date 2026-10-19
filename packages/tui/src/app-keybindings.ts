@@ -90,15 +90,15 @@ export const KEYBINDINGS = {
 	...TUI_KEYBINDINGS,
 	"app.interrupt": {
 		defaultKeys: "escape",
-		description: "Interrupt current operation",
+		description: "中断当前操作",
 	},
 	"app.clear": {
 		defaultKeys: "ctrl+c",
-		description: "Clear screen or cancel",
+		description: "清屏或取消",
 	},
 	"app.exit": {
 		defaultKeys: "ctrl+d",
-		description: "Exit application",
+		description: "退出应用",
 	},
 	"app.suspend": {
 		defaultKeys: "ctrl+z",
@@ -106,11 +106,11 @@ export const KEYBINDINGS = {
 	},
 	"app.display.reset": {
 		defaultKeys: "alt+l",
-		description: "Reset terminal display",
+		description: "重置终端显示",
 	},
 	"app.thinking.cycle": {
 		defaultKeys: "shift+tab",
-		description: "Cycle thinking level",
+		description: "循环切换思考等级",
 	},
 	"app.thinking.toggle": {
 		defaultKeys: "ctrl+t",
@@ -118,65 +118,65 @@ export const KEYBINDINGS = {
 	},
 	"app.model.cycleForward": {
 		defaultKeys: "ctrl+p",
-		description: "Cycle to next model",
+		description: "循环到下一个模型",
 	},
 	"app.model.cycleBackward": {
 		defaultKeys: "shift+ctrl+p",
-		description: "Cycle to previous model",
+		description: "循环到上一个模型",
 	},
 	"app.model.select": {
 		defaultKeys: "alt+m",
-		description: "Select model",
+		description: "选择模型",
 	},
 	"app.model.selectTemporary": {
 		defaultKeys: "alt+p",
-		description: "Select temporary model for current session",
+		description: "为当前会话选择临时模型",
 	},
 	"app.tools.expand": {
 		defaultKeys: "ctrl+o",
-		description: "Expand tools",
+		description: "展开工具",
 	},
 	"app.tools.toggleVisibility": {
 		defaultKeys: "ctrl+shift+o",
-		description: "Show or hide tool activity",
+		description: "显示或隐藏工具活动",
 	},
 	"app.ask.hide": {
 		defaultKeys: "alt+h",
-		description: "Hide or show a pending ask dialog",
+		description: "隐藏或显示待处理的询问对话框",
 	},
 	"app.approval.approve": {
 		// A chord, not Enter: an Enter typed for the composer as the prompt appears must not approve.
 		// Ctrl+Q backs up Ctrl+Enter, which Windows Terminal cannot deliver (#1903).
 		defaultKeys: ["ctrl+enter", "ctrl+q"],
-		description: "Approve a pending tool call",
+		description: "批准待处理的工具调用",
 	},
 	"app.editor.external": {
 		defaultKeys: "ctrl+g",
-		description: "Open external editor",
+		description: "打开外部编辑器",
 	},
 	"app.message.followUp": {
 		// Ctrl+Enter is preserved for terminals that deliver it (Kitty/iTerm2/WezTerm/Ghostty),
 		// but Windows Terminal does not emit a distinct event for Ctrl+Enter — Ctrl+Q is listed
 		// first so the default binding works there without remapping (#1903).
 		defaultKeys: ["ctrl+q", "ctrl+enter"],
-		description: "Send follow-up message",
+		description: "发送跟进消息",
 	},
 	"app.retry": {
 		// F5 leads: it is delivered verbatim by every terminal, unlike modified
 		// Enter chords (Ctrl/Alt/Cmd+Enter), which various terminals swallow or
 		// fold into plain Enter. The idle "F5 to Retry" status row advertises it.
 		defaultKeys: ["f5", "alt+r"],
-		description: "Retry last failed assistant turn",
+		description: "重试上次失败的助手轮次",
 	},
 	"app.message.dequeue": {
 		// Shift+Up is listed alongside Alt+Up because macOS Terminal.app consumes Option
 		// for character composition, leaving Alt+Up unreachable there.
 		defaultKeys: ["alt+up", "shift+up"],
-		description: "Dequeue message",
+		description: "出队消息",
 	},
 	"app.clipboard.pasteImage": {
 		defaultKeys: getDefaultPasteImageKeys(),
-		description: "Paste image or text from clipboard",
+		description: "从剪贴板粘贴图像或文本",
 	},
 	"app.clipboard.pasteTextRaw": {
 		defaultKeys: ["ctrl+shift+v", "alt+shift+v"],
@@ -184,35 +184,35 @@ export const KEYBINDINGS = {
 	},
 	"app.clipboard.copyLine": {
 		defaultKeys: "alt+shift+l",
-		description: "Copy current line",
+		description: "复制当前行",
 	},
 	"app.clipboard.copyPrompt": {
 		defaultKeys: "alt+shift+c",
-		description: "Copy prompt",
+		description: "复制提示词",
 	},
 	"app.session.new": {
 		defaultKeys: [],
-		description: "Create new session",
+		description: "创建新会话",
 	},
 	"app.session.tree": {
 		defaultKeys: [],
-		description: "Show session tree",
+		description: "显示会话树",
 	},
 	"app.session.fork": {
 		defaultKeys: [],
-		description: "Fork session",
+		description: "复刻会话",
 	},
 	"app.session.resume": {
 		defaultKeys: [],
-		description: "Resume session",
+		description: "恢复会话",
 	},
 	"app.agents.hub": {
 		defaultKeys: "alt+a",
-		description: "Open the agent hub",
+		description: "打开代理中心",
 	},
 	"app.session.observe": {
 		defaultKeys: "ctrl+s",
-		description: "Open the agent hub",
+		description: "打开代理中心",
 	},
 	"app.session.togglePath": {
 		defaultKeys: "ctrl+p",
@@ -224,23 +224,23 @@ export const KEYBINDINGS = {
 	},
 	"app.session.rename": {
 		defaultKeys: "ctrl+r",
-		description: "Rename session",
+		description: "重命名会话",
 	},
 	"app.session.delete": {
 		defaultKeys: "ctrl+d",
-		description: "Delete session",
+		description: "删除会话",
 	},
 	"app.session.deleteNoninvasive": {
 		defaultKeys: "ctrl+backspace",
-		description: "Delete session (non-invasive)",
+		description: "删除会话（非侵入式）",
 	},
 	"app.tree.previousBranch": {
 		defaultKeys: [],
-		description: "Jump to the previous branch in /tree",
+		description: "跳转到 /tree 中的上一个分支",
 	},
 	"app.tree.nextBranch": {
 		defaultKeys: [],
-		description: "Jump to the next branch in /tree",
+		description: "跳转到 /tree 中的下一个分支",
 	},
 	"app.plan.toggle": {
 		defaultKeys: "alt+shift+p",
@@ -248,11 +248,11 @@ export const KEYBINDINGS = {
 	},
 	"app.history.search": {
 		defaultKeys: "ctrl+r",
-		description: "Search history",
+		description: "搜索历史",
 	},
 	"app.stt.pushToTalk": {
 		defaultKeys: "space",
-		description: "Hold to record speech-to-text",
+		description: "按住以录制语音转文字",
 	},
 	"app.stt.toggle": {
 		defaultKeys: [],

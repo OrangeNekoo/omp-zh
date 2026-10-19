@@ -93,8 +93,8 @@ export class PlanSaveOverlay implements Component, Focusable {
 		children.push(
 			actionBar([
 				null,
-				actionButton("Cancel", "cancel", cancelKey ? { keys: cancelKey } : {}),
-				actionButton("Save and quit", "save", { tone: "accent", ...(submitKey ? { keys: submitKey } : {}) }),
+				actionButton("取消", "cancel", cancelKey ? { keys: cancelKey } : {}),
+				actionButton("保存并退出", "save", { tone: "accent", ...(submitKey ? { keys: submitKey } : {}) }),
 			]),
 		);
 		this.#nativeSig = sig;

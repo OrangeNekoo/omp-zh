@@ -269,7 +269,7 @@ export class SessionInfoOverlay implements Component {
 			);
 		}
 		flushStats();
-		body.push(actionBar([null, actionButton("Close", "close", { keys: "escape" })]));
+		body.push(actionBar([null, actionButton("关闭", "close", { keys: "escape" })]));
 		const described = col(body, { gap: "md" });
 		this.#nativeNode = { meter, node: described };
 		return described;
@@ -343,7 +343,7 @@ export class SessionInfoOverlay implements Component {
 					"row",
 					{ align: "baseline", role: "omp.info.contextHead" },
 					[
-						text([span("Context window")], { grow: 1, shrink: 1, truncate: "end" }),
+						text([span("上下文窗口")], { grow: 1, shrink: 1, truncate: "end" }),
 						text(
 							[
 								span(`${formatNumber(context.tokens)} / ${formatNumber(context.contextWindow)}`, "mono muted"),

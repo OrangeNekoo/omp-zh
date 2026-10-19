@@ -392,7 +392,7 @@ function isAnswered(state: QuestionState): boolean {
 
 /** The answer to one question for the Review tab: the chosen labels (code mono), the custom answer, the note. */
 function describeAnswer(question: ExtensionAskDialogQuestion, state: QuestionState): readonly TspSpan[] {
-	if (!isAnswered(state)) return [span("Unanswered", "warning")];
+	if (!isAnswered(state)) return [span("未回答", "warning")];
 	const labels = displayOptionLabels(question);
 	const spans: TspSpan[] = [];
 	const push = (parts: readonly TspSpan[]): void => {
@@ -814,7 +814,7 @@ export class AskDialogComponent implements Component {
 						items,
 						active,
 						role: "omp.ask.questions",
-						title: "Next question  tab · Previous  shift+tab",
+						title: "下一题  tab · 上一题  shift+tab",
 						actions: { click: "select" },
 					},
 					undefined,
@@ -837,7 +837,7 @@ export class AskDialogComponent implements Component {
 				style: "ring",
 				size: "sm",
 				label: `${Math.ceil(left / 1000)}s`,
-				title: "Answers the recommended option when the time runs out",
+				title: "时间耗尽时回答推荐选项",
 			},
 			undefined,
 			"timer",
@@ -857,13 +857,13 @@ export class AskDialogComponent implements Component {
 			{ truncate: "end", role: "omp.ask.summary" },
 		);
 		const hideKey = getKeybindings().getKeys("app.ask.hide")[0];
-		const show = actionButton("Show", "show", {
+		const show = actionButton("显示", "show", {
 			tone: "accent",
 			...(hideKey ? { keys: hideKey } : {}),
 			title: `Show the question${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
 		});
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
-		const skip = actionButton("Skip", "cancel", cancelKey ? { keys: cancelKey } : {});
+		const skip = actionButton("跳过", "cancel", cancelKey ? { keys: cancelKey } : {});
 		const items: (NativeNode | null)[] = [];
 		if (this.#countdown) items.push(this.#describeTimer(this.#countdown, ring));
 		// The summary grows (`omp.ask.summary`), end-aligning Skip and Show.
@@ -897,7 +897,7 @@ export class AskDialogComponent implements Component {
 			const recommended = rowItem.kind === "option" && question.recommended === rowItem.optionIndex;
 			const detail =
 				describeRowDetail(rowItem, question, state) ??
-				(rowItem.kind === "other" ? [span("Type your own answer")] : undefined);
+				(rowItem.kind === "other" ? [span("输入你自己的回答")] : undefined);
 			const role =
 				rowItem.kind === "other"
 					? question.multi
@@ -916,7 +916,7 @@ export class AskDialogComponent implements Component {
 							: optionLabelSpans(question, rowItem.optionIndex ?? -1, rowItem.label),
 					role,
 					...(detail ? { detail } : {}),
-					...(recommended ? { value: [span("Recommended")] } : {}),
+					...(recommended ? { value: [span("推荐")] } : {}),
 					...(checked ? { tone: "accent" as const, ...(question.multi ? { icon: "check" } : {}) } : {}),
 				},
 				undefined,
@@ -950,7 +950,7 @@ export class AskDialogComponent implements Component {
 						span(`${unanswered} unanswered`, "warning"),
 						span(` · Submit still sends ${unanswered === this.#questions.length ? "the questions" : "the rest"}`),
 					]
-				: [span("All answered · Submit sends them")];
+				: [span("全部已回答 · 提交即发送")];
 		children.push(node("text", { spans: notice, role: "omp.ask.notice" }, undefined, "notice"));
 		const answers: { k: string; v: readonly TspSpan[] }[] = [];
 		for (let index = 0; index < this.#questions.length; index++) {
@@ -971,12 +971,12 @@ export class AskDialogComponent implements Component {
 	 */
 	#describeActions(blocked: boolean, ring: boolean): NativeNode {
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
-		const skip = actionButton("Skip", "cancel", {
+		const skip = actionButton("跳过", "cancel", {
 			...(cancelKey ? { keys: cancelKey } : {}),
 			title: `Skip without answering${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
 		});
 		const hideKey = getKeybindings().getKeys("app.ask.hide")[0];
-		const hide = actionButton("Hide", "hide", {
+		const hide = actionButton("隐藏", "hide", {
 			...(hideKey ? { keys: hideKey } : {}),
 			title: `Hide until you are ready to answer${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
 		});
@@ -990,10 +990,10 @@ export class AskDialogComponent implements Component {
 			]);
 		}
 		if (this.#isSubmitTab()) {
-			const submit = actionButton("Submit", "submit", {
+			const submit = actionButton("提交", "submit", {
 				keys: "enter",
 				tone: "accent",
-				title: "Submit answers  enter",
+				title: "提交回答  enter",
 			});
 			return actionBar([...lead, null, skip, submit]);
 		}
@@ -1006,7 +1006,7 @@ export class AskDialogComponent implements Component {
 			tone: "accent",
 			title: question?.multi ? `${enterLabel}  enter · Toggle  space` : `${enterLabel}  enter`,
 		});
-		const note = actionButton("Note", "note", { keys: "n", title: "Add a note to the highlighted answer  n" });
+		const note = actionButton("备注", "note", { keys: "n", title: "为高亮回答添加备注  n" });
 		return actionBar([...lead, null, note, skip, submit]);
 	}
 
@@ -1223,7 +1223,7 @@ export class AskDialogComponent implements Component {
 					id: String(index),
 					label: questionTabLabel(question, index),
 				})),
-				{ id: "submit", label: "Submit" },
+				{ id: "submit", label: "提交" },
 			];
 			this.#tabBar = new TabBar("", tabs, getTabBarTheme(), this.#activeTabIndex);
 			this.#tabBar.showHint = false;
@@ -1438,7 +1438,7 @@ export class AskDialogComponent implements Component {
 		try {
 			const prefill =
 				state.customInput === undefined ? undefined : { text: state.customInput, images: state.customInputImages };
-			const result = await this.#openPrompt({ title: "Custom answer", question: question.question }, prefill);
+			const result = await this.#openPrompt({ title: "自定义回答", question: question.question }, prefill);
 			if (result === undefined || this.#closed) return;
 			const input = splitPromptInput(result);
 			if (input.text.trim() === "") {

@@ -40,15 +40,15 @@ const PENDING_STATUSES = new Set(["queued", "requested", "waiting", "pending"]);
 const FALLBACK_WIDTH = 80;
 
 const OP_TITLES: Record<string, string> = {
-	repo_view: "GitHub Repo",
-	pr_checkout: "GitHub PR Checkout",
-	pr_push: "GitHub PR Push",
-	search_issues: "GitHub Search Issues",
-	search_prs: "GitHub Search PRs",
-	search_code: "GitHub Search Code",
-	search_commits: "GitHub Search Commits",
-	search_repos: "GitHub Search Repos",
-	run_watch: "GitHub Run Watch",
+	repo_view: "GitHub 仓库",
+	pr_checkout: "GitHub PR 检出",
+	pr_push: "GitHub PR 推送",
+	search_issues: "GitHub 搜索 Issue",
+	search_prs: "GitHub 搜索 PR",
+	search_code: "GitHub 搜索代码",
+	search_commits: "GitHub 搜索提交",
+	search_repos: "GitHub 搜索仓库",
+	run_watch: "GitHub 运行监视",
 };
 
 function formatOpTitle(op: string | undefined): string {
@@ -533,19 +533,19 @@ export const githubToolRenderer = {
 					? {
 							icon: options.spinnerFrame !== undefined ? "running" : "pending",
 							spinnerFrame: options.spinnerFrame,
-							title: "GitHub Run Watch",
+							title: "GitHub 运行监视",
 							meta: [getWatchHeader(watch)],
 						}
 					: isError
 						? {
 								icon: "error",
-								title: "GitHub Run Watch",
+								title: "GitHub 运行监视",
 								titleColor: "error",
 								meta: [getWatchHeader(watch)],
 							}
 						: {
 								iconOverride: uiTheme.styledSymbol("tool.gh", "accent"),
-								title: "GitHub Run Watch",
+								title: "GitHub 运行监视",
 								titleColor: "accent",
 								meta: [getWatchHeader(watch)],
 							},

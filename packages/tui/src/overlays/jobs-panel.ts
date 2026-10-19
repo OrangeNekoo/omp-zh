@@ -74,10 +74,10 @@ export interface JobsSheetSource {
 
 /** A job's status as the sheet names it. */
 const STATUS_LABEL: Record<JobsPanelJob["status"], string> = {
-	running: "Running",
-	completed: "Done",
-	failed: "Failed",
-	cancelled: "Cancelled",
+	running: "运行中",
+	completed: "完成",
+	failed: "失败",
+	cancelled: "已取消",
 };
 
 /** A job's status color: the list row's icon and the detail's status pill. */
@@ -153,7 +153,7 @@ export class JobsSheet implements Component {
 		].join("|");
 		const output = detail?.output;
 		if (this.#native?.key === key && this.#native.output === output) return this.#native.node;
-		const close = actionButton("Close", "close", { keys: "escape" });
+		const close = actionButton("关闭", "close", { keys: "escape" });
 		const described = selected
 			? col([
 					node(
@@ -405,7 +405,7 @@ function describeDetail(
 				}),
 				text([span(`${job.type} · ${job.id}`, "mono")], { role: "omp.jobs.id", wrap: "none", truncate: "end" }),
 				node("spacer", { grow: 1 }),
-				cancellable && !settled && actionButton("Cancel job", "cancel", { keys: "x", tone: "error" }),
+				cancellable && !settled && actionButton("取消任务", "cancel", { keys: "x", tone: "error" }),
 			]),
 			{ role: "omp.jobs.status", gap: "sm", align: "center" },
 		),

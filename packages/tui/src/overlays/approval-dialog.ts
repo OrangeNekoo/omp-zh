@@ -123,9 +123,9 @@ export class ApprovalDialogComponent implements Component {
 		this.#full =
 			options.fullPrompt === undefined ? undefined : promptDetails(sanitizeDisplayLines(options.fullPrompt));
 		this.#choices = [
-			{ label: "Approve", answer: "once" },
+			{ label: "批准", answer: "once" },
 			...(options.session ? [{ label: options.session.label, answer: "session" as const }] : []),
-			{ label: "Deny", answer: "deny" },
+			{ label: "拒绝", answer: "deny" },
 		];
 		this.#panel = new OverlayPanel(title, "omp.overlay.approval");
 		this.#footer.setHeight(1);
@@ -290,12 +290,12 @@ export class ApprovalDialogComponent implements Component {
 		if (this.#native && this.#nativeDrafting === drafting) return this.#native;
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
 		const approveKey = appApproveKeys()[0];
-		const deny = actionButton("Deny", "deny", {
+		const deny = actionButton("拒绝", "deny", {
 			...(cancelKey ? { keys: cancelKey } : {}),
 			tone: "error",
 			title: `Deny this call${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
 		});
-		const approve = actionButton("Approve", "approve", {
+		const approve = actionButton("批准", "approve", {
 			...(approveKey ? { keys: approveKey } : {}),
 			tone: "accent",
 			title: `Approve this call${approveKey ? `  ${formatTooltipKey(approveKey)}` : ""}`,

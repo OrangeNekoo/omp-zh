@@ -72,7 +72,7 @@ export class TtsrNotificationComponent extends Container {
 	#nativePresentation(): MessageNoticeNativePresentation {
 		const single = this.#rules.length === 1 ? this.#rules[0] : undefined;
 		const head = single
-			? [span("Rule applied: ", "warning"), span(single.name, "mono strong")]
+			? [span("已应用规则：", "warning"), span(single.name, "mono strong")]
 			: [
 					span(`${this.#rules.length} rules applied: `, "warning"),
 					span(this.#rules.map(rule => rule.name).join(", "), "mono strong"),

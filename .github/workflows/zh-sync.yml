@@ -1,0 +1,141 @@
+name: Sync upstream and re-apply 汉化
+
+# 拉取上游 can1357/oh-my-pi 的 main，重放本仓库的汉化改动，验证后推送。
+#
+# 为什么这样做：上游每天都在更新界面文案与代码结构。若把汉化结果当作
+# 一次性补丁，上游一更新就会冲突。因此汉化被拆成两部分：
+#   1. i18n/dictionary.json —— 人工维护的英文→中文词典（可叠加、可审查）
+#   2. i18n/*.ts —— 确定性的 AST 重写器（作用于当前上游源码）
+# 同步时重新执行一次重写器，而不是合并旧的翻译 diff，冲突面因此收敛到
+# 词典条目本身。
+#
+# 校验闸门：重写后源码必须仍能被解析、CLI 必须能启动、类型检查必须通过。
+# 任何一步失败都不会推送，避免把损坏的构建推到 main。
+
+on:
+   schedule:
+      # 每天 UTC 03:17 跑一次（避开整点，减少 GitHub Actions 排队）
+      - cron: "17 3 * * *"
+   workflow_dispatch:
+      inputs:
+         upstream_ref:
+            description: "上游分支或 tag（默认 main）"
+            required: false
+            default: "main"
+
+permissions:
+   contents: write
+
+concurrency:
+   group: zh-sync
+   cancel-in-progress: false
+
+jobs:
+   sync:
+      name: Re-apply 汉化 onto upstream
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout fork
+           uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
+              # 用 fork 自己的 token 推送
+              token: ${{ secrets.GITHUB_TOKEN }}
+
+         - name: Setup Bun
+           uses: oven-sh/setup-bun@v2
+           with:
+              bun-version: latest
+
+         - name: Configure git
+           run: |
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+         - name: Fetch upstream
+           run: |
+              git remote add upstream https://github.com/can1357/oh-my-pi.git || true
+              git fetch --no-tags upstream "${{ inputs.upstream_ref || 'main' }}"
+              UPSTREAM_SHA=$(git rev-parse FETCH_HEAD)
+              echo "UPSTREAM_SHA=$UPSTREAM_SHA" >> "$GITHUB_ENV"
+              echo "上游提交：$UPSTREAM_SHA"
+
+         - name: Skip when already up to date
+           id: check
+           run: |
+              # 已经包含上游提交就不必重跑
+              if git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
+                 echo "need_sync=false" >> "$GITHUB_OUTPUT"
+                 echo "已在最新上游，跳过。"
+              else
+                 echo "need_sync=true" >> "$GITHUB_OUTPUT"
+              fi
+
+         # 关键步骤：把汉化脚本与词典（本仓库自有文件）取出来，再切换到上游源码。
+         # 这样重写器总是作用于上游最新代码，而不是旧的翻译结果。
+         - name: Stage 汉化 tooling
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              mkdir -p /tmp/zh-tooling
+              cp -R i18n /tmp/zh-tooling/i18n
+              cp -R scripts/link-omp.sh /tmp/zh-tooling/ 2>/dev/null || true
+
+         - name: Reset working tree to upstream
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              git checkout --detach "$UPSTREAM_SHA"
+              git clean -fdx -e node_modules || true
+
+         - name: Restore 汉化 tooling
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              rm -rf i18n
+              cp -R /tmp/zh-tooling/i18n i18n
+              # 只保留词典、规则与脚本；report.json 是产物，不入库
+              rm -f i18n/report.json
+
+         - name: Install dependencies
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun install --frozen-lockfile
+
+         - name: Apply 汉化
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/translate.ts
+
+         - name: Verify translated sources still parse
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # translate.ts 内部已在写盘前做过语法校验；这里再跑一次提取，
+              # 确认重写器对当前上游结构仍然生效（未命中任何位置说明规则失效）。
+              bun i18n/extract.ts --check
+
+         - name: Verify CLI boots
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              bun packages/coding-agent/src/cli.ts --version
+
+         - name: Verify types
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              (cd packages/utils && bun run check:types)
+              (cd packages/tui && bun run check:types)
+              (cd packages/coding-agent && bun run check:types)
+
+         - name: Restore omp-zh command name
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 上游的 package.json 每次发布都会重写 bin 字段，改名必须重新套用。
+              bun i18n/apply-cli-name.ts
+
+         - name: Commit and push
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              git add -A
+              if git diff --cached --quiet; then
+                 echo "没有需要提交的改动。"
+                 exit 0
+              fi
+              SUBJECT=$(git log -1 --format=%s "$UPSTREAM_SHA")
+              git commit -m "chore(zh): sync upstream ${UPSTREAM_SHA:0:12} and re-apply 汉化" \
+                 -m "上游提交：$SUBJECT"
+              git push origin HEAD:main

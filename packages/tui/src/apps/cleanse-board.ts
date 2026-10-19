@@ -243,7 +243,7 @@ export class CleanseBoardModel {
 		const value = this.#repairDone / this.#repairTotal;
 		const label = `${this.#repairDone}/${this.#repairTotal}`;
 		const children: NativeNode[] = [
-			node("spinner", { label: "Repairing", tone: "accent" }),
+			node("spinner", { label: "修复中", tone: "accent" }),
 			meter
 				? node("meter", {
 						value,

@@ -292,11 +292,11 @@ export class BashInteractiveOverlayComponent implements Component {
 			const footer =
 				this.#state === "running"
 					? actionBar([
-							text([span("Input forwarded to PTY", "dim")]),
+							text([span("转发到 PTY 的输入", "dim")]),
 							null,
-							actionButton("Force kill", KILL_ACTION, { keys: "escape", tone: "error" }),
+							actionButton("强制终止", KILL_ACTION, { keys: "escape", tone: "error" }),
 						])
-					: actionBar([text([span("Session finished", "dim")])]);
+					: actionBar([text([span("会话已结束", "dim")])]);
 			return col([head, ansi(screen.join("\n"), { cols }), footer], { gap: "sm" });
 		});
 	}

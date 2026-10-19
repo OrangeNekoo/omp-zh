@@ -53,7 +53,7 @@ const EARLIER_TURNS_KEY = "earlier";
 /** Leading item of a truncated transcript list; selecting it loads the older turns. */
 const earlierTurnsItem: NativeNode = node(
 	"item",
-	{ label: [span("Earlier turns…", "muted")], hint: ["a"] },
+	{ label: [span("更早的轮次…", "muted")], hint: ["a"] },
 	undefined,
 	EARLIER_TURNS_KEY,
 );
@@ -87,9 +87,9 @@ function turnSummary(entry: TranscriptEntry): { label: string; role: string } {
 		case "pythonExecution":
 			return { label: firstLine(message.code), role: "omp.tool.eval" };
 		case "compactionSummary":
-			return { label: "Compaction summary", role: "omp.summary" };
+			return { label: "压缩摘要", role: "omp.summary" };
 		case "branchSummary":
-			return { label: "Branch summary", role: "omp.summary" };
+			return { label: "分支摘要", role: "omp.summary" };
 		case "custom":
 		case "hookMessage": {
 			const draft = userTurnDraft(entry);
@@ -132,7 +132,7 @@ function turnItem(target: OutlineTarget, detail?: TspText): NativeNode {
 
 /** Preview of a turn's text: prose as markdown, command/tool output as a plain code block. */
 export function turnPreview(target: OutlineTarget, content: string): NativeNode {
-	if (!content.trim()) return text([span("(no text)", "muted")]);
+	if (!content.trim()) return text([span("（无文本）", "muted")]);
 	const message = transcriptEntryMessage(target.entries[0]!);
 	switch (message?.role) {
 		case "assistant":
@@ -725,7 +725,7 @@ export class CopySelectorComponent implements Component {
 				!descended && blocks.length > 0 ? pickerAction("blocks", "Blocks", "right") : undefined,
 				focused?.href && this.deps.onOpen ? pickerAction("open-link", "Open link", "o") : undefined,
 				!descended && this.#truncated ? pickerAction("earlier", "Earlier turns", "a") : undefined,
-				descended ? { ...CLOSE_ACTION, label: "Back" } : CLOSE_ACTION,
+				descended ? { ...CLOSE_ACTION, label: "返回" } : CLOSE_ACTION,
 			]),
 		};
 		const preview: NativeNode[] = [];
@@ -825,7 +825,7 @@ export class CopySelectorComponent implements Component {
 		children.push(hintsRow(hints));
 		const head: TspText = this.deps.title ?? [
 			span(`${theme.cmd.copy} `),
-			span("Copy", "strong"),
+			span("复制", "strong"),
 			span(`${theme.sep.dot}pick what to put on the clipboard`, "dim"),
 		];
 		const root = overlayCard("omp.overlay.copy", head, children);

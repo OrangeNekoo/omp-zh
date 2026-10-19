@@ -289,7 +289,7 @@ function describeCodexResetFireworks(event: CodexResetFireworksEvent): NativeNod
 				},
 			}),
 			text([span(subtitle, FIREWORK_THEME_COLORS.cyan)]),
-			actionBar([null, actionButton("Close", "close", { keys: "escape" })]),
+			actionBar([null, actionButton("关闭", "close", { keys: "escape" })]),
 		],
 		{ align: "center", gap: "sm" },
 	);

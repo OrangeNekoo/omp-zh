@@ -213,7 +213,7 @@ export function renderResult(
 	const renderBody = (expanded: boolean): LspResultBody => {
 		if (codeBlockMatch) {
 			return {
-				label: "Hover",
+				label: "悬停",
 				state: "success",
 				bodyLines: renderHover(codeBlockMatch, text, lines, expanded, theme),
 			};
@@ -222,29 +222,29 @@ export function renderResult(
 			const errorCount = errorMatch ? Number.parseInt(errorMatch[1], 10) : 0;
 			const warnCount = warningMatch ? Number.parseInt(warningMatch[1], 10) : 0;
 			return {
-				label: "Diagnostics",
+				label: "诊断",
 				state: errorCount > 0 ? "error" : warnCount > 0 ? "warning" : "success",
 				bodyLines: renderDiagnostics(errorMatch, warningMatch, lines, expanded, theme),
 			};
 		}
 		if (refMatch) {
 			return {
-				label: "References",
+				label: "引用",
 				state: "success",
 				bodyLines: renderReferences(refMatch, lines, expanded, theme),
 			};
 		}
 		if (symbolsMatch) {
-			return { label: "Symbols", state: "success", bodyLines: renderSymbols(symbolsMatch, lines, expanded, theme) };
+			return { label: "符号", state: "success", bodyLines: renderSymbols(symbolsMatch, lines, expanded, theme) };
 		}
 		if (result.details?.action === "diagnostics" && text === "OK") {
 			return {
-				label: "Diagnostics",
+				label: "诊断",
 				state: "success",
 				bodyLines: [`${theme.styledSymbol("tool.lsp", "accent")} ${theme.fg("dim", "OK")}`],
 			};
 		}
-		return { label: "Response", state: "success", bodyLines: renderGeneric(text, lines, expanded, theme) };
+		return { label: "响应", state: "success", bodyLines: renderGeneric(text, lines, expanded, theme) };
 	};
 
 	return framedToolCard(theme, ({ contentWidth }) => {

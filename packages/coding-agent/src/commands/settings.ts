@@ -11,8 +11,8 @@ export const cfgShareServerUrl = register({
 	default: DEFAULT_SHARE_URL,
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Share Server",
+		group: "协作",
+		label: "共享服务器",
 		description:
 			"Share viewer/upload base used by /share (encrypted blob upload + viewer; links are <base>/<id>#<key>)",
 	},
@@ -25,13 +25,13 @@ export const cfgShareStore = register({
 	default: "blob",
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Share Store",
+		group: "协作",
+		label: "共享存储",
 		description: "Where /share uploads the encrypted session blob",
 		options: [
 			{
 				value: "blob",
-				label: "Encrypted Blob",
+				label: "加密数据块",
 				description: "Upload to the share server (no GitHub account needed; avoids gist API rate limits)",
 			},
 			{
@@ -49,8 +49,8 @@ export const cfgShareRedactSecrets = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Share Secret Redaction",
+		group: "协作",
+		label: "共享密钥脱敏",
 		description: "Run the secret obfuscator over /share snapshots before upload (uses the secrets.* config)",
 	},
 });

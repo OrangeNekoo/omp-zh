@@ -298,7 +298,7 @@ function renderAnswerOptionLines(
 
 function askHead(question: string | undefined, meta?: string): NativeToolHead {
 	const first = question ? plainText(sanitizeCarriageReturns(question)).trim().split("\n")[0] : "";
-	return { title: "Ask", target: first || undefined, targetKind: "text", meta: meta ? [meta] : undefined };
+	return { title: "询问", target: first || undefined, targetKind: "text", meta: meta ? [meta] : undefined };
 }
 
 /** One question of a multi-question result: the question as markdown over its answers. */
@@ -327,7 +327,7 @@ function describeAnswers(
 ): NativeChild[] {
 	const selected = new Set(selectedOptions ?? []);
 	if (selected.size === 0 && customInput === undefined && note === undefined) {
-		return [text([span("Cancelled", "warning")], { tone: "warning" })];
+		return [text([span("已取消", "warning")], { tone: "warning" })];
 	}
 	const labels = options && options.length > 0 ? options : (selectedOptions ?? []);
 	const rows = labels.map((label, index) => {
@@ -353,7 +353,7 @@ function describeAskCall(args: AskRenderArgs): NativeToolView {
 	return {
 		tool: askHead(first, more),
 		inline: true,
-		body: [text([span("Waiting for your answer…", "muted")])],
+		body: [text([span("等待你的回答…", "muted")])],
 	};
 }
 
@@ -424,7 +424,7 @@ function describeAskResult(result: ToolRenderResult<AskToolDetails>, args: AskRe
 				selectedIndicesFor(rawDetails.options, rawDetails.selectedOptions),
 			),
 			details.timedOut
-				? text([span("auto-selected after timeout — not a user choice", "muted")], {
+				? text([span("超时后自动选择 — 非用户选择", "muted")], {
 						wrap: "word",
 						role: "omp.tool.notice",
 					})
@@ -526,7 +526,7 @@ export const askToolRenderer = {
 		if (!rawDetails) {
 			const txt = result.content[0];
 			const fallback = txt?.type === "text" && txt.text ? sanitizeCarriageReturns(txt.text) : "";
-			const header = renderStatusLine({ icon: "warning", title: "Ask" }, uiTheme);
+			const header = renderStatusLine({ icon: "warning", title: "询问" }, uiTheme);
 			const body = fallback ? `\n${uiTheme.fg("dim", fallback)}` : "";
 			return new Text(`${header}${body}`, 0, 0);
 		}
@@ -534,7 +534,7 @@ export const askToolRenderer = {
 
 		// Chat redirect: user chose "Chat about this" instead of answering.
 		if (details.chatRedirect) {
-			const header = renderStatusLine({ icon: "info", title: "Ask", meta: ["chat redirect"] }, uiTheme);
+			const header = renderStatusLine({ icon: "info", title: "询问", meta: ["chat redirect"] }, uiTheme);
 			const questions = details.questions ?? [];
 			return framedToolCard(uiTheme, ({ width }) => ({
 				header,
@@ -556,7 +556,7 @@ export const askToolRenderer = {
 			const header = renderStatusLine(
 				{
 					icon: hasAnySelection ? "success" : "warning",
-					title: "Ask",
+					title: "询问",
 					meta: [`${results.length} questions`],
 				},
 				uiTheme,
@@ -607,8 +607,8 @@ export const askToolRenderer = {
 			(details.selectedOptions && details.selectedOptions.length > 0);
 		const header = renderStatusLine(
 			hasSelection
-				? { iconOverride: uiTheme.styledSymbol("tool.ask", "accent"), title: "Ask" }
-				: { icon: "warning", title: "Ask" },
+				? { iconOverride: uiTheme.styledSymbol("tool.ask", "accent"), title: "询问" }
+				: { icon: "warning", title: "询问" },
 			uiTheme,
 		);
 		const dOptions = details.options;

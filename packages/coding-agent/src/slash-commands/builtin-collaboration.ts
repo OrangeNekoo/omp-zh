@@ -62,15 +62,15 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "advisor",
 		icon: "advisor",
-		description: "Toggle the advisor (a second model that reviews each turn and injects notes)",
+		description: "切换顾问（审查每一轮并注入备注的第二个模型）",
 		acpDescription: "Toggle advisor",
 		acpInputHint: "[on|off|status|dump [raw]|configure]",
 		subcommands: [
-			{ name: "on", description: "Enable the advisor" },
-			{ name: "off", description: "Disable the advisor" },
-			{ name: "status", description: "Show advisor status" },
-			{ name: "dump", description: "Copy the advisor's transcript to clipboard", usage: "[raw]" },
-			{ name: "configure", description: "Open the advisor configuration editor (TUI)" },
+			{ name: "on", description: "启用顾问" },
+			{ name: "off", description: "禁用顾问" },
+			{ name: "status", description: "显示顾问状态" },
+			{ name: "dump", description: "将顾问的会话记录复制到剪贴板", usage: "[raw]" },
+			{ name: "configure", description: "打开顾问配置编辑器 (TUI)" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -179,7 +179,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "export",
 		icon: "export",
-		description: "Export session to HTML file",
+		description: "将会话导出为 HTML 文件",
 		inlineHint: "[--themes] [path]",
 		allowArgs: true,
 		handle: async (command, runtime) => {
@@ -203,7 +203,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "trace",
 		icon: "stats",
-		description: "Open this session's trace in the stats dashboard",
+		description: "在统计仪表盘中打开本会话的追踪",
 		handle: async (_command, runtime) => {
 			const sessionFile = runtime.session.sessionFile;
 			if (!sessionFile) {
@@ -230,17 +230,17 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "dump",
 		icon: "clipboard",
-		description: "Copy session transcript to clipboard (and write LLM request JSON to tmp)",
+		description: "将会话记录复制到剪贴板（并将 LLM 请求 JSON 写入临时目录）",
 		acpDescription: "Return full transcript as plain text, with LLM request JSON path",
 		acpInputHint: "[all|anon]",
 		subcommands: [
 			{
 				name: "all",
-				description: "Write a zip with the main transcript, LLM request JSON, and one file per subagent",
+				description: "写入包含主记录、LLM 请求 JSON 及每个子代理一个文件的压缩包",
 			},
 			{
 				name: "anon",
-				description: "Write a zip of anonymized session JSONL (contents redacted, metadata kept) plus subagents",
+				description: "写入匿名化会话 JSONL（内容脱敏、保留元数据）及子代理的压缩包",
 			},
 		],
 		allowArgs: true,
@@ -292,7 +292,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "share",
 		icon: "share",
-		description: "Share session via an encrypted link (share server or secret gist)",
+		description: "通过加密链接共享会话（共享服务器或秘密 gist）",
 		handle: async (_command, runtime) => {
 			try {
 				const result = await shareSession(runtime.sessionManager, {
@@ -318,13 +318,13 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "collab",
 		icon: "broadcast",
-		description: "Share this session live via a relay",
+		description: "通过中继实时共享本会话",
 		inlineHint: "[start|view|list|stop|status] [relayUrl]",
 		subcommands: [
-			{ name: "view", description: "Share a read-only link (guests can watch, not prompt)" },
-			{ name: "list", description: "List active local Collab hosts (no links; use `omp collab link`)" },
-			{ name: "status", description: "Show link + participants" },
-			{ name: "stop", description: "Stop sharing" },
+			{ name: "view", description: "共享只读链接（访客可观看，不可提示）" },
+			{ name: "list", description: "列出活动的本地协作主机（无链接；使用 `omp collab link`）" },
+			{ name: "status", description: "显示链接和参与者" },
+			{ name: "stop", description: "停止共享" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -447,7 +447,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "join",
 		icon: "signIn",
-		description: "Join a shared collab session",
+		description: "加入共享协作会话",
 		inlineHint: "<link>",
 		allowArgs: true,
 		handleTui: async (command, runtime) => {
@@ -479,7 +479,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "leave",
 		icon: "signOut",
-		description: "Leave the collab session",
+		description: "离开协作会话",
 		getTuiAutocompleteDescription: runtime => {
 			if (runtime.ctx.collabController.host) return "Leave collab: hosting";
 			if (runtime.ctx.collabGuest) return "Leave collab: guest";
@@ -504,11 +504,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "browser",
 		icon: "globe",
-		description: "Toggle browser eval-prelude headless vs visible mode",
+		description: "切换浏览器 eval 前奏的无头/可见模式",
 		acpInputHint: "[headless|visible]",
 		subcommands: [
-			{ name: "headless", description: "Switch to headless mode" },
-			{ name: "visible", description: "Switch to visible mode" },
+			{ name: "headless", description: "切换到无头模式" },
+			{ name: "visible", description: "切换到可见模式" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -574,7 +574,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "copy",
 		icon: "copy",
-		description: "Pick text or code from the conversation to copy",
+		description: "从对话中选择要复制的文本或代码",
 		allowArgs: true,
 		handleTui: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();
@@ -626,7 +626,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 	{
 		name: "open",
 		icon: "globe",
-		description: "Open the last link from the conversation in your browser (or pick one with /copy)",
+		description: "在浏览器中打开对话中的最后一个链接（或使用 /copy 选择）",
 		allowArgs: true,
 		handleTui: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();

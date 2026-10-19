@@ -64,7 +64,7 @@ export function renderCfgRead(
 		const header = renderStatusLine(
 			{
 				icon: result === undefined ? "pending" : result.isError ? "error" : "info",
-				title: "Config",
+				title: "配置",
 				description: (details?.path ?? parseCfgUrl(url)?.segments.join(".")) || "all settings",
 				meta,
 			},
@@ -165,7 +165,7 @@ export function renderCfgWrite(
 		const badges = [formatBadge(save ? "persist" : "session", save ? "accent" : "muted", theme)];
 		if (details?.outcome === "declined") badges.push(formatBadge("declined", "warning", theme));
 		if (details?.outcome === "unchanged") badges.push(formatBadge("unchanged", "muted", theme));
-		const header = `${renderStatusLine({ icon, title: "Config", description: details?.path ?? target?.segments.join(".") }, theme)} ${badges.join(" ")}`;
+		const header = `${renderStatusLine({ icon, title: "配置", description: details?.path ?? target?.segments.join(".") }, theme)} ${badges.join(" ")}`;
 		if (result?.isError) return [header, formatErrorDetail(firstText(result) || "Settings write failed.", theme)];
 		const arrow = theme.fg("dim", "→");
 		const next = theme.fg("toolOutput", details?.value ?? content?.trim() ?? "…");

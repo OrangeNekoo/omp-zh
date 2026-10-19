@@ -18,8 +18,8 @@ export const cfgTtsLocalVoice = register({
 	default: DEFAULT_TTS_VOICE,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Local TTS Voice",
+		group: "服务",
+		label: "本地 TTS 音色",
 		description: "Kokoro voice used by the local TTS backend (American/British, female/male)",
 		options: TTS_LOCAL_VOICE_OPTIONS,
 	},
@@ -31,8 +31,8 @@ export const cfgTtsLocalSpeed = register({
 	default: DEFAULT_TTS_SPEED,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Local TTS Speed",
+		group: "服务",
+		label: "本地 TTS 速度",
 		description: "Speaking rate of the local TTS backend (tts tool, omp say). 1 = normal; clamped to 0.5–2.5",
 		options: TTS_SPEED_OPTIONS,
 	},
@@ -44,8 +44,8 @@ export const cfgSpeechEnabled = register({
 	default: false,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Speech Vocalization",
+		group: "服务",
+		label: "语音朗读",
 		description: "Speak the assistant's output aloud through the speakers as it streams",
 	},
 });
@@ -57,14 +57,14 @@ export const cfgSpeechMode = register({
 	default: "assistant",
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Speech Vocalization Mode",
+		group: "服务",
+		label: "语音朗读模式",
 		description:
 			"What to speak: all = assistant messages + thinking; assistant = messages only; yield = only the final message at turn end",
 		options: [
-			{ value: "all", label: "All (messages + thinking)" },
-			{ value: "assistant", label: "Assistant messages" },
-			{ value: "yield", label: "Final message only" },
+			{ value: "all", label: "全部（消息 + 思考）" },
+			{ value: "assistant", label: "助手消息" },
+			{ value: "yield", label: "仅最终消息" },
 		],
 	},
 });
@@ -75,8 +75,8 @@ export const cfgSpeechEnhanced = register({
 	default: false,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Enhanced Speech Rewriting",
+		group: "服务",
+		label: "增强语音改写",
 		description:
 			"Rewrite assistant output into natural spoken prose with the tiny/smol model before synthesis (describes code, drops links and markdown). Falls back to mechanical cleanup on failure",
 	},
@@ -89,8 +89,8 @@ export const cfgSpeechVoice = register({
 	default: DEFAULT_TTS_VOICE,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Speech Vocalization Voice",
+		group: "服务",
+		label: "语音朗读音色",
 		description: "Kokoro voice used when speaking the assistant's output aloud",
 		options: TTS_LOCAL_VOICE_OPTIONS,
 	},
@@ -102,8 +102,8 @@ export const cfgSpeechSpeed = register({
 	default: DEFAULT_TTS_SPEED,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Speech Vocalization Speed",
+		group: "服务",
+		label: "语音朗读速度",
 		description: "Speaking rate when reading the assistant's output aloud. 1 = normal; clamped to 0.5–2.5",
 		options: TTS_SPEED_OPTIONS,
 	},

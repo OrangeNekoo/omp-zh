@@ -65,9 +65,9 @@ const DETAIL_WIDTH = 120;
 /** Human-readable verdict for each scored failure mode. */
 const FAILURE_TEXT: Record<IfBenchFailure, string> = {
 	result: "wrong array",
-	cat: "no cat sound",
-	"result+cat": "wrong array + no cat sound",
-	format: "no <result> block",
+	cat: "无猫叫声",
+	"result+cat": "数组错误 + 无猫叫声",
+	format: "无 <result> 块",
 	provider: "provider error",
 };
 

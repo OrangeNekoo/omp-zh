@@ -1159,7 +1159,7 @@ export class CustomEditor extends Editor {
 								rate !== undefined &&
 									node(
 										"rate",
-										{ value: rate, unit: "tok/s", role: "omp.composer.rate", title: "Generation rate" },
+										{ value: rate, unit: "tok/s", role: "omp.composer.rate", title: "生成速率" },
 										undefined,
 										"rate",
 									),
@@ -1380,8 +1380,7 @@ export class CustomEditor extends Editor {
 		const mode = keyed(
 			row(
 				compact([
-					shell.excluded &&
-						node("icon", { name: "eye-off", title: "Not sent to the model" }, undefined, "excluded"),
+					shell.excluded && node("icon", { name: "eye-off", title: "不发送给模型" }, undefined, "excluded"),
 					node(
 						"text",
 						{ spans: [span(shell.kind, shell.kind === "bash" ? "bashMode" : "pythonMode")], wrap: "none" },

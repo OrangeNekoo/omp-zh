@@ -1590,7 +1590,7 @@ export class AnnotationOverlay implements Focusable {
 						} else {
 							items.push(
 								item(`r${rowIndex}`, {
-									label: [span("No newline at end of file", "muted")],
+									label: [span("文件末尾无换行", "muted")],
 									value: blankGutter,
 									disabled: true,
 									tone: "muted",
@@ -1675,7 +1675,7 @@ export class AnnotationOverlay implements Focusable {
 			{
 				selected: this.#files.length > 0 ? `f${this.#fileIndex}` : null,
 				max: { lines: this.#bodyHeight },
-				empty: [span("No files", "muted")],
+				empty: [span("无文件", "muted")],
 				role: "omp.review.files",
 				tone: this.#focus === "files" && !editing ? "accent" : undefined,
 			},
@@ -1702,7 +1702,7 @@ export class AnnotationOverlay implements Focusable {
 			return node("row", props, children, "head");
 		}
 		const file = this.#currentFile();
-		if (!file) return node("row", props, [text([span("No reviewable files", "muted")])], "head");
+		if (!file) return node("row", props, [text([span("无可审查的文件", "muted")])], "head");
 		const status = fileStatus(file);
 		children.push(
 			text([span(sanitizeStatusText(displayFileLabel(file)), "path")], { truncate: "middle", min: { w: 0 } }),
@@ -1774,7 +1774,7 @@ export class AnnotationOverlay implements Focusable {
 				"col",
 				{ role: "omp.review.composer" },
 				[
-					keyed(text([span("Edit which note?", "strong")]), "caption"),
+					keyed(text([span("编辑哪条备注？", "strong")]), "caption"),
 					selectList("chooser", entries, { selected: `c${chooser.selected}`, tone: "accent" }),
 				],
 				"chooser",
@@ -1794,7 +1794,7 @@ export class AnnotationOverlay implements Focusable {
 		const verb = span(this.#editingAnnotationIndex === undefined ? "Note on " : "Edit note on ", "muted");
 		if (this.#textSource) {
 			return this.#annotationScope === "text"
-				? [verb, span("the whole text", "strong")]
+				? [verb, span("全文", "strong")]
 				: [verb, span(`line ${this.#sourceIndex + 1}`, "strong")];
 		}
 		const file = this.#currentFile();
@@ -1824,16 +1824,14 @@ export class AnnotationOverlay implements Focusable {
 			mark ? ({ ...button, p: { ...button.p, mark } } as NativeNode) : button;
 		const hasNotes = this.#textSource ? this.#textAnnotations.length > 0 : this.#annotations.length > 0;
 		const pasteTitle = hasNotes ? PASTE_CODE_REVIEW_ACTION : "Add a note to paste it into the prompt";
-		const buttons: NativeNode[] = [actionButton("Cancel", "close", { keys: "escape" })];
+		const buttons: NativeNode[] = [actionButton("取消", "close", { keys: "escape" })];
 		if (this.#textSource) {
-			buttons.push(
-				marked(actionButton("Paste into prompt", "paste", { tone: "accent", title: pasteTitle }), pick(0)),
-			);
+			buttons.push(marked(actionButton("粘贴到提示词", "paste", { tone: "accent", title: pasteTitle }), pick(0)));
 		} else {
 			buttons.push(
-				marked(actionButton("Paste into prompt", "paste", { title: pasteTitle }), pick(1)),
+				marked(actionButton("粘贴到提示词", "paste", { title: pasteTitle }), pick(1)),
 				marked(
-					actionButton("Review with LLM", "review", { tone: "accent", title: CONTINUE_CODE_REVIEW_ACTION }),
+					actionButton("用 LLM 审查", "review", { tone: "accent", title: CONTINUE_CODE_REVIEW_ACTION }),
 					pick(0),
 				),
 			);

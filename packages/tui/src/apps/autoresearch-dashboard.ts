@@ -176,7 +176,7 @@ export function createDashboardController(): DashboardController {
 								],
 								() => {
 									const children = describeSheet(runtime, chart);
-									children.push(actionBar([null, actionButton("Close", "close", { keys: "escape" })]));
+									children.push(actionBar([null, actionButton("关闭", "close", { keys: "escape" })]));
 									return { ...col(children, { gap: "md", role: "omp.app.autoresearch" }), scroll };
 								},
 							);
@@ -317,7 +317,7 @@ function describeCollapsed(runtime: AutoresearchDashboardRuntime, state: Experim
 	} else if (state.bestMetric !== null) {
 		spans.push(span(`baseline ${formatNum(state.bestMetric, state.metricUnit)}`, "warning"));
 	} else {
-		spans.push(span("no kept runs yet", "warning"));
+		spans.push(span("暂无保留的运行", "warning"));
 	}
 	if (state.confidence !== null) {
 		spans.push(span(" | ", "dim"));
@@ -370,7 +370,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 				),
 			];
 		}
-		return [keyed(text([span("No experiments logged yet.", "dim")]), "summary")];
+		return [keyed(text([span("尚未记录实验。", "dim")]), "summary")];
 	}
 
 	const current = currentResults(state.results, state.currentSegment);
@@ -510,7 +510,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 /** Sheet head: the experiment's name, then what the sheet is. */
 function describeSheetHead(runtime: AutoresearchDashboardRuntime): TspSpan[] {
 	const name = runtime.state.name?.trim();
-	return name ? [span(replaceTabs(name)), span(" · Autoresearch", "muted")] : [span("Autoresearch")];
+	return name ? [span(replaceTabs(name)), span(" · Autoresearch", "muted")] : [span("自动研究")];
 }
 
 const STATUS_LABEL: Record<ExperimentResult["status"], string> = {
@@ -629,7 +629,7 @@ function describeNow(runtime: AutoresearchDashboardRuntime): NativeNode | undefi
 		return keyed(
 			row(
 				[
-					node("spinner", { label: [span("Running")], tone: "pending" }),
+					node("spinner", { label: [span("运行中")], tone: "pending" }),
 					elapsed(Date.now() - running.startedAt),
 					text([span(replaceTabs(running.command), "mono")], {
 						truncate: "end",
@@ -738,7 +738,7 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 			]),
 		);
 	} else {
-		tiles.push(stat("best", "Best", [span("—", "muted")], [statDetail([span("No kept run yet")])]));
+		tiles.push(stat("best", "Best", [span("—", "muted")], [statDetail([span("暂无保留的运行")])]));
 	}
 
 	const baselineDetail: TspSpan[] = [];
@@ -746,7 +746,7 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 	if (baselineResult?.commit) baselineDetail.push(span(" · "), span(baselineResult.commit.slice(0, 7), "mono"));
 	tiles.push(
 		stat("baseline", "Baseline", baseline === null ? [span("—", "muted")] : metricSpans(baseline, unit, digits), [
-			statDetail(baselineDetail.length > 0 ? baselineDetail : [span("Not logged yet")]),
+			statDetail(baselineDetail.length > 0 ? baselineDetail : [span("尚未记录")]),
 		]),
 	);
 

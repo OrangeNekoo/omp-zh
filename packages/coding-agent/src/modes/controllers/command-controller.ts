@@ -704,7 +704,7 @@ export class CommandController {
 	async handleAdvisorStatusCommand(): Promise<void> {
 		const stats = this.ctx.session.getAdvisorStats();
 		if (!stats.configured) {
-			this.showCommandReport({ title: "Advisor Status", body: new Text("Advisor is disabled.", 0, 0) });
+			this.showCommandReport({ title: "顾问状态", body: new Text("Advisor is disabled.", 0, 0) });
 			return;
 		}
 		// Render cached quota data without waiting for the network. Quota lines
@@ -817,7 +817,7 @@ export class CommandController {
 			info += `${theme.fg("dim", "Cache Read:")} ${stats.tokens.cacheRead.toLocaleString()}\n`;
 		}
 		if (stats.cost > 0) info += `${theme.fg("dim", "Cost:")} $${stats.cost.toFixed(4)}\n`;
-		this.showCommandReport({ title: "Advisor Status", body: new Text(info.trim(), 0, 0) });
+		this.showCommandReport({ title: "顾问状态", body: new Text(info.trim(), 0, 0) });
 	}
 
 	/**
@@ -843,7 +843,7 @@ export class CommandController {
 		let info = `${theme.fg("dim", "Running:")} ${tree.running.length}\n`;
 		if (tree.running.length === 0 && tree.recent.length === 0) {
 			info += `\n${theme.fg("dim", "No async jobs yet.")}`;
-			this.showCommandReport({ title: "Background Jobs", body: new Text(info, 0, 0) });
+			this.showCommandReport({ title: "后台任务", body: new Text(info, 0, 0) });
 			return;
 		}
 
@@ -878,7 +878,7 @@ export class CommandController {
 			}
 		}
 
-		this.showCommandReport({ title: "Background Jobs", body: new Text(info.trimEnd(), 0, 0) });
+		this.showCommandReport({ title: "后台任务", body: new Text(info.trimEnd(), 0, 0) });
 	}
 
 	async handleUsageCommand(reports?: UsageReport[] | null): Promise<void> {
@@ -961,7 +961,7 @@ export class CommandController {
 		}
 		// Natively the body is `/context`'s own card (meters, legend, compaction mark).
 		this.showCommandReport({
-			title: "Context Usage",
+			title: "上下文用量",
 			head: contextUsageHead(breakdown),
 			body: new ContextUsageView(breakdown, theme),
 		});

@@ -39,14 +39,14 @@ export const cfgPowerSleepPrevention = register({
 	default: "idle",
 	ui: {
 		tab: "interaction",
-		group: "Power",
+		group: "电源",
 		label: "Sleep Prevention",
 		description:
 			"Prevent the system sleeping during active sessions. Each level is cumulative — it adds the flags of all lower levels.",
 		options: [
 			{
 				value: "off",
-				label: "Off",
+				label: "关闭",
 				description: "Do not prevent any sleep",
 			},
 			{
@@ -75,7 +75,7 @@ export const cfgPrewalkEnabled = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Prewalk",
+		group: "预走",
 		label: "Enable Prewalk",
 		description:
 			"Start on the active model, then switch to a fast/cheap model (default the 'smol' role) at the first edit/write after the plan nudge's todo list exists — the strong model plans, commits the todos, and starts the implementation before handing off. Overridable per session with --prewalk / --no-prewalk.",
@@ -89,12 +89,12 @@ export const cfgPrewalkAuto = register({
 	default: "off",
 	ui: {
 		tab: "model",
-		group: "Prewalk",
+		group: "预走",
 		label: "Auto Prewalk",
 		description:
 			"Ask the native judge resolved through the 'judge' role whether each new top-level user task front-loads its hard reasoning. Needs a native judge; without one nothing is classified. Independent of Enable Prewalk.",
 		options: [
-			{ value: "off", label: "Off", description: "Never classify prompts for prewalk" },
+			{ value: "off", label: "关闭", description: "Never classify prompts for prewalk" },
 			{
 				value: "suggest",
 				label: "Suggest",
@@ -116,7 +116,7 @@ export const cfgPrewalkAutoTarget = register({
 	default: "@smol",
 	ui: {
 		tab: "model",
-		group: "Prewalk",
+		group: "预走",
 		label: "Auto-prewalk target",
 		description: "Model or role (default '@smol') auto-prewalk hands off to at the first edit/write.",
 	},
@@ -165,8 +165,8 @@ export const cfgProvidersMaxInFlightRequests = register({
 	normalize: validateProviderMaxInFlightRequests,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Max In-Flight Requests",
+		group: "服务",
+		label: "最大并发请求数",
 		description:
 			'Maximum concurrent LLM requests per provider id (for example "openai" or "anthropic"), shared across local OMP processes with this config root. Omitted providers are unlimited.',
 	},
@@ -181,7 +181,7 @@ export const cfgImagesDescribeForTextModels = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Vision",
+		group: "视觉",
 		label: "Describe Images for Text Models",
 		description:
 			"When an image is attached to a model without vision support, save it under local:// and inject a description from a vision-capable model instead of dropping it",
@@ -200,7 +200,7 @@ export const cfgDefaultThinkingLevel = register({
 	default: "high",
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Thinking Level",
 		description: "Reasoning depth for thinking-capable models",
 		options: [getConfiguredThinkingLevelMetadata(AUTO_THINKING), ...THINKING_EFFORTS.map(getThinkingLevelMetadata)],
@@ -213,7 +213,7 @@ export const cfgHideThinkingBlock = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Hide Thinking Blocks",
 		description: "Hide thinking blocks in assistant responses",
 	},
@@ -225,7 +225,7 @@ export const cfgExpandThinkingBlocks = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Expand Thinking Blocks",
 		description: "Keep finished thinking blocks expanded instead of collapsing them when the turn ends",
 		condition: "nativeRendering",
@@ -238,7 +238,7 @@ export const cfgProseOnlyThinking = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Prose Only Thinking",
 		description: "Omit code blocks from thinking summaries and replace them with an ellipsis",
 	},
@@ -250,7 +250,7 @@ export const cfgOmitThinking = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Omit Thinking summaries",
 		description: "Instruct upstream providers to completely omit thinking summaries from responses (where supported)",
 	},
@@ -262,7 +262,7 @@ export const cfgExternalThinking = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "External Thinking",
 		description: "Private scratchpad; not shown to user. Disables supported GPT, Claude, and Gemini reasoning",
 		warning: "At your own risk: providers have flagged this request shape as abuse, up to account-level enforcement",
@@ -277,7 +277,7 @@ export const cfgModelLoopGuardEnabled = register({
 	env: { name: "PI_NO_THINKING_LOOP_GUARD", parse: raw => (raw === "1" ? false : undefined) },
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Loop Guard",
 		description: "Enable automatic stream loop detection for model reasoning and prose",
 	},
@@ -289,7 +289,7 @@ export const cfgModelLoopGuardCheckAssistantContent = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Loop Guard Scan Prose",
 		description: "Apply loop guard to assistant prose messages in addition to thinking logs",
 	},
@@ -301,7 +301,7 @@ export const cfgModelLoopGuardToolCallReminder = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Loop Guard Tool-Call Reminder",
 		description:
 			"When a Gemini reasoning stream emits many consecutive planning headers without calling a tool, interrupt it and inject a reminder to issue a tool call (requires Loop Guard)",
@@ -314,7 +314,7 @@ export const cfgModelToolCallLoopGuardEnabled = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Tool-Call Loop Guard",
 		description: "Detect consecutive identical tool calls across turns and inject a corrective steer",
 	},
@@ -326,7 +326,7 @@ export const cfgModelToolCallLoopGuardThreshold = register({
 	default: 5,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Tool-Call Loop Threshold",
 		description: "Consecutive identical tool calls required before the corrective steer is injected",
 	},
@@ -338,7 +338,7 @@ export const cfgModelToolCallLoopGuardExemptTools = register({
 	default: DEFAULT_TOOL_CALL_LOOP_EXEMPT_TOOLS,
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Tool-Call Loop Exempt Tools",
 		description: "Tool names that may repeat consecutively without triggering the cross-turn loop guard",
 	},
@@ -351,18 +351,18 @@ export const cfgInlineToolDescriptors = register({
 	default: "auto",
 	ui: {
 		tab: "model",
-		group: "Prompt",
+		group: "提示词",
 		label: "Inline Tool Descriptors",
 		description:
 			"Render full tool descriptors in the system prompt and strip top-level/nested descriptions from provider tool schemas so descriptor text is sent once. Auto enables this for Gemini models and disables it otherwise",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description: "Inline descriptors for Gemini models; keep them in tool schemas otherwise",
 			},
 			{ value: "on", label: "On", description: "Always inline descriptors in the system prompt" },
-			{ value: "off", label: "Off", description: "Keep descriptors in provider tool schemas only" },
+			{ value: "off", label: "关闭", description: "Keep descriptors in provider tool schemas only" },
 		],
 	},
 });
@@ -373,7 +373,7 @@ export const cfgIncludeModelInPrompt = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Prompt",
+		group: "提示词",
 		label: "Include Model in Prompt",
 		description: "Surface the active model identifier in the system prompt so the agent knows which model it is",
 	},
@@ -385,7 +385,7 @@ export const cfgIncludeWorkspaceTree = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Prompt",
+		group: "提示词",
 		label: "Include Workspace Tree",
 		description:
 			"Render the workspace directory tree in the system prompt. WARNING: This can bust prompt caching across sessions when files are modified.",
@@ -398,7 +398,7 @@ export const cfgSkillful = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Prompt",
+		group: "提示词",
 		label: "List Skills in Prompt",
 		description:
 			"List available skills in the system prompt; disable to save context and toggle per-session with /skillful",
@@ -415,13 +415,13 @@ export const cfgPersonality = register({
 	default: "default",
 	ui: {
 		tab: "model",
-		group: "Prompt",
+		group: "提示词",
 		label: "Personality",
 		description: "Communication style rendered into the system prompt's personality block",
 		options: [
 			{
 				value: "default",
-				label: "Default",
+				label: "默认",
 				description: "Terse, evidence-first engineer; dense, action-oriented replies",
 			},
 			{
@@ -434,7 +434,7 @@ export const cfgPersonality = register({
 				label: "Pragmatic",
 				description: "Direct, efficient engineer focused on clarity and rigor",
 			},
-			{ value: "none", label: "None", description: "Omit the personality block entirely" },
+			{ value: "none", label: "无", description: "Omit the personality block entirely" },
 		],
 	},
 });
@@ -446,11 +446,11 @@ export const cfgTemperature = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Temperature",
 		description: "Sampling temperature (0 = deterministic, 1 = creative, -1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "0", label: "0", description: "Deterministic" },
 			{ value: "0.2", label: "0.2", description: "Focused" },
 			{ value: "0.5", label: "0.5", description: "Balanced" },
@@ -466,11 +466,11 @@ export const cfgTopP = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Top P",
 		description: "Nucleus sampling cutoff (0-1, -1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "0.1", label: "0.1", description: "Very focused" },
 			{ value: "0.3", label: "0.3", description: "Focused" },
 			{ value: "0.5", label: "0.5", description: "Balanced" },
@@ -486,11 +486,11 @@ export const cfgTopK = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Top K",
 		description: "Sample from top-K tokens (-1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "1", label: "1", description: "Greedy top token" },
 			{ value: "20", label: "20", description: "Focused" },
 			{ value: "40", label: "40", description: "Balanced" },
@@ -505,14 +505,14 @@ export const cfgMinP = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Min P",
 		description: "Minimum probability threshold (0-1, -1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "0.01", label: "0.01", description: "Very permissive" },
 			{ value: "0.05", label: "0.05", description: "Balanced" },
-			{ value: "0.1", label: "0.1", description: "Strict" },
+			{ value: "0.1", label: "0.1", description: "严格" },
 		],
 	},
 });
@@ -523,11 +523,11 @@ export const cfgPresencePenalty = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Presence Penalty",
 		description: "Penalty for introducing already-present tokens (-1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "0", label: "0", description: "No penalty" },
 			{ value: "0.5", label: "0.5", description: "Mild novelty" },
 			{ value: "1", label: "1", description: "Encourage novelty" },
@@ -542,11 +542,11 @@ export const cfgRepetitionPenalty = register({
 	default: -1,
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Repetition Penalty",
 		description: "Penalty for repeated tokens (-1 = provider default)",
 		options: [
-			{ value: "-1", label: "Default", description: "Use provider default" },
+			{ value: "-1", label: "默认", description: "Use provider default" },
 			{ value: "0.8", label: "0.8", description: "Allow repetition" },
 			{ value: "1", label: "1", description: "No penalty" },
 			{ value: "1.1", label: "1.1", description: "Mild penalty" },
@@ -587,7 +587,7 @@ export const cfgTextVerbosity = register({
 	default: "medium",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Text Verbosity",
 		description: "OpenAI Responses and Codex response verbosity (low, medium, or high)",
 		options: [
@@ -605,7 +605,7 @@ export const cfgTierOpenai = register({
 	default: "none",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Service Tier — OpenAI",
 		description:
 			"Processing tier for OpenAI / OpenAI-Codex requests, and OpenAI-family models routed via OpenRouter (none = omit). Sent as `service_tier`.",
@@ -620,7 +620,7 @@ export const cfgTierAnthropic = register({
 	default: "none",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Service Tier — Anthropic",
 		description:
 			'Processing tier for Claude requests. `priority` realizes fast mode (`speed: "fast"`) on supported direct Anthropic models; ignored on Bedrock/Vertex Claude and via OpenRouter.',
@@ -635,7 +635,7 @@ export const cfgTierGoogle = register({
 	default: "none",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Service Tier — Google",
 		description:
 			"Processing tier for Gemini (Google AI Studio + Vertex) requests, and Google-family models routed via OpenRouter (none = omit). Sent as the top-level `serviceTier` field.",
@@ -650,7 +650,7 @@ export const cfgTierSubagent = register({
 	default: "inherit",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Service Tier — Subagent",
 		description:
 			"Service Tier for spawned task/eval subagents. Inherit = match the main agent's live per-family tiers (tracks /fast); pick a value to apply it to whichever family the subagent's model belongs to.",
@@ -666,7 +666,7 @@ export const cfgTierAdvisor = register({
 	default: "none",
 	ui: {
 		tab: "model",
-		group: "Sampling",
+		group: "采样",
 		label: "Service Tier — Advisor",
 		description:
 			"Service Tier for the advisor model. None = standard processing; Inherit = match the main agent's live per-family tiers; pick a value to apply it to the advisor model's family.",
@@ -684,7 +684,7 @@ export const cfgRetryMaxRetries = register({
 	default: 10,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Retry Attempts",
 		description: "Maximum retry attempts on API errors",
 		options: [
@@ -705,7 +705,7 @@ export const cfgRetryMaxDelayMs = register({
 	default: 5 * 60 * 1000,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Max Retry Delay",
 		description:
 			"Maximum wait between retries, in ms. When the provider asks us to wait longer than this and no credential or model fallback succeeds, the request fails fast instead of sleeping (e.g. 3-hour Anthropic rate-limit windows). 0 disables the ceiling — to let the session auto-resume through provider-stated quota resets.",
@@ -718,7 +718,7 @@ export const cfgRetryWaitForUsageReset = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Wait For Usage Reset",
 		get description() {
 			return `When a provider reports usage-limit exhaustion with a reset time (5-hour or weekly quota windows on any provider), sleep until the reset instead of failing fast past retry.maxDelayMs. Waits are abortable (${formatKeyHint("escape")}) but also hold subagents, so leave off for unattended runs.`;
@@ -732,7 +732,7 @@ export const cfgRetryModelFallback = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Retry Model Fallback",
 		description:
 			"Allow retry recovery to switch to models in retry.fallbackChains after provider errors. Independent of Auto-Promote Context",
@@ -746,7 +746,7 @@ export const cfgRetryFallbackOn = register({
 	default: "any",
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Fallback Trigger",
 		description: "Which failed requests may switch to a configured fallback model",
 		options: [
@@ -771,7 +771,7 @@ export const cfgRetryUsageAwareFallback = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Usage-Aware Fallback",
 		description:
 			"Use reliable coding-plan quota reports to prefer same-provider accounts, then configured fallback models, before a hard usage limit. Ordinary configured API keys are excluded.",
@@ -784,7 +784,7 @@ export const cfgRetryUsageReservePct = register({
 	default: DEFAULT_USAGE_RESERVE_PCT,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Reserve Margin",
 		description:
 			"Treat a coding-plan model as near its limit below this remaining percentage. Unknown or unmapped usage keeps the primary model.",
@@ -806,7 +806,7 @@ export const cfgRetryUsageReservePolicy = register({
 	default: "confirm",
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Reserve Policy",
 		description: "What to do when every same-provider coding-plan account is inside the reserve margin.",
 		condition: "usageAwareFallbackEnabled",
@@ -836,7 +836,7 @@ export const cfgRetryFallbackChains = register({
 	default: EMPTY_STRING_ARRAYS_RECORD,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Retry Fallback Chains",
 		description:
 			'JSON object mapping model roles, model selectors ("provider/model-id"), or provider wildcards ("provider/*") to ordered fallback selectors, e.g. {"default":["openai/gpt-4o-mini"],"google-antigravity/*":["google/*","google-vertex/*"]}. Model-oriented keys apply whenever that model/provider is active, regardless of role; a "provider/*" entry keeps the failing model\'s id and swaps the provider. An id-prefixed wildcard ("openrouter/google/*") re-prefixes the failing model\'s bare id (google-antigravity/gemini-x -> openrouter/google/gemini-x) and, used as a key, matches only that provider\'s ids under the prefix. A fallback entry may carry an explicit thinking suffix ("provider/model:low", ":high", ":max", ":off"); a bare entry inherits the failing turn\'s effort, and "provider/*" entries always inherit.',
@@ -850,7 +850,7 @@ export const cfgRetryFallbackRevertPolicy = register({
 	default: "cooldown-expiry",
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Fallback Revert Policy",
 		description: "When to return to the primary model after a fallback",
 		options: [
@@ -859,7 +859,7 @@ export const cfgRetryFallbackRevertPolicy = register({
 				label: "Cooldown expiry",
 				description: "Return to the primary model after its suppression window ends",
 			},
-			{ value: "never", label: "Never", description: "Stay on the fallback model until manually changed" },
+			{ value: "never", label: "从不", description: "Stay on the fallback model until manually changed" },
 		],
 	},
 });
@@ -887,7 +887,7 @@ export const cfgProvidersAnthropicServerSideFallback = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Retry & Fallback",
+		group: "重试与备用",
 		label: "Anthropic Server-Side Fallback (Fable 5)",
 		description:
 			"When a Claude Fable 5 / Mythos 5 request is blocked by Anthropic's safety classifier, retry it on Claude Opus 5 server-side (Anthropic `server-side-fallback-2026-06-01` beta). Opt-in — leaving this off preserves the pre-fallback behavior for every request.",
@@ -915,7 +915,7 @@ export const cfgProvidersOllamaCloudMaxConcurrency = register({
 	default: 3,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Ollama Cloud Max Concurrency",
 		description: "Maximum concurrent Ollama Cloud subagent runs per process; 0 disables the provider-specific limit",
 	},
@@ -927,15 +927,15 @@ export const cfgProvidersWebSearchTimeoutSeconds = register({
 	default: DEFAULT_WEB_SEARCH_TIMEOUT_SECONDS,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Web Search Timeout",
 		description: `Hard timeout for each provider's search transport before web_search advances to the next fallback, in seconds (maximum ${MAX_WEB_SEARCH_TIMEOUT_SECONDS})`,
 		options: [
-			{ value: "30", label: "30 seconds" },
-			{ value: "60", label: "1 minute" },
-			{ value: "120", label: "2 minutes" },
-			{ value: "180", label: "3 minutes" },
-			{ value: "300", label: "5 minutes" },
+			{ value: "30", label: "30 秒" },
+			{ value: "60", label: "1 分钟" },
+			{ value: "120", label: "2 分钟" },
+			{ value: "180", label: "3 分钟" },
+			{ value: "300", label: "5 分钟" },
 		],
 	},
 });
@@ -947,13 +947,13 @@ export const cfgProvidersAntigravityEndpoint = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Antigravity Endpoint Mode",
 		description: "Endpoint routing strategy for google-antigravity providers (chat, search, image, discovery)",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description: "Try production endpoint, fail over to sandbox on 5xx/429",
 			},
 			{
@@ -1003,7 +1003,7 @@ export const cfgProvidersTinyModelDevice = register({
 	},
 	ui: {
 		tab: "providers",
-		group: "Tiny Model",
+		group: "微型模型",
 		label: "Tiny Model Device",
 		description:
 			"Inference backend for local tiny models (titles + memory): an ONNX execution provider, or `mlx` to download MLX weights and run them through mlx-lm on Apple silicon. Default uses CPU-only ONNX. The PI_TINY_DEVICE env var overrides this.",
@@ -1022,7 +1022,7 @@ export const cfgProvidersTinyModelDtype = register({
 	},
 	ui: {
 		tab: "providers",
-		group: "Tiny Model",
+		group: "微型模型",
 		label: "Tiny Model Precision",
 		description:
 			"ONNX quantization/precision for local tiny models. Default uses each model's shipped dtype (q4); lower precision is faster, higher is more faithful. Ignored by the MLX backend (its repos are pre-quantized 4-bit). The PI_TINY_DTYPE env var overrides this.",
@@ -1037,7 +1037,7 @@ export const cfgProvidersAutoThinkingMaxEffort = register({
 	default: "xhigh",
 	ui: {
 		tab: "model",
-		group: "Thinking",
+		group: "思考",
 		label: "Auto Thinking Ceiling",
 		description:
 			"Highest effort the `auto` classifier may resolve. `xhigh` keeps the classifier one tier below the top, so only an explicit `ultrathink` reaches `max`; `max` lets a turn the classifier judges exceptional bill the top tier on models that expose it.",
@@ -1056,12 +1056,12 @@ export const cfgFeaturesUnexpectedStopDetection = register({
 	default: "mechanical",
 	ui: {
 		tab: "interaction",
-		group: "Agent",
+		group: "代理",
 		label: "Unexpected Stops",
 		description:
 			"Automatically recover when the assistant stops without a visible message. Smart also classifies text-only stops with a small model.",
 		options: [
-			{ value: "none", label: "None", description: "Disabled" },
+			{ value: "none", label: "无", description: "已禁用" },
 			{
 				value: "mechanical",
 				label: "Mechanical",
@@ -1069,7 +1069,7 @@ export const cfgFeaturesUnexpectedStopDetection = register({
 			},
 			{
 				value: "smart",
-				label: "Smart",
+				label: "智能",
 				description: "Mechanical + small-model classification of text-only stops",
 			},
 		],
@@ -1083,11 +1083,11 @@ export const cfgProvidersKimiApiFormat = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "Kimi API Format",
 		description: "API format for Kimi Code provider (auto follows live model metadata)",
 		options: [
-			{ value: "auto", label: "Auto", description: "Use the model's server-declared protocol" },
+			{ value: "auto", label: "自动", description: "Use the model's server-declared protocol" },
 			{ value: "openai", label: "OpenAI", description: "api.kimi.com" },
 			{ value: "anthropic", label: "Anthropic", description: "api.moonshot.ai" },
 		],
@@ -1101,12 +1101,12 @@ export const cfgProvidersOpenaiWebsockets = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "OpenAI WebSockets",
 		description: "Websocket policy for OpenAI Codex models (auto uses model defaults, on forces, off disables)",
 		options: [
-			{ value: "auto", label: "Auto", description: "Use model/provider default websocket behavior" },
-			{ value: "off", label: "Off", description: "Disable websockets for OpenAI Codex models" },
+			{ value: "auto", label: "自动", description: "Use model/provider default websocket behavior" },
+			{ value: "off", label: "关闭", description: "Disable websockets for OpenAI Codex models" },
 			{ value: "on", label: "On", description: "Force websockets for OpenAI Codex models" },
 		],
 	},
@@ -1118,7 +1118,7 @@ export const cfgProvidersOpenaiLiveSteering = register({
 	default: true,
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "OpenAI Live Steering",
 		description:
 			"Deliver messages typed while a GPT-6 response streams into that response over the Codex WebSocket, instead of waiting for the next tool boundary",
@@ -1132,7 +1132,7 @@ export const cfgProvidersMuseCodeStoreResponses = register({
 	env: "PI_MUSE_STORE_RESPONSES",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "Muse Code Stored Responses",
 		description:
 			"Store Muse Code results on Meta's servers so a turn whose connection drops is recovered instead of re-run. Stored runs keep prompts and outputs on Meta's side.",
@@ -1149,14 +1149,14 @@ export const cfgProvidersCacheRetention = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "Prompt Cache Retention",
 		description:
 			"Prompt-cache retention forwarded to providers that support it (Anthropic, Bedrock, OpenRouter, OpenAI)",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description:
 					"Provider default — Anthropic OAuth subscriber sessions default to 1h, API keys use 5m; PI_CACHE_RETENTION still applies",
 			},
@@ -1170,7 +1170,7 @@ export const cfgProvidersCacheRetention = register({
 				label: "Long (1h)",
 				description: "1h TTL where the provider supports it; pricier writes, only warmed during active runs",
 			},
-			{ value: "none", label: "Off", description: "Disable prompt caching and cache-affinity routing" },
+			{ value: "none", label: "关闭", description: "Disable prompt caching and cache-affinity routing" },
 		],
 	},
 });
@@ -1182,12 +1182,12 @@ export const cfgProvidersCacheWarming = register({
 	default: "idle",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "Cache Warming",
 		description:
 			"Re-send the last request with a one-token output budget shortly before its prompt-cache entry expires",
 		options: [
-			{ value: "off", label: "Off", description: "Disable cache warming" },
+			{ value: "off", label: "关闭", description: "Disable cache warming" },
 			{
 				value: "streaming",
 				label: "Streaming",
@@ -1209,16 +1209,16 @@ export const cfgProvidersStreamFirstEventTimeoutSeconds = register({
 	default: -1,
 	ui: {
 		tab: "providers",
-		group: "Timeouts",
+		group: "超时",
 		label: "Stream First Event Timeout",
 		description:
 			"Seconds to wait for the first model stream event; -1 uses provider/env defaults, 0 disables the watchdog",
 		options: [
-			{ value: "-1", label: "Auto", description: "Use provider defaults and PI_* timeout env vars" },
-			{ value: "0", label: "Off", description: "Disable first-event timeout" },
-			{ value: "300", label: "5 minutes" },
-			{ value: "600", label: "10 minutes" },
-			{ value: "1800", label: "30 minutes" },
+			{ value: "-1", label: "自动", description: "Use provider defaults and PI_* timeout env vars" },
+			{ value: "0", label: "关闭", description: "Disable first-event timeout" },
+			{ value: "300", label: "5 分钟" },
+			{ value: "600", label: "10 分钟" },
+			{ value: "1800", label: "30 分钟" },
 		],
 	},
 });
@@ -1229,16 +1229,16 @@ export const cfgProvidersStreamIdleTimeoutSeconds = register({
 	default: -1,
 	ui: {
 		tab: "providers",
-		group: "Timeouts",
+		group: "超时",
 		label: "Stream Idle Timeout",
 		description:
 			"Seconds a model stream may stay silent between events; -1 uses provider/env defaults, 0 disables the watchdog",
 		options: [
-			{ value: "-1", label: "Auto", description: "Use provider defaults and PI_* timeout env vars" },
-			{ value: "0", label: "Off", description: "Disable idle timeout" },
-			{ value: "300", label: "5 minutes" },
-			{ value: "600", label: "10 minutes" },
-			{ value: "1800", label: "30 minutes" },
+			{ value: "-1", label: "自动", description: "Use provider defaults and PI_* timeout env vars" },
+			{ value: "0", label: "关闭", description: "Disable idle timeout" },
+			{ value: "300", label: "5 分钟" },
+			{ value: "600", label: "10 分钟" },
+			{ value: "1800", label: "30 分钟" },
 		],
 	},
 });
@@ -1250,12 +1250,12 @@ export const cfgProvidersOpenrouterVariant = register({
 	default: "default",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "OpenRouter Routing",
 		description:
 			"Default routing-variant suffix appended to OpenRouter model IDs (overridden when the selector already names a variant)",
 		options: [
-			{ value: "default", label: "Default", description: "No suffix; use OpenRouter's default routing" },
+			{ value: "default", label: "默认", description: "No suffix; use OpenRouter's default routing" },
 			{ value: "nitro", label: ":nitro", description: "Prioritize throughput / lowest latency" },
 			{ value: "floor", label: ":floor", description: "Prioritize cheapest available provider" },
 			{ value: "online", label: ":online", description: "Enable OpenRouter's web-search plugin" },
@@ -1275,13 +1275,13 @@ export const cfgProvidersFetch = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Fetch Provider",
 		description: "Reader backend priority for the fetch/read URL tool",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description: "Priority: native > trafilatura > lynx > parallel > firecrawl > jina",
 			},
 			{ value: "native", label: "Native", description: "In-process HTML→Markdown converter (always available)" },
@@ -1302,7 +1302,7 @@ export const cfgCodexResetsAutoRedeem = register({
 	default: "unset" as const,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Codex Auto-Redeem Saved Resets",
 		description:
 			"Spend saved Codex rate-limit resets automatically: restore an account blocked by an exhausted 5h or weekly window when a turn is stuck and no other account can take over, and salvage credits that are about to expire. unset asks before the first spend (with no prompt UI, it spends only a reset expiring within 5 minutes), yes spends without prompting, and no disables both checks.",
@@ -1313,8 +1313,8 @@ export const cfgCodexResetsAutoRedeem = register({
 				description:
 					"Check eligibility, then ask before spending the first saved reset. With no prompt UI, spend only a reset expiring within 5 minutes.",
 			},
-			{ value: "yes", label: "Yes", description: "Spend eligible saved resets without prompting." },
-			{ value: "no", label: "No", description: "Do not run the saved-reset auto-redeem check." },
+			{ value: "yes", label: "是", description: "Spend eligible saved resets without prompting." },
+			{ value: "no", label: "否", description: "Do not run the saved-reset auto-redeem check." },
 		],
 	},
 });
@@ -1325,7 +1325,7 @@ export const cfgCodexResetsMinBlockedMinutes = register({
 	default: 60,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Codex Auto-Redeem Min Block",
 		description:
 			"Only auto-redeem when the natural unblock — the latest reset among the exhausted 5h/weekly windows — is at least this many minutes away (don't spend a scarce credit to save a short wait). Raise it (e.g. 360) to ignore 5h-only blocks.",
@@ -1338,7 +1338,7 @@ export const cfgCodexResetsKeepCredits = register({
 	default: 0,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Codex Auto-Redeem Reserve",
 		description:
 			"Never auto-spend below this many saved resets (0 = the last credit may be spent automatically). Credits about to expire are exempt — a reserved credit that expires preserves nothing.",
@@ -1351,7 +1351,7 @@ export const cfgCodexResetsSalvageHorizonHours = register({
 	default: 12,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Codex Reset Salvage Horizon",
 		description:
 			"With auto-redeem enabled, spend a saved Codex reset within this many hours of expiry when either chat window has meaningful usage. 0 disables early salvage; credits expiring within 5 minutes are still attempted regardless of usage.",
@@ -1377,7 +1377,7 @@ export const cfgClaudeResetsAutoRedeem = register({
 	default: "unset" as const,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Claude Auto-Redeem Resets",
 		description:
 			"Spend eligible Claude Cedar or Juniper resets automatically. Cedar is spent only for covered limits; Juniper can only recover a sole 5-hour block. unset asks before the first spend (with no prompt UI, it spends only a reset expiring within 5 minutes), yes spends without prompting, and no disables blocked recovery and expiry salvage.",
@@ -1388,8 +1388,8 @@ export const cfgClaudeResetsAutoRedeem = register({
 				description:
 					"Check live eligibility, then ask before spending the first Claude reset. With no prompt UI, spend only a reset expiring within 5 minutes.",
 			},
-			{ value: "yes", label: "Yes", description: "Spend eligible Claude resets without prompting." },
-			{ value: "no", label: "No", description: "Do not run Claude reset auto-redeem checks." },
+			{ value: "yes", label: "是", description: "Spend eligible Claude resets without prompting." },
+			{ value: "no", label: "否", description: "Do not run Claude reset auto-redeem checks." },
 		],
 	},
 });
@@ -1400,7 +1400,7 @@ export const cfgClaudeResetsMinBlockedMinutes = register({
 	default: 60,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Claude Auto-Redeem Min Block",
 		description:
 			"Only auto-redeem when the natural unblock — the latest reset among the exhausted covered windows — is at least this many minutes away. A 5-hour-only reset is never used for a weekly or model-scoped block.",
@@ -1413,7 +1413,7 @@ export const cfgClaudeResetsKeepCredits = register({
 	default: 0,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Claude Auto-Redeem Reserve",
 		description:
 			"Keep at least this many Claude resets banked (0 allows the last eligible reset to be spent automatically). The reserve applies to early salvage, but not to eligible resets expiring within 5 minutes.",
@@ -1426,7 +1426,7 @@ export const cfgClaudeResetsSalvageHorizonHours = register({
 	default: 12,
 	ui: {
 		tab: "providers",
-		group: "Services",
+		group: "服务",
 		label: "Claude Reset Salvage Horizon",
 		description:
 			"With auto-redeem enabled, use a server-selected Cedar reset within this many hours of expiry when its covered windows have meaningful usage. 0 disables early salvage; eligible Cedar or Juniper resets expiring within 5 minutes are still attempted regardless of usage or reserve. Provider limit requirements still apply.",
@@ -1448,14 +1448,14 @@ export const cfgProviderAppendOnlyContext = register({
 	default: "auto",
 	ui: {
 		tab: "providers",
-		group: "Protocol",
+		group: "协议",
 		label: "Append-Only Context",
 		description:
 			"Cache system prompt + tool specs and keep an append-only message log so provider prefix caches (DeepSeek, Xiaomi/SGLang, Anthropic) hit at maximum rate. Auto enables for known prefix-cache providers.",
 		options: [
-			{ value: "auto", label: "Auto", description: "Enable for known prefix-cache providers (recommended)" },
+			{ value: "auto", label: "自动", description: "Enable for known prefix-cache providers (recommended)" },
 			{ value: "on", label: "On", description: "Always enable append-only context" },
-			{ value: "off", label: "Off", description: "Disable append-only context" },
+			{ value: "off", label: "关闭", description: "Disable append-only context" },
 		],
 	},
 });

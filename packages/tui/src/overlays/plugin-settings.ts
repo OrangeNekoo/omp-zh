@@ -31,7 +31,7 @@ import { actionHint, hintsRow, overlayCard } from "../native/overlay";
 
 const PLUGIN_SETTINGS_ROLE = "omp.overlay.plugin-settings";
 /** A plugin row's control on the native settings page: open the plugin's settings. */
-const PLUGIN_CONFIGURE: TspPrefsControl = { k: "action", label: "Configure", act: "open" };
+const PLUGIN_CONFIGURE: TspPrefsControl = { k: "action", label: "配置", act: "open" };
 
 /** The plugins tab as a native settings page draws it (the settings selector puts it in its `prefs` node). */
 export interface PluginPrefsPage {
@@ -379,7 +379,7 @@ export class PluginListComponent extends OverlayPanel {
 				rows.length > 0
 					? "Plugins installed for you and this project. Configure one to turn it or its features on and off."
 					: "No plugins installed. Install one with omp plugin install <package>, or <name>@<marketplace>.",
-			sections: rows.length > 0 ? [{ id: "installed", title: "Installed", rows }] : [],
+			sections: rows.length > 0 ? [{ id: "installed", title: "已安装", rows }] : [],
 			focus: this.#selectList.getSelectedItem()?.value ?? null,
 			editing: null,
 		};
@@ -400,7 +400,7 @@ export class PluginListComponent extends OverlayPanel {
 		const body =
 			this.entries.length === 0
 				? [
-						text([span("No plugins installed", "muted")]),
+						text([span("未安装插件", "muted")]),
 						node("kv", {
 							items: [
 								{ k: "Install npm plugins", v: [span("omp plugin install <package>", "code")] },
@@ -512,8 +512,8 @@ export class PluginDetailComponent extends OverlayPanel {
 		// Enable/disable toggle
 		items.push({
 			id: "__enabled__",
-			label: "Enabled",
-			description: "Enable or disable this plugin",
+			label: "已启用",
+			description: "启用或禁用此插件",
 			currentValue: plugin.enabled ? "true" : "false",
 			values: ["true", "false"],
 		});
@@ -672,8 +672,8 @@ export class MarketplacePluginDetailComponent extends OverlayPanel {
 		const items: SettingItem[] = [
 			{
 				id: "__enabled__",
-				label: "Enabled",
-				description: "Enable or disable this marketplace plugin",
+				label: "已启用",
+				description: "启用或禁用此插件市场插件",
 				currentValue: marketplaceEnabled(plugin) ? "true" : "false",
 				values: ["true", "false"],
 			},
@@ -940,7 +940,7 @@ export class PluginSettingsComponent extends Container {
 		) {
 			return view.prefsPage();
 		}
-		return { lead: "Loading installed plugins…", sections: [], focus: null, editing: null };
+		return { lead: "正在加载已安装插件…", sections: [], focus: null, editing: null };
 	}
 
 	/** Routes a native page event to the current view. */

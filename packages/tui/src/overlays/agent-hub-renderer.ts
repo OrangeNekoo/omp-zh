@@ -243,7 +243,7 @@ export function modelBadgeSpans(ref: AgentRecordLike, observed: ObservableSessio
 	const badge = resolveModelBadge(ref, observed);
 	if (!badge) return undefined;
 	const spans: TspSpan[] = [];
-	if (badge.fallback) spans.push(span("fallback → ", "warning"));
+	if (badge.fallback) spans.push(span("备用 → ", "warning"));
 	spans.push(span(sanitizeDisplaySingleLine(badge.model), "muted"));
 	if (showsThinkingLevel(badge.level)) {
 		spans.push(span(` ${theme.thinking[badge.level] ?? badge.level}`, thinkingToken(badge.level)));

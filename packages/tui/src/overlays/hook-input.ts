@@ -153,12 +153,7 @@ export class HookInputComponent extends OverlayPanel {
 		];
 		if (countdown) {
 			titleRow.push(
-				node(
-					"row",
-					{ role: `${PART}.timer`, title: "Cancels when the time runs out; typing restarts it" },
-					[countdown],
-					"timer",
-				),
+				node("row", { role: `${PART}.timer`, title: "时间耗尽时取消；输入会重新计时" }, [countdown], "timer"),
 			);
 		}
 		const head: NativeChild[] = [node("row", { gap: "md", align: "baseline" }, titleRow, "line")];
@@ -184,8 +179,8 @@ export class HookInputComponent extends OverlayPanel {
 		const cancelKey = boundKeys("app.interrupt", ["escape"])[0];
 		this.#nativeActions = actionBar([
 			null,
-			actionButton("Cancel", "cancel", cancelKey ? { keys: cancelKey } : {}),
-			actionButton("Submit", "submit", { tone: "accent", ...(submitKey ? { keys: submitKey } : {}) }),
+			actionButton("取消", "cancel", cancelKey ? { keys: cancelKey } : {}),
+			actionButton("提交", "submit", { tone: "accent", ...(submitKey ? { keys: submitKey } : {}) }),
 		]);
 		return this.#nativeActions;
 	}

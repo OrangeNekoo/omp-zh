@@ -368,7 +368,7 @@ export function diagnosticsSection(
 	return node(
 		"section",
 		{
-			head: [span("Diagnostics")],
+			head: [span("诊断")],
 			tone: diagnostics.errored ? "error" : "warning",
 			role: "omp.tool.diagnostics",
 		},

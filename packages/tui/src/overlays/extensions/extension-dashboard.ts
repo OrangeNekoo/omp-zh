@@ -133,14 +133,14 @@ function providerInitials(label: string): string {
  */
 export function buildPickerScopes(tabs: ProviderTab[]): TspPickerScope[] {
 	return tabs.map(tab => {
-		if (tab.id === "all") return { id: tab.id, label: "All", icon: "extension", count: tab.count };
+		if (tab.id === "all") return { id: tab.id, label: "全部", icon: "extension", count: tab.count };
 		const emptyEnabled = tab.count === 0 && tab.enabled;
 		return {
 			id: tab.id,
 			label: tab.label,
 			mark: { text: providerInitials(tab.label), seed: tab.id },
 			count: tab.count,
-			group: "Providers",
+			group: "服务商",
 			dot: !tab.enabled ? "muted" : emptyEnabled ? "warning" : "success",
 			disabled: emptyEnabled ? "No extensions" : undefined,
 		};
@@ -721,7 +721,7 @@ export class ExtensionDashboard implements Component {
 			],
 			"head",
 		);
-		const search = text([span("Search: ", "muted"), query ? span(query, "accent") : span("type to filter", "dim")], {
+		const search = text([span("Search: ", "muted"), query ? span(query, "accent") : span("输入以筛选", "dim")], {
 			truncate: "end",
 		});
 		const body = node(
@@ -745,8 +745,8 @@ export class ExtensionDashboard implements Component {
 			}),
 			actionButton(expanded ? "Collapse" : "Expand", "expand", { keys: this.#expandKey() }),
 		];
-		if (query) buttons.push(actionButton("Clear search", "clear", { keys: "escape" }));
-		buttons.push(null, actionButton("Close", "close", { keys: "escape" }));
+		if (query) buttons.push(actionButton("清除搜索", "clear", { keys: "escape" }));
+		buttons.push(null, actionButton("关闭", "close", { keys: "escape" }));
 		return col([head, this.#tabBar, keyed(search, "search"), body, actionBar(buttons)], { gap: "md", grow: 1 });
 	}
 

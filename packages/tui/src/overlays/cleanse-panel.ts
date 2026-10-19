@@ -219,7 +219,7 @@ export class CleansePanelComponent extends OverlayPanel {
 		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "dismiss" };
 		switch (this.#outcome) {
 			case undefined:
-				return hintsRow([{ ...esc, label: "cancel /cleanse" }]);
+				return hintsRow([{ ...esc, label: "取消 /cleanse" }]);
 			case "clean":
 				return statusHintsRow([span(`${theme.status.success} Clean`, "success")], [esc]);
 			case "unresolved":

@@ -82,7 +82,7 @@ export class QueuedMessagesBand extends Container {
 							title: editTitle,
 							actions: { click: "queue.edit" },
 						},
-						[kbd(dequeueKey), text("Edit")],
+						[kbd(dequeueKey), text("编辑")],
 						"edit",
 					),
 				);

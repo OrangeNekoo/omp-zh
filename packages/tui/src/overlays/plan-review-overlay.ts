@@ -1590,7 +1590,7 @@ export class PlanReviewOverlay implements Component {
 			children.push(node("spinner", { label: [span(label, "accent strong")] }, undefined, "options"));
 			children.push(
 				keyed(
-					text([span("Applying your selection — this can take a moment while context is prepared.", "dim")], {
+					text([span("正在应用你的选择 — 准备上下文可能需要一点时间。", "dim")], {
 						wrap: "word",
 					}),
 					"footer",
@@ -1628,17 +1628,17 @@ export class PlanReviewOverlay implements Component {
 		if (this.#committed) return undefined;
 		const buttons: NativeNode[] = [];
 		if (this.callbacks.onCopyPlan)
-			buttons.push(actionButton("Copy", "copyPlan", { keys: "c", title: "Copy plan  c" }));
+			buttons.push(actionButton("复制", "copyPlan", { keys: "c", title: "复制计划  c" }));
 		// Unbound: the button still mirrors the callback, without a keycap.
 		const editorKeyId = getKeybindings().getKeys("app.editor.external")[0];
 		if (this.callbacks.onExternalEditor) {
-			buttons.push(actionButton("Edit in $EDITOR", "externalEditor", editorKeyId ? { keys: editorKeyId } : {}));
+			buttons.push(actionButton("在 $EDITOR 中编辑", "externalEditor", editorKeyId ? { keys: editorKeyId } : {}));
 		}
 		// Cancel the review the way the cancel key does; while annotating that key
 		// only leaves the draft/chooser, so the button is hidden there.
 		if (!this.#annotating && !this.#annotationChooser) {
 			const cancelKeyId = getKeybindings().getKeys("tui.select.cancel")[0];
-			buttons.push(actionButton("Cancel", "cancel", cancelKeyId ? { keys: cancelKeyId } : {}));
+			buttons.push(actionButton("取消", "cancel", cancelKeyId ? { keys: cancelKeyId } : {}));
 		}
 		if (buttons.length === 0) return undefined;
 		return node("row", { role: "omp.plan.tools", gap: "sm", align: "center", justify: "end" }, buttons, "tools");
@@ -1773,7 +1773,7 @@ export class PlanReviewOverlay implements Component {
 				});
 			});
 			return [
-				keyed(text([span("Edit annotation", "accent strong")]), "chooserHead"),
+				keyed(text([span("编辑标注", "accent strong")]), "chooserHead"),
 				selectList("chooser", entries, { selected: `c${chooser.selected}` }),
 				hintsRow(
 					[

@@ -2528,8 +2528,8 @@ export class InputController {
 				`Pasted ${lineCount} lines`,
 				[
 					{ label: WRAPPED_BLOCK, description: "Wrap the text in <attachment> tags, collapsed to a marker" },
-					{ label: LOCAL_FILE, description: "Save the text to a local://paste file" },
-					{ label: INLINE, description: "Collapse the text to an inline paste marker" },
+					{ label: LOCAL_FILE, description: "将文本保存到 local://paste 文件" },
+					{ label: INLINE, description: "将文本折叠为内联粘贴标记" },
 				],
 				{ helpText: `${editorKey("tui.select.cancel")} to paste inline` },
 			);

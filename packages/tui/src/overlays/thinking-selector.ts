@@ -43,7 +43,7 @@ export class ThinkingSelectorComponent extends OverlayPanel {
 
 		this.addChild(this.#selectList);
 		this.#sheet = new SelectListSheet(this.#selectList, {
-			title: "Thinking level",
+			title: "思考等级",
 			icon: "brain",
 			noun: "levels",
 			current: currentLevel ? [currentLevel] : [],

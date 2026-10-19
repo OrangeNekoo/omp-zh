@@ -158,7 +158,7 @@ export class InspectorPanel implements Component {
 	describePreview(): NativeNode[] {
 		const ext = this.#extension;
 		if (!ext) {
-			return [text([span("Select an extension to view details", "muted")], { wrap: "word" })];
+			return [text([span("选择扩展以查看详情", "muted")], { wrap: "word" })];
 		}
 		this.#toolFrame = snapshotToolRuntimeSource(this.#toolSource);
 		const view = this.#nativeKindView(ext);
@@ -248,7 +248,7 @@ export class InspectorPanel implements Component {
 
 	/** Tool/argument rows: name, type and required flag, then the description. */
 	#nativeParams(params: ToolParamView[]): NativeNode {
-		if (params.length === 0) return text([span("(no arguments)", "dim")]);
+		if (params.length === 0) return text([span("（无参数）", "dim")]);
 		return node("kv", {
 			items: params.map(param => ({
 				k: [span(param.name, "accent mono")],
@@ -339,7 +339,7 @@ export class InspectorPanel implements Component {
 				return {
 					...base,
 					description: data.description,
-					sections: [this.#nativeSection("Applies", [applies ?? text([span("(no apply conditions)", "dim")])])],
+					sections: [this.#nativeSection("Applies", [applies ?? text([span("（无应用条件）", "dim")])])],
 					preview: { heading: "Rule", text: data.content },
 				};
 			}
@@ -366,7 +366,7 @@ export class InspectorPanel implements Component {
 					["hint", data.argumentHint ? [span(sanitizeDisplayText(data.argumentHint), "dim")] : undefined],
 				]);
 				if (facts) invocation.push(facts);
-				if (data.usesArguments) invocation.push(text([span("accepts $ARGUMENTS", "dim")]));
+				if (data.usesArguments) invocation.push(text([span("接受 $ARGUMENTS", "dim")]));
 				return {
 					...base,
 					description: data.description,

@@ -1,6 +1,6 @@
 import "@oh-my-pi/pi-utils/env";
 import chalk from "@oh-my-pi/pi-utils/chalk";
-import { APP_NAME, CONFIG_DIR_NAME } from "@oh-my-pi/pi-utils/dirs";
+import { CLI_NAME, CONFIG_DIR_NAME } from "@oh-my-pi/pi-utils/dirs";
 
 export function getExtraHelpText(): string {
 	return `${chalk.bold("Environment Variables:")}
@@ -81,7 +81,7 @@ ${chalk.bold("Available Tools (default-enabled unless noted):")}
   grep          - Search file contents
   glob          - Find files by glob pattern
   lsp           - Language server protocol (code intelligence)
-  python        - Execute Python code (requires: ${APP_NAME} setup python)
+  python        - Execute Python code (requires: ${CLI_NAME} setup python)
   notebook      - Edit Jupyter notebooks
   browser       - Browser automation (Puppeteer)
   computer      - Native host desktop capture and input (disabled by default)
@@ -94,6 +94,6 @@ ${chalk.bold("Plugin Options:")}
   --plugin-dir <path>        Load plugin from directory (repeatable)
 
 ${chalk.bold("Useful Commands:")}
-  omp agents unpack           - Export bundled subagents to ~/.omp/agent/agents (default)
-  omp agents unpack --project - Export bundled subagents to ./.omp/agents`;
+  ${CLI_NAME} agents unpack           - Export bundled subagents to ~/.omp/agent/agents (default)
+  ${CLI_NAME} agents unpack --project - Export bundled subagents to ./.omp/agents`;
 }

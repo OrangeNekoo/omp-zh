@@ -1848,8 +1848,8 @@ export class SelectorController {
 							},
 						}
 					: {
-							title: "Select a Session to Consult",
-							actionLabel: "Select",
+							title: "选择要咨询的会话",
+							actionLabel: "选择",
 							scopeLabel: false,
 							showCwd: true,
 						}),

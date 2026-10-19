@@ -470,7 +470,7 @@ interface WriteUrlCard {
 const WRITE_URL_CARDS: Record<string, WriteUrlCard> = {
 	agent: {
 		detailsKey: "message",
-		activity: target => ({ label: "Message", detail: target === "all" ? "broadcast" : target }),
+		activity: target => ({ label: "消息", detail: target === "all" ? "broadcast" : target }),
 		render: (_url, target, content, result, details, options, uiTheme) =>
 			renderAgentWrite(
 				target,
@@ -485,7 +485,7 @@ const WRITE_URL_CARDS: Record<string, WriteUrlCard> = {
 		detailsKey: "proc",
 		activity: target => {
 			const { id, action } = procWriteTarget(target);
-			return { label: "Process", detail: `${action} ${shortenPath(id)}` };
+			return { label: "进程", detail: `${action} ${shortenPath(id)}` };
 		},
 		render: (_url, target, content, result, details, options, uiTheme) => {
 			const { id, action } = procWriteTarget(target);
@@ -502,7 +502,7 @@ const WRITE_URL_CARDS: Record<string, WriteUrlCard> = {
 	},
 	cfg: {
 		detailsKey: "cfg",
-		activity: target => ({ label: "Config", detail: target }),
+		activity: target => ({ label: "配置", detail: target }),
 		render: (url, _target, content, result, details, options, uiTheme) =>
 			renderCfgWrite(url, typeof content === "string" ? content : undefined, result, details?.cfg, options, uiTheme),
 	},
@@ -576,7 +576,7 @@ function writeToolHead(
 	const diagnostics = diagnosticsBadge([details?.diagnostics]);
 	if (diagnostics) badges.push(diagnostics);
 	return {
-		title: "Write",
+		title: "写入",
 		target: rawPath ? sanitizeText(displayPath(rawPath)) : undefined,
 		targetKind: "path",
 		href: fileHref(details?.resolvedPath),
@@ -596,7 +596,7 @@ export const writeToolRenderer = {
 				: typeof writeArgs.path === "string"
 					? writeArgs.path
 					: "";
-		if (!rawPath) return { label: "Write" };
+		if (!rawPath) return { label: "写入" };
 		const routed = writeUrlCard(rawPath);
 		if (routed) return routed.card.activity(routed.target);
 		const xdev = parseXdUrl(rawPath);
@@ -604,7 +604,7 @@ export const writeToolRenderer = {
 			const resolveMounted = (context.renderContext as WriteRenderContext | undefined)?.resolveXdevMounted;
 			return xdevActivitySummary(xdev.name, writeArgs.content, resolveMounted);
 		}
-		return { label: "Write", detail: shortenPath(rawPath) };
+		return { label: "写入", detail: shortenPath(rawPath) };
 	},
 
 	renderCall(
@@ -649,7 +649,7 @@ export const writeToolRenderer = {
 		// noise. The liveness cue rides the trailing "(streaming)" line instead.
 		const header = renderStatusLine(
 			{
-				title: "Write",
+				title: "写入",
 				description: `${langIcon} ${pathDisplay}`,
 			},
 			uiTheme,
@@ -733,7 +733,7 @@ export const writeToolRenderer = {
 		if (result.isError) {
 			const errorText = result.content?.find(c => c.type === "text")?.text ?? "";
 			const header = renderStatusLine(
-				{ icon: "error", title: "Write", description: `${langIcon} ${pathDisplay}` },
+				{ icon: "error", title: "写入", description: `${langIcon} ${pathDisplay}` },
 				uiTheme,
 			);
 			return framedToolCard(uiTheme, () => ({
@@ -757,7 +757,7 @@ export const writeToolRenderer = {
 				icon: isPartial ? "running" : undefined,
 				iconOverride: isPartial ? undefined : uiTheme.styledSymbol("tool.write", "accent"),
 				spinnerFrame: options.spinnerFrame,
-				title: "Write",
+				title: "写入",
 				description: `${langIcon} ${pathDisplay}${lineSuffix}${execSuffix}`,
 			},
 			uiTheme,

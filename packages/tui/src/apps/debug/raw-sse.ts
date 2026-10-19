@@ -126,7 +126,7 @@ export class RawSseViewerComponent implements Component {
 			this.#onUpdate?.();
 		});
 		this.#frame = new DebugViewerFrame({
-			title: "Raw Provider Stream",
+			title: "原始服务商流",
 			getHeight: () => process.stdout.rows || this.#terminalRows || 24,
 			headerRows: 1,
 			footerRows: 1,
@@ -279,9 +279,7 @@ export class RawSseViewerComponent implements Component {
 						col(
 							[
 								text("No raw SSE frames captured yet", { role: "omp.app.empty-title" }),
-								text([
-									span("HTTP SSE providers populate this view while a model response is streaming.", "muted"),
-								]),
+								text([span("HTTP SSE 服务商会在模型响应流式传输时填充此视图。", "muted")]),
 							],
 							{ gap: "xs", align: "center", role: "omp.app.empty" },
 						),
@@ -305,9 +303,9 @@ export class RawSseViewerComponent implements Component {
 							"status",
 						),
 					actionBar([
-						actionButton("Copy raw", "copy-raw", { keys: "ctrl+c", tone: "accent" }),
+						actionButton("复制原始内容", "copy-raw", { keys: "ctrl+c", tone: "accent" }),
 						null,
-						actionButton("Close", "close", { keys: "escape" }),
+						actionButton("关闭", "close", { keys: "escape" }),
 					]),
 				]),
 				{ role: "omp.debug.bar", gap: "sm" },
@@ -328,7 +326,7 @@ export class RawSseViewerComponent implements Component {
 			span(" · ", "dim"),
 			snapshot.lastUpdatedAt
 				? span(`last ${formatRawSseIsoTime(snapshot.lastUpdatedAt)}`, "muted")
-				: span("waiting for first frame", "muted"),
+				: span("等待首帧", "muted"),
 		);
 		return keyed(
 			row([text("Raw provider stream", { role: "omp.app.title" }), text(stats, { truncate: "end" })], {

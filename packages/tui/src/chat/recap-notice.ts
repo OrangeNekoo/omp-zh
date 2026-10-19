@@ -22,7 +22,7 @@ export class RecapNotice extends Container {
 	}
 
 	override describe(): NativeNode {
-		return node("row", { gap: "sm", align: "start", role: "omp.recap", title: "Recap while you were away" }, [
+		return node("row", { gap: "sm", align: "start", role: "omp.recap", title: "你离开期间的回顾" }, [
 			node("icon", { name: "history" }, undefined, "icon"),
 			text(this.#recap, { wrap: "word" }),
 		]);

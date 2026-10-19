@@ -1807,7 +1807,7 @@ export class AcpAgent implements Agent {
 	#buildThinkingOptions(session: AgentSession): Array<{ value: string; name: string; description?: string }> {
 		return [
 			{ value: THINKING_OFF, name: "Off" },
-			{ value: AUTO_THINKING, name: "Auto", description: "Auto-detect per prompt" },
+			{ value: AUTO_THINKING, name: "Auto", description: "按提示词自动检测" },
 			...session.getAvailableThinkingLevels().map(level => ({
 				value: level,
 				name: level,

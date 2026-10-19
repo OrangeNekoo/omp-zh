@@ -16,8 +16,8 @@ export const cfgSecretsEnabled = register({
 	default: false,
 	ui: {
 		tab: "providers",
-		group: "Privacy",
-		label: "Hide Secrets",
+		group: "隐私",
+		label: "隐藏密钥",
 		description: "Obfuscate configured secrets and redact credential-shaped tokens before sending to AI providers",
 	},
 });

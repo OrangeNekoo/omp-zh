@@ -675,7 +675,7 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 				...head,
 				role: "omp.tool.read",
 				name: "read",
-				title: "Read",
+				title: "读取",
 				status,
 				tone: status === "error" ? "error" : undefined,
 				frame: "inline",
@@ -778,7 +778,7 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 		const usageByRow = this.#usageRowsBySummaryRow(rows);
 		const previews = entries.filter(entry => this.#shouldRenderPreview(entry));
 		const status = this.#groupStatus(entries);
-		const title = span("Read", "toolTitle");
+		const title = span("读取", "toolTitle");
 		const children: NativeChild[] = [];
 		let head: TspSpan[] = [title];
 		if (rows.length === 1) {

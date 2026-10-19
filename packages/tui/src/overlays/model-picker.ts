@@ -452,7 +452,7 @@ export class ModelPickerComponent implements Component {
 					this.#taskModeKey !== undefined && mode !== "role" && mode !== "selection"
 						? pickerAction("task", "Task model", this.#taskModeKey, { on: mode === "task" })
 						: undefined,
-					query.length > 0 ? { ...CLOSE_ACTION, label: "Clear search" } : CLOSE_ACTION,
+					query.length > 0 ? { ...CLOSE_ACTION, label: "清除搜索" } : CLOSE_ACTION,
 				]),
 			},
 			preview,
@@ -492,7 +492,7 @@ export class ModelPickerComponent implements Component {
 								? "select model"
 								: "use for this session",
 			},
-			{ keys: [], label: "type to search" },
+			{ keys: [], label: "输入以搜索" },
 		];
 		if (mode === "session") hints.push({ keys: ["@"], label: "quick roles" });
 		hints.push(actionHint("tui.select.cancel", "close"));

@@ -247,14 +247,14 @@ interface ReadUrlCard {
 /** Read cards keyed by URL scheme. */
 const READ_URL_CARDS: Record<string, ReadUrlCard> = {
 	proc: {
-		label: "Process",
+		label: "进程",
 		rootDetail: "jobs & services",
 		detailsKey: "proc",
 		render: (_url, target, result, details, options, uiTheme) =>
 			renderProcRead(target, result, details?.proc, options, uiTheme),
 	},
 	cfg: {
-		label: "Config",
+		label: "配置",
 		rootDetail: "all settings",
 		detailsKey: "cfg",
 		render: (url, _target, result, details, options, uiTheme) =>
@@ -401,7 +401,7 @@ function readNativeHead(
 	}
 	const conflicts = details?.conflictCount ?? 0;
 	return {
-		title: "Read",
+		title: "读取",
 		target: sanitizeText(target) || "…",
 		targetKind: "path",
 		href: fileHref(linkPath ?? details?.resolvedPath ?? details?.displayTarget ?? readSourceFsPath(details)),
@@ -479,7 +479,7 @@ export const readToolRenderer = {
 			typeof input?.file_path === "string" ? input.file_path : typeof input?.path === "string" ? input.path : "";
 		const routed = readUrlCard(rawPath);
 		if (routed) return { label: routed.card.label, detail: routed.target || routed.card.rootDetail };
-		return { label: "Read", detail: sanitizeText(shortenPath(rawPath)) };
+		return { label: "读取", detail: sanitizeText(shortenPath(rawPath)) };
 	},
 	renderCall(args: ReadRenderArgs, _options: RenderResultOptions, uiTheme: Theme): Component {
 		const rawPath =
@@ -500,7 +500,7 @@ export const readToolRenderer = {
 			pathDisplay += `:${startLine}${endLine ? `-${endLine}` : ""}`;
 		}
 
-		const text = renderStatusLine({ icon: "pending", title: "Read", description: pathDisplay }, uiTheme);
+		const text = renderStatusLine({ icon: "pending", title: "读取", description: pathDisplay }, uiTheme);
 		return new Text(text, 0, 0);
 	},
 
@@ -597,7 +597,7 @@ export const readToolRenderer = {
 			});
 			const correction = suffix ? ` ${uiTheme.fg("dim", `(corrected from ${shortenPath(suffix.from)})`)}` : "";
 			const header = renderStatusLine(
-				{ icon: suffix ? "warning" : "success", title: "Read", description: `${displayPath}${correction}` },
+				{ icon: suffix ? "warning" : "success", title: "读取", description: `${displayPath}${correction}` },
 				uiTheme,
 			);
 			const detailLines = contentText

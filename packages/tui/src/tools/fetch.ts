@@ -131,7 +131,7 @@ export function renderReadUrlCall(
 	const description = formatReadUrlDescription(url);
 	const meta: string[] = [];
 	if (args.raw) meta.push("raw");
-	const text = renderStatusLine({ icon: "pending", title: "Read", description, meta }, uiTheme);
+	const text = renderStatusLine({ icon: "pending", title: "读取", description, meta }, uiTheme);
 	return new Text(text, 0, 0);
 }
 
@@ -139,7 +139,7 @@ export function renderReadUrlCall(
 function readUrlHead(input: string, meta: readonly string[] = []): NativeToolHead {
 	const link = input ? readUrlLinkSpan(input) : undefined;
 	return {
-		title: "Read",
+		title: "读取",
 		target: link?.t || undefined,
 		targetKind: "text",
 		href: link?.href,
@@ -228,7 +228,7 @@ export function renderReadUrlResult(
 		const errorText = (rawErrorText || "No response data").replace(/^Error:\s*/, "");
 		const urlText = details?.finalUrl ?? details?.url ?? "";
 		const description = urlText ? formatReadUrlDescription(urlText) : undefined;
-		const header = renderStatusLine({ icon: "error", title: "Read", description }, uiTheme);
+		const header = renderStatusLine({ icon: "error", title: "读取", description }, uiTheme);
 		const errorLines = sanitizeDisplayLines(errorText).map(line => uiTheme.fg("error", line));
 		return framedToolCard(uiTheme, () => ({
 			header,
@@ -246,7 +246,7 @@ export function renderReadUrlResult(
 	const header = renderStatusLine(
 		{
 			icon: truncated ? "warning" : "success",
-			title: "Read",
+			title: "读取",
 			description,
 		},
 		uiTheme,

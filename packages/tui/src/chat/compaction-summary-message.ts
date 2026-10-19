@@ -305,7 +305,7 @@ export class BranchSummaryMessageComponent extends SummaryMessageComponent {
 	constructor(message: BranchSummaryMessage) {
 		super({
 			label: () => `${theme.icon.branch} branch`,
-			nativeLabel: () => [span("Branch summarized", "muted")],
+			nativeLabel: () => [span("分支已总结", "muted")],
 			role: "omp.branch",
 			detailMarkdown: () => `**Branch summary**\n\n${message.summary}`,
 		});

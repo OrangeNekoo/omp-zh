@@ -232,7 +232,7 @@ function findNativeHead(
 	query: string | undefined,
 	meta: readonly NonNullable<NativeToolHead["meta"]>[number][],
 ): NativeToolHead {
-	return { title: "Find", target: query ?? "", targetKind: "query", meta };
+	return { title: "查找", target: query ?? "", targetKind: "query", meta };
 }
 
 function quoteQuery(query: string | undefined): string | undefined {
@@ -249,7 +249,7 @@ export const findToolRenderer = {
 			{
 				icon: "pending",
 				spinnerFrame: options.spinnerFrame,
-				title: "Find",
+				title: "查找",
 				titleColor: "toolTitle",
 				description: quoteQuery(args.query),
 				meta,
@@ -278,7 +278,7 @@ export const findToolRenderer = {
 				{
 					icon: "pending",
 					spinnerFrame: options.spinnerFrame,
-					title: "Find",
+					title: "查找",
 					titleColor: "toolTitle",
 					description: quoteQuery(args?.query ?? details?.query),
 					meta: text ? [text] : [],
@@ -308,7 +308,7 @@ export const findToolRenderer = {
 			const emptyMeta = ["0 hits", ...scope, `$${stats.cost.toFixed(4)}`, formatDuration(details.elapsedMs)];
 			if (failed) emptyMeta.push(uiTheme.fg("warning", failed));
 			const header = renderStatusLine(
-				{ icon: "warning", title: "Find", titleColor: "toolTitle", description, meta: emptyMeta },
+				{ icon: "warning", title: "查找", titleColor: "toolTitle", description, meta: emptyMeta },
 				uiTheme,
 			);
 			const empty =
@@ -323,7 +323,7 @@ export const findToolRenderer = {
 		const header = renderStatusLine(
 			{
 				iconOverride: uiTheme.fg("toolTitle", uiTheme.symbol("icon.search")),
-				title: "Find",
+				title: "查找",
 				titleColor: "toolTitle",
 				description,
 				meta,

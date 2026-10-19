@@ -148,7 +148,7 @@ interface MarkTagged {
 const EARLIER_TURNS = node(
 	"row",
 	{ role: "omp.rewind.earlier", gap: "xs", align: "center" },
-	[kbd("a"), text([span("load earlier turns", "muted")])],
+	[kbd("a"), text([span("加载更早的轮次", "muted")])],
 	"earlier",
 );
 
@@ -832,9 +832,9 @@ export class RewindSelectorComponent implements Component {
 		const memo = `${this.#selected}|${this.#activeVariant}|${this.#siblingSelected}|${this.#truncated}|${columns.length}|${filter ?? "\0"}`;
 		if (this.#bar?.memo === memo && this.#bar.targets === this.#targets) return this.#bar.node;
 
-		const title = text([span(`${theme.icon.rewind} `, "accent"), span("Rewind", "strong")], { wrap: "none" });
+		const title = text([span(`${theme.icon.rewind} `, "accent"), span("回退", "strong")], { wrap: "none" });
 		const upDown = actionHint(["tui.select.up", "tui.select.down"], "step");
-		const rewind = actionButton("Rewind here", "rewind", { keys: "enter", tone: "accent" });
+		const rewind = actionButton("回退到此处", "rewind", { keys: "enter", tone: "accent" });
 		let children: NativeChild[];
 		if (filter === undefined) {
 			const column = columns[this.#activeVariant - 1];
@@ -849,7 +849,7 @@ export class RewindSelectorComponent implements Component {
 					{ keys: ["f"], label: "filter" },
 					this.#truncated ? { keys: ["a"], label: "earlier turns" } : undefined,
 				]),
-				actionBar([null, actionButton("Cancel", "cancel", { keys: "escape" }), rewind]),
+				actionBar([null, actionButton("取消", "cancel", { keys: "escape" }), rewind]),
 			];
 		} else {
 			const matches = this.#filterMatches();
@@ -866,7 +866,7 @@ export class RewindSelectorComponent implements Component {
 					{ wrap: "none" },
 				),
 				hintsRow([upDown, { keys: ["left", "right"], label: "user turns" }]),
-				actionBar([null, actionButton("Show all", "cancel", { keys: "escape" }), rewind]),
+				actionBar([null, actionButton("显示全部", "cancel", { keys: "escape" }), rewind]),
 			];
 		}
 		const root = node("row", { role: "omp.rewind.bar", gap: "md", align: "center", wrap: true }, children);

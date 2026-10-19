@@ -4,7 +4,7 @@ export const acpHelp = {
 	description: "Run omp as an ACP (Agent Client Protocol) server over stdio",
 } satisfies CommandMetadata;
 
-export const agentsHelp = { description: "Manage bundled task agents" } satisfies CommandMetadata;
+export const agentsHelp = { description: "管理内置任务代理" } satisfies CommandMetadata;
 
 export const anonymizeHelp = {
 	description:
@@ -16,7 +16,7 @@ export const authHelp = {
 } satisfies CommandMetadata;
 
 export const authBrokerHelp = {
-	description: "Manage the omp auth-broker (credential vault)",
+	description: "管理 omp 认证代理（凭据保险库）",
 } satisfies CommandMetadata;
 
 export const authGatewayHelp = {
@@ -34,7 +34,7 @@ export const browserRelayHelp = {
 } satisfies CommandMetadata;
 
 export const cleanseHelp = {
-	description: "Detect and fix project diagnostics with weighted parallel subagents",
+	description: "用加权并行子代理检测并修复项目诊断问题",
 } satisfies CommandMetadata;
 
 export const collabHelp = {
@@ -46,7 +46,7 @@ export const clipHelp = {
 	description: "Upload a /record recording to live.omp.sh as a public clip and print its URL",
 } satisfies CommandMetadata;
 
-export const commitHelp = { description: "Generate a commit message and update changelogs" } satisfies CommandMetadata;
+export const commitHelp = { description: "生成提交消息并更新变更日志" } satisfies CommandMetadata;
 
 export const completionsHelp = {
 	description: "Print a shell completion script (bash, zsh, or fish)",
@@ -58,17 +58,17 @@ export const compressHelp = {
 	description: "Rewrite a text file into the dense prompt register, reporting what it drops",
 } satisfies CommandMetadata;
 
-export const configHelp = { description: "Manage configuration settings" } satisfies CommandMetadata;
+export const configHelp = { description: "管理配置设置" } satisfies CommandMetadata;
 
 export const dryBalanceHelp = {
-	description: "Dry-run OAuth account balancing across random session ids",
+	description: "跨随机会话 ID 试运行 OAuth 账户均衡",
 } satisfies CommandMetadata;
 
 export const galleryHelp = {
 	description: "Preview tool, composer, and status-line renderers in a deterministic visual gallery",
 } satisfies CommandMetadata;
 
-export const gcHelp = { description: "Run storage garbage collection" } satisfies CommandMetadata;
+export const gcHelp = { description: "运行存储垃圾回收" } satisfies CommandMetadata;
 export const ifBenchHelp = {
 	description:
 		"Benchmark instruction following and working memory: one cached thread of glyph array actions with a moving cat-sound directive",
@@ -92,18 +92,18 @@ export const loginHelp = {
 } satisfies CommandMetadata;
 
 export const imagesHelp = {
-	description: "Inspect, diagnose, probe, and purge image publication backends",
+	description: "检查、诊断、探测并清理图像发布后端",
 } satisfies CommandMetadata;
 
 export const installHelp = {
 	description: "Install or link an extension package (alias of `plugin install`/`plugin link`)",
 } satisfies CommandMetadata;
 
-export const joinHelp = { description: "Join a shared collab session (same as /join)" } satisfies CommandMetadata;
+export const joinHelp = { description: "加入共享协作会话（同 /join）" } satisfies CommandMetadata;
 
-export const modelsHelp = { description: "List, search, and refresh available models" } satisfies CommandMetadata;
+export const modelsHelp = { description: "列出、搜索并刷新可用模型" } satisfies CommandMetadata;
 
-export const pluginHelp = { description: "Manage plugins (install, uninstall, list, etc.)" } satisfies CommandMetadata;
+export const pluginHelp = { description: "管理插件（安装、卸载、列出等）" } satisfies CommandMetadata;
 
 export const playHelp = {
 	description: "Replay a /record session recording in the terminal (space pauses, q quits)",
@@ -142,13 +142,13 @@ export const setupHelp = {
 	description: "Run onboarding setup or install dependencies for optional features",
 } satisfies CommandMetadata;
 
-export const shellHelp = { description: "Interactive shell console" } satisfies CommandMetadata;
+export const shellHelp = { description: "交互式 Shell 控制台" } satisfies CommandMetadata;
 
 export const skillHelp = {
 	description: "Install, search, publish, and manage skills on the Skillshare registry (skills.omp.sh)",
 } satisfies CommandMetadata;
 
-export const sshHelp = { description: "Manage SSH host configurations" } satisfies CommandMetadata;
+export const sshHelp = { description: "管理 SSH 主机配置" } satisfies CommandMetadata;
 
 export const statsHelp = { description: "View usage statistics" } satisfies CommandMetadata;
 
@@ -167,13 +167,13 @@ export const toksHelp = {
 } satisfies CommandMetadata;
 
 export const ttsrHelp = {
-	description: "Inspect and test Time-Traveling Stream Rules (TTSR)",
+	description: "检查并测试时间旅行流规则 (TTSR)",
 } satisfies CommandMetadata;
 
-export const updateHelp = { description: "Check for and install updates" } satisfies CommandMetadata;
+export const updateHelp = { description: "检查并安装更新" } satisfies CommandMetadata;
 
 export const usageHelp = {
-	description: "Show provider usage limits for every authenticated account",
+	description: "显示每个已认证账户的服务商用量限制",
 } satisfies CommandMetadata;
 
 export const worktreeHelp = {

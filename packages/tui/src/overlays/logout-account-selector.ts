@@ -192,7 +192,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 			),
 			(this.#nativeHints ??= hintsRow([
 				actionHint(["tui.select.up", "tui.select.down"], "select"),
-				{ keys: ["enter"], label: "log out account" },
+				{ keys: ["enter"], label: "退出账户" },
 				actionHint("tui.select.cancel", "cancel"),
 			])),
 		]);

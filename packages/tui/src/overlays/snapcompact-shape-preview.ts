@@ -97,9 +97,9 @@ export class SnapcompactShapePreview implements Component {
 		if (memo !== undefined && memo.variant === this.#variant && memo.entry === entry) return memo.node;
 		const { label, stats } = this.#caption(shape, name);
 		let sample: NativeNode;
-		if (!entry) sample = text([span("(graphic sample needs an image-capable terminal)", "dim")]);
-		else if (entry.state === "rendering") sample = node("spinner", { label: [span("rendering sample…", "dim")] });
-		else if (entry.state === "failed") sample = text([span("(sample render failed)", "dim")]);
+		if (!entry) sample = text([span("（图形示例需要支持图像的终端）", "dim")]);
+		else if (entry.state === "rendering") sample = node("spinner", { label: [span("正在渲染示例…", "dim")] });
+		else if (entry.state === "failed") sample = text([span("（示例渲染失败）", "dim")]);
 		else {
 			sample = nativeImageNode(entry.bytes, "image/png", {
 				alt: `snapcompact ${label} sample`,

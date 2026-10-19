@@ -87,7 +87,7 @@ export const cfgBashEnabled = register({
 		tab: "shell",
 		group: "Bash",
 		label: "Bash",
-		description: "Enable the bash tool for shell command execution",
+		description: "启用 bash 工具以执行 shell 命令",
 	},
 });
 
@@ -98,7 +98,7 @@ export const cfgBashAllowCompoundCommands = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Allow Compound Commands",
+		label: "允许复合命令",
 		description:
 			"Evaluate literal && chains per command; unmatched commands use normal bash approval policy and mode",
 	},
@@ -112,7 +112,7 @@ export const cfgBashAutoBackgroundEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Auto-Background",
+		label: "Bash 自动后台",
 		description: "Automatically background long-running bash commands and deliver the result later",
 	},
 });
@@ -124,7 +124,7 @@ export const cfgBashGitGuard = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Git Guard",
+		label: "Git 守卫",
 		description:
 			"Refuse git commands that discard or move shared work in the bash tool: stash, reset --hard or to another commit, and checkout/switch/restore outside a merge or rebase conflict",
 	},
@@ -137,7 +137,7 @@ export const cfgBashPatterns = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Approval Patterns",
+		label: "Bash 批准模式",
 		description:
 			"Ordered bash command approval rules. Each item has match and approval fields; only '*' wildcards are supported.",
 	},
@@ -151,8 +151,8 @@ export const cfgBashInterceptorEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Interceptor",
-		description: "Block shell commands that have dedicated tools",
+		label: "Bash 拦截器",
+		description: "阻止已有专用工具的 shell 命令",
 	},
 });
 
@@ -197,7 +197,7 @@ export const cfgShellMinimizerEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Shell Minimizer",
+		label: "Shell 精简器",
 		description: "Compress verbose shell output (git, npm, cargo, etc.) before returning it to the agent",
 	},
 });
@@ -234,7 +234,7 @@ export const cfgShellMinimizerSourceOutlineLevel = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Shell Minimizer Source Outline",
+		label: "Shell 精简器源码大纲",
 		description: "Source outline mode for cat/read of source files: default or aggressive",
 	},
 });

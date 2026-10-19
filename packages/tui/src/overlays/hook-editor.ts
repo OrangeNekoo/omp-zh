@@ -240,7 +240,7 @@ export class HookEditorComponent extends OverlayPanel implements Focusable {
 		if (this.#externalEditor) {
 			const [externalKey] = boundKeys("app.editor.external", ["ctrl+g"]);
 			buttons.push(
-				actionButton("Open in editor", "external", {
+				actionButton("在编辑器中打开", "external", {
 					...(externalKey ? { keys: externalKey } : {}),
 					title: tip([["Edit in your external editor", externalKey]]),
 				}),
@@ -248,8 +248,8 @@ export class HookEditorComponent extends OverlayPanel implements Focusable {
 		}
 		buttons.push(
 			null,
-			actionButton("Cancel", "cancel", { keys: cancelKey, title: tip([["Cancel", cancelKey]]) }),
-			actionButton("Submit", "submit", {
+			actionButton("取消", "cancel", { keys: cancelKey, title: tip([["Cancel", cancelKey]]) }),
+			actionButton("提交", "submit", {
 				keys: submitKey,
 				tone: "accent",
 				title: tip([

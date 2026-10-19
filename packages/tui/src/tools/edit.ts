@@ -1685,7 +1685,7 @@ function renderMultiFileResult(
 					renderStatusLine(
 						{
 							iconOverride: spinner,
-							title: "Edit",
+							title: "编辑",
 							description: uiTheme.fg("dim", `${remaining} more file${remaining > 1 ? "s" : ""} pending…`),
 						},
 						uiTheme,

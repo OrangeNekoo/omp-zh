@@ -241,8 +241,8 @@ export class MCPAuthorizationLinkPrompt implements Component {
 	describe(): NativeNode {
 		this.#node ??= col(
 			[
-				text([span("Open authorization URL:", "success")]),
-				text([span("Click here to authorize", "link", { href: this.#fullUrl })], {
+				text([span("打开授权 URL：", "success")]),
+				text([span("点击此处授权", "link", { href: this.#fullUrl })], {
 					href: this.#fullUrl,
 					actions: { click: "open", menu: ["open", "copy"] },
 				}),
@@ -274,7 +274,7 @@ function urlCopyRow(label: string, url: string): NativeNode {
 		wrap: "char",
 		href: url,
 		actions: { click: "copy", menu: ["copy", "open"] },
-		title: "Copy URL",
+		title: "复制 URL",
 	});
 }
 

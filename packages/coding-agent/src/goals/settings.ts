@@ -6,8 +6,8 @@ export const cfgGoalEnabled = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Modes",
-		label: "Goal Mode",
+		group: "模式",
+		label: "目标模式",
 		description: "Enable per-session goal mode and the hidden goal tool",
 	},
 });
@@ -18,8 +18,8 @@ export const cfgGoalStatusInFooter = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Modes",
-		label: "Goal Status in Footer",
+		group: "模式",
+		label: "页脚中的目标状态",
 		description: "Show token budget alongside the goal indicator in the status line",
 	},
 });
@@ -32,8 +32,8 @@ export const cfgGoalContinuationModes = register({
 	default: GOAL_CONTINUATION_MODES_DEFAULT,
 	ui: {
 		tab: "tasks",
-		group: "Modes",
-		label: "Goal Continuation Modes",
+		group: "模式",
+		label: "目标延续模式",
 		description: 'Run modes where active goals may auto-continue between turns ("interactive", "rpc")',
 	},
 });

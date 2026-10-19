@@ -65,14 +65,14 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "skills",
 		icon: "skill",
-		description: "Search, install, and update skills from the skills.omp.sh registry",
+		description: "从 skills.omp.sh 注册表搜索、安装和更新技能",
 		subcommands: [
-			{ name: "search", description: "Search the skill registry", usage: "<query>" },
-			{ name: "install", description: "Install registry skills", usage: "<@scope/name[@range]>… [--global]" },
-			{ name: "installed", description: "List installed registry skills" },
+			{ name: "search", description: "搜索技能注册表", usage: "<query>" },
+			{ name: "install", description: "安装注册表技能", usage: "<@scope/name[@range]>… [--global]" },
+			{ name: "installed", description: "列出已安装的注册表技能" },
 			{
 				name: "update",
-				description: "Update registry skills within their ranges",
+				description: "在其版本范围内更新注册表技能",
 				usage: "[@scope/name…] [--global]",
 			},
 		],

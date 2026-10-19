@@ -8,12 +8,12 @@ export type ComposerShape = string;
 export const BUILTIN_COMPOSER_SHAPES = [
 	{
 		value: "band",
-		label: "Status Band (Default)",
+		label: "状态带（默认）",
 		description: "Flush soft-capped status band above a curved prompt, no frame",
 	},
 	{
 		value: "box",
-		label: "Rounded Box",
+		label: "圆角框",
 		description: "Status line embedded in top border, compact 2-line prompt",
 	},
 	{
@@ -28,22 +28,22 @@ export const BUILTIN_COMPOSER_SHAPES = [
 	},
 	{
 		value: "borderless",
-		label: "Borderless",
+		label: "无边框",
 		description: "Clean prompt glyph with status line at bottom, no box borders",
 	},
 	{
 		value: "rule",
-		label: "Top Rule Dock",
+		label: "顶部规则坞",
 		description: "Single top rule with status docked onto it and below",
 	},
 	{
 		value: "field",
-		label: "Compact Field",
+		label: "压缩字段",
 		description: "Filled one-row field with accent end caps",
 	},
 	{
 		value: "rail",
-		label: "Accent Rail",
+		label: "强调色边栏",
 		description: "Filled one-row field anchored by a single accent rail",
 	},
 ] as const;

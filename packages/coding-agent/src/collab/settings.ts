@@ -12,9 +12,9 @@ export const cfgCollabRelayUrl = register({
 	default: DEFAULT_RELAY_URL,
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Relay URL",
-		description: "Relay used by /collab (wss://host[:port])",
+		group: "协作",
+		label: "中继地址",
+		description: "/collab 使用的中继 (wss://host[:port])",
 	},
 });
 
@@ -24,8 +24,8 @@ export const cfgCollabWebUrl = register({
 	default: "",
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Web UI URL",
+		group: "协作",
+		label: "Web UI 地址",
 		description:
 			"Browser UI used by /collab links; empty derives from collab.relayUrl; explicit http:// is localhost-only",
 	},
@@ -37,8 +37,8 @@ export const cfgCollabDisplayName = register({
 	default: "",
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Display Name",
+		group: "协作",
+		label: "显示名称",
 		description: "Name shown to other collab participants (default: OS username)",
 	},
 });
@@ -50,20 +50,20 @@ export const cfgCollabAutoStart = register({
 	default: "off",
 	ui: {
 		tab: "interaction",
-		group: "Collab",
-		label: "Auto Start",
+		group: "协作",
+		label: "自动启动",
 		description:
 			"Host every interactive session via collab.relayUrl as it starts and publish it to the local registry (omp collab list); rooms rotate on session switch",
 		options: [
-			{ value: "off", label: "Off", description: "Share only when /collab is run" },
+			{ value: "off", label: "关闭", description: "仅在运行 /collab 时共享" },
 			{
 				value: "view",
-				label: "View",
+				label: "查看",
 				description: "Auto-host; the registry hands out view-only links (omp collab link --view)",
 			},
 			{
 				value: "control",
-				label: "Control",
+				label: "控制",
 				description: "Auto-host; the registry hands out control links that can prompt the session",
 			},
 		],

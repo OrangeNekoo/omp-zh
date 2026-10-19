@@ -72,7 +72,7 @@ export class ErrorBannerComponent extends Container {
 		if (multiline || headline.length > 80) {
 			children.push(actionButton(this.#expanded ? "Less" : "Details", "details"));
 		}
-		if (this.#onDismiss) children.push(actionButton("Dismiss", "dismiss"));
+		if (this.#onDismiss) children.push(actionButton("忽略", "dismiss"));
 		this.#native = node(
 			"row",
 			{ role: "omp.errorBanner", tone: "error", gap: "sm", align: this.#expanded ? "start" : "center" },

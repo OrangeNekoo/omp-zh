@@ -203,7 +203,7 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 								age: Date.now() - this.#startedAt,
 								format: "clock",
 								role: "omp.pause.clock",
-								title: "Paused for",
+								title: "暂停",
 							},
 							undefined,
 							"clock",
@@ -246,12 +246,9 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 				keyed(hero, "hero"),
 				keyed(facts, "facts"),
 				actionBar([
-					keyed(
-						text([span("Each agent continues where it stopped.", "muted")], { role: "omp.pause.note" }),
-						"note",
-					),
+					keyed(text([span("每个代理从其停止处继续。", "muted")], { role: "omp.pause.note" }), "note"),
 					null,
-					actionButton("Resume", "resume", {
+					actionButton("恢复", "resume", {
 						keys: resumeKey,
 						tone: "accent",
 						// Each ` · ` clause ending in two spaces and a key is a keycap: `Resume [esc] · [⏎] · [space]`.

@@ -127,7 +127,7 @@ export class SessionObserverRegistry {
 		this.#sessions.set("main", {
 			id: "main",
 			kind: "main",
-			label: "Main Session",
+			label: "主会话",
 			status: "active",
 			sessionFile: sessionFile ?? existing?.sessionFile,
 			lastUpdate: Date.now(),

@@ -445,9 +445,9 @@ function describeVibeResult(
 			op === "spawn"
 				? span(`turn started${details.spawned ? ` (job ${details.spawned.jobId})` : ""}`, "success")
 				: details.send?.mode === "steered"
-					? span("steered into the running turn", "success")
+					? span("已引导进入运行中的回合", "success")
 					: details.send?.mode === "queued"
-						? span("mid-turn — queued as the next turn", "warning")
+						? span("回合中 — 排队为下一轮", "warning")
 						: span(`turn started${details.send?.jobId ? ` (job ${details.send.jobId})` : ""}`, "success");
 		return {
 			head,

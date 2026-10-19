@@ -94,7 +94,7 @@ export const resolveRenderer = {
 		const text = renderStatusLine(
 			{
 				icon: "pending",
-				title: "Resolve",
+				title: "解决",
 				description: args.action,
 				badge: {
 					label: args.action === "apply" ? "proposed -> resolved" : "proposed -> rejected",

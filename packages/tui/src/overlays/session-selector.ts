@@ -126,15 +126,15 @@ const PREVIEW_EXCERPT_CHARS = 1200;
 /** The preview follows the selection once it rests this long (holding ↓ doesn't flood the wire). */
 const PREVIEW_SETTLE_MS = 60;
 const DAY_MS = 86_400_000;
-const PINNED_GROUP = { id: "pinned", label: "Pinned" };
+const PINNED_GROUP = { id: "pinned", label: "已固定" };
 
 /** Day group of a session's last modification, relative to local midnight today. */
 function sessionDayGroup(modified: Date, startOfToday: number): { id: string; label: string } {
 	const at = modified.getTime();
-	if (at >= startOfToday) return { id: "today", label: "Today" };
-	if (at >= startOfToday - DAY_MS) return { id: "yesterday", label: "Yesterday" };
-	if (at >= startOfToday - 6 * DAY_MS) return { id: "week", label: "This week" };
-	return { id: "earlier", label: "Earlier" };
+	if (at >= startOfToday) return { id: "today", label: "今天" };
+	if (at >= startOfToday - DAY_MS) return { id: "yesterday", label: "昨天" };
+	if (at >= startOfToday - 6 * DAY_MS) return { id: "week", label: "本周" };
+	return { id: "earlier", label: "更早" };
 }
 
 /** A cwd as dim-prefix / strong-tail path spans. */
@@ -259,8 +259,8 @@ interface SessionPickerMessage {
 }
 
 const SCOPE_TABS: readonly { id: "folder" | "all"; label: string }[] = [
-	{ id: "folder", label: "Current folder" },
-	{ id: "all", label: "All projects" },
+	{ id: "folder", label: "当前文件夹" },
+	{ id: "all", label: "所有项目" },
 ];
 
 /** Returns the IDs of sessions whose recorded prompts match a query, best first. */
@@ -1026,7 +1026,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 			if (!base) continue;
 			add.push(
 				now.has(key)
-					? { ...base, badges: [...(base.badges ?? []), { text: "history", title: "Matched in prompt history" }] }
+					? { ...base, badges: [...(base.badges ?? []), { text: "history", title: "在提示词历史中匹配" }] }
 					: base,
 			);
 		}
@@ -1064,7 +1064,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 		const memo = this.#listNative;
 		if (memo?.items === items.items && memo.selected === selected && memo.query === query) return memo.node;
 		const empty: TspText = this.#showCwd
-			? [span("No sessions found", "muted")]
+			? [span("未找到会话", "muted")]
 			: [span("No sessions in current folder. Press ", "muted"), span("tab", "key"), span(" to view all.", "muted")];
 		const list = node(
 			"list",
@@ -1825,7 +1825,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 					? {
 							text: `Delete “${sessionLabel(choice.session)}”? This removes the session file.`,
 							act: "delete-confirm",
-							label: "Delete",
+							label: "删除",
 						}
 					: null,
 			},

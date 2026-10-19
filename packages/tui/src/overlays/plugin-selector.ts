@@ -63,7 +63,7 @@ export class PluginSelectorComponent extends OverlayPanel {
 		if (items.length === 0) {
 			items.push({
 				value: "__empty__",
-				label: "No plugins available",
+				label: "无可用插件",
 				description:
 					marketplaceCount === 0
 						? "Add a marketplace first: /marketplace add <source>"
@@ -87,7 +87,7 @@ export class PluginSelectorComponent extends OverlayPanel {
 
 		this.addChild(this.#selectList);
 		this.#sheet = new SelectListSheet(this.#selectList, {
-			title: "Plugins",
+			title: "插件",
 			icon: "plus",
 			noun: "plugins",
 			confirm: "Install",

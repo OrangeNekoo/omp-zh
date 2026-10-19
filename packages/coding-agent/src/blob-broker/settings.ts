@@ -28,8 +28,8 @@ export const cfgImagesUrlsEnabled = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Serve Images as URLs",
+		group: "视觉",
+		label: "以 URL 提供图像",
 		description:
 			"Publish outgoing images through the configured backend chain and send URL-fetching providers short URLs instead of inline base64. Falls back to inline automatically when every backend or a provider fetch fails",
 	},
@@ -41,8 +41,8 @@ export const cfgImagesUrlsBackends = register({
 	default: DEFAULT_IMAGES_URLS_BACKENDS,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL Backends",
+		group: "视觉",
+		label: "图像 URL 后端",
 		description: "Ordered destinations tried when publishing images for provider access",
 		options: BLOB_BACKEND_CHOICES,
 		ordered: true,
@@ -68,8 +68,8 @@ export const cfgImagesUrlsCommand = register({
 	default: undefined,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image Upload Command",
+		group: "视觉",
+		label: "图像上传命令",
 		description:
 			"Argv template for the command backend; {file} is the image path, {mime}/{ext} optional. The last URL printed on stdout is used (e.g. pasta -b -f {file})",
 	},
@@ -81,8 +81,8 @@ export const cfgImagesUrlsPublicBaseUrl = register({
 	default: undefined,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL Public Base",
+		group: "视觉",
+		label: "图像 URL 公共前缀",
 		description: "Externally reachable base URL fronting the blob server (required for ssh, optional for direct)",
 	},
 });
@@ -93,8 +93,8 @@ export const cfgImagesUrlsTtlHours = register({
 	default: 72,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL Lifetime (hours)",
+		group: "视觉",
+		label: "图像 URL 有效期（小时）",
 		description:
 			"Serving window for locally hosted image URLs, measured from the last time a conversation sent them; resuming a conversation re-arms the window at the same link. 0 keeps links alive while the broker runs",
 	},
@@ -106,8 +106,8 @@ export const cfgImagesUrlsBindHost = register({
 	default: "127.0.0.1",
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL Bind Host",
+		group: "视觉",
+		label: "图像 URL 绑定主机",
 		description: "Host the blob server binds to; loopback for tunnels, 0.0.0.0 for direct serving",
 	},
 });
@@ -118,8 +118,8 @@ export const cfgImagesUrlsSshTarget = register({
 	default: undefined,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL SSH Target",
+		group: "视觉",
+		label: "图像 URL SSH 目标",
 		description: "user@host destination for the ssh reverse forward",
 	},
 });
@@ -130,8 +130,8 @@ export const cfgImagesUrlsSshRemotePort = register({
 	default: 8787,
 	ui: {
 		tab: "model",
-		group: "Vision",
-		label: "Image URL SSH Remote Port",
+		group: "视觉",
+		label: "图像 URL SSH 远程端口",
 		description: "Remote listen port of the ssh reverse forward that your web server proxies to",
 	},
 });

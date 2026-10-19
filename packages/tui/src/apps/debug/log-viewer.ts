@@ -678,7 +678,7 @@ export class DebugLogViewerComponent implements Component {
 		this.#onError = options.onError;
 		this.#onUpdate = options.onUpdate;
 		this.#frame = new DebugViewerFrame({
-			title: "Recent Logs",
+			title: "最近日志",
 			getHeight: () => process.stdout.rows || this.#terminalRows || 24,
 			headerRows: 2,
 			footerRows: 2,
@@ -883,11 +883,11 @@ export class DebugLogViewerComponent implements Component {
 				const needle = query.toLowerCase();
 				for (const viewerRow of model.rows) {
 					if (viewerRow.kind === "warning") {
-						order.push({ group: "session", label: "This session" });
+						order.push({ group: "session", label: "本会话" });
 						continue;
 					}
 					if (viewerRow.kind === "load-older") {
-						items.push({ id: OLDER_ITEM, label: "Load older entries", tone: "muted" });
+						items.push({ id: OLDER_ITEM, label: "加载更早的条目", tone: "muted" });
 						order.push(OLDER_ITEM);
 						continue;
 					}
@@ -915,7 +915,7 @@ export class DebugLogViewerComponent implements Component {
 					.join(" · ");
 				return picker(
 					{
-						title: "Recent logs",
+						title: "最近日志",
 						subtitle,
 						noun: "entries",
 						size: "lg",

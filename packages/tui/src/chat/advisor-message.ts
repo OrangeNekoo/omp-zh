@@ -156,10 +156,10 @@ const RANKS: readonly AdvisorRank[] = ["blocker", "concern", "nit", "note"];
 
 /** Each rank's native look, GitHub-alert style: card/icon tone, Tern icon name, label and its span style. */
 const RANK_LOOK: Record<AdvisorRank, { tone: TspTone; icon: string; label: string; style: string }> = {
-	blocker: { tone: "error", icon: "octagon-alert", label: "Blocker", style: "error strong" },
-	concern: { tone: "warning", icon: "warn", label: "Concern", style: "warning strong" },
-	nit: { tone: "neutral", icon: "lightbulb", label: "Nit", style: "strong" },
-	note: { tone: "neutral", icon: "info", label: "Note", style: "strong" },
+	blocker: { tone: "error", icon: "octagon-alert", label: "阻塞项", style: "error strong" },
+	concern: { tone: "warning", icon: "warn", label: "关注点", style: "warning strong" },
+	nit: { tone: "neutral", icon: "lightbulb", label: "细节", style: "strong" },
+	note: { tone: "neutral", icon: "info", label: "备注", style: "strong" },
 };
 
 function rankOf(entry: AdvisorNote): AdvisorRank {

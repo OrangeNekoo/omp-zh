@@ -10,7 +10,7 @@ export const cfgBrowserEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Browser",
 		description: "Enable the browser eval prelude for scripted Chromium automation (Puppeteer)",
 	},
@@ -22,7 +22,7 @@ export const cfgBrowserCdpUrl = register({
 	default: undefined,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Browser CDP URL",
 		description:
 			"Default HTTP CDP discovery endpoint (for example http://127.0.0.1:9222) to attach to instead of launching a browser. Explicit app.cdp_url or app.path on the tool call take precedence.",
@@ -35,7 +35,7 @@ export const cfgBrowserRelay = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Browser Relay",
 		description:
 			"Drive your own Chrome tabs through the omp browser relay. Install the extension once (`omp browser-relay install`); the relay server auto-starts when the browser prelude needs it. Takes precedence over Browser CDP URL; set PI_BROWSER_RELAY=0 or PI_BROWSER_RELAY=1 to override.",
@@ -48,7 +48,7 @@ export const cfgBrowserRelayUrl = register({
 	default: undefined,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Browser Relay URL",
 		description: "omp browser relay endpoint (default http://127.0.0.1:9224).",
 	},
@@ -60,7 +60,7 @@ export const cfgBrowserHeadless = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Headless Browser",
 		description: "Launch browser in headless mode (disable to show browser UI)",
 	},
@@ -72,7 +72,7 @@ export const cfgBrowserCmux = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "cmux Browser",
 		description:
 			"Use cmux WKWebView surfaces for browser automation when a cmux socket is available. Set PI_BROWSER_CMUX=0 or PI_BROWSER_CMUX=1 to override.",
@@ -85,7 +85,7 @@ export const cfgBrowserTern = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Tern Browser",
 		description:
 			"Inside a Tern pane, open browser tabs as picture-in-pictures over omp's pane (native web view) instead of headless Chromium; falls back to Chromium when no Tern window can host them. Explicit app options, the relay and Browser CDP URL take precedence; app.tern:false opts one open out. Set PI_BROWSER_TERN=0 or PI_BROWSER_TERN=1 to override.",
@@ -98,7 +98,7 @@ export const cfgBrowserFreezeOnTurnEnd = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Freeze Browser Tabs On Turn End",
 		description:
 			"Freeze OMP-owned headless browser tabs when a turn settles so animated pages stop burning CPU/GPU while idle. Tabs unfreeze automatically on next use; pass persist:true on open to opt a tab out.",
@@ -111,15 +111,15 @@ export const cfgBrowserIdleCloseSec = register({
 	default: 1800,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Browser Idle Close Timeout",
 		description:
 			"Close OMP-owned headless browser tabs and Tern browser picture-in-pictures idle longer than this many seconds (0 = never; session dispose still reaps). Never touches relay/CDP/spawned browsers or other sessions' tabs.",
 		options: [
-			{ value: "0", label: "Never" },
-			{ value: "900", label: "15 minutes" },
-			{ value: "1800", label: "30 minutes" },
-			{ value: "3600", label: "1 hour" },
+			{ value: "0", label: "从不" },
+			{ value: "900", label: "15 分钟" },
+			{ value: "1800", label: "30 分钟" },
+			{ value: "3600", label: "1 小时" },
 		],
 	},
 });
@@ -130,7 +130,7 @@ export const cfgBrowserScreenshotDir = register({
 	default: undefined,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Screenshot Directory",
 		description:
 			"Directory to save screenshots. If unset, screenshots go to a temp file. Supports ~. Examples: ~/Downloads, ~/Desktop, /sdcard/Download (Android)",

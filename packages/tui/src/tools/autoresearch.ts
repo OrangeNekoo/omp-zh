@@ -396,7 +396,7 @@ export const runExperimentToolRenderer = {
 					status.node,
 					details.tailOutput.trim() ? ansi(details.tailOutput, { follow: true }) : undefined,
 					details.truncation && details.fullOutputPath
-						? text([span("Full output: ", "warning"), span(shortenPath(details.fullOutputPath), "path")], {
+						? text([span("完整输出：", "warning"), span(shortenPath(details.fullOutputPath), "path")], {
 								truncate: "middle",
 							})
 						: undefined,

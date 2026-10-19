@@ -955,7 +955,7 @@ export class AssistantMessageComponent extends Container {
 								{ gap: "sm", title },
 								[
 									node("spinner", { style: "starburst", role: "omp.thinking.spin" }),
-									text([span("Thinking…", "muted")]),
+									text([span("思考中…", "muted")]),
 									elapsed(performance.now() - (this.#thinkingClock.get(index)?.start ?? performance.now())),
 									...(rate >= 0.05 ? [node("rate", { value: rate, unit: "tok/s" })] : []),
 								],
@@ -1037,7 +1037,7 @@ export class AssistantMessageComponent extends Container {
 						{
 							name: "copy",
 							role: "omp.turn.copy",
-							title: "Copy answer",
+							title: "复制回答",
 							aria: "Copy answer",
 							actions: { click: "copy-answer" },
 						},
@@ -1101,7 +1101,7 @@ export class AssistantMessageComponent extends Container {
 				"row",
 				{ gap: "sm" },
 				[
-					text([span("Request failed", "error strong")]),
+					text([span("请求失败", "error strong")]),
 					...(code ? [node("badge", { text: code[1]!, tone: "error", role: "omp.error.code" })] : []),
 				],
 				"head",

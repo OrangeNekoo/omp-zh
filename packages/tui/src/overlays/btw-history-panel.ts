@@ -90,11 +90,11 @@ interface BtwHistoryNativeMemo {
 }
 
 const STATUS: Record<BtwHistoryRecord["status"], { label: string; color: ThemeColor }> = {
-	running: { label: "Running", color: "accent" },
-	complete: { label: "Complete", color: "success" },
-	cancelled: { label: "Cancelled", color: "warning" },
-	error: { label: "Error", color: "error" },
-	interrupted: { label: "Interrupted", color: "warning" },
+	running: { label: "运行中", color: "accent" },
+	complete: { label: "完成", color: "success" },
+	cancelled: { label: "已取消", color: "warning" },
+	error: { label: "错误", color: "error" },
+	interrupted: { label: "已中断", color: "warning" },
 };
 
 const SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "lg", head: "BTW history" } as const;
@@ -106,11 +106,11 @@ function describeStatus(status: BtwHistoryTurn["status"]): TspSpan[] | undefined
 		case "running":
 			return [span("●", "accent", { fx: "pulse" }), span(" Answering", "accent")];
 		case "cancelled":
-			return [span("Cancelled", "warning")];
+			return [span("已取消", "warning")];
 		case "error":
-			return [span("Failed", "error")];
+			return [span("失败", "error")];
 		case "interrupted":
-			return [span("Interrupted", "warning")];
+			return [span("已中断", "warning")];
 		case "complete":
 			return undefined;
 	}
@@ -590,7 +590,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 		const meta: TspSpan[] =
 			index === 0
 				? [span(this.#dateFormat.format(turn.createdAt))]
-				: [span("Follow-up · "), span(this.#timeFormat.format(turn.createdAt))];
+				: [span("跟进 · "), span(this.#timeFormat.format(turn.createdAt))];
 		const status = describeStatus(turn.status);
 		if (status) meta.push(span("  ·  "), ...status);
 		// The question stays markdown so its inline code and links render.
@@ -611,7 +611,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 			children.push(text([span(sanitizeErrorLine(turn.error), "error")], { role: "omp.btw.error", wrap: "word" }));
 		}
 		if (turn.status === "interrupted") {
-			children.push(text([span("Not resumed in this view.", "muted")], { role: "omp.btw.note" }));
+			children.push(text([span("未在此视图中恢复。", "muted")], { role: "omp.btw.note" }));
 		}
 		return node("col", { role: "omp.btw.turn" }, children, key);
 	}
@@ -637,14 +637,10 @@ export class BtwHistoryPanel implements Component, Focusable {
 			{ role: "omp.btw.empty", align: "center", gap: "sm" },
 			[
 				text("No side questions yet", { role: "omp.btw.empty.title" }),
-				text(
-					[
-						span("Ask one with "),
-						span("/btw <question>", "code"),
-						span(". The answer stays out of the main conversation."),
-					],
-					{ role: "omp.btw.empty.hint", wrap: "word" },
-				),
+				text([span("提一个附带问题，使用 "), span("/btw <question>", "code"), span("。答案不会进入主对话。")], {
+					role: "omp.btw.empty.hint",
+					wrap: "word",
+				}),
 			],
 			"empty",
 		);
@@ -659,22 +655,22 @@ export class BtwHistoryPanel implements Component, Focusable {
 		if (this.#composer) {
 			return actionBar([
 				null,
-				actionButton("Cancel", "discard", { keys: "escape" }),
+				actionButton("取消", "discard", { keys: "escape" }),
 				actionButton(this.#followUpPending ? "Sending…" : "Send", "send", { keys: "enter", tone: "accent" }),
 			]);
 		}
 		const running = record !== undefined && getBtwLatestTurn(record).status === "running";
 		const hides = this.#options.escapeHides === true;
 		const buttons: (NativeNode | null)[] = [];
-		if (running) buttons.push(actionButton("Stop answer", "stop", { keys: hides ? "x" : "escape" }));
+		if (running) buttons.push(actionButton("停止回答", "stop", { keys: hides ? "x" : "escape" }));
 		if (record && getBtwCopyText(record) !== undefined) {
 			buttons.push(actionButton(copied ? "Copy again" : "Copy answer", "copy-answer", { keys: "c" }));
-			if (copied) buttons.push(text([span("✓ Copied", "success")], { role: "omp.btw.copied" }));
+			if (copied) buttons.push(text([span("✓ 已复制", "success")], { role: "omp.btw.copied" }));
 		}
 		buttons.push(null);
 		// Clicking Close always dismisses the sheet; its tooltip names Esc only where Esc does too.
-		buttons.push(actionButton("Close", "close", running && !hides ? undefined : { keys: "escape" }));
-		if (canFollowUp) buttons.push(actionButton("Follow up", "follow-up", { keys: "f", tone: "accent" }));
+		buttons.push(actionButton("关闭", "close", running && !hides ? undefined : { keys: "escape" }));
+		if (canFollowUp) buttons.push(actionButton("跟进", "follow-up", { keys: "f", tone: "accent" }));
 		return actionBar(buttons);
 	}
 

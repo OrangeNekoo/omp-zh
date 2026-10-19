@@ -1102,8 +1102,8 @@ export class Sidebar {
 			"tabs",
 			{
 				items: [
-					{ id: "path", label: "Path" },
-					{ id: "tree", label: "Tree" },
+					{ id: "path", label: "路径" },
+					{ id: "tree", label: "树" },
 				],
 				active: this.viewStyle,
 				role: "omp.app.seg",
@@ -1132,7 +1132,7 @@ export class Sidebar {
 							{
 								name: "wand",
 								role: "omp.app.ibtn",
-								title: "Stage by description…",
+								title: "按描述暂存…",
 								aria: "Stage by description",
 								actions: { click: "stage-ai" },
 							},
@@ -1242,7 +1242,7 @@ export class Sidebar {
 		const summaryField = summaryInput
 			? row(
 					[
-						node("input", { ...inputProps(summaryInput), placeholder: "Summary", grow: 1 }),
+						node("input", { ...inputProps(summaryInput), placeholder: "摘要", grow: 1 }),
 						text([span(String(left), left < 0 ? "warning num" : "num")], { role: "omp.app.git.count" }),
 					],
 					{ gap: "sm", align: "center", role: "omp.app.git.summary.on" },
@@ -1286,7 +1286,7 @@ export class Sidebar {
 								align: "center",
 								role: `omp.app.git.toggle${this.amend ? ".set" : ""}${on({ kind: "amend" }) ? ".on" : ""}`,
 								actions: { click: "amend" },
-								title: "Amend the previous commit",
+								title: "修正上一次提交",
 							}),
 							row(compact([this.generating && node("spinner", { style: "dots" }), text(label)]), {
 								gap: "xs",
@@ -1313,7 +1313,7 @@ export class Sidebar {
 	#describeHead(selectedKey: string | undefined): NativeChild[] {
 		const head = this.#model.headCommit;
 		if (!head) {
-			return [keyed(text([span("No commits yet", "muted")], { role: "omp.app.git.empty" }), "empty")];
+			return [keyed(text([span("暂无提交", "muted")], { role: "omp.app.git.empty" }), "empty")];
 		}
 		const when = head.authorDate ? new Date(head.authorDate) : null;
 		const initials = head.authorName
@@ -1356,7 +1356,7 @@ export class Sidebar {
 		);
 		const out: NativeChild[] = [keyed(commit, "head")];
 		if (!head.filesLoaded) {
-			out.push(keyed(text([span("Loading changed files…", "muted")]), "loading"));
+			out.push(keyed(text([span("正在加载变更文件…", "muted")]), "loading"));
 			return out;
 		}
 		const additions = head.files.reduce((sum, file) => sum + (file.additions ?? 0), 0);

@@ -103,7 +103,7 @@ export function activityRowsFromProgress(progress: AgentProgress, lastUpdate = D
 			agentId: progress.id,
 			timestamp: lastUpdate,
 			kind: "response",
-			title: "Response",
+			title: "响应",
 			summary: response,
 			status: progress.status === "failed" ? "error" : progress.status === "aborted" ? "aborted" : "pending",
 			source: "live",

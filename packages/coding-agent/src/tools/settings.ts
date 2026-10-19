@@ -15,7 +15,7 @@ export const cfgToolsArtifactSpillThreshold = register({
 	default: 50,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Artifact Spill Threshold (KB)",
 		description: "Tool output above this size is saved as an artifact; tail is kept inline",
 		options: [
@@ -41,7 +41,7 @@ export const cfgToolsArtifactTailBytes = register({
 	default: 20,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Artifact Tail Size (KB)",
 		description: "Amount of tail content kept inline when output spills to artifact",
 		options: [
@@ -63,7 +63,7 @@ export const cfgToolsArtifactHeadBytes = register({
 	default: 20,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Artifact Head Size (KB)",
 		description:
 			"Amount of head content kept inline alongside the tail when output spills to artifact (middle elision). 0 disables — keep tail only.",
@@ -87,15 +87,15 @@ export const cfgToolsOutputMaxColumns = register({
 	default: 768,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Output Column Cap",
 		description:
 			"Per-line byte cap for streaming tool outputs (bash, python, js eval) and `read`. Lines wider than this are ellipsis-truncated; remaining bytes up to the next newline are dropped. 0 disables.",
 		options: [
-			{ value: "0", label: "Off", description: "No per-line cap" },
+			{ value: "0", label: "关闭", description: "No per-line cap" },
 			{ value: "256", label: "256", description: "Tight" },
 			{ value: "512", label: "512" },
-			{ value: "768", label: "768", description: "Default" },
+			{ value: "768", label: "768", description: "默认" },
 			{ value: "1024", label: "1024" },
 			{ value: "2048", label: "2048" },
 			{ value: "4096", label: "4096", description: "Loose" },
@@ -109,17 +109,17 @@ export const cfgToolsArtifactTailLines = register({
 	default: 500,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Artifact Tail Lines",
 		description: "Maximum lines of tail content kept inline when output spills to artifact",
 		options: [
-			{ value: "50", label: "50 lines", description: "~250 tokens" },
-			{ value: "100", label: "100 lines", description: "~500 tokens" },
-			{ value: "250", label: "250 lines", description: "~1.25K tokens" },
-			{ value: "500", label: "500 lines", description: "Default; ~2.5K tokens" },
-			{ value: "1000", label: "1000 lines", description: "~5K tokens" },
-			{ value: "2000", label: "2000 lines", description: "~10K tokens" },
-			{ value: "5000", label: "5000 lines", description: "~25K tokens" },
+			{ value: "50", label: "50 行", description: "~250 tokens" },
+			{ value: "100", label: "100 行", description: "~500 tokens" },
+			{ value: "250", label: "250 行", description: "~1.25K tokens" },
+			{ value: "500", label: "500 行", description: "Default; ~2.5K tokens" },
+			{ value: "1000", label: "1000 行", description: "~5K tokens" },
+			{ value: "2000", label: "2000 行", description: "~10K tokens" },
+			{ value: "5000", label: "5000 行", description: "~25K tokens" },
 		],
 	},
 });
@@ -130,14 +130,14 @@ export const cfgToolsArtifactMaxBytes = register({
 	default: 16,
 	ui: {
 		tab: "tools",
-		group: "Output Limits",
+		group: "输出限制",
 		label: "Artifact File Cap (MB)",
 		description:
 			"Maximum size of the artifact file saved for streaming tool output (bash, python, js eval). Larger output keeps its beginning (up to 3 MB) and its most recent remainder, with a truncation notice between them. 0 = unlimited.",
 		options: [
-			{ value: "0", label: "Unlimited", description: "Save the complete output" },
+			{ value: "0", label: "无限制", description: "Save the complete output" },
 			{ value: "4", label: "4 MB" },
-			{ value: "16", label: "16 MB", description: "Default" },
+			{ value: "16", label: "16 MB", description: "默认" },
 			{ value: "64", label: "64 MB" },
 			{ value: "256", label: "256 MB" },
 			{ value: "1024", label: "1 GB" },
@@ -151,7 +151,7 @@ export const cfgReadLineNumbers = register({
 	default: false,
 	ui: {
 		tab: "files",
-		group: "Reading",
+		group: "读取",
 		label: "Line Numbers",
 		description: "Prepend line numbers to read tool output by default",
 	},
@@ -163,15 +163,15 @@ export const cfgReadDefaultLimit = register({
 	default: 300,
 	ui: {
 		tab: "files",
-		group: "Reading",
+		group: "读取",
 		label: "Default Read Limit",
 		description: "Default number of lines returned when agent calls read without a limit",
 		options: [
-			{ value: "200", label: "200 lines" },
-			{ value: "300", label: "300 lines" },
-			{ value: "500", label: "500 lines" },
-			{ value: "1000", label: "1000 lines" },
-			{ value: "5000", label: "5000 lines" },
+			{ value: "200", label: "200 行" },
+			{ value: "300", label: "300 行" },
+			{ value: "500", label: "500 行" },
+			{ value: "1000", label: "1000 行" },
+			{ value: "5000", label: "5000 行" },
 		],
 	},
 });
@@ -182,7 +182,7 @@ export const cfgReadRenderMarkdown = register({
 	default: false,
 	ui: {
 		tab: "files",
-		group: "Reading",
+		group: "读取",
 		label: "Markdown Previews",
 		description: "Render Markdown read results as formatted terminal Markdown previews instead of raw source",
 	},
@@ -194,8 +194,8 @@ export const cfgReadSummarizeEnabled = register({
 	default: true,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
-		label: "Read Summaries",
+		group: "读取摘要",
+		label: "读取摘要",
 		description: "Return structural code summaries when read is called without an explicit selector",
 	},
 });
@@ -206,7 +206,7 @@ export const cfgReadSummarizeProse = register({
 	default: false,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Prose Summaries",
 		description: "Return structural summaries for Markdown and plain text reads",
 	},
@@ -218,7 +218,7 @@ export const cfgReadSummarizeMinBodyLines = register({
 	default: 4,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Read Summary Body Lines",
 		description: "Minimum multiline body or literal length before read summaries collapse it",
 	},
@@ -230,7 +230,7 @@ export const cfgReadSummarizeMinCommentLines = register({
 	default: 6,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Read Summary Comment Lines",
 		description: "Minimum multiline block comment length before read summaries collapse it",
 	},
@@ -242,7 +242,7 @@ export const cfgReadSummarizeMinTotalLines = register({
 	default: 100,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Read Summary Minimum File Length",
 		description: "Files with fewer total lines are read verbatim instead of structurally summarized",
 	},
@@ -254,7 +254,7 @@ export const cfgReadSummarizeUnfoldUntil = register({
 	default: 50,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Read Summary Unfold Target",
 		description:
 			"BFS-unfold elidable spans until the summary is at least this many visible lines. 0 keeps only the outermost elisions.",
@@ -267,7 +267,7 @@ export const cfgReadSummarizeUnfoldLimit = register({
 	default: 100,
 	ui: {
 		tab: "files",
-		group: "Read Summaries",
+		group: "读取摘要",
 		label: "Read Summary Unfold Ceiling",
 		description:
 			"Hard ceiling on summary size while BFS-unfolding. An unfold whose revealed lines would exceed this is skipped (that span stays folded) and unfolding continues with the remaining spans.",
@@ -280,7 +280,7 @@ export const cfgReadToolResultPreview = register({
 	default: false,
 	ui: {
 		tab: "files",
-		group: "Reading",
+		group: "读取",
 		label: "Inline Read Previews",
 		description: "Render read tool results inline in the transcript instead of summary rows",
 	},
@@ -297,7 +297,7 @@ export const cfgToolsApproval = register({
 	default: {},
 	ui: {
 		tab: "interaction",
-		group: "Approvals",
+		group: "批准",
 		label: "Tool Approval Policies",
 		description:
 			"Per-tool approval policies. Set to 'allow' to auto-approve, 'prompt' to require confirmation, or 'deny' to block. Overrides are honored in every approval mode.",
@@ -315,7 +315,7 @@ export const cfgToolsApprovalMode = register({
 	default: "yolo",
 	ui: {
 		tab: "interaction",
-		group: "Approvals",
+		group: "批准",
 		label: "Tool Approval",
 		description:
 			"Default approval behavior for tool calls. 'Always ask' auto-approves read-only tools only. 'Write' auto-approves read and workspace-write tools. 'Yolo' auto-approves all tiers; user policy may still prompt or block.",
@@ -327,7 +327,7 @@ export const cfgToolsApprovalMode = register({
 			},
 			{
 				value: "write",
-				label: "Write",
+				label: "写入",
 				description:
 					"Auto-approve read-only and write tools; require confirmation for exec tools such as bash, eval, browser, and task.",
 			},
@@ -350,8 +350,8 @@ export const cfgTodoEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Todos",
+		group: "可用工具",
+		label: "待办",
 		description: "Enable the todo tool for task tracking",
 	},
 });
@@ -362,7 +362,7 @@ export const cfgTodoReminders = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Todos",
+		group: "待办",
 		label: "Todo Reminders",
 		description: "Remind the agent to complete todos before stopping",
 	},
@@ -374,7 +374,7 @@ export const cfgTodoRemindersMax = register({
 	default: 3,
 	ui: {
 		tab: "tools",
-		group: "Todos",
+		group: "待办",
 		label: "Todo Reminder Limit",
 		description: "Maximum number of todo reminders before giving up",
 		options: [
@@ -393,17 +393,17 @@ export const cfgTodoEager = register({
 	default: "default",
 	ui: {
 		tab: "tools",
-		group: "Todos",
+		group: "待办",
 		label: "Create Todos Automatically",
 		description: "How strongly to push automatic todo-list creation after the first message",
 		options: [
-			{ value: "default", label: "Default", description: "Model decides; no automatic todo list" },
+			{ value: "default", label: "默认", description: "Model decides; no automatic todo list" },
 			{
 				value: "preferred",
-				label: "Preferred",
+				label: "首选",
 				description: "Suggests a todo list on the first message (reminder, not forced)",
 			},
-			{ value: "always", label: "Always", description: "Forces a comprehensive todo list on the first message" },
+			{ value: "always", label: "总是", description: "Forces a comprehensive todo list on the first message" },
 		],
 	},
 });
@@ -414,17 +414,17 @@ export const cfgTasksTodoClearDelay = register({
 	default: 60,
 	ui: {
 		tab: "tools",
-		group: "Todos",
+		group: "待办",
 		label: "Todo Auto-Clear Delay",
 		description: "Delay before completed or abandoned todos are removed from the todo widget",
 		options: [
 			{ value: "0", label: "Instant" },
-			{ value: "60", label: "1 minute", description: "Default" },
-			{ value: "300", label: "5 minutes" },
-			{ value: "900", label: "15 minutes" },
-			{ value: "1800", label: "30 minutes" },
-			{ value: "3600", label: "1 hour" },
-			{ value: "-1", label: "Never" },
+			{ value: "60", label: "1 分钟", description: "默认" },
+			{ value: "300", label: "5 分钟" },
+			{ value: "900", label: "15 分钟" },
+			{ value: "1800", label: "30 分钟" },
+			{ value: "3600", label: "1 小时" },
+			{ value: "-1", label: "从不" },
 		],
 	},
 });
@@ -436,7 +436,7 @@ export const cfgGlobEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Glob",
 		description: "Enable the glob tool for glob-based file lookup",
 	},
@@ -448,7 +448,7 @@ export const cfgGrepEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Grep",
 		description: "Enable the grep tool for regex content search",
 	},
@@ -460,15 +460,15 @@ export const cfgGrepContextBefore = register({
 	default: 1,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Grep Context Before",
 		description: "Lines of context before each grep match",
 		options: [
-			{ value: "0", label: "0 lines" },
-			{ value: "1", label: "1 line" },
-			{ value: "2", label: "2 lines" },
-			{ value: "3", label: "3 lines" },
-			{ value: "5", label: "5 lines" },
+			{ value: "0", label: "0 行" },
+			{ value: "1", label: "1 行" },
+			{ value: "2", label: "2 行" },
+			{ value: "3", label: "3 行" },
+			{ value: "5", label: "5 行" },
 		],
 	},
 });
@@ -479,16 +479,16 @@ export const cfgGrepContextAfter = register({
 	default: 3,
 	ui: {
 		tab: "tools",
-		group: "Grep & Browser",
+		group: "Grep 与浏览器",
 		label: "Grep Context After",
 		description: "Lines of context after each grep match",
 		options: [
-			{ value: "0", label: "0 lines" },
-			{ value: "1", label: "1 line" },
-			{ value: "2", label: "2 lines" },
-			{ value: "3", label: "3 lines" },
-			{ value: "5", label: "5 lines" },
-			{ value: "10", label: "10 lines" },
+			{ value: "0", label: "0 行" },
+			{ value: "1", label: "1 行" },
+			{ value: "2", label: "2 行" },
+			{ value: "3", label: "3 行" },
+			{ value: "5", label: "5 行" },
+			{ value: "10", label: "10 行" },
 		],
 	},
 });
@@ -499,8 +499,8 @@ export const cfgAstGrepEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "AST Grep",
+		group: "可用工具",
+		label: "AST 搜索",
 		description: "Enable the ast_grep tool for structural AST search",
 	},
 });
@@ -511,8 +511,8 @@ export const cfgAstEditEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "AST Edit",
+		group: "可用工具",
+		label: "AST 编辑",
 		description: "Enable the ast_edit tool for structural AST rewrites",
 	},
 });
@@ -524,18 +524,18 @@ export const cfgFindEnabled = register({
 	default: "auto",
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Find (semantic grep)",
 		description:
 			"Enable the find tool: natural-language search for files and line ranges, judged by the judge model role. Auto enables it only when the judge role resolves to a native TypeSafe jev model",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description: "Enable when the judge role resolves to a native TypeSafe jev model",
 			},
 			{ value: "on", label: "On", description: "Always enable, whichever model the judge role resolves to" },
-			{ value: "off", label: "Off", description: "Disable the find tool" },
+			{ value: "off", label: "关闭", description: "Disable the find tool" },
 		],
 	},
 });
@@ -548,8 +548,8 @@ export const cfgDebugEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Debug",
+		group: "可用工具",
+		label: "调试",
 		description: "Enable the debug tool for DAP-based debugging",
 	},
 });
@@ -560,8 +560,8 @@ export const cfgLaunchEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Services",
+		group: "可用工具",
+		label: "服务",
 		description: "Enable named bash services and proc:// supervision for shared long-running project processes",
 	},
 });
@@ -572,7 +572,7 @@ export const cfgSpeechgenEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Speech Generation",
 		description: "Enable the tts tool for on-device (Kokoro) or xAI Grok Voice speech-file synthesis",
 	},
@@ -584,7 +584,7 @@ export const cfgGenerateImageEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Generate Image",
 		description:
 			"Enable the generate_image tool (text-to-image generation and editing). Exposed as an xd:// device when tools.xdev is on.",
@@ -597,8 +597,8 @@ export const cfgComputerEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Computer",
+		group: "可用工具",
+		label: "计算机",
 		description: "Enable the scriptable host-desktop eval prelude (screenshots, input, accessibility)",
 	},
 });
@@ -609,7 +609,7 @@ export const cfgRatchetEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Ratchet",
 		description: "Enable the ratchet eval/hillclimb prelude; /ratchet turns it on for the current session",
 	},
@@ -621,7 +621,7 @@ export const cfgArchiveEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Archive",
 		description:
 			"Enable the read-only archive eval prelude: prompt history, recent projects, past sessions and recaps",
@@ -634,7 +634,7 @@ export const cfgComputerDisplay = register({
 	default: "active",
 	ui: {
 		tab: "tools",
-		group: "Computer",
+		group: "计算机",
 		label: "Computer Display",
 		description: "Active window's display (active), all displays (all), or a native display id",
 	},
@@ -646,7 +646,7 @@ export const cfgComputerMaxWidth = register({
 	default: 3840,
 	ui: {
 		tab: "tools",
-		group: "Computer",
+		group: "计算机",
 		label: "Computer Screenshot Width",
 		description: "Maximum screenshot width in pixels",
 	},
@@ -658,7 +658,7 @@ export const cfgComputerMaxHeight = register({
 	default: 2400,
 	ui: {
 		tab: "tools",
-		group: "Computer",
+		group: "计算机",
 		label: "Computer Screenshot Height",
 		description: "Maximum screenshot height in pixels",
 	},
@@ -671,7 +671,7 @@ export const cfgComputerBackgroundFallback = register({
 	default: "takeover",
 	ui: {
 		tab: "tools",
-		group: "Computer",
+		group: "计算机",
 		label: "Computer Background Fallback",
 		description:
 			"What window input does when its background route is unavailable: rerun it in takeover and return focus to your app (macOS; elsewhere plain takeover), or refuse, which also keeps the agent from taking the foreground or opening macOS menus itself",
@@ -698,16 +698,16 @@ export const cfgImagesQuestionTimeoutMs = register({
 	default: 300_000,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Image Question Timeout",
 		description:
 			"Per-request timeout for the vision-model call behind read's ?q= image questions, in milliseconds. A stalled provider fails fast with a timeout error instead of blocking until manual abort. Set to 0 to disable the timeout.",
 		options: [
-			{ value: "0", label: "Disabled" },
-			{ value: "60000", label: "1 minute" },
-			{ value: "120000", label: "2 minutes" },
-			{ value: "180000", label: "3 minutes" },
-			{ value: "300000", label: "5 minutes" },
+			{ value: "0", label: "已禁用" },
+			{ value: "60000", label: "1 分钟" },
+			{ value: "120000", label: "2 分钟" },
+			{ value: "180000", label: "3 分钟" },
+			{ value: "300000", label: "5 分钟" },
 		],
 	},
 });
@@ -718,7 +718,7 @@ export const cfgCheckpointEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Checkpoint/Rewind",
 		description: "Enable the checkpoint and rewind tools for context checkpointing",
 	},
@@ -731,7 +731,7 @@ export const cfgFetchEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Read URLs",
 		description: "Allow the read tool to fetch and process URLs",
 	},
@@ -743,7 +743,7 @@ export const cfgVaultEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Obsidian Vault",
 		description:
 			"Enable the vault:// internal URL for reading and editing Obsidian vault content via the Obsidian CLI. When disabled, vault:// resolution is refused and the vault:// entry is omitted from the system prompt.",
@@ -756,7 +756,7 @@ export const cfgGithubEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "GitHub CLI",
 		description:
 			"Enable the github tool (op-based dispatch for repository, issue, pull request, diff, search, checkout, push, and Actions watch workflows)",
@@ -806,8 +806,8 @@ export const cfgWebSearchEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Web Search",
+		group: "可用工具",
+		label: "网络搜索",
 		description: "Enable the web_search tool for live web results",
 	},
 });
@@ -818,7 +818,7 @@ export const cfgSecurityEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
+		group: "可用工具",
 		label: "Security",
 		description:
 			"Enable OMP-native security scan planning, execution, and the read-only security:// resource namespace",
@@ -831,8 +831,8 @@ export const cfgAskEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Available Tools",
-		label: "Ask",
+		group: "可用工具",
+		label: "询问",
 		description: "Enable the ask tool for interactive user questions",
 	},
 });
@@ -845,7 +845,7 @@ export const cfgToolsIntentTracing = register({
 	env: "PI_INTENT_TRACING",
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Intent Tracing",
 		description: "Ask the agent to describe the intent of each tool call before executing it",
 	},
@@ -857,7 +857,7 @@ export const cfgToolsAbortOnFabricatedResult = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Abort On Fabricated Tool Result",
 		description:
 			"With in-band tool calls, stop the model immediately when it starts hallucinating a tool result mid-turn. Disable to let the model finish generating and discard the fabricated continuation instead.",
@@ -870,7 +870,7 @@ export const cfgToolsSpeculativeExecutionEnabled = register({
 	default: false,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Experimental Speculative Execution",
 		description:
 			"Enable the discard-safe first slice: validated local reads through direct read calls and nested eval. Network requests, provider completions, and live filesystem writes are not part of this baseline.",
@@ -883,7 +883,7 @@ export const cfgToolsSpeculativeExecutionMaxInFlight = register({
 	default: 2,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Speculative Execution Concurrency",
 		description: "Maximum number of validated local reads allowed to run before normal dispatch.",
 		options: [
@@ -901,16 +901,16 @@ export const cfgToolsMaxTimeout = register({
 	default: 0,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Max Tool Timeout",
 		description: "Maximum timeout in seconds the agent can set for any tool (0 = no limit)",
 		options: [
 			{ value: "0", label: "No limit" },
-			{ value: "30", label: "30 seconds" },
-			{ value: "60", label: "60 seconds" },
-			{ value: "120", label: "120 seconds" },
-			{ value: "300", label: "5 minutes" },
-			{ value: "600", label: "10 minutes" },
+			{ value: "30", label: "30 秒" },
+			{ value: "60", label: "60 秒" },
+			{ value: "120", label: "120 秒" },
+			{ value: "300", label: "5 分钟" },
+			{ value: "600", label: "10 分钟" },
 		],
 	},
 });
@@ -924,7 +924,7 @@ export const cfgAsyncEnabled = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Execution",
+		group: "执行",
 		label: "Async Execution",
 		description: "Enable async bash commands and background task execution",
 	},
@@ -943,7 +943,7 @@ export const cfgToolsXdev = register({
 	default: true,
 	ui: {
 		tab: "tools",
-		group: "Discovery & MCP",
+		group: "发现与 MCP",
 		label: "xd:// Tools",
 		description:
 			"Mount rarely-used (discoverable) tools under xd:// device URLs driven via read/write instead of shipping their schemas on every request. Sessions whose explicit tool list grants read but omits write mount devices through a device-only write transport (only local:// scratch stays writable besides devices). Disable to expose every enabled tool top-level.",
@@ -957,7 +957,7 @@ export const cfgToolsXdevDocs = register({
 	default: "catalog",
 	ui: {
 		tab: "tools",
-		group: "Discovery & MCP",
+		group: "发现与 MCP",
 		label: "xd:// Prompt Docs",
 		description:
 			"Choose which mounted-device docs and schemas are inlined in the system prompt. Built-ins keeps core tools inline while MCP and extension tools stay on-demand.",
@@ -979,7 +979,7 @@ export const cfgToolsXdevInlineDevices = register({
 	default: EMPTY_STRING_ARRAY,
 	ui: {
 		tab: "tools",
-		group: "Discovery & MCP",
+		group: "发现与 MCP",
 		label: "xd:// Inline Devices",
 		description:
 			"When xd:// Prompt Docs is Built-ins Only, inline dynamic devices whose names match these glob patterns (for example mcp__context_mode_*). Catalog Only ignores this setting.",
@@ -993,7 +993,7 @@ export const cfgDevAutoqa = register({
 	env: "PI_AUTO_QA",
 	ui: {
 		tab: "tools",
-		group: "Developer",
+		group: "开发者",
 		label: "Auto QA",
 		description:
 			"Automated tool issue reporting (xd://report_issue). On by default; the first report asks for consent, and denying it disables reporting until re-enabled explicitly",
@@ -1006,7 +1006,7 @@ export const cfgDevAutoqaPushEndpoint = register({
 	default: "https://qa.omp.sh/v1/grievances" as const,
 	ui: {
 		tab: "tools",
-		group: "Developer",
+		group: "开发者",
 		label: "Auto QA Push Endpoint",
 		description: "Full URL receiving Auto QA JSON reports (default https://qa.omp.sh/v1/grievances)",
 	},

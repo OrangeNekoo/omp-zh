@@ -6726,10 +6726,10 @@ export class InteractiveMode implements InteractiveModeContext {
 		const keepContextLabel = this.#formatKeepContextLabel(contextUsage);
 		const keepContextDisabled = this.#isKeepContextDisabled(contextUsage);
 		const reviewOptions: PlanReviewOption[] = [
-			{ id: "execute", label: "Approve and execute", disabled: false },
-			{ id: "compact", label: "Approve and compact context", disabled: false },
+			{ id: "execute", label: "批准并执行", disabled: false },
+			{ id: "compact", label: "批准并压缩上下文", disabled: false },
 			{ id: "keep", label: keepContextLabel, disabled: keepContextDisabled },
-			{ id: "refine", label: "Refine plan", disabled: false },
+			{ id: "refine", label: "完善计划", disabled: false },
 			{ id: "save", label: PLAN_SAVE_AND_QUIT_OPTION, disabled: false },
 		];
 

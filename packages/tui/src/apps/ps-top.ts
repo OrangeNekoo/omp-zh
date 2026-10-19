@@ -413,7 +413,7 @@ export class PsTopComponent implements Component {
 				node("icon", {
 					name: "back",
 					role: "omp.app.ibtn",
-					title: "Back  esc",
+					title: "返回  esc",
 					aria: "Back",
 					actions: { click: "back" },
 				}),
@@ -443,7 +443,7 @@ export class PsTopComponent implements Component {
 										? "Target"
 										: "This project",
 							},
-							{ id: "all", label: "All scopes" },
+							{ id: "all", label: "所有范围" },
 						],
 						active: this.#all ? "all" : "current",
 						role: "omp.app.seg",
@@ -468,7 +468,7 @@ export class PsTopComponent implements Component {
 						align: "center",
 						role: "omp.app.fresh",
 					}),
-			node("icon", { name: "x", role: "omp.app.ibtn", title: "Quit  q", aria: "Quit", actions: { click: "quit" } }),
+			node("icon", { name: "x", role: "omp.app.ibtn", title: "退出  q", aria: "Quit", actions: { click: "quit" } }),
 		);
 		return keyed(
 			row(
@@ -502,8 +502,8 @@ export class PsTopComponent implements Component {
 							],
 							{ truncate: "end", grow: 1 },
 						),
-						actionButton("Cancel", "kill-cancel"),
-						actionButton("Kill", "kill-confirm", { tone: "error" }),
+						actionButton("取消", "kill-cancel"),
+						actionButton("终止", "kill-confirm", { tone: "error" }),
 					],
 					{ gap: "sm", align: "center", role: "omp.app.confirm", tone: "error" },
 				),
@@ -512,19 +512,19 @@ export class PsTopComponent implements Component {
 		}
 		if (this.#view !== "table") {
 			return actionBar([
-				actionButton("Back", "back", { keys: "escape", tone: "accent" }),
-				...(this.#view === "info" ? [actionButton("Logs", "logs")] : []),
+				actionButton("返回", "back", { keys: "escape", tone: "accent" }),
+				...(this.#view === "info" ? [actionButton("日志", "logs")] : []),
 			]);
 		}
-		if (!entry) return actionBar([null, actionButton("Quit", "quit", { keys: "q" })]);
+		if (!entry) return actionBar([null, actionButton("退出", "quit", { keys: "q" })]);
 		return actionBar([
-			actionButton("Info", "info", { keys: "enter", tone: "accent" }),
-			actionButton("Logs", "logs", { keys: "l" }),
-			actionButton("Restart", "restart", { keys: "r" }),
-			actionButton("Stop", "stop", { keys: "s" }),
-			actionButton("Kill", "kill", { keys: "x", tone: "error", title: "Kill the process (asks first)" }),
+			actionButton("信息", "info", { keys: "enter", tone: "accent" }),
+			actionButton("日志", "logs", { keys: "l" }),
+			actionButton("重启", "restart", { keys: "r" }),
+			actionButton("停止", "stop", { keys: "s" }),
+			actionButton("终止", "kill", { keys: "x", tone: "error", title: "终止进程（会先询问）" }),
 			null,
-			actionButton("Quit", "quit", { keys: "q" }),
+			actionButton("退出", "quit", { keys: "q" }),
 		]);
 	}
 
@@ -574,7 +574,7 @@ export class PsTopComponent implements Component {
 		const info = this.#info;
 		if (!info) {
 			return keyed(
-				row([node("spinner", { style: "dots" }), text([span("Loading…", "muted")])], { gap: "sm" }),
+				row([node("spinner", { style: "dots" }), text([span("加载中…", "muted")])], { gap: "sm" }),
 				"info",
 			);
 		}
@@ -593,7 +593,7 @@ export class PsTopComponent implements Component {
 		const body: NativeNode[] = [];
 		if (!TERMINAL_STATES[daemon.state]) {
 			body.push(
-				row([text([span("Up for", "muted")]), elapsed(Date.now() - daemon.startedAt)], {
+				row([text([span("可用于", "muted")]), elapsed(Date.now() - daemon.startedAt)], {
 					gap: "xs",
 					role: "omp.app.fresh",
 				}),
@@ -783,9 +783,7 @@ function scopeSpans(scope: PsScope): TspSpan[] {
 			: [span("project "), span(scope.projectDir ?? path.basename(scope.runtimeDir), "strong path")];
 	spans.push(span(" — ", "dim"));
 	spans.push(
-		scope.brokerPid !== undefined
-			? span(`broker pid ${scope.brokerPid}`, "success")
-			: span("broker not running", "dim"),
+		scope.brokerPid !== undefined ? span(`broker pid ${scope.brokerPid}`, "success") : span("代理未运行", "dim"),
 	);
 	return spans;
 }

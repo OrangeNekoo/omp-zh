@@ -136,7 +136,7 @@ function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 				...(mode === "rows-sections"
 					? [{ keys: ["tab"], label: "jump sections" } satisfies NativeHint, switchTabs]
 					: [{ keys: ["tab"], label: "switch tabs" } satisfies NativeHint]),
-				{ keys: [], label: "type to search" },
+				{ keys: [], label: "输入以搜索" },
 				close,
 			];
 			break;
@@ -448,11 +448,11 @@ class ProviderLimitsSubmenu extends Container {
 		const clearItem: SelectItem[] =
 			Object.keys(limits).length === 0
 				? []
-				: [{ value: "__clear_all", label: "Clear all limits", description: "Make every provider unlimited" }];
+				: [{ value: "__clear_all", label: "清除所有限制", description: "让所有服务商无限制" }];
 		const items = [...providerItems, ...clearItem];
 		this.#listField = new SelectFormField({
 			theme: formTheme,
-			label: "Max In-Flight Requests",
+			label: "最大并发请求数",
 			description:
 				"Select a provider, enter a positive number to cap concurrent LLM requests, or clear it for unlimited.",
 			items,
@@ -823,7 +823,7 @@ export class SettingsSelectorComponent implements Component {
 			const changed = this.#changedCount(id);
 			return { id, label: TAB_METADATA[id].label, icon: id, changed: changed > 0 ? changed : undefined };
 		});
-		pages.push({ id: PLUGINS_PAGE, label: "Installed", icon: "plugins", group: "Plugins" });
+		pages.push({ id: PLUGINS_PAGE, label: "已安装", icon: "plugins", group: "插件" });
 
 		let sections: TspPrefsProps["sections"] = [];
 		let focus: string | null = null;
@@ -955,7 +955,7 @@ export class SettingsSelectorComponent implements Component {
 					mono: !def.secret && MONO_TEXT_SETTING.test(def.path) ? true : undefined,
 				};
 			case "providerLimits":
-				return { k: "action", label: "Edit…", act: "edit" };
+				return { k: "action", label: "编辑…", act: "edit" };
 			case "multiselect":
 				return {
 					k: "multi",
@@ -1177,7 +1177,7 @@ export class SettingsSelectorComponent implements Component {
 						"col",
 						{ gap: "xs" },
 						[
-							text([span("Preview:", "muted")]),
+							text([span("预览：", "muted")]),
 							this.#callbacks.describeStatusLinePreview?.() ??
 								text(styledSpans(source), { wrap: "none", truncate: "end" }),
 						],

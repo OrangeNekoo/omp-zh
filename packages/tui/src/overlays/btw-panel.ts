@@ -171,11 +171,11 @@ export class BtwPanelComponent extends OverlayPanel {
 			case "complete": {
 				const hints: NativeHint[] = [];
 				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "to copy again" : "to copy" });
-				if (canFollowUp) hints.push({ keys: ["f"], label: "to follow up" });
+				if (canFollowUp) hints.push({ keys: ["f"], label: "以跟进" });
 				if (canBranch) hints.push({ keys: ["b"], label: "to branch" });
 				hints.push(esc);
 				if (!this.#copied) return hintsRow(hints);
-				return statusHintsRow([span("✓ Copied to clipboard", "success")], hints);
+				return statusHintsRow([span("✓ 已复制到剪贴板", "success")], hints);
 			}
 			case "branching":
 				return text([span(`${theme.status.pending} Branching to chat…`, "muted")]);

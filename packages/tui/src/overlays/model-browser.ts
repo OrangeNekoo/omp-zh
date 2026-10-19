@@ -2083,7 +2083,7 @@ export class ModelBrowser implements Component {
 			pushRows(visible);
 		} else {
 			if (recent.length > 0) {
-				order.push({ group: "recent", label: "Recent", count: recent.length });
+				order.push({ group: "recent", label: "最近", count: recent.length });
 				pushRows(recent);
 			}
 			if (grouping.providers) this.#pushProviderGroups(order, rest, pushRows);
@@ -2204,7 +2204,7 @@ export class ModelBrowser implements Component {
 
 		const children: NativeChild[] = [
 			text(model.name, { role: "omp.picker.title" }),
-			text([span(selector, "mono")], { actions: { click: "copy" }, title: "Copy model id", truncate: "middle" }),
+			text([span(selector, "mono")], { actions: { click: "copy" }, title: "复制模型 ID", truncate: "middle" }),
 		];
 		const badges: NativeChild[] = [];
 		if (item.selector === current) badges.push(node("badge", { text: "current", tone: "success" }));
@@ -2237,7 +2237,7 @@ export class ModelBrowser implements Component {
 					? "off"
 					: `${compaction.tokens.toLocaleString("en-US")}${compaction.basis !== undefined ? ` · ${compaction.basis}` : ""}`;
 			facts.push({
-				k: [span("Compacts at", "muted")],
+				k: [span("压缩于", "muted")],
 				v: [span(value, "mono"), span(` · ${compaction.source}`, "dim")],
 			});
 		}

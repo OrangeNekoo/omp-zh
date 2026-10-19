@@ -306,7 +306,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				"list",
 				{
 					selected: this.#menu.selectedKey ?? null,
-					empty: [span("No provider accounts with saved resets", "muted")],
+					empty: [span("没有保存了重置额度的服务商账户", "muted")],
 					max: { lines: RESET_SELECTOR_MAX_VISIBLE },
 				},
 				this.#nativeItems,
@@ -316,7 +316,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				? text([span(oneLine(this.#confirmationMessage(pending)), "warning")])
 				: (this.#nativeHints ??= hintsRow([
 						actionHint(["tui.select.up", "tui.select.down"], "select"),
-						{ keys: ["enter"], label: "spend a reset" },
+						{ keys: ["enter"], label: "消耗一次重置" },
 						actionHint("tui.select.cancel", "cancel"),
 					])),
 		];
@@ -341,12 +341,12 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 		let subtitle: TspPickerProps["subtitle"] = "Spend a saved reset to refresh an account's rate limit now";
 		if (pending) {
 			const { subject, notes } = this.#confirmationNotes(pending);
-			confirm = { text: `Spend ${subject} on ${oneLine(pending.label)}?`, act: "confirm", label: "Spend" };
+			confirm = { text: `Spend ${subject} on ${oneLine(pending.label)}?`, act: "confirm", label: "花费" };
 			if (notes.length > 0) subtitle = oneLine(notes.join(" "));
 		}
 		if (this.#statusMessage) subtitle = [span(oneLine(this.#statusMessage), "warning")];
 		this.#pickerRoot = dockedPicker({
-			title: "Rate-limit resets",
+			title: "速率限制重置",
 			subtitle,
 			icon: "refresh",
 			noun: "accounts",

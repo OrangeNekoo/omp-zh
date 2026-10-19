@@ -549,10 +549,10 @@ const modeSegment: StatusLineSegment = {
 		const plan = ctx.planMode;
 		if (plan && (plan.enabled || plan.paused)) {
 			return plan.paused
-				? segView([span("Plan (paused)", "warning")], "plan", "warning")
-				: segView([span("Plan", accentToken(ctx, "accent"))], "plan");
+				? segView([span("计划（已暂停）", "warning")], "plan", "warning")
+				: segView([span("计划", accentToken(ctx, "accent"))], "plan");
 		}
-		if (ctx.prewalk?.enabled) return segView([span("Prewalk", accentToken(ctx, "accent"))], "prewalk");
+		if (ctx.prewalk?.enabled) return segView([span("预走", accentToken(ctx, "accent"))], "prewalk");
 		const goal = ctx.goalMode;
 		if (goal && (goal.enabled || goal.paused)) return describeGoalMode(ctx, goal);
 		if (ctx.vibeMode?.enabled) return segView([span("Vibe", accentToken(ctx, "accent"))], "agents");

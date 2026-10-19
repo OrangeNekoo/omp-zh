@@ -638,7 +638,7 @@ export function renderCall(args: TaskParams, options: TaskRenderOptions, theme: 
 	const header = renderStatusLine(
 		{
 			iconOverride: theme.styledSymbol("tool.task", "accent"),
-			title: "Task",
+			title: "任务",
 			description: formatAgentHeaderLabel(args),
 		},
 		theme,
@@ -1356,11 +1356,11 @@ export function renderResult(
 		const text = result.content.find(c => c.type === "text")?.text || "";
 		const errored = result.isError === true;
 		const header = errored
-			? renderStatusLine({ icon: "error", title: "Task", description: agentLabel }, theme)
+			? renderStatusLine({ icon: "error", title: "任务", description: agentLabel }, theme)
 			: renderStatusLine(
 					{
 						iconOverride: theme.styledSymbol("status.done", "accent"),
-						title: "Task",
+						title: "任务",
 						description: agentLabel,
 					},
 					theme,
@@ -1419,7 +1419,7 @@ export function renderResult(
 					: icon === "success"
 						? theme.styledSymbol("status.done", "accent")
 						: undefined,
-			title: "Task",
+			title: "任务",
 			meta: metaLabel ? [metaLabel] : undefined,
 		},
 		theme,
@@ -2049,7 +2049,7 @@ function describeTaskCall(args: TaskParams | undefined): NativeToolView {
 	}
 	const target = agents.length > 1 ? agentCountLabel(agents.length) : formatAgentHeaderLabel(args);
 	return {
-		tool: { title: "Task", target, targetKind: target ? "text" : undefined },
+		tool: { title: "任务", target, targetKind: target ? "text" : undefined },
 		body: compact([describeContext(args?.context), ...agents]),
 	};
 }
@@ -2066,13 +2066,13 @@ function describeTaskResult(
 		const fallback = resultText(result).trim();
 		if (result.isError) {
 			return {
-				tool: { title: "Task", target: agentLabel, targetKind: "text" },
+				tool: { title: "任务", target: agentLabel, targetKind: "text" },
 				tone: "error",
 				body: compact([context, errorText(fallback || "Task failed")]),
 			};
 		}
 		return {
-			tool: { title: "Task", target: agentLabel, targetKind: agentLabel ? "text" : undefined },
+			tool: { title: "任务", target: agentLabel, targetKind: agentLabel ? "text" : undefined },
 			body: compact([context, fallback ? noteText(fallback, "dim") : undefined]),
 		};
 	}
@@ -2125,7 +2125,7 @@ function describeTaskResult(
 	const target = count > 0 ? agentCountLabel(count) : agentLabel;
 	return {
 		tool: {
-			title: "Task",
+			title: "任务",
 			target,
 			targetKind: target ? "text" : undefined,
 			meta: summary.length > 0 ? [summary.join(" · ")] : undefined,

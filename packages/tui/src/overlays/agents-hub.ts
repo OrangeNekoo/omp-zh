@@ -75,9 +75,9 @@ export interface HubAgent {
 }
 
 const SOURCE_LABEL: Record<AgentSource, string> = {
-	project: "Project",
-	user: "User",
-	bundled: "Bundled",
+	project: "项目",
+	user: "用户",
+	bundled: "内置",
 };
 const SOURCE_ORDER: Record<AgentSource, number> = { project: 0, user: 1, bundled: 2 };
 const SOURCES = ["project", "user", "bundled"] as const satisfies readonly AgentSource[];
@@ -343,7 +343,7 @@ export class AgentsHubComponent implements Component {
 		const counts: Record<AgentSource, number> = { project: 0, user: 0, bundled: 0 };
 		for (const agent of this.#allAgents) counts[agent.source]++;
 		const entries: SidebarEntry[] = [
-			{ id: "all", kind: "all", label: "All agents", annotation: String(this.#allAgents.length) },
+			{ id: "all", kind: "all", label: "所有代理", annotation: String(this.#allAgents.length) },
 		];
 		const sources = (["project", "user", "bundled"] as const).filter(source => counts[source] > 0);
 		if (sources.length > 0) {
@@ -359,7 +359,7 @@ export class AgentsHubComponent implements Component {
 			}
 		}
 		entries.push({ id: "sep:actions", kind: "separator", label: "" });
-		entries.push({ id: "new", kind: "new", label: "New agent" });
+		entries.push({ id: "new", kind: "new", label: "新建代理" });
 		this.#entries = entries;
 		if (!entries.some(entry => entry.id === this.#activeEntryId)) this.#activeEntryId = "all";
 	}
@@ -505,7 +505,7 @@ export class AgentsHubComponent implements Component {
 			active ? theme.fg("accent", `${theme.status.enabled} ${label}`) : theme.fg(color, label);
 		if (property === "model") {
 			chips.push({
-				label: "pick model…",
+				label: "选择模型…",
 				styled: theme.fg("accent", "pick model…"),
 				action: { kind: "pick", property },
 			});
@@ -538,7 +538,7 @@ export class AgentsHubComponent implements Component {
 				action: { kind: "set", property, value: "off" },
 			});
 			chips.push({
-				label: "pick model…",
+				label: "选择模型…",
 				styled: theme.fg("accent", "pick model…"),
 				action: { kind: "pick", property },
 			});
@@ -1412,7 +1412,7 @@ export class AgentsHubComponent implements Component {
 		const counts: Record<AgentSource, number> = { project: 0, user: 0, bundled: 0 };
 		for (const agent of this.#allAgents) counts[agent.source]++;
 		const scopes: TspPickerScope[] = [
-			{ id: "all", label: "All agents", icon: "users", count: this.#allAgents.length },
+			{ id: "all", label: "所有代理", icon: "users", count: this.#allAgents.length },
 			...SOURCES.map((source): TspPickerScope => ({
 				id: `source:${source}`,
 				label: SOURCE_LABEL[source],
@@ -1437,21 +1437,21 @@ export class AgentsHubComponent implements Component {
 				{ id: "configure", label: agent ? "Configure" : "Create", keys: ["enter"], primary: true },
 				{
 					id: "toggle",
-					label: "Toggle",
+					label: "切换",
 					keys: ["space"],
 					on: agent ? !agent.disabled : undefined,
 					disabled: noAgent,
 				},
-				{ id: "model", label: "Model", disabled: noAgent },
-				{ id: "new", label: "New agent" },
-				{ id: "reload", label: "Reload", keys: ["ctrl", "r"] },
+				{ id: "model", label: "模型", disabled: noAgent },
+				{ id: "new", label: "新建代理" },
+				{ id: "reload", label: "重新加载", keys: ["ctrl", "r"] },
 				CLOSE_ACTION,
 			];
 		}
 		const selectedRow = this.#rows[this.#rowIndex];
 		return picker(
 			{
-				title: "Agents",
+				title: "代理",
 				subtitle: this.#notice ?? undefined,
 				icon: "users",
 				noun: "agents",
@@ -1488,7 +1488,7 @@ export class AgentsHubComponent implements Component {
 
 	#pickerItem(rowDef: ListRow): TspPickerItem {
 		if (rowDef.kind === "new") {
-			return { id: listRowId(rowDef), label: "New agent…", icon: "plus", tone: "muted" };
+			return { id: listRowId(rowDef), label: "新建代理…", icon: "plus", tone: "muted" };
 		}
 		const agent = rowDef.agent;
 		const prewalk = this.#deps.effectivePrewalkPattern(agent);
@@ -1528,7 +1528,7 @@ export class AgentsHubComponent implements Component {
 		if (!rowDef) return [];
 		if (rowDef.kind === "new") {
 			return [
-				text("New agent", { role: "omp.picker.title" }),
+				text("新建代理", { role: "omp.picker.title" }),
 				md(
 					"Describe what the agent should do; the architect drafts its name, when to use it and its system prompt.",
 				),
@@ -1545,7 +1545,7 @@ export class AgentsHubComponent implements Component {
 			{ k: "Model", v: model },
 			{ k: "Prewalk", v: [prewalk ? span(prewalk, "mono") : span("off", "dim")] },
 			{ k: "Advisor", v: [advisor ? span(advisor, "mono") : span("off", "dim")] },
-			{ k: "Status", v: [agent.disabled ? span("Disabled", "warning") : span("Enabled", "success")] },
+			{ k: "Status", v: [agent.disabled ? span("已禁用", "warning") : span("已启用", "success")] },
 			{ k: "Source", v: SOURCE_LABEL[agent.source] },
 		];
 		if (agent.filePath) {
@@ -1593,7 +1593,7 @@ export class AgentsHubComponent implements Component {
 			const what = property === "model" ? "model override" : `${property} model`;
 			return [span(`Picking ${what} for `, "accent"), span(agent.name, "accent strong")];
 		}
-		if (this.#createActive) return [span("New agent — describe it and let the architect draft it", "accent")];
+		if (this.#createActive) return [span("新建代理 — 描述它并让架构师起草", "accent")];
 		if (this.#notice) return [span(this.#notice, "success")];
 		const entry = this.#activeEntry();
 		const scopeLabel = entry.kind === "source" ? `${entry.label} agents` : "All agents";
@@ -1607,7 +1607,7 @@ export class AgentsHubComponent implements Component {
 			{
 				spans: [
 					span("search: ", "muted"),
-					this.#search.getValue() ? span(this.#search.getValue(), "accent") : span("type to filter", "dim"),
+					this.#search.getValue() ? span(this.#search.getValue(), "accent") : span("输入以筛选", "dim"),
 				],
 				truncate: "end",
 			},
@@ -1616,7 +1616,7 @@ export class AgentsHubComponent implements Component {
 		);
 		const items = this.#rows.map(rowDef =>
 			rowDef.kind === "new"
-				? node("item", { label: [span("+ New agent…", "dim")] }, undefined, listRowId(rowDef))
+				? node("item", { label: [span("+ 新建代理…", "dim")] }, undefined, listRowId(rowDef))
 				: this.#describeAgentItem(rowDef.agent),
 		);
 		const selectedRow = this.#rows[this.#rowIndex];
@@ -1667,11 +1667,11 @@ export class AgentsHubComponent implements Component {
 	#describeDetail(): NativeNode {
 		const agent = this.#selectedAgent();
 		if (!agent) {
-			return node("section", {}, [text([span("Select an agent to inspect", "dim")])], "detail");
+			return node("section", {}, [text([span("选择一个代理进行检查", "dim")])], "detail");
 		}
 		const patterns = this.#deps.effectiveModelPatterns(agent);
 		const resolved = this.#deps.resolvePatterns(patterns);
-		const model: TspSpan[] = [patterns.length > 0 ? span(patterns.join(",")) : span("(session model)", "dim")];
+		const model: TspSpan[] = [patterns.length > 0 ? span(patterns.join(",")) : span("（会话模型）", "dim")];
 		if (resolved) model.push(span(" → ", "dim"), span(resolved, "success"));
 		const prewalk = this.#deps.effectivePrewalkPattern(agent);
 		const advisor = this.#deps.effectiveAdvisorPattern(agent);
@@ -1695,18 +1695,18 @@ export class AgentsHubComponent implements Component {
 		const spec = this.#createSpec;
 		if (spec) {
 			nodes.push(
-				text([span("Review generated agent", "accent strong")]),
+				text([span("审查生成的代理", "accent strong")]),
 				node("kv", {
 					items: [
-						{ k: [span("Identifier", "muted")], v: [span(spec.identifier, "code")] },
-						{ k: [span("Scope", "muted")], v: [span(this.#createScope, "accent")] },
+						{ k: [span("标识符", "muted")], v: [span(spec.identifier, "code")] },
+						{ k: [span("范围", "muted")], v: [span(this.#createScope, "accent")] },
 					],
 				}),
 				node("section", { head: [span("whenToUse", "muted")] }, [text(spec.whenToUse, { wrap: "word", lines: 6 })]),
 				node(
 					"card",
 					{
-						head: [span("System prompt", "muted")],
+						head: [span("系统提示词", "muted")],
 						collapsible: true,
 						collapsed: this.#promptCollapsed,
 						preview: { lines: 8 },
@@ -1717,7 +1717,7 @@ export class AgentsHubComponent implements Component {
 			);
 		} else {
 			nodes.push(
-				text([span("Create new agent", "accent strong")]),
+				text([span("新建代理", "accent strong")]),
 				text([span("Describe what the agent should do; scope: ", "muted"), span(this.#createScope, "accent")], {
 					wrap: "word",
 				}),
@@ -1726,7 +1726,7 @@ export class AgentsHubComponent implements Component {
 				nodes.push(this.#createInput);
 			}
 			if (this.#createGenerating) {
-				nodes.push(node("spinner", { label: "Generating…" }, undefined, "generating"));
+				nodes.push(node("spinner", { label: "生成中…" }, undefined, "generating"));
 				if (this.#createStreamingText) {
 					nodes.push(
 						node("code", { text: this.#createStreamingText, lang: "json", wrap: true }, undefined, "stream"),
@@ -1821,7 +1821,7 @@ export class AgentsHubComponent implements Component {
 			return [
 				{ keys: ["enter"], label: "pick" },
 				upDown("models"),
-				{ keys: [], label: "type to search" },
+				{ keys: [], label: "输入以搜索" },
 				cancel("cancel"),
 			];
 		}
@@ -1849,7 +1849,7 @@ export class AgentsHubComponent implements Component {
 			{ keys: ["enter"], label: "configure" },
 			{ keys: ["space"], label: "enable/disable" },
 			upDown("rows"),
-			{ keys: [], label: "type to search" },
+			{ keys: [], label: "输入以搜索" },
 			{ keys: ["ctrl+r"], label: "reload" },
 			cancel("close"),
 		];
