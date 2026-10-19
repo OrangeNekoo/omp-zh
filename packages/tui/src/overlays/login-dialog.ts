@@ -469,7 +469,7 @@ export class LoginDialogComponent extends OverlayPanel {
 				title: `Open ${urlPlace(url)} in your browser`,
 				...(primary ? { tone: "accent" as const } : {}),
 			},
-			[text("Open sign-in page"), node("icon", { name: "open" }, undefined, "icon")],
+			[text("打开登录页面"), node("icon", { name: "open" }, undefined, "icon")],
 			"openLink",
 		);
 	}

@@ -12,7 +12,7 @@ export const cfgBrowserEnabled = register({
 		tab: "tools",
 		group: "可用工具",
 		label: "浏览器",
-		description: "Enable the browser eval prelude for scripted Chromium automation (Puppeteer)",
+		description: "启用浏览器 eval 前奏以进行脚本化 Chromium 自动化（Puppeteer）",
 	},
 });
 
@@ -25,7 +25,7 @@ export const cfgBrowserCdpUrl = register({
 		group: "Grep 与浏览器",
 		label: "浏览器 CDP 地址",
 		description:
-			"Default HTTP CDP discovery endpoint (for example http://127.0.0.1:9222) to attach to instead of launching a browser. Explicit app.cdp_url or app.path on the tool call take precedence.",
+			"默认附加的 HTTP CDP 发现端点（例如 http://127.0.0.1:9222），替代启动新浏览器。工具调用中显式的 app.cdp_url 或 app.path 优先。",
 	},
 });
 
@@ -38,7 +38,7 @@ export const cfgBrowserRelay = register({
 		group: "Grep 与浏览器",
 		label: "浏览器中继",
 		description:
-			"Drive your own Chrome tabs through the omp browser relay. Install the extension once (`omp browser-relay install`); the relay server auto-starts when the browser prelude needs it. Takes precedence over Browser CDP URL; set PI_BROWSER_RELAY=0 or PI_BROWSER_RELAY=1 to override.",
+			"通过 omp 浏览器中继驱动你自己的 Chrome 标签页。先安装一次扩展（`omp browser-relay install`）；浏览器前奏需要时中继服务器会自动启动。此项优先于 Browser CDP URL；可用 PI_BROWSER_RELAY=0 或 PI_BROWSER_RELAY=1 覆盖。",
 	},
 });
 
@@ -50,7 +50,7 @@ export const cfgBrowserRelayUrl = register({
 		tab: "tools",
 		group: "Grep 与浏览器",
 		label: "浏览器中继地址",
-		description: "omp browser relay endpoint (default http://127.0.0.1:9224).",
+		description: "omp 浏览器中继端点（默认 http://127.0.0.1:9224）。",
 	},
 });
 
@@ -62,7 +62,7 @@ export const cfgBrowserHeadless = register({
 		tab: "tools",
 		group: "Grep 与浏览器",
 		label: "无头浏览器",
-		description: "Launch browser in headless mode (disable to show browser UI)",
+		description: "以无头模式启动浏览器（关闭则显示浏览器界面）",
 	},
 });
 
@@ -75,7 +75,7 @@ export const cfgBrowserCmux = register({
 		group: "Grep 与浏览器",
 		label: "cmux 浏览器",
 		description:
-			"Use cmux WKWebView surfaces for browser automation when a cmux socket is available. Set PI_BROWSER_CMUX=0 or PI_BROWSER_CMUX=1 to override.",
+			"当 cmux socket 可用时，使用 cmux WKWebView 界面进行浏览器自动化。可用 PI_BROWSER_CMUX=0 或 PI_BROWSER_CMUX=1 覆盖。",
 	},
 });
 
@@ -86,9 +86,9 @@ export const cfgBrowserTern = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Tern Browser",
+		label: "Tern 浏览器",
 		description:
-			"Inside a Tern pane, open browser tabs as picture-in-pictures over omp's pane (native web view) instead of headless Chromium; falls back to Chromium when no Tern window can host them. Explicit app options, the relay and Browser CDP URL take precedence; app.tern:false opts one open out. Set PI_BROWSER_TERN=0 or PI_BROWSER_TERN=1 to override.",
+			"在 Tern 窗格中，以画中画形式在 omp 窗格上打开浏览器标签页（原生网页视图），而非无头 Chromium；当没有 Tern 窗口可承载时回退到 Chromium。显式的 app 选项、中继与 Browser CDP URL 优先；app.tern:false 可让某次打开不参与。可用 PI_BROWSER_TERN=0 或 PI_BROWSER_TERN=1 覆盖。",
 	},
 });
 
@@ -101,7 +101,7 @@ export const cfgBrowserFreezeOnTurnEnd = register({
 		group: "Grep 与浏览器",
 		label: "回合结束时冻结浏览器标签页",
 		description:
-			"Freeze OMP-owned headless browser tabs when a turn settles so animated pages stop burning CPU/GPU while idle. Tabs unfreeze automatically on next use; pass persist:true on open to opt a tab out.",
+			"回合结束时冻结 OMP 拥有的无头浏览器标签页，使动画页面在空闲时不再消耗 CPU/GPU。标签页会在下次使用时自动解冻；在 open 时传 persist:true 可让某个标签页不参与冻结。",
 	},
 });
 
@@ -114,7 +114,7 @@ export const cfgBrowserIdleCloseSec = register({
 		group: "Grep 与浏览器",
 		label: "浏览器空闲关闭超时",
 		description:
-			"Close OMP-owned headless browser tabs and Tern browser picture-in-pictures idle longer than this many seconds (0 = never; session dispose still reaps). Never touches relay/CDP/spawned browsers or other sessions' tabs.",
+			"关闭 OMP 拥有的无头浏览器标签页与 Tern 浏览器画中画，当它们空闲超过这么多秒时（0 = 从不；会话销毁仍会回收）。绝不触碰中继/CDP/派生浏览器或其他会话的标签页。",
 		options: [
 			{ value: "0", label: "从不" },
 			{ value: "900", label: "15 分钟" },
@@ -131,8 +131,8 @@ export const cfgBrowserScreenshotDir = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Screenshot Directory",
+		label: "截图目录",
 		description:
-			"Directory to save screenshots. If unset, screenshots go to a temp file. Supports ~. Examples: ~/Downloads, ~/Desktop, /sdcard/Download (Android)",
+			"保存截图的目录。未设置时截图写入临时文件。支持 ~。示例：~/Downloads、~/Desktop、/sdcard/Download（Android）",
 	},
 });

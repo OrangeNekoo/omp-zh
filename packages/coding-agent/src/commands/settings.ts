@@ -14,7 +14,7 @@ export const cfgShareServerUrl = register({
 		group: "协作",
 		label: "共享服务器",
 		description:
-			"Share viewer/upload base used by /share (encrypted blob upload + viewer; links are <base>/<id>#<key>)",
+			"/share 使用的共享查看器/上传基础地址（加密 blob 上传 + 查看器；链接为 <base>/<id>#<key>）",
 	},
 });
 
@@ -27,17 +27,17 @@ export const cfgShareStore = register({
 		tab: "interaction",
 		group: "协作",
 		label: "共享存储",
-		description: "Where /share uploads the encrypted session blob",
+		description: "/share 上传加密会话 blob 的位置",
 		options: [
 			{
 				value: "blob",
 				label: "加密数据块",
-				description: "Upload to the share server (no GitHub account needed; avoids gist API rate limits)",
+				description: "上传到共享服务器（无需 GitHub 账户；可避开 gist API 速率限制）",
 			},
 			{
 				value: "gist",
 				label: "GitHub Gist",
-				description: "Push to a secret gist (needs authenticated gh), falling back to the share server",
+				description: "推送到私有 gist（需要已认证的 gh），失败则回退到共享服务器",
 			},
 		],
 	},
@@ -51,6 +51,6 @@ export const cfgShareRedactSecrets = register({
 		tab: "interaction",
 		group: "协作",
 		label: "共享密钥脱敏",
-		description: "Run the secret obfuscator over /share snapshots before upload (uses the secrets.* config)",
+		description: "上传前对 /share 快照运行密钥混淆器（使用 secrets.* 配置）",
 	},
 });

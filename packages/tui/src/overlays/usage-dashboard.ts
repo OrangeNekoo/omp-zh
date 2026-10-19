@@ -502,7 +502,7 @@ function statTile(
 /** `62%` in mono, toned like the window's status, then a quiet `left`. */
 function leftSpans(fraction: number, status: UsageLimit["status"]): TspSpan[] {
 	const token = status === "exhausted" ? "mono error" : status === "warning" ? "mono warning" : "mono";
-	return [span(`${Math.max(0, Math.round((1 - fraction) * 100))}%`, token), span(" left", "dim")];
+	return [span(`${Math.max(0, Math.round((1 - fraction) * 100))}%`, token), span(" 剩余", "dim")];
 }
 
 /** Stable, human account name for a report in the detail view. */

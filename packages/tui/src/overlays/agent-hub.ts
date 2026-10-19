@@ -906,7 +906,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			layout: this.#viewMode === "tree" ? "tree" : "rows",
 			preview: "side",
 			...pickerQuery(this.#agentFilterEditing || this.#agentFilter.getValue() ? this.#agentFilter : null),
-			placeholder: "Filter agents…",
+			placeholder: "筛选代理…",
 			columns: AGENT_COLUMNS,
 			items: this.#rows.map(ref => this.#pickerAgentItem(ref)),
 			selected: selected?.id ?? null,
@@ -1073,7 +1073,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			layout: "rows",
 			preview: "none",
 			...pickerQuery(this.#activitySearchEditing || this.#activitySearch.getValue() ? this.#activitySearch : null),
-			placeholder: "Search activity…",
+			placeholder: "搜索活动…",
 			scopes: ACTIVITY_FILTER_SCOPES,
 			scope: this.#activityFilter,
 			columns: ACTIVITY_COLUMNS,
@@ -1208,7 +1208,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 				[
 					text([span(`${theme.status.shadowed} `, "muted"), span("本会话无代理", "strong")]),
 					text(
-						[span("Finished, parked, and killed subagents remain with the session that created them.", "dim")],
+						[span("已完成、已停放与已终止的子代理会留在创建它们的会话中。", "dim")],
 						{ wrap: "word" },
 					),
 					text([span("Resume that session with omp-dev --continue, or spawn a task here.", "dim")], {
@@ -1326,7 +1326,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		const duration = metrics ? formatMetricDuration(metrics) : undefined;
 		if (duration) state.push(text([span(duration, "dim")]));
 		state.push(
-			text([span("last active", "dim")]),
+			text([span("最后活动", "dim")]),
 			node("elapsed", { age: Math.max(0, Date.now() - ref.lastActivity), format: "short" }),
 			text([span("ago", "dim")]),
 		);
@@ -1474,7 +1474,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 						{
 							text: this.#activitySearch.getValue(),
 							cursor: this.#activitySearch.getCursor(),
-							prompt: [span("search: ", "muted")],
+							prompt: [span("搜索：", "muted")],
 						},
 						undefined,
 						"search",

@@ -69,23 +69,23 @@ export const cfgHindsightScoping = register({
 		group: "Hindsight",
 		label: "Hindsight 范围",
 		description:
-			"global = one shared bank; per-project = isolated bank per cwd; per-project-tagged = shared bank with project tags so global + project memories merge on recall",
+			"global = 一个共享库；per-project = 按 cwd 隔离的库；per-project-tagged = 带项目标签的共享库，使全局与项目记忆在回忆时合并",
 		options: [
 			{
 				value: "global",
 				label: "全局",
-				description: "One shared bank — every project sees the same memories",
+				description: "一个共享库 — 所有项目看到相同的记忆",
 			},
 			{
 				value: "per-project",
 				label: "按项目",
-				description: "Isolated bank per cwd basename — projects cannot see each other's memories",
+				description: "按 cwd 基名隔离的库 — 各项目无法看到彼此的记忆",
 			},
 			{
 				value: "per-project-tagged",
 				label: "按项目（标记）",
 				description:
-					"Shared bank, retains tagged with project:<cwd>. Recall surfaces project + untagged global memories together",
+					"共享库，保留内容标记为 project:<cwd>。回忆时同时呈现项目记忆与未标记的全局记忆",
 			},
 		],
 		condition: "hindsightActive",
@@ -114,7 +114,7 @@ export const cfgHindsightAutoRecall = register({
 		tab: "memory",
 		group: "Hindsight",
 		label: "Hindsight 自动回忆",
-		description: "Recall memories on the first turn of each session",
+		description: "在每个会话的首个回合回忆记忆",
 		condition: "hindsightActive",
 	},
 });
@@ -128,7 +128,7 @@ export const cfgHindsightAutoRetain = register({
 		tab: "memory",
 		group: "Hindsight",
 		label: "Hindsight 自动保留",
-		description: "Retain transcript every N turns and at session boundaries",
+		description: "每 N 回合以及会话边界处保留会话记录",
 		condition: "hindsightActive",
 	},
 });
@@ -143,12 +143,12 @@ export const cfgHindsightRetainMode = register({
 		tab: "memory",
 		group: "Hindsight",
 		label: "Hindsight 保留模式",
-		description: "full-session = upsert one document per session, last-turn = chunked",
+		description: "full-session = 每会话 upsert 一个文档，last-turn = 分块",
 		options: [
 			{
 				value: "full-session",
 				label: "完整会话",
-				description: "Upsert one document per session (recommended)",
+				description: "每会话 upsert 一个文档（推荐）",
 			},
 			{ value: "last-turn", label: "最后一轮", description: "按回合边界切分的分块保留" },
 		],
@@ -250,7 +250,7 @@ export const cfgHindsightMentalModelsEnabled = register({
 		group: "Hindsight",
 		label: "Hindsight 心智模型",
 		description:
-			"Read curated reflect summaries (mental models) into developer instructions at boot. Loads existing models on the bank — does not write. Pair with hindsight.mentalModelAutoSeed to also auto-create the built-in seed set.",
+			"启动时把精选的反思摘要（心智模型）读入开发者指令。只加载库中已有的模型 — 不写入。配合 hindsight.mentalModelAutoSeed 可同时自动创建内置种子集。",
 		condition: "hindsightActive",
 	},
 });
@@ -264,7 +264,7 @@ export const cfgHindsightMentalModelAutoSeed = register({
 		group: "Hindsight",
 		label: "Hindsight 心智模型自动播种",
 		description:
-			"At session start, create any built-in mental models (project-conventions, project-decisions, user-preferences) that do not yet exist on the bank.",
+			"会话开始时，在库中创建尚不存在的内置心智模型（project-conventions、project-decisions、user-preferences）。",
 		condition: "hindsightActive",
 	},
 });

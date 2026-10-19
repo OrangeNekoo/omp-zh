@@ -43,7 +43,7 @@ const ORIGIN_LABELS = {
 	runtime: "--api-key",
 	config: "config",
 	oauth: "login",
-	api_key: "api key",
+	api_key: "API 密钥",
 	env: "env",
 };
 /**
@@ -454,7 +454,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		if (state === "checking") return { value: [span("checking", "warning", { fx: "pulse" })], detail };
 		if (state === "invalid") return { value: [span("invalid", "error")], detail };
 		if (state === "valid" || this.#hasSelectableAuth(providerId)) {
-			return { value: [span("logged in", "success")], detail };
+			return { value: [span("已登录", "success")], detail };
 		}
 		return { detail };
 	}
@@ -513,7 +513,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 			layout: "cards",
 			preview: "none",
 			...search,
-			placeholder: "Search providers…",
+			placeholder: "搜索服务商…",
 			items: this.#pickerItems,
 			...(query.length > 0 ? { order: this.#menu.visibleItems.map(provider => provider.id) } : {}),
 			selected: this.#menu.selectedKey ?? null,

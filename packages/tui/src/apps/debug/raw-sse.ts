@@ -278,7 +278,7 @@ export class RawSseViewerComponent implements Component {
 				: keyed(
 						col(
 							[
-								text("No raw SSE frames captured yet", { role: "omp.app.empty-title" }),
+								text("尚未捕获原始 SSE 帧", { role: "omp.app.empty-title" }),
 								text([span("HTTP SSE 服务商会在模型响应流式传输时填充此视图。", "muted")]),
 							],
 							{ gap: "xs", align: "center", role: "omp.app.empty" },
@@ -329,7 +329,7 @@ export class RawSseViewerComponent implements Component {
 				: span("等待首帧", "muted"),
 		);
 		return keyed(
-			row([text("Raw provider stream", { role: "omp.app.title" }), text(stats, { truncate: "end" })], {
+			row([text("原始服务商流", { role: "omp.app.title" }), text(stats, { truncate: "end" })], {
 				gap: "sm",
 				align: "center",
 				role: "omp.app.head",

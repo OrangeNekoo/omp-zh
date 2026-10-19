@@ -38,7 +38,7 @@ export async function pickCleanseTarget(checkers: readonly CleanseCheckerChoice[
 		{
 			value: "request",
 			label: "描述要修复的内容…",
-			description: "A discovery agent figures out the command to run",
+			description: "由发现代理找出要运行的命令",
 		},
 	];
 	const selection = await selectStandaloneItem("Select what to cleanse:", items, {
@@ -46,7 +46,7 @@ export async function pickCleanseTarget(checkers: readonly CleanseCheckerChoice[
 		picker: {
 			icon: "wand",
 			noun: "checkers",
-			subtitle: "Run the checkers, then repair what they find",
+			subtitle: "运行检查器，然后修复它们发现的问题",
 			confirm: "Cleanse",
 		},
 	});

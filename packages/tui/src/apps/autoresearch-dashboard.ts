@@ -257,7 +257,7 @@ function describeTitle(runtime: AutoresearchDashboardRuntime): TspSpan[] {
 /** Widget shown while the very first run is in flight. */
 function describeRunningOnly(runtime: AutoresearchDashboardRuntime, state: ExperimentState): NativeNode {
 	const children: NativeNode[] = [
-		node("spinner", { label: [span("autoresearch", "accent"), span(" running", "warning")], tone: "warning" }),
+		node("spinner", { label: [span("autoresearch", "accent"), span(" 运行中", "warning")], tone: "warning" }),
 	];
 	if (runtime.runningExperiment) children.push(elapsed(Date.now() - runtime.runningExperiment.startedAt));
 	const details: TspSpan[] = [];
@@ -517,7 +517,7 @@ const STATUS_LABEL: Record<ExperimentResult["status"], string> = {
 	keep: "kept",
 	discard: "discarded",
 	crash: "crashed",
-	checks_failed: "checks failed",
+	checks_failed: "检查失败",
 };
 
 const STATUS_TOKEN: Record<ExperimentResult["status"], string> = {
@@ -654,7 +654,7 @@ function describeNow(runtime: AutoresearchDashboardRuntime): NativeNode | undefi
 		row(
 			[
 				text(result, { truncate: "end" }),
-				text([span("Log it with "), span("log_experiment", "mono"), span(" before the next run")], {
+				text([span("记录方式："), span("log_experiment", "mono"), span(" 在下一次运行前")], {
 					truncate: "end",
 					role: "omp.autoresearch.next",
 				}),

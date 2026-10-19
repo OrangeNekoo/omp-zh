@@ -655,7 +655,7 @@ export class ExtensionDashboard implements Component {
 				layout: "rows",
 				preview: "side",
 				...this.#mainList.nativeQuery(),
-				placeholder: "Search extensions…",
+				placeholder: "搜索扩展…",
 				scopes: buildPickerScopes(this.#state.tabs),
 				scope: activeTab?.id ?? "all",
 				columns: view.grouped ? undefined : KIND_COLUMNS,
@@ -721,7 +721,7 @@ export class ExtensionDashboard implements Component {
 			],
 			"head",
 		);
-		const search = text([span("Search: ", "muted"), query ? span(query, "accent") : span("输入以筛选", "dim")], {
+		const search = text([span("搜索：", "muted"), query ? span(query, "accent") : span("输入以筛选", "dim")], {
 			truncate: "end",
 		});
 		const body = node(

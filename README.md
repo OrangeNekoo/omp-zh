@@ -191,7 +191,19 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    bun i18n/extract.ts
    ```
 
-   结果写入 `i18n/extracted.json`（已 gitignore，属本地快照），并打印命中位置分布。
+   结果写入两处（均已 gitignore）：
+
+   - `i18n/extracted.json` — 全部界面文案快照
+   - `i18n/pending.json` — **待译清单**，键为英文原文、值为空字符串。
+     直接填入中文译文，再合并进 `dictionary.json` 即可
+
+   终端同时打印覆盖率：
+
+   ```
+   翻译状态：已汉化 788 条，未译 160 条（其中值得人工翻译的 78 条）
+   ```
+
+   统计会排除专有名词、参数名、数值标签与快捷键，剩下的才是真正的工作量。
 
 2. 在 `i18n/dictionary.json` 里补上「英文原文 → 简体中文」：
 
@@ -290,10 +302,12 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - `oxlint` 0 warning / 0 error
 - 设置面板 10 个标签页、59 个分组全部汉化，且 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值 100% 对齐
 - 设置项的名称、说明与选项（含 `options` 子菜单的 label/description）已汉化
+- 设置项下方的长段说明文字已汉化（`session`、`tools`、`modes`、`task`、`context` 等主要模块）
 - 首次使用引导的 5 个场景（登录、模型、字形、输入框、主题）已汉化
 - 欢迎界面 34 条提示语已汉化
 - 设置面板底部与各对话框的操作提示行已汉化
 - 斜杠命令描述汉化 82/86
+- 词典收录 2607 条；界面文案累计汉化约 790 条，剩余未译多为专有名词与数值标签
 - 翻译器与提示片段翻译器均幂等：连续执行两次，第二次替换数为 0
 
 ---

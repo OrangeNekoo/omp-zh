@@ -783,7 +783,7 @@ function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefine
 		role: "omp.context.snap.head",
 	});
 	if (!snap.visionCapable) {
-		const note = text("Inactive: the model has no image input.", { role: "omp.context.snap.note" });
+		const note = text("不可用：该模型没有图像输入。", { role: "omp.context.snap.note" });
 		return node("col", { role: "omp.context.snap" }, [head, note], "snapcompact");
 	}
 	const lines: { label: string; detail: string; value?: TspSpan }[] = [];

@@ -36,9 +36,22 @@ const COUNT_UNITS: Readonly<Record<string, UnitTranslation>> = {
 };
 
 const DURATION_RE = /^(\d+)\s+(second|minute|hour|day|week|month|year)s?$/;
-const COUNT_RE = /^(\d+)\s+(item|line|step|task|note|request|token|agent|file|message|session)s?$/i;
+const COUNT_RE =
+	/^(\d+)\s+(item|line|step|task|note|request|token|agent|file|message|session|operation|reminder|retry|retries)s?$/i;
 /** 上下文窗口标签：`100K tokens`、`1M tokens`。 */
 const TOKEN_LABEL_RE = /^(\d+(?:\.\d+)?[KM]?)\s+tokens?$/i;
+/** 近似令牌数：`~1.25K tokens`、`~250 tokens`。 */
+const APPROX_TOKEN_RE = /^~(\d+(?:\.\d+)?[KM]?)\s+tokens?$/i;
+/** 存储/大小标签：`1 KB`、`16 MB`、`1 GB`。单位本身是国际通用写法，保持原样。 */
+const SIZE_LABEL_RE = /^(\d+(?:\.\d+)?)\s*(KB|MB|GB)$/i;
+
+/** 复数单位补充词表。 */
+const EXTRA_COUNT_UNITS: Readonly<Record<string, string>> = {
+	operation: "项操作",
+	reminder: "次提醒",
+	retry: "次重试",
+	retries: "次重试",
+};
 
 /**
  * 尝试用规则翻译一条文案。
@@ -58,11 +71,20 @@ export function translateByRule(source: string): string | undefined {
 		const amount = count[1];
 		const unit = COUNT_UNITS[count[2].toLowerCase()];
 		if (unit) return `${amount} ${unit.plural ?? unit.singular}`;
+		const extra = EXTRA_COUNT_UNITS[count[2].toLowerCase()];
+		if (extra) return `${amount} ${extra}`;
 	}
 
 	// 上下文窗口标签保留数字与单位，只把 tokens 换成中文
 	const tokenLabel = TOKEN_LABEL_RE.exec(source);
 	if (tokenLabel) return `${tokenLabel[1]} 令牌`;
+
+	// 近似令牌数：`~2.5K tokens` → `约 2.5K 令牌`
+	const approx = APPROX_TOKEN_RE.exec(source);
+	if (approx) return `约 ${approx[1]} 令牌`;
+
+	// 大小标签：数字 + 国际通用单位，无需翻译，保持原样
+	if (SIZE_LABEL_RE.test(source)) return source;
 
 	return undefined;
 }

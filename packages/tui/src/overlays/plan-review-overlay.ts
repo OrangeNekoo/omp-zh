@@ -1803,7 +1803,7 @@ export class PlanReviewOverlay implements Component {
 					{ role: "omp.plan.feedback", gap: "xs" },
 					[
 						keyed(
-							text([span("Note on ", "muted"), span(location, "accent")], { truncate: "end" }),
+							text([span("备注：", "muted"), span(location, "accent")], { truncate: "end" }),
 							"annotateHead",
 						),
 						this.#editor,

@@ -70,7 +70,7 @@ export const TTS_LOCAL_MODELS = [
 		dtype: "q8",
 		sampleRate: 24_000,
 		label: "Kokoro-82M",
-		description: "Kokoro-82M neural TTS — SoTA on-device quality, multi-voice, fully local",
+		description: "Kokoro-82M 神经 TTS — 设备端最优质量，多音色，完全本地",
 		voices: KOKORO_VOICES,
 	},
 ] as const satisfies readonly TtsLocalModelSpec[];

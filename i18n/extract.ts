@@ -299,6 +299,33 @@ export function extractAll(root: string = ROOT): ExtractionResult {
 	return { entries, perFile };
 }
 
+/** 判定一条文案是否仍是未翻译的英文。 */
+function isUntranslated(source: string): boolean {
+	return !/[\u4e00-\u9fa5]/.test(source);
+}
+
+/**
+ * 判断未译项是否值得人工翻译。
+ *
+ * 专有名词、参数名、数值标签、快捷键、内部键名即使保持英文也不影响
+ * 可读性，排除它们能让覆盖率数字反映真实工作量。
+ */
+function isTranslatable(source: string): boolean {
+	const text = source.trim();
+	if (text.length < 2) return false;
+	// 数值/尺寸标签：`0 KB`、`~2.5K tokens`
+	if (/^[~\d]/.test(text)) return false;
+	// 配置后缀：`:exacto`、`:floor`
+	if (text.startsWith(":")) return false;
+	// 快捷键与路径
+	if (/^(alt|ctrl|shift|cmd|meta|fn|esc|tab)\+/i.test(text)) return false;
+	if (/^(~\/|\/|\.\/|https?:)/.test(text)) return false;
+	// 单个小写词与全大写缩写（Glob、Grep、XML）多为技术名称
+	if (/^[a-z][a-z0-9]*$/.test(text)) return false;
+	if (/^[A-Z][A-Za-z0-9]*$/.test(text) && text.length <= 6) return false;
+	return true;
+}
+
 function main(): void {
 	const checkOnly = process.argv.includes("--check");
 	const before = performance.now();
@@ -310,6 +337,9 @@ function main(): void {
 		for (const kind of entry.kinds) byKind.set(kind, (byKind.get(kind) ?? 0) + 1);
 	}
 
+	const untranslated = result.entries.filter(entry => isUntranslated(entry.source));
+	const pending = untranslated.filter(entry => isTranslatable(entry.source));
+
 	process.stdout.write(
 		`扫描完成：${result.entries.length} 条唯一界面文案，${result.perFile.size} 个文件，耗时 ${elapsed}ms\n`,
 	);
@@ -318,10 +348,27 @@ function main(): void {
 		process.stdout.write(`  ${String(count).padStart(5)}  ${kind}\n`);
 	}
 
+	process.stdout.write(
+		`\n翻译状态：已汉化 ${result.entries.length - untranslated.length} 条，` +
+			`未译 ${untranslated.length} 条（其中值得人工翻译的 ${pending.length} 条）\n`,
+	);
+	if (pending.length > 0) {
+		process.stdout.write("待译示例：\n");
+		for (const entry of pending.slice(0, 10)) {
+			process.stdout.write(`  [${entry.kinds[0]}] ${entry.source.slice(0, 90)}\n`);
+		}
+	}
+
 	if (!checkOnly) {
 		const output = path.join(import.meta.dir, "extracted.json");
 		fs.writeFileSync(output, `${JSON.stringify(result.entries, null, 2)}\n`);
 		process.stdout.write(`\n已写出 ${path.relative(ROOT, output)}\n`);
+
+		// 单独的待译清单：直接按词典格式组织，补译时可直接填写译文
+		const pendingFile = path.join(import.meta.dir, "pending.json");
+		const pendingObject = Object.fromEntries(pending.map(entry => [entry.source, ""]));
+		fs.writeFileSync(pendingFile, `${JSON.stringify(pendingObject, null, 2)}\n`);
+		process.stdout.write(`待译清单：${path.relative(ROOT, pendingFile)}（键为原文，填入译文即可）\n`);
 	}
 }
 

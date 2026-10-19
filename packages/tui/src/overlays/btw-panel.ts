@@ -167,12 +167,12 @@ export class BtwPanelComponent extends OverlayPanel {
 		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "以关闭" };
 		switch (this.#state) {
 			case "running":
-				return hintsRow([{ ...esc, label: "to cancel" }]);
+				return hintsRow([{ ...esc, label: "以取消" }]);
 			case "complete": {
 				const hints: NativeHint[] = [];
 				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "to copy again" : "to copy" });
 				if (canFollowUp) hints.push({ keys: ["f"], label: "以跟进" });
-				if (canBranch) hints.push({ keys: ["b"], label: "to branch" });
+				if (canBranch) hints.push({ keys: ["b"], label: "到分支" });
 				hints.push(esc);
 				if (!this.#copied) return hintsRow(hints);
 				return statusHintsRow([span("✓ 已复制到剪贴板", "success")], hints);

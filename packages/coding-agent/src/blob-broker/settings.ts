@@ -31,7 +31,7 @@ export const cfgImagesUrlsEnabled = register({
 		group: "视觉",
 		label: "以 URL 提供图像",
 		description:
-			"Publish outgoing images through the configured backend chain and send URL-fetching providers short URLs instead of inline base64. Falls back to inline automatically when every backend or a provider fetch fails",
+			"通过已配置的后端链发布外发图像，并向支持 URL 抓取的服务商发送短链接而非内联 base64。当所有后端或服务商抓取失败时自动回退到内联。",
 	},
 });
 
@@ -43,7 +43,7 @@ export const cfgImagesUrlsBackends = register({
 		tab: "model",
 		group: "视觉",
 		label: "图像 URL 后端",
-		description: "Ordered destinations tried when publishing images for provider access",
+		description: "为服务商访问发布图像时按顺序尝试的目标",
 		options: BLOB_BACKEND_CHOICES,
 		ordered: true,
 	},
@@ -71,7 +71,7 @@ export const cfgImagesUrlsCommand = register({
 		group: "视觉",
 		label: "图像上传命令",
 		description:
-			"Argv template for the command backend; {file} is the image path, {mime}/{ext} optional. The last URL printed on stdout is used (e.g. pasta -b -f {file})",
+			"命令后端的 argv 模板；{file} 是图像路径，{mime}/{ext} 可选。使用 stdout 上打印的最后一个 URL（例如 pasta -b -f {file}）",
 	},
 });
 
@@ -83,7 +83,7 @@ export const cfgImagesUrlsPublicBaseUrl = register({
 		tab: "model",
 		group: "视觉",
 		label: "图像 URL 公共前缀",
-		description: "Externally reachable base URL fronting the blob server (required for ssh, optional for direct)",
+		description: "面向 blob 服务器的外部可访问基础 URL（ssh 必需，direct 可选）",
 	},
 });
 
@@ -96,7 +96,7 @@ export const cfgImagesUrlsTtlHours = register({
 		group: "视觉",
 		label: "图像 URL 有效期（小时）",
 		description:
-			"Serving window for locally hosted image URLs, measured from the last time a conversation sent them; resuming a conversation re-arms the window at the same link. 0 keeps links alive while the broker runs",
+			"本地托管图像 URL 的服务窗口，从对话最后一次发送它们时开始计算；恢复对话会在同一链接上重新启动该窗口。0 表示代理运行期间链接始终有效",
 	},
 });
 
@@ -108,7 +108,7 @@ export const cfgImagesUrlsBindHost = register({
 		tab: "model",
 		group: "视觉",
 		label: "图像 URL 绑定主机",
-		description: "Host the blob server binds to; loopback for tunnels, 0.0.0.0 for direct serving",
+		description: "blob 服务器绑定的主机；隧道用回环地址，直接服务用 0.0.0.0",
 	},
 });
 
@@ -120,7 +120,7 @@ export const cfgImagesUrlsSshTarget = register({
 		tab: "model",
 		group: "视觉",
 		label: "图像 URL SSH 目标",
-		description: "user@host destination for the ssh reverse forward",
+		description: "ssh 反向转发的 user@host 目标",
 	},
 });
 
@@ -132,7 +132,7 @@ export const cfgImagesUrlsSshRemotePort = register({
 		tab: "model",
 		group: "视觉",
 		label: "图像 URL SSH 远程端口",
-		description: "Remote listen port of the ssh reverse forward that your web server proxies to",
+		description: "ssh 反向转发的远程监听端口（由你的 Web 服务器代理）",
 	},
 });
 

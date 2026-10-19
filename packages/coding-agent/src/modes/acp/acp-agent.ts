@@ -638,7 +638,7 @@ export class AcpAgent implements Agent {
 			{
 				id: "agent",
 				name: "Use existing local credentials",
-				description: "Authenticate via the provider keys/OAuth state already configured under ~/.omp.",
+				description: "使用 ~/.omp 下已配置的服务商密钥/OAuth 状态进行认证。",
 			},
 		];
 		if (params.clientCapabilities?.auth?.terminal === true) {
@@ -646,7 +646,7 @@ export class AcpAgent implements Agent {
 				type: "terminal",
 				id: "terminal",
 				name: "Set up omp in terminal",
-				description: "Launch the omp TUI to add provider keys and select models.",
+				description: "启动 omp TUI 以添加服务商密钥并选择模型。",
 				args: [ACP_TERMINAL_AUTH_FLAG],
 			});
 		}
@@ -885,7 +885,7 @@ export class AcpAgent implements Agent {
 					error instanceof AgentBusyError
 						? RequestError.sessionBusy(error.message, {
 								reason: "session_busy",
-								hint: "steer|followUp|wait",
+								hint: "引导|跟进|等待",
 							})
 						: error,
 				);
@@ -1847,12 +1847,12 @@ export class AcpAgent implements Agent {
 	}
 
 	#getAvailableModes(session: AgentSession): Array<{ id: string; name: string; description: string }> {
-		const modes = [{ id: ACP_DEFAULT_MODE_ID, name: "Default", description: "Standard ACP headless mode" }];
+		const modes = [{ id: ACP_DEFAULT_MODE_ID, name: "Default", description: "标准 ACP 无头模式" }];
 		if (cfgPlanEnabled.get(session.settings)) {
 			modes.push({
 				id: ACP_PLAN_MODE_ID,
 				name: "Plan",
-				description: "Read-only planning mode that drafts a plan to a markdown file before any code changes",
+				description: "只读计划模式，在做出任何代码更改前先把计划写入 Markdown 文件",
 			});
 		}
 		void session;

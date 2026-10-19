@@ -398,7 +398,7 @@ export class PsTopComponent implements Component {
 			const running = this.#flat.filter(flat => !TERMINAL_STATES[flat.row.snapshot.state]).length;
 			const stopped = this.#flat.length - running;
 			left.push(
-				text("Processes", { role: "omp.app.title" }),
+				text("进程", { role: "omp.app.title" }),
 				text(
 					[
 						span(`${running} running`, running > 0 ? "success" : "muted"),
@@ -498,7 +498,7 @@ export class PsTopComponent implements Component {
 						text(
 							[
 								span(`Kill ${entry.row.snapshot.name}${pid === undefined ? "" : ` (pid ${pid})`}?`, "strong"),
-								span("  It stops at once, without cleanup.", "muted"),
+								span("  它会立即停止，不做清理。", "muted"),
 							],
 							{ truncate: "end", grow: 1 },
 						),
@@ -533,9 +533,9 @@ export class PsTopComponent implements Component {
 			return keyed(
 				col(
 					[
-						text("No broker scopes", { role: "omp.app.empty-title" }),
+						text("无代理作用域", { role: "omp.app.empty-title" }),
 						text([
-							span("No omp process broker runs here. ", "muted"),
+							span("此处没有运行 omp 进程代理。", "muted"),
 							span(this.#all ? "Nothing runs anywhere." : "Show every scope with ", "muted"),
 							...(this.#all ? [] : [span("a", "key"), span(".", "muted")]),
 						]),

@@ -704,7 +704,7 @@ export class CommandController {
 	async handleAdvisorStatusCommand(): Promise<void> {
 		const stats = this.ctx.session.getAdvisorStats();
 		if (!stats.configured) {
-			this.showCommandReport({ title: "顾问状态", body: new Text("Advisor is disabled.", 0, 0) });
+			this.showCommandReport({ title: "顾问状态", body: new Text("顾问已禁用。", 0, 0) });
 			return;
 		}
 		// Render cached quota data without waiting for the network. Quota lines

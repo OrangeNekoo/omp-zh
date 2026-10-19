@@ -922,7 +922,7 @@ export class DebugLogViewerComponent implements Component {
 						layout: "rows",
 						preview: preview ? "below" : "none",
 						...pickerQuery(this.#filter),
-						placeholder: "Filter logs…",
+						placeholder: "筛选日志…",
 						columns: [
 							{ id: "pid", format: "dim", priority: 0 },
 							{ id: "time", format: "dim", priority: 1 },

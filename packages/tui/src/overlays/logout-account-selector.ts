@@ -146,7 +146,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 		if (cx.supports("picker")) {
 			this.#pickerRoot ??= dockedPicker({
 				title: `${this.#providerName} accounts`,
-				subtitle: "Pick the account to sign out",
+				subtitle: "选择要退出登录的账户",
 				icon: "key-round",
 				noun: "accounts",
 				size: "md",

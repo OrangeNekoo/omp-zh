@@ -8,7 +8,7 @@ export const cfgGoalEnabled = register({
 		tab: "tasks",
 		group: "模式",
 		label: "目标模式",
-		description: "Enable per-session goal mode and the hidden goal tool",
+		description: "启用按会话的目标模式与隐藏的 goal 工具",
 	},
 });
 
@@ -20,7 +20,7 @@ export const cfgGoalStatusInFooter = register({
 		tab: "tasks",
 		group: "模式",
 		label: "页脚中的目标状态",
-		description: "Show token budget alongside the goal indicator in the status line",
+		description: "在状态栏目标指示器旁显示令牌预算",
 	},
 });
 
@@ -34,6 +34,6 @@ export const cfgGoalContinuationModes = register({
 		tab: "tasks",
 		group: "模式",
 		label: "目标延续模式",
-		description: 'Run modes where active goals may auto-continue between turns ("interactive", "rpc")',
+		description: '允许活跃目标在回合之间自动继续的运行模式（"interactive"、"rpc"）',
 	},
 });

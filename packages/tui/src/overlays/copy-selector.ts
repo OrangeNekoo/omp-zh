@@ -707,7 +707,7 @@ export class CopySelectorComponent implements Component {
 		const action = this.deps.actionLabel ?? "copy";
 		const props: TspPickerProps = {
 			title: this.deps.title ?? "Copy",
-			...(this.deps.title ? {} : { subtitle: "Pick what to put on the clipboard" }),
+			...(this.deps.title ? {} : { subtitle: "选择要放入剪贴板的内容" }),
 			icon: "clipboard",
 			noun: "turns",
 			size: "lg",
@@ -769,7 +769,7 @@ export class CopySelectorComponent implements Component {
 		if (this.#blocks && target) {
 			const block = this.#blocks[this.#blockSelected];
 			children.push(
-				row([text([span("‹ back", "accent")], { actions: { click: "back" } })], { gap: "md" }),
+				row([text([span("‹ 返回", "accent")], { actions: { click: "back" } })], { gap: "md" }),
 				node(
 					"list",
 					{ selected: String(this.#blockSelected), empty: "No blocks" },
@@ -1128,7 +1128,7 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 	const message = transcriptEntryMessage(entry);
 	switch (message?.role) {
 		case "user":
-			return { content: rawUserText(message), label: "user message" };
+			return { content: rawUserText(message), label: "用户消息" };
 		case "assistant": {
 			const text = assistantVisibleText(message);
 			if (text) return { content: text, label: "助手消息" };
@@ -1156,7 +1156,7 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 		case "hookMessage": {
 			// A user-invoked skill/collab prompt copies as what the user typed, not the expanded body.
 			const draft = message.role === "custom" ? userTurnDraft(entry) : undefined;
-			if (draft?.trim()) return { content: draft, label: "user message" };
+			if (draft?.trim()) return { content: draft, label: "用户消息" };
 			const content =
 				typeof message.content === "string"
 					? message.content
@@ -1171,5 +1171,5 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 			break;
 	}
 	// No direct prose (e.g. a pure tool turn): fall back to its blocks joined.
-	return { content: blocks.map(block => block.content).join("\n\n"), label: "turn content" };
+	return { content: blocks.map(block => block.content).join("\n\n"), label: "回合内容" };
 }

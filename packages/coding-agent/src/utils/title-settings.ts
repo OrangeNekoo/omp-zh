@@ -17,16 +17,16 @@ export const cfgTitleIcons = register({
 	ui: {
 		tab: "appearance",
 		group: "显示",
-		label: "Title Icons",
-		description: "Icon and short code that head new generated or /rename session titles",
+		label: "标题图标",
+		description: "新生成或 /rename 会话标题前的图标与短代码",
 		options: [
 			{
 				value: "nf+emoji",
-				label: "Nerd Font + Emoji",
-				description: "Nerd Font glyph where the Nerd Font symbol preset renders it, else the emoji (default)",
+				label: "Nerd 字体 + Emoji",
+				description: "当 Nerd 字体符号预设能渲染时使用 Nerd 字形，否则用 Emoji（默认）",
 			},
 			{ value: "emoji", label: "Emoji", description: "始终显示 Emoji" },
-			{ value: "boring", label: "朴素", description: "Plain title: no icon or code" },
+			{ value: "boring", label: "朴素", description: "纯标题：无图标或代码" },
 		],
 	},
 });
@@ -39,16 +39,16 @@ export const cfgTitleGenerator = register({
 	ui: {
 		tab: "tasks",
 		group: "模式",
-		label: "Title Generator",
-		description: "What names an untitled session from the user's messages",
+		label: "标题生成器",
+		description: "从用户消息中为未命名会话取名的依据",
 		options: [
 			{
 				value: "fork",
 				label: "复刻",
 				description:
-					"A side turn of the reply on the session's model: reads its prompt cache, adds the card icon (default)",
+					"在会话模型上做一次侧轮回复：可读取其提示词缓存，并加上卡片图标（默认）",
 			},
-			{ value: "tiny", label: "微型", description: "The title model role only; plain titles without a card" },
+			{ value: "tiny", label: "微型", description: "仅使用标题模型角色；纯标题，无卡片" },
 		],
 	},
 });
@@ -61,6 +61,6 @@ export const cfgTitleRefreshOnReplan = register({
 		tab: "tasks",
 		group: "模式",
 		label: "重新规划时刷新标题",
-		description: "Refresh generated session titles after todo init replans unless the title was set by the user",
+		description: "待办初始化重新规划后刷新生成的会话标题，除非标题由用户设置",
 	},
 });

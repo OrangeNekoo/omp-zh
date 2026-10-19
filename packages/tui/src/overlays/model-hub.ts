@@ -3084,7 +3084,7 @@ export class ModelHubComponent implements Component {
 				spans = [
 					span("模型角色 — ", "muted"),
 					span("f", "key"),
-					span(" adds a retry fallback, cleared roles fall back to auto-selection", "muted"),
+					span(" 添加一个重试备用，清除的角色回退到自动选择", "muted"),
 				];
 				break;
 			case "provider":
@@ -3214,7 +3214,7 @@ export class ModelHubComponent implements Component {
 				{ gap: "xs", align: "center", wrap: true },
 				[
 					...keycap,
-					text([span("cycle is empty — press ", "dim"), span("c", "key"), span(" on a role to add it", "dim")]),
+					text([span("循环为空 — 按 ", "dim"), span("c", "key"), span(" 选择角色以添加", "dim")]),
 				],
 				"cycle",
 			);
@@ -3230,7 +3230,7 @@ export class ModelHubComponent implements Component {
 		return node(
 			"row",
 			{ gap: "xs", align: "center", wrap: true },
-			[...keycap, text([span("cycle:", "dim")]), text(track, { wrap: "word" })],
+			[...keycap, text([span("循环：", "dim")]), text(track, { wrap: "word" })],
 			"cycle",
 		);
 	}
@@ -3302,7 +3302,7 @@ export class ModelHubComponent implements Component {
 			// is live, so the sheet offers no search field to type into.
 			query: rolesView && this.#browser.query.length === 0 ? null : this.#browser.query,
 			cursor: this.#browser.cursor,
-			placeholder: "Search models…",
+			placeholder: "搜索模型…",
 			scopes: this.#pickerScopes(),
 			scope: entry.id,
 			actions: this.#pickerActions(entry, rolesView, lockedView),
@@ -3409,7 +3409,7 @@ export class ModelHubComponent implements Component {
 		const presets = rolesView ? this.#presets() : undefined;
 		if (presets && presets.names.length > 0) {
 			return [
-				span("Preset ", "muted"),
+				span("预设 ", "muted"),
 				presets.active ? span(presets.active, "strong") : span("custom", "muted"),
 				span(
 					this.#scopedModels.length > 0 ? " · --models scope" : " · Cleared roles fall back to auto-selection",
@@ -3459,7 +3459,7 @@ export class ModelHubComponent implements Component {
 							id: entry.id,
 							label: entry.label,
 							mark,
-							group: "Not signed in",
+							group: "未登录",
 							disabled: oauthIds.has(providerId)
 								? "Sign in with /login"
 								: envVars.length > 0
@@ -3643,7 +3643,7 @@ export class ModelHubComponent implements Component {
 				return {
 					label: [
 						span(strip.model.id, "mono"),
-						span(" limit ", "muted"),
+						span(" 限制 ", "muted"),
 						span(strip.input.getValue(), "mono"),
 						span("▏", "accent"),
 						span(`  ${notice.text}`, notice.style),
@@ -3858,7 +3858,7 @@ export class ModelHubComponent implements Component {
 			}
 			case "newRole":
 				children.push(
-					text("New role", { role: "omp.picker.title" }),
+					text("新建角色", { role: "omp.picker.title" }),
 					text([span("命名自定义角色，然后选择它运行的模型。", "muted")], { wrap: "word" }),
 				);
 				break;

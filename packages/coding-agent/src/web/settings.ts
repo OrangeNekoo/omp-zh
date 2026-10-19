@@ -25,7 +25,7 @@ export const cfgExaSearchDelayMs = register({
 		tab: "providers",
 		group: "服务",
 		label: "Exa 搜索延迟",
-		description: "Minimum delay between Exa web search requests in milliseconds; set 0 to disable pacing",
+		description: "Exa 网络搜索请求之间的最小延迟（毫秒）；设为 0 可禁用节流",
 	},
 });
 
@@ -39,7 +39,7 @@ export const cfgSearxngEndpoint = register({
 		tab: "providers",
 		group: "服务",
 		label: "SearXNG 端点",
-		description: "Base URL of a self-hosted SearXNG instance used for web search",
+		description: "用于网络搜索的自托管 SearXNG 实例基础 URL",
 	},
 });
 

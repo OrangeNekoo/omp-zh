@@ -14,7 +14,7 @@ export const cfgEvalPy = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "Python Eval 后端",
-		description: "Allow the eval tool to dispatch Python cells to the IPython kernel",
+		description: "允许 eval 工具把 Python 单元派发到 IPython 内核",
 	},
 });
 
@@ -27,7 +27,7 @@ export const cfgEvalJs = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "JavaScript Eval 后端",
-		description: "Allow the eval tool to dispatch JavaScript cells to the in-process runtime",
+		description: "允许 eval 工具把 JavaScript 单元派发到进程内运行时",
 	},
 });
 
@@ -39,7 +39,7 @@ export const cfgEvalAutoProvision = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "Eval 环境准备",
-		description: "Automatically create the managed JavaScript eval package environment on first install",
+		description: "首次安装时自动创建托管的 JavaScript eval 包环境",
 	},
 });
 
@@ -52,7 +52,7 @@ export const cfgEvalToolsEnabled = register({
 		group: "Eval 与运行时",
 		label: "Eval 定义的工具",
 		description:
-			"Let eval cells define tools (@tool in Python, tool(fn) in JS) that task, agent(), and workpool() subagents can call",
+			"允许 eval 单元定义工具（Python 的 @tool，JS 的 tool(fn)），供 task、agent() 与 workpool() 子代理调用",
 	},
 });
 
@@ -64,7 +64,7 @@ export const cfgEvalWorkpoolFreshAgents = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "新工作池代理",
-		description: "Spawn a new subagent for every workpool item instead of reusing workers or batching queued items",
+		description: "为每个 workpool 条目派生新的子代理，而不是复用工作器或批量处理排队条目",
 	},
 });
 
@@ -77,7 +77,7 @@ export const cfgEvalAutoBackgroundEnabled = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "Eval 自动后台",
-		description: "Automatically background long-running eval cells and deliver the result later",
+		description: "自动将长时间运行的 eval 单元转入后台，稍后投递结果",
 	},
 });
 
@@ -98,7 +98,7 @@ export const cfgPythonKernelMode = register({
 		tab: "shell",
 		group: "Eval 与运行时",
 		label: "Python 内核模式",
-		description: "Keep the IPython kernel alive across eval calls or start fresh each time",
+		description: "在多次 eval 调用之间保持 IPython 内核存活，或每次都重新启动",
 	},
 });
 
@@ -111,6 +111,6 @@ export const cfgPythonInterpreter = register({
 		group: "Eval 与运行时",
 		label: "Python 解释器",
 		description:
-			"Optional path to an exact Python executable. When set, automatic Python runtime discovery is skipped.",
+			"可选的精确 Python 可执行文件路径。设置后将跳过自动 Python 运行时发现。",
 	},
 });

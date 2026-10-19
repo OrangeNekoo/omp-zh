@@ -2172,7 +2172,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		if (!startupQuiet && this.#startupChangelog && cfgStartupChangelogMode.get(settings) !== "hidden") {
 			headerAfter.push(
 				new DynamicBorder(),
-				new Text("What's New", 1, 0).setStyleFn(t => theme.bold(theme.fg("accent", t))),
+				new Text("新功能", 1, 0).setStyleFn(t => theme.bold(theme.fg("accent", t))),
 				new Spacer(1),
 			);
 			if (cfgStartupChangelogMode.get(settings) === "summary") {
@@ -6746,7 +6746,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const slider: HookSelectorSlider | undefined =
 			cycle && cycle.models.length > 1
 				? {
-						caption: "continue with",
+						caption: "继续使用",
 						index: startTierIndex,
 						segments: cycle.models.map(entry => ({
 							label: entry.role,
@@ -7932,7 +7932,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		hint.addChild(new Text(` ${rawKeyHint(retryKey, "to retry")}`, 1, 0));
 		this.#retryHintRow = new DescribedComponent(
 			hint,
-			row([node("icon", { name: "loop", tone: "muted" }), kbd(retryKey, "key"), text([span("to retry", "muted")])], {
+			row([node("icon", { name: "loop", tone: "muted" }), kbd(retryKey, "key"), text([span("以重试", "muted")])], {
 				gap: "sm",
 				align: "center",
 				role: "omp.hint.retry",

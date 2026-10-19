@@ -405,7 +405,7 @@ export class HistorySearchComponent extends OverlayPanel {
 			layout: "rows",
 			preview: "none",
 			...pickerQuery(this.#searchInput),
-			placeholder: "Search prompts…",
+			placeholder: "搜索提示词…",
 			columns: [{ id: "when", format: "time" }],
 			items: rows.rows,
 			selected: selected ? nativeEntryKey(selected) : null,

@@ -104,7 +104,7 @@ const EMPTY_SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "m
 function describeStatus(status: BtwHistoryTurn["status"]): TspSpan[] | undefined {
 	switch (status) {
 		case "running":
-			return [span("●", "accent", { fx: "pulse" }), span(" Answering", "accent")];
+			return [span("●", "accent", { fx: "pulse" }), span(" 回答中", "accent")];
 		case "cancelled":
 			return [span("已取消", "warning")];
 		case "error":
@@ -636,7 +636,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 			"col",
 			{ role: "omp.btw.empty", align: "center", gap: "sm" },
 			[
-				text("No side questions yet", { role: "omp.btw.empty.title" }),
+				text("暂无附带问题", { role: "omp.btw.empty.title" }),
 				text([span("提一个附带问题，使用 "), span("/btw <question>", "code"), span("。答案不会进入主对话。")], {
 					role: "omp.btw.empty.hint",
 					wrap: "word",

@@ -454,7 +454,7 @@ class ProviderLimitsSubmenu extends Container {
 			theme: formTheme,
 			label: "最大并发请求数",
 			description:
-				"Select a provider, enter a positive number to cap concurrent LLM requests, or clear it for unlimited.",
+				"选择服务商，输入正数限制并发 LLM 请求数，清空则不受限制。",
 			items,
 			maxVisible: 12,
 			selectTheme: getSelectListTheme(),
@@ -484,7 +484,7 @@ class ProviderLimitsSubmenu extends Container {
 				theme: formTheme,
 				label: `Max In-Flight Requests: ${provider}`,
 				description:
-					"Enter a positive number. Decimals round down. Clear the field to make this provider unlimited.",
+					"输入一个正数。小数向下取整。清空该字段可让此服务商不受限制。",
 				initialValue: limits[provider]?.toString() ?? undefined,
 				empty: "submit",
 				hint: `  ${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消 · Clear field to unset`,
@@ -1305,7 +1305,7 @@ export class SettingsSelectorComponent implements Component {
 			{
 				layout: "flat",
 				typeToSearch: false,
-				emptyText: "No matching settings",
+				emptyText: "无匹配的设置",
 				hint: "",
 			},
 		);

@@ -355,8 +355,8 @@ function describeEmpty(): NativeNode {
 		{ role: "omp.jobs.empty", align: "center" },
 		[
 			node("icon", { name: "jobs" }),
-			text("No background jobs", { role: "omp.jobs.empty.title" }),
-			text("Commands and subagent tasks started in the background show up here while they run.", {
+			text("无后台任务", { role: "omp.jobs.empty.title" }),
+			text("在后台启动的命令与子代理任务会在运行时显示在这里。", {
 				role: "omp.jobs.empty.note",
 				wrap: "word",
 			}),
@@ -417,7 +417,7 @@ function describeDetail(
 			"col",
 			{ role: "omp.jobs.out", gap: "sm" },
 			[
-				text("Output", { role: "omp.jobs.label" }),
+				text("输出", { role: "omp.jobs.label" }),
 				detail?.output
 					? ansi(detail.output, { follow: !settled, role: "omp.jobs.output", max: { h: "16lines" } })
 					: text(settled ? "No output" : "No output yet", { role: "omp.jobs.nooutput" }),

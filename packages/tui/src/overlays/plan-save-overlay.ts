@@ -85,7 +85,7 @@ export class PlanSaveOverlay implements Component, Focusable {
 		if (showDefault) {
 			children.push(
 				keyed(
-					text([span("Empty saves to ", "dim"), span(this.#suggestedPath, "path")], { truncate: "middle" }),
+					text([span("留空则保存到 ", "dim"), span(this.#suggestedPath, "path")], { truncate: "middle" }),
 					"default",
 				),
 			);

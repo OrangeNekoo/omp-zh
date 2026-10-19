@@ -21,7 +21,7 @@ export const cfgSkillsRegistryUrl = register({
 		group: "技能",
 		label: "技能注册表",
 		description:
-			"Skillshare registry used by `omp skill` to install, search, and publish skills (https://host[:port])",
+			"`omp skill` 用于安装、搜索与发布技能的 Skillshare 注册表（https://host[:port]）",
 	},
 });
 
@@ -157,6 +157,6 @@ export const cfgExtensionHandlersToolCallTimeoutMs = register({
 		group: "扩展",
 		label: "工具调用处理超时（毫秒）",
 		description:
-			"Positive finite active-work timeout for extension tool_call handlers; invalid values use 30000ms, and time awaiting OMP-owned dialogs does not count",
+			"扩展 tool_call 处理器的正数有限活跃工作时限；无效值使用 30000 毫秒，等待 OMP 自有对话框的时间不计入",
 	},
 });

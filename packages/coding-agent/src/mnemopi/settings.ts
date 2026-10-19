@@ -14,7 +14,7 @@ export const cfgMnemopiDbPath = register({
 		tab: "memory",
 		group: "Mnemopi",
 		label: "Mnemopi 数据库路径",
-		description: "Optional SQLite DB path. Defaults to the agent memories directory.",
+		description: "可选的 SQLite 数据库路径。默认为代理记忆目录。",
 		condition: "mnemopiActive",
 	},
 });
@@ -27,7 +27,7 @@ export const cfgMnemopiBank = register({
 		tab: "memory",
 		group: "Mnemopi",
 		label: "Mnemopi 库",
-		description: "Optional shared bank base name. Per-project modes derive project-local banks from it.",
+		description: "可选的共享库基础名称。按项目模式会据此派生项目本地库。",
 		condition: "mnemopiActive",
 	},
 });
@@ -42,7 +42,7 @@ export const cfgMnemopiScoping = register({
 		group: "Mnemopi",
 		label: "Mnemopi 范围",
 		description:
-			"global = one shared bank; per-project = isolated bank per cwd; per-project-tagged = project-local writes plus global recall visibility",
+			"global = 一个共享库；per-project = 按 cwd 隔离的库；per-project-tagged = 项目本地写入，同时具备全局回忆可见性",
 		options: [
 			{
 				value: "global",
@@ -57,7 +57,7 @@ export const cfgMnemopiScoping = register({
 			{
 				value: "per-project-tagged",
 				label: "按项目（标记）",
-				description: "Write to a project-local bank but merge project + shared recall results",
+				description: "写入项目本地库，但合并项目与共享的回忆结果",
 			},
 		],
 		condition: "mnemopiActive",
@@ -82,17 +82,17 @@ export const cfgMnemopiEmbeddingVariant = register({
 		group: "Mnemopi",
 		label: "嵌入变体",
 		description:
-			"Local embedding model family. en = stronger English model; multilingual = cross-language model. Changing this rebuilds existing memory embeddings on next start.",
+			"本地嵌入模型系列。en = 更强的英语模型；multilingual = 跨语言模型。更改后会在下次启动时重建现有记忆嵌入。",
 		options: [
 			{
 				value: "en",
 				label: "英语 (bge-base-en-v1.5)",
-				description: "BAAI/bge-base-en-v1.5 (768d), English-only",
+				description: "BAAI/bge-base-en-v1.5 (768 维)，仅英语",
 			},
 			{
 				value: "multilingual",
 				label: "多语言 (multilingual-e5-large)",
-				description: "intfloat/multilingual-e5-large (1024d), cross-language recall",
+				description: "intfloat/multilingual-e5-large (1024 维)，跨语言回忆",
 			},
 		],
 		condition: "mnemopiActive",
@@ -107,7 +107,7 @@ export const cfgMnemopiAutoRecall = register({
 		tab: "memory",
 		group: "Mnemopi",
 		label: "Mnemopi 自动回忆",
-		description: "Recall local memories into the first turn of each session",
+		description: "把本地记忆召回进每个会话的首个回合",
 		condition: "mnemopiActive",
 	},
 });
@@ -134,7 +134,7 @@ export const cfgMnemopiPolyphonicRecall = register({
 		group: "Mnemopi",
 		label: "Mnemopi 多声部回忆",
 		description:
-			"Fuse recall with graph, fact, vector and temporal voices so linked memories surface without a keyword match",
+			"融合图谱、事实、向量与时间等多路召回，使关联记忆无需关键词匹配也能浮现",
 		condition: "mnemopiActive",
 	},
 });
@@ -148,7 +148,7 @@ export const cfgMnemopiEnhancedRecall = register({
 		group: "Mnemopi",
 		label: "Mnemopi 增强回忆",
 		description:
-			"Cache recall results for repeated and similar queries with identical options; any memory write clears it",
+			"为相同选项下的重复与相似查询缓存回忆结果；任何记忆写入都会清除缓存",
 		condition: "mnemopiActive",
 	},
 });
@@ -162,7 +162,7 @@ export const cfgMnemopiProactiveLinking = register({
 		group: "Mnemopi",
 		label: "Mnemopi 主动链接",
 		description:
-			"Ingest new memories into the episodic graph as they are stored, linking them to related entities and memories",
+			"新记忆在存储时即进入情景图谱，并链接到相关实体与记忆",
 		condition: "mnemopiActive",
 	},
 });
@@ -191,7 +191,7 @@ export const cfgMnemopiEmbeddingModel = register({
 		group: "Mnemopi",
 		label: "Mnemopi 嵌入模型",
 		description:
-			"Advanced: explicit embedding model id that overrides the variant. Leave empty to use mnemopi.embeddingVariant.",
+			"高级：显式指定嵌入模型 ID，覆盖所选变体。留空则使用 mnemopi.embeddingVariant。",
 		condition: "mnemopiActive",
 	},
 });
@@ -233,16 +233,16 @@ export const cfgMnemopiLlmMode = register({
 		group: "Mnemopi",
 		label: "Mnemopi LLM 模式",
 		description:
-			"Use no LLM, the online tiny model (the TINY role from /models, else @smol), or a remote OpenAI-compatible endpoint",
+			"不使用 LLM、使用在线微型模型（/models 中的 TINY 角色，否则 @smol），或使用远程 OpenAI 兼容端点",
 		condition: "mnemopiActive",
 		options: [
 			{ value: "none", label: "无", description: "禁用 Mnemopi 的 LLM 提取" },
 			{
 				value: "smol",
 				label: "在线（微型）",
-				description: "Use the online tiny model (the TINY role from /models, else @smol)",
+				description: "使用在线微型模型（/models 中的 TINY 角色，否则 @smol）",
 			},
-			{ value: "remote", label: "远程", description: "Use the Mnemopi remote LLM settings below" },
+			{ value: "remote", label: "远程", description: "使用下方 Mnemopi 远程 LLM 设置" },
 		],
 	},
 });

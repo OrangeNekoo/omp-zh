@@ -30,7 +30,7 @@ export const cfgSttSubmitTrigger = register({
 		group: "语音",
 		label: "语音转文字提交触发",
 		description:
-			"Choose when speech dictation automatically submits: Never, Release (2+ words), Release with complete sentence, or When I Say Submit.",
+			"选择语音听写何时自动提交：从不、松开（2 个词以上）、松开且句子完整，或当我说提交时。",
 		options: STT_SUBMIT_TRIGGER_OPTIONS,
 	},
 });

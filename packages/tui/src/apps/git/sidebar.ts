@@ -1167,7 +1167,7 @@ export class Sidebar {
 					aiInput
 						? node("input", {
 								...inputProps(aiInput),
-								placeholder: "What should we stage?",
+								placeholder: "要暂存什么？",
 								role: "omp.app.git.field.on",
 							})
 						: fieldText(this.aiInput.getValue(), "What should we stage?", "edit-ai", on(target)),
@@ -1281,7 +1281,7 @@ export class Sidebar {
 				keyed(
 					row(
 						[
-							row([node("icon", { name: this.amend ? "check" : "commit" }), text("Amend")], {
+							row([node("icon", { name: this.amend ? "check" : "commit" }), text("修正")], {
 								gap: "xs",
 								align: "center",
 								role: `omp.app.git.toggle${this.amend ? ".set" : ""}${on({ kind: "amend" }) ? ".on" : ""}`,

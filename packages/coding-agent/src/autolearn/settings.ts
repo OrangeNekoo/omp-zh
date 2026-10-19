@@ -16,7 +16,7 @@ export const cfgAutolearnEnabled = register({
 		group: "自动学习",
 		label: "自动学习（实验性）",
 		description:
-			"After the agent stops, nudge it to capture lessons to memory and create/enhance isolated managed skills",
+			"代理停止后，提示它把经验写入记忆并创建/增强隔离的托管技能",
 	},
 });
 
@@ -29,7 +29,7 @@ export const cfgAutolearnAutoContinue = register({
 		group: "自动学习",
 		label: "停止时自动运行捕获",
 		description:
-			"When on, auto-run one private capture turn at stop (uses extra tokens). When off, only standing auto-learn guidance remains.",
+			"开启时，在停止时自动运行一次隐私捕获回合（会消耗额外令牌）。关闭时，只保留常驻的自动学习指引。",
 		condition: "autolearnActive",
 	},
 });

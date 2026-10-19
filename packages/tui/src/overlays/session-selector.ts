@@ -1065,7 +1065,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 		if (memo?.items === items.items && memo.selected === selected && memo.query === query) return memo.node;
 		const empty: TspText = this.#showCwd
 			? [span("未找到会话", "muted")]
-			: [span("No sessions in current folder. Press ", "muted"), span("tab", "key"), span(" to view all.", "muted")];
+			: [span("当前文件夹中没有会话。按 ", "muted"), span("tab", "key"), span(" 以查看全部。", "muted")];
 		const list = node(
 			"list",
 			{ selected: selected ?? null, filter: query.trim() || undefined, empty, virtual: true },

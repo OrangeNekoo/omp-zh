@@ -13,7 +13,7 @@ export const cfgLspEnabled = register({
 		tab: "files",
 		group: "LSP",
 		label: "LSP",
-		description: "Enable the lsp tool for code intelligence (definitions, references, diagnostics, rename)",
+		description: "启用 lsp 工具以提供代码智能（定义、引用、诊断、重命名）",
 	},
 });
 
@@ -26,7 +26,7 @@ export const cfgLspLazy = register({
 		group: "LSP",
 		label: "延迟启动 LSP",
 		description:
-			"Start language servers on first use (lsp tool or editing a matching file type) instead of at session startup",
+			"在首次使用时启动语言服务器（lsp 工具或编辑匹配的文件类型），而不是在会话启动时",
 	},
 });
 
@@ -39,7 +39,7 @@ export const cfgLspShared = register({
 		group: "LSP",
 		label: "共享语言服务器",
 		description:
-			"Start language servers through the per-project daemon broker. Each connection gets its own server. While another omp instance in the project is running, a released server stays warm and the next connection reuses it instead of cold-starting (falls back to private servers when unavailable)",
+			"通过按项目的守护进程代理启动语言服务器。每个连接获得自己的服务器。当项目中还有其他 omp 实例运行时，已释放的服务器保持热备，下一个连接复用它而非冷启动（不可用时回退到私有服务器）",
 	},
 });
 
@@ -87,7 +87,7 @@ export const cfgLspDiagnosticsDeduplicate = register({
 		tab: "files",
 		group: "LSP",
 		label: "去重诊断",
-		description: "Suppress post-edit LSP diagnostics already shown for a file; only surface new or changed ones",
+		description: "抑制某文件已显示过的编辑后 LSP 诊断；仅呈现新增或变化的诊断",
 	},
 });
 
@@ -100,7 +100,7 @@ export const cfgLspRequestTimeout = register({
 		group: "LSP",
 		label: "请求超时",
 		description:
-			"Seconds to wait for a language server's diagnostics, hover and other answers when the agent sets no timeout; late post-edit diagnostics wait at least this long. Raise it for servers that are slow on a cold start. The lsp tool's timeout argument can still raise or lower it per call",
+			"当代理未设置超时时，等待语言服务器诊断、悬停及其他响应的秒数；编辑后的延迟诊断至少等待这么久。冷启动较慢的服务器可调高此值。lsp 工具的 timeout 参数仍可按调用升高或降低",
 		options: [
 			{ value: "10", label: "10 秒", description: "默认" },
 			{ value: "20", label: "20 秒" },

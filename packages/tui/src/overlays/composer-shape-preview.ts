@@ -148,7 +148,7 @@ export class ComposerShapePreview implements Component {
 		const described = col(
 			[
 				text([span("预览：", "muted")]),
-				node("editor", { placeholder: "Ask anything, edit files, run tools", readonly: true, maxLines: 1 }),
+				node("editor", { placeholder: "提问、编辑文件、运行工具", readonly: true, maxLines: 1 }),
 				text(caption, { wrap: "word" }),
 			],
 			{ role: "omp.preview.composer-shape", gap: "xs" },

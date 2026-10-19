@@ -850,7 +850,7 @@ export class AskDialogComponent implements Component {
 		const more = this.#questions.length > 1 ? `  +${this.#questions.length - 1} more` : "";
 		const summary = text(
 			[
-				span("Question  ", "muted"),
+				span("问题  ", "muted"),
 				span(normalizedInlineInput(sanitizeCarriageReturns(question?.question ?? ""))),
 				...(more ? [span(more, "muted")] : []),
 			],

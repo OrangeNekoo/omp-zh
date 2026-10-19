@@ -799,7 +799,7 @@ export class ExtensionUiController {
 					? {
 							isBlocked: () => draftEditor.getText().length > 0,
 							handleInput: (keyData: string) => draftEditor.handleDraftEdit(keyData),
-							hint: "Finish or clear the current prompt to answer",
+							hint: "完成或清空当前提示词以作答",
 							// Show the draft's insertion cursor while it owns input; drop it
 							// once the draft clears and the ask controls take over.
 							syncPresentation: () => {

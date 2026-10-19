@@ -503,7 +503,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			icon: "advisor",
 			group: "Advisors",
 		}));
-		pages.push({ id: "shared", label: "共享指令", icon: "doc", group: "All advisors" });
+		pages.push({ id: "shared", label: "共享指令", icon: "doc", group: "所有顾问" });
 
 		const sections: TspPrefsProps["sections"][number][] = [];
 		if (doc.warnings?.length) {
@@ -525,7 +525,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "toggleEnabled",
 					label: "已启用",
-					hint: "Run this advisor alongside the session.",
+					hint: "随会话一起运行此顾问。",
 					control: { k: "switch", on: advisor.enabled !== false },
 				},
 				{ id: "name", label: "名称", control: { k: "text", value: advisor.name } },
@@ -540,7 +540,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "reviewMode",
 					label: "审查模式",
-					hint: "turn reviews every primary turn; agent-end reviews only final yields.",
+					hint: "turn 审查每个主回合；agent-end 仅在最终让出时审查。",
 					changed: advisor.reviewMode !== undefined ? true : undefined,
 					control: {
 						k: "choice",
@@ -578,7 +578,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "tools",
 					label: "工具",
-					hint: "None means no tools; read, grep and glob are the default.",
+					hint: "None 表示不启用工具；read、grep 与 glob 是默认值。",
 					control: {
 						k: "multi",
 						values: tools,
@@ -615,14 +615,14 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "save",
 					label: "保存并应用",
-					hint: "Write this file and reload the live advisors without a restart.",
+					hint: "写入此文件并在无需重启的情况下重新加载实时顾问。",
 					warning: this.#dirty ? "Unsaved changes" : undefined,
 					control: { k: "action", label: "保存", act: "save" },
 				},
 				{
 					id: "add",
 					label: "添加顾问",
-					hint: "Create a new advisor entry, then set its model, tools and instructions.",
+					hint: "创建新的顾问条目，然后设置其模型、工具与指令。",
 					control: { k: "action", label: "添加", act: "add" },
 				},
 				{
@@ -746,7 +746,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				preview: "below",
 				query: browser.query,
 				cursor: browser.cursor,
-				placeholder: "Search models…",
+				placeholder: "搜索模型…",
 				columns: MODEL_PICKER_COLUMNS,
 				...catalogue,
 				order: order.order,
@@ -907,7 +907,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			return prev.node;
 		}
 		const head: TspSpan[] = [span(`Advisor configuration · ${this.#scope}`)];
-		if (this.#dirty) head.push(span("  ● unsaved", "warning"));
+		if (this.#dirty) head.push(span("  ● 未保存", "warning"));
 		const body: NativeNode = preview
 			? node(
 					"row",
@@ -954,7 +954,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			const instructions = this.#doc.instructions?.trim();
 			children.push(
 				text([span("共享指令", "strong")]),
-				instructions ? text(instructions, { wrap: "word" }) : text([span("(none)", "muted")]),
+				instructions ? text(instructions, { wrap: "word" }) : text([span("（无）", "muted")]),
 			);
 		} else {
 			const help =
@@ -991,7 +991,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				],
 			}),
 			text([span("说明：", "dim")]),
-			instructions ? text(instructions, { wrap: "word" }) : text([span("(none)", "muted")]),
+			instructions ? text(instructions, { wrap: "word" }) : text([span("（无）", "muted")]),
 		];
 		const liveStat = this.#cb.getAdvisorStats?.()?.find(s => s.name === (advisor.name || "default"));
 		if (liveStat && (liveStat.status === "running" || liveStat.status === "quota_exhausted")) {

@@ -210,7 +210,7 @@ export function createWarpEventBridgeExtension(): ExtensionFactory {
 
 		api.on("tool_execution_start", event => {
 			if (event.toolName === "ask") {
-				emitter?.emit({ event: "question_asked", summary: "Waiting for your answer" });
+				emitter?.emit({ event: "question_asked", summary: "等待你的回答" });
 			}
 		});
 

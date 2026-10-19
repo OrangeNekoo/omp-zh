@@ -14,7 +14,7 @@ export const cfgLiveVoice = register({
 		tab: "providers",
 		group: "服务",
 		label: "实时语音",
-		description: "Voice used by Codex-backed realtime voice sessions",
+		description: "Codex 支持的实时语音会话使用的音色",
 		options: LIVE_VOICE_OPTIONS,
 	},
 });

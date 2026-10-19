@@ -860,12 +860,12 @@ export class RewindSelectorComponent implements Component {
 				text(
 					[
 						matches.length === 0
-							? span("no matches", "error")
+							? span("无匹配", "error")
 							: span(`${at >= 0 ? at + 1 : "-"}/${matches.length}`, "dim"),
 					],
 					{ wrap: "none" },
 				),
-				hintsRow([upDown, { keys: ["left", "right"], label: "user turns" }]),
+				hintsRow([upDown, { keys: ["left", "right"], label: "用户回合" }]),
 				actionBar([null, actionButton("显示全部", "cancel", { keys: "escape" }), rewind]),
 			];
 		}

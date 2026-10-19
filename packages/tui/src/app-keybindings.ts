@@ -102,7 +102,7 @@ export const KEYBINDINGS = {
 	},
 	"app.suspend": {
 		defaultKeys: "ctrl+z",
-		description: "Suspend application",
+		description: "挂起应用",
 	},
 	"app.display.reset": {
 		defaultKeys: "alt+l",
@@ -114,7 +114,7 @@ export const KEYBINDINGS = {
 	},
 	"app.thinking.toggle": {
 		defaultKeys: "ctrl+t",
-		description: "Toggle thinking mode",
+		description: "切换思考模式",
 	},
 	"app.model.cycleForward": {
 		defaultKeys: "ctrl+p",
@@ -180,7 +180,7 @@ export const KEYBINDINGS = {
 	},
 	"app.clipboard.pasteTextRaw": {
 		defaultKeys: ["ctrl+shift+v", "alt+shift+v"],
-		description: "Paste text from clipboard as raw text (no collapse)",
+		description: "从剪贴板粘贴文本作为原始文本（不折叠）",
 	},
 	"app.clipboard.copyLine": {
 		defaultKeys: "alt+shift+l",
@@ -216,11 +216,11 @@ export const KEYBINDINGS = {
 	},
 	"app.session.togglePath": {
 		defaultKeys: "ctrl+p",
-		description: "Toggle session path display",
+		description: "切换会话路径显示",
 	},
 	"app.session.toggleSort": {
 		defaultKeys: "ctrl+s",
-		description: "Toggle session sort order",
+		description: "切换会话排序方式",
 	},
 	"app.session.rename": {
 		defaultKeys: "ctrl+r",
@@ -244,7 +244,7 @@ export const KEYBINDINGS = {
 	},
 	"app.plan.toggle": {
 		defaultKeys: "alt+shift+p",
-		description: "Toggle plan mode",
+		description: "切换计划模式",
 	},
 	"app.history.search": {
 		defaultKeys: "ctrl+r",
@@ -256,11 +256,11 @@ export const KEYBINDINGS = {
 	},
 	"app.stt.toggle": {
 		defaultKeys: [],
-		description: "Toggle speech-to-text recording",
+		description: "切换语音转文字录音",
 	},
 	"app.live.toggle": {
 		defaultKeys: "ctrl+l",
-		description: "Start or stop live voice mode (/live)",
+		description: "启动或停止实时语音模式 (/live)",
 	},
 } as const satisfies KeybindingDefinitions;
 

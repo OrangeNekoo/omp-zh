@@ -18,7 +18,7 @@ export const cfgWorkspaceAdditionalDirectories = register({
 		group: "常规",
 		label: "附加工作区目录",
 		description:
-			"Extra workspace directories added to every session as additional roots (multi-root workspace). Managed live via /add-dir and /remove-dir. Paths resolve relative to cwd; absolute paths recommended. The agent is told these roots exist and can read/grep/glob them.",
+			"作为额外根目录添加到每个会话的工作区目录（多根工作区）。可通过 /add-dir 与 /remove-dir 实时管理。路径相对于 cwd 解析；建议使用绝对路径。代理会被告知这些根目录存在，并可对其执行 read/grep/glob。",
 	},
 });
 
@@ -55,7 +55,7 @@ export const cfgContextFilesExtra = register({
 		label: "额外上下文文件",
 		editor: "json",
 		description:
-			'Extra instruction filenames loaded beside AGENTS.md. Use a JSON list of names, not paths, e.g. ["AGENTS.local.md"]; [] disables extras. Start a new session to load them.',
+			'在 AGENTS.md 之外加载的额外指令文件名。使用名称的 JSON 列表而非路径，例如 ["AGENTS.local.md"]；[] 表示禁用额外指令。需开始新会话才能加载。',
 		condition: "contextFilesExtraNotProject",
 	},
 	validate: raw => {
@@ -82,7 +82,7 @@ export const cfgContextPromotionEnabled = register({
 		group: "常规",
 		label: "自动提升上下文",
 		description:
-			"Promote to the model's contextPromotionTarget on context overflow instead of compacting. Retry fallback switches are controlled by Retry Model Fallback",
+			"上下文溢出时提升到模型的 contextPromotionTarget 而非压缩。重试回退切换由「重试模型回退」控制",
 	},
 });
 
@@ -98,7 +98,7 @@ export const cfgExtendedContext = register({
 		group: "常规",
 		label: "扩展上下文",
 		description:
-			"Use larger context windows where supported; may incur premium pricing. Off keeps default or standard-pricing windows",
+			"在支持的情况下使用更大的上下文窗口；可能产生溢价计费。关闭则保留默认或标准定价的窗口",
 	},
 });
 
@@ -111,7 +111,7 @@ export const cfgCompactionEnabled = register({
 		tab: "context",
 		group: "压缩",
 		label: "自动压缩",
-		description: "Automatically compact context when it gets too large",
+		description: "上下文过大时自动压缩",
 	},
 });
 
@@ -123,7 +123,7 @@ export const cfgCompactionExperimentalContextManagement = register({
 		tab: "context",
 		group: "压缩",
 		label: "基于笔记的上下文窗口（实验性）",
-		description: "Keep persistent notes and searchable raw history across context windows.",
+		description: "跨上下文窗口保留持久笔记与可搜索的原始历史。",
 	},
 });
 
@@ -136,7 +136,7 @@ export const cfgCompactionMidTurnEnabled = register({
 		group: "压缩",
 		label: "回合中压缩",
 		description:
-			"Check thresholds at safe mid-turn tool-loop boundaries before the next provider request; subagents always check, since their whole assignment is one turn",
+			"在下一个服务商请求之前的、安全的回合中工具循环边界检查阈值；子代理总是检查，因为它们的整个任务就是一个回合",
 	},
 });
 
@@ -149,7 +149,7 @@ export const cfgCompactionMethodOrder = register({
 		group: "压缩",
 		label: "压缩方法顺序",
 		description:
-			"Preferred fallback order for automatic context maintenance; unavailable or failed methods advance to the next choice",
+			"自动上下文维护的首选回退顺序；不可用或失败的方法会推进到下一个选项",
 		options: COMPACTION_METHOD_CHOICES,
 		ordered: true,
 	},
@@ -163,7 +163,7 @@ export const cfgCompactionThresholdPercent = register({
 		tab: "context",
 		group: "压缩",
 		label: "压缩阈值",
-		description: "Percent threshold for context maintenance; set to Default to use legacy reserve-based behavior",
+		description: "上下文维护的百分比阈值；设为「默认」则使用传统的基于预留量的行为",
 		options: [
 			{ value: "default", label: "默认", description: "传统的基于预留量的阈值" },
 			{ value: "10", label: "10%", description: "极早维护" },
@@ -190,7 +190,7 @@ export const cfgCompactionThresholdTokens = register({
 		tab: "context",
 		group: "压缩",
 		label: "压缩令牌上限",
-		description: "Fixed token limit for context maintenance; overrides percentage if set",
+		description: "上下文维护的固定令牌上限；设置后会覆盖百分比",
 		options: [
 			{ value: "default", label: "默认", description: "使用基于百分比的阈值" },
 			{ value: "25000", label: "25K 令牌", description: "200K 窗口的 1/8" },
@@ -240,7 +240,7 @@ export const cfgCompactionHandoffSaveToDisk = register({
 		tab: "context",
 		group: "压缩",
 		label: "保存交接文档",
-		description: "Save generated handoff documents to markdown files for the auto-handoff flow",
+		description: "将生成的交接文档保存为 Markdown 文件，供自动交接流程使用",
 	},
 });
 
@@ -252,7 +252,7 @@ export const cfgCompactionRemoteStreamingV2Enabled = register({
 		tab: "context",
 		group: "压缩",
 		label: "远程压缩 V2",
-		description: "Use Responses streaming compaction for compatible remote compaction models",
+		description: "对兼容的远程压缩模型使用 Responses 流式压缩",
 	},
 });
 
@@ -265,7 +265,7 @@ export const cfgCompactionAsyncEnabled = register({
 		group: "压缩",
 		label: "异步压缩",
 		description:
-			"Speculatively summarize in the background as context nears the compaction threshold, then splice the ready result in when the threshold is crossed",
+			"当上下文接近压缩阈值时在后台推测性总结，越过阈值时把准备好的结果拼接进来",
 	},
 });
 
@@ -308,7 +308,7 @@ export const cfgCompactionIdleEnabled = register({
 		tab: "context",
 		group: "压缩",
 		label: "空闲压缩",
-		description: "Compact context while idle when token count exceeds threshold",
+		description: "令牌数超过阈值时在空闲期间压缩上下文",
 	},
 });
 
@@ -320,7 +320,7 @@ export const cfgCompactionIdleThresholdTokens = register({
 		tab: "context",
 		group: "压缩",
 		label: "空闲压缩阈值",
-		description: "Token count above which idle compaction triggers",
+		description: "超过此令牌数时触发空闲压缩",
 		options: [
 			{ value: "100000", label: "100K 令牌" },
 			{ value: "200000", label: "200K 令牌" },
@@ -344,7 +344,7 @@ export const cfgCompactionIdleTimeoutSeconds = register({
 		group: "压缩",
 		label: "空闲压缩延迟",
 		description:
-			"Seconds to wait while idle before compacting; with a 1-hour prompt cache, compaction instead runs just before the cache expires",
+			"空闲多少秒后开始压缩；当提示词缓存为 1 小时时，压缩改为在缓存即将过期前执行",
 		options: [
 			{ value: "60", label: "1 分钟" },
 			{ value: "120", label: "2 分钟" },
@@ -364,7 +364,7 @@ export const cfgCompactionSupersedeReads = register({
 		tab: "context",
 		group: "压缩",
 		label: "取代过期的读取",
-		description: "Prune older read results when the same file is read again (cache-aware, runs every turn)",
+		description: "再次读取同一文件时清理较旧的读取结果（感知缓存，每回合运行）",
 	},
 });
 
@@ -377,7 +377,7 @@ export const cfgCompactionDropUseless = register({
 		group: "压缩",
 		label: "省略无变化的结果",
 		description:
-			"Prune tool results flagged contextually useless (no matches, timed-out waits) once consumed (cache-aware)",
+			"被标记为上下文无用的工具结果（无匹配、等待超时）在消费后清理（感知缓存）",
 	},
 });
 
@@ -422,7 +422,7 @@ export const cfgSnapcompactSystemPrompt = register({
 		group: "实验性",
 		label: "Snapcompact 系统提示词",
 		description:
-			"Experimental: render selected system prompt text as dense PNG image(s) and attach to the first user message (vision models only). Saves tokens; loses prompt caching for imaged text.",
+			"实验性：把选定的系统提示词文本渲染为高密度 PNG 图像并附加到首条用户消息（仅视觉模型）。可节省令牌；但图像化的文本会失去提示词缓存。",
 		options: [
 			{ value: "none", label: "无", description: "将系统提示词保留为文本。" },
 			{
@@ -448,7 +448,7 @@ export const cfgSnapcompactToolResults = register({
 		group: "实验性",
 		label: "Snapcompact 工具结果",
 		description:
-			"Experimental: render large tool results, the newest one included, as dense PNG image(s) instead of text (vision models only). Saves tokens on accumulated search and command output; read results stay text unless the model is known to edit exactly from images.",
+			"实验性：把大型工具结果（包括最新的一个）渲染为高密度 PNG 图像而非文本（仅视觉模型）。可在累积的搜索与命令输出上节省令牌；read 结果保持文本，除非已知该模型能够精确地基于图像进行编辑。",
 	},
 });
 
@@ -476,7 +476,7 @@ export const cfgToolsFormat = register({
 		group: "实验性",
 		label: "工具调用模式",
 		description:
-			"Controls how tools are exposed to the model. Auto uses provider-native tool calls unless the selected model is marked as not supporting them, then falls back to the GLM owned dialect. Native forces provider-native tools; the other values force the named owned dialect.",
+			"控制工具如何暴露给模型。Auto 使用服务商原生工具调用，除非所选模型被标记为不支持，此时回退到 GLM 自有方言。Native 强制使用服务商原生工具；其余值强制使用指定的自有方言。",
 		options: [
 			{
 				value: "auto",
@@ -509,7 +509,7 @@ export const cfgSnapcompactShape = register({
 		group: "实验性",
 		label: "Snapcompact 形状",
 		description:
-			"Frame shape snapcompact prints text with (compaction archive and inline imaging). Auto picks a shape tuned for the current model.",
+			"snapcompact 打印文本所使用的画框形状（压缩归档与内联成像）。Auto 会选择针对当前模型调优的形状。",
 		options: [
 			{
 				value: "auto",
@@ -614,7 +614,7 @@ export const cfgBranchSummaryEnabled = register({
 		tab: "context",
 		group: "常规",
 		label: "分支摘要",
-		description: "Prompt to summarize when leaving a branch",
+		description: "离开分支时用于总结的提示词",
 	},
 });
 

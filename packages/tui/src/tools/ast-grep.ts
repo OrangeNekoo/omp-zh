@@ -267,7 +267,7 @@ export const astGrepToolRenderer = {
 		if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 		meta.push(`searched ${filesSearched}`);
 		const head = toolHead("AST Grep", pattern, ...meta);
-		if (limitReached) head.push(span(" limit reached", "warning"));
+		if (limitReached) head.push(span(" 已达上限", "warning"));
 		const allLines = (details?.displayContent ?? resultText(result)).split("\n");
 		const kept = groupLineIndicesByBlank(allLines)
 			.filter(indices => {

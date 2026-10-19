@@ -288,7 +288,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 		this.#nativeItems ??= this.#menu.visibleItems.map(account => {
 			const redeemable = account.redeemableCount > 0;
 			const detail = [span(`${oneLine(account.providerLabel)} · #${account.target.credentialId}`, "muted")];
-			if (account.active) detail.push(span(" (active)", "muted"));
+			if (account.active) detail.push(span("（活动）", "muted"));
 			return node(
 				"item",
 				{

@@ -64,7 +64,7 @@ export const STT_MODELS = [
 		dtype: "q8",
 		englishOnly: false,
 		label: "快速（Whisper base）",
-		description: "Whisper base, multilingual. Smallest + fastest; lowest accuracy. Best for low-resource machines.",
+		description: "Whisper base，多语言。体积最小、速度最快；准确率最低。适合资源受限的机器。",
 		sizeHint: "~60 MB",
 	},
 	{
@@ -74,7 +74,7 @@ export const STT_MODELS = [
 		dtype: "q8",
 		englishOnly: false,
 		label: "均衡（Whisper small）",
-		description: "Whisper small, multilingual. More accurate than Fast, still light on CPU/RAM.",
+		description: "Whisper small，多语言。比 Fast 更准确，对 CPU/内存依然轻量。",
 		sizeHint: "~190 MB",
 	},
 	{
@@ -84,7 +84,7 @@ export const STT_MODELS = [
 		dtype: "q4",
 		englishOnly: false,
 		label: "Turbo (Whisper large-v3)",
-		description: "Whisper large-v3-turbo, 99 languages. Widest language coverage; large download, slower.",
+		description: "Whisper large-v3-turbo，99 种语言。语言覆盖最广；下载体积大，速度较慢。",
 		sizeHint: "~600 MB",
 	},
 	{
@@ -102,7 +102,7 @@ export const STT_MODELS = [
 		englishOnly: false,
 		label: "Parakeet TDT v3 (SoTA)",
 		description:
-			"NVIDIA Parakeet TDT 0.6B v3, 25 languages. Open ASR Leaderboard leader — best accuracy and far fastest decoding. Default.",
+			"NVIDIA Parakeet TDT 0.6B v3，25 种语言。Open ASR 排行榜第一 — 准确率最佳、解码最快。默认。",
 		sizeHint: "~680 MB",
 	},
 	{
@@ -120,7 +120,7 @@ export const STT_MODELS = [
 		englishOnly: true,
 		label: "Nemotron 0.6B (live streaming, English)",
 		description:
-			"NVIDIA Nemotron Speech 0.6B, English only. Native streaming recognition with live words while you speak; 160 ms audio chunks.",
+			"NVIDIA Nemotron Speech 0.6B，仅英语。原生流式识别，说话时实时出字；音频分块 160 毫秒。",
 		sizeHint: "~630 MB",
 	},
 ] as const satisfies readonly SttModelSpec[];

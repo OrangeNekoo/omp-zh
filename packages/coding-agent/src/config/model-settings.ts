@@ -90,17 +90,17 @@ export const cfgModelRoleStorage = register({
 		tab: "model",
 		group: "提示词",
 		label: "模型角色存储",
-		description: "Where model selector role assignments are saved",
+		description: "模型选择器角色分配的保存位置",
 		options: [
 			{
 				value: "global",
 				label: "全局",
-				description: "Save role models in the active profile config (current behavior)",
+				description: "把角色模型保存到当前 profile 配置（当前行为）",
 			},
 			{
 				value: "project",
 				label: "按项目",
-				description: "Save project role models in .omp/config.yml; missing project roles use global defaults",
+				description: "把项目角色模型保存到 .omp/config.yml；缺失的项目角色使用全局默认值",
 			},
 		],
 	},

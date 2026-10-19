@@ -839,16 +839,16 @@ class TreeList implements Component {
 			return [
 				span(`No entries match search "${query}". Press `, "muted"),
 				span("backspace", "key"),
-				span(" to clear the search", "muted"),
+				span(" 以清除搜索", "muted"),
 			];
 		}
 		const filterLabel = this.#getFilterLabel().trim() || "[default]";
 		return [
 			span(`${total} entries hidden by the current filter ${filterLabel}. Press `, "muted"),
 			span("alt+a", "key"),
-			span(" to show all, ", "muted"),
+			span(" 以显示全部，", "muted"),
 			span("alt+d", "key"),
-			span(" for default", "muted"),
+			span(" 设为默认", "muted"),
 		];
 	}
 
@@ -1418,7 +1418,7 @@ class LabelInput implements Component {
 
 	/** The picker preview while editing: the prompt and the label `Input` (save/cancel sit in the action bar). */
 	get preview(): readonly NativeChild[] {
-		this.#preview ??= [text("Label", { role: "omp.picker.title" }), text([span("留空以移除", "muted")]), this.#input];
+		this.#preview ??= [text("标签", { role: "omp.picker.title" }), text([span("留空以移除", "muted")]), this.#input];
 		return this.#preview;
 	}
 
@@ -1577,7 +1577,7 @@ export class TreeSelectorComponent extends OverlayPanel {
 			layout: "tree",
 			preview: "side",
 			...pickerQuery(this.#treeList.searchInput),
-			placeholder: "Search entries…",
+			placeholder: "搜索条目…",
 			tabs: FILTER_TABS,
 			tab: view.filterMode,
 			items: view.items,

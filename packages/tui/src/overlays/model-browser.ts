@@ -773,8 +773,8 @@ function withCreditBadge(model: Model, price: string): string {
 const PRICING_STATUS_LABELS: Record<Exclude<ModelPricingStatus, "fixed">, { short: string; detail: string }> = {
 	free: { short: "free", detail: "free" },
 	included: { short: "included", detail: "included" },
-	variable: { short: "varies", detail: "price varies" },
-	unknown: { short: "unknown", detail: "pricing unknown" },
+	variable: { short: "varies", detail: "价格浮动" },
+	unknown: { short: "unknown", detail: "价格未知" },
 };
 
 /** `$in/out` per-million cost pair with any credit badge; `free` when nothing is charged; a declared pricing state otherwise. */

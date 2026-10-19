@@ -69,7 +69,7 @@ export class SessionAccountSelectorComponent extends OverlayPanel {
 		// row's detail is what tells accounts apart instead of "active for this session".
 		this.#sheet = new SelectListSheet(this.#selectList, {
 			title: `${providerName} account`,
-			subtitle: "Pin the account this session sends its requests with",
+			subtitle: "固定本会话发送请求所用的账户",
 			icon: "key-round",
 			noun: "accounts",
 			current: accounts.filter(account => account.active).map(account => String(account.credentialId)),

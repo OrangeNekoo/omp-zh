@@ -17,7 +17,7 @@ export class ShowImagesSelectorComponent extends OverlayPanel {
 
 		const items: SelectItem[] = [
 			{ value: "yes", label: "是", description: "在终端中内联显示图像" },
-			{ value: "no", label: "否", description: "Show text placeholder instead" },
+			{ value: "no", label: "否", description: "改为显示文本占位符" },
 		];
 
 		// Create selector

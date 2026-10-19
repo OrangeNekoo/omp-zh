@@ -276,7 +276,7 @@ export class HandoffSummaryMessageComponent extends SummaryMessageComponent {
 	constructor(message: CustomMessage<unknown>) {
 		super({
 			label: () => `${theme.icon.context} handed-off`,
-			nativeLabel: () => [span("Handed off", "muted")],
+			nativeLabel: () => [span("已移交", "muted")],
 			role: "omp.handoff",
 			detailMarkdown: () => {
 				const document = extractHandoffDocument(getCustomMessageText(message));

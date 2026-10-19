@@ -1459,7 +1459,7 @@ export class AgentsHubComponent implements Component {
 				layout: "rows",
 				preview: "side",
 				...pickerQuery(this.#search),
-				placeholder: "Search agents…",
+				placeholder: "搜索代理…",
 				scopes,
 				scope: entry.kind === "source" ? entry.id : "all",
 				columns: entry.kind === "source" ? AGENT_COLUMNS : [...AGENT_COLUMNS, SOURCE_COLUMN],
@@ -1530,14 +1530,14 @@ export class AgentsHubComponent implements Component {
 			return [
 				text("新建代理", { role: "omp.picker.title" }),
 				md(
-					"Describe what the agent should do; the architect drafts its name, when to use it and its system prompt.",
+					"描述代理应做什么；架构师会起草它的名称、使用时机与系统提示词。",
 				),
 			];
 		}
 		const agent = rowDef.agent;
 		const patterns = this.#deps.effectiveModelPatterns(agent);
 		const resolved = this.#deps.resolvePatterns(patterns);
-		const model: TspSpan[] = [patterns.length > 0 ? span(patterns.join(","), "mono") : span("session model", "dim")];
+		const model: TspSpan[] = [patterns.length > 0 ? span(patterns.join(","), "mono") : span("会话模型", "dim")];
 		if (resolved) model.push(span(" → ", "dim"), span(resolved, "mono success"));
 		const prewalk = this.#deps.effectivePrewalkPattern(agent);
 		const advisor = this.#deps.effectiveAdvisorPattern(agent);
@@ -1606,7 +1606,7 @@ export class AgentsHubComponent implements Component {
 			"text",
 			{
 				spans: [
-					span("search: ", "muted"),
+					span("搜索：", "muted"),
 					this.#search.getValue() ? span(this.#search.getValue(), "accent") : span("输入以筛选", "dim"),
 				],
 				truncate: "end",
@@ -1718,7 +1718,7 @@ export class AgentsHubComponent implements Component {
 		} else {
 			nodes.push(
 				text([span("新建代理", "accent strong")]),
-				text([span("Describe what the agent should do; scope: ", "muted"), span(this.#createScope, "accent")], {
+				text([span("描述代理应做什么；范围：", "muted"), span(this.#createScope, "accent")], {
 					wrap: "word",
 				}),
 			);

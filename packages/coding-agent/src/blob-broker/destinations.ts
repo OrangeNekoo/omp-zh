@@ -89,21 +89,21 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "requires-account",
 		directImage: true,
 		options: [
-			{ key: "title", label: "Title", type: "string" },
+			{ key: "title", label: "标题", type: "string" },
 			{ key: "description", label: "描述", type: "string" },
-			{ key: "tags", label: "Tags", type: "string" },
+			{ key: "tags", label: "标签", type: "string" },
 			{ key: "isPublic", label: "公开可见性", type: "string" },
 			{ key: "isFriend", label: "好友可见性", type: "string" },
 			{ key: "isFamily", label: "家族可见性", type: "string" },
-			{ key: "safetyLevel", label: "Safety level", type: "string" },
+			{ key: "safetyLevel", label: "安全级别", type: "string" },
 			{ key: "contentType", label: "内容类型", type: "string" },
 			{ key: "hidden", label: "从搜索中隐藏", type: "string" },
 		],
 		credentials: [
 			{ key: "apiKey", label: "API 密钥", required: true, secret: false },
 			{ key: "apiSecret", label: "API 密钥", required: true, secret: true },
-			{ key: "oauthToken", label: "OAuth token", required: true, secret: true },
-			{ key: "oauthTokenSecret", label: "OAuth token secret", required: true, secret: true },
+			{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true },
+			{ key: "oauthTokenSecret", label: "OAuth 令牌密钥", required: true, secret: true },
 		],
 	},
 	photobucket: {
@@ -132,11 +132,11 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "available",
 		directImage: true,
 		options: noFields,
-		credentials: [{ key: "userKey", label: "User key", secret: true }],
+		credentials: [{ key: "userKey", label: "用户密钥", secret: true }],
 	},
 	"custom-image-uploader": {
 		id: "custom-image-uploader",
-		label: "ShareX custom image uploader",
+		label: "ShareX 自定义图像上传器",
 		family: "sharex-custom",
 		status: "incompatible",
 		directImage: false,
@@ -146,7 +146,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	"file-uploader": {
 		id: "file-uploader",
-		label: "ShareX delegated file uploader",
+		label: "ShareX 委托文件上传器",
 		family: "sharex-routing",
 		status: "incompatible",
 		directImage: false,
@@ -161,11 +161,11 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "requires-account",
 		directImage: true,
 		options: [
-			{ key: "uploadPath", label: "Upload path", type: "string", default: "ShareX/%y/%mo" },
+			{ key: "uploadPath", label: "上传路径", type: "string", default: "ShareX/%y/%mo" },
 			{ key: "createShareableLink", label: "创建可分享链接", type: "boolean", default: true },
-			{ key: "directLink", label: "Use direct link", type: "boolean", default: true },
+			{ key: "directLink", label: "使用直链", type: "boolean", default: true },
 		],
-		credentials: [{ key: "oauthToken", label: "OAuth token", required: true, secret: true }],
+		credentials: [{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true }],
 	},
 	ftp: {
 		id: "ftp",
@@ -182,7 +182,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 			{ key: "commandBinary", label: "FTP 命令程序", type: "string" },
 		],
 		credentials: [
-			{ key: "username", label: "Username", required: true, secret: false },
+			{ key: "username", label: "用户名", required: true, secret: false },
 			{ key: "password", label: "密码", secret: true },
 			{ key: "privateKey", label: "私钥路径", secret: true },
 		],
@@ -195,9 +195,9 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		options: [
 			{ key: "folderId", label: "文件夹 ID", type: "string" },
-			{ key: "directLink", label: "Use embed link", type: "boolean", default: true },
+			{ key: "directLink", label: "使用嵌入链接", type: "boolean", default: true },
 		],
-		credentials: [{ key: "oauthToken", label: "OAuth token", required: true, secret: true }],
+		credentials: [{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true }],
 	},
 	"google-drive": {
 		id: "google-drive",
@@ -209,7 +209,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 			{ key: "folderId", label: "文件夹 ID", type: "string" },
 			{ key: "public", label: "设为公开", type: "boolean", default: true },
 		],
-		credentials: [{ key: "oauthToken", label: "OAuth token", required: true, secret: true }],
+		credentials: [{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true }],
 	},
 	puush: {
 		id: "puush",
@@ -218,7 +218,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "requires-account",
 		directImage: true,
 		reason: "The public service is defunct; a replacement endpoint is required.",
-		options: [{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true }],
+		options: [{ key: "endpoint", label: "替换端点", type: "string", required: true }],
 		credentials: [{ key: "apiKey", label: "API 密钥", required: true, secret: true }],
 	},
 	box: {
@@ -229,16 +229,16 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		options: [
 			{ key: "folderId", label: "文件夹 ID", type: "string", default: "0" },
-			{ key: "directLink", label: "Use direct link", type: "boolean", default: true },
+			{ key: "directLink", label: "使用直链", type: "boolean", default: true },
 			{
 				key: "shareAccess",
-				label: "Share access",
+				label: "共享访问权限",
 				type: "select",
 				default: "open",
 				choices: ["open", "company", "collaborators"],
 			},
 		],
-		credentials: [{ key: "oauthToken", label: "OAuth token", required: true, secret: true }],
+		credentials: [{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true }],
 	},
 	"amazon-s3": {
 		id: "amazon-s3",
@@ -259,8 +259,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		],
 		credentials: [
 			{ key: "accessKeyId", label: "访问密钥 ID", required: true, secret: false },
-			{ key: "secretAccessKey", label: "Secret access key", required: true, secret: true },
-			{ key: "sessionToken", label: "Session token", secret: true },
+			{ key: "secretAccessKey", label: "私有访问密钥", required: true, secret: true },
+			{ key: "sessionToken", label: "会话令牌", secret: true },
 		],
 	},
 	"google-cloud-storage": {
@@ -277,7 +277,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string" },
 			{ key: "cacheControl", label: "Cache-Control", type: "string" },
 		],
-		credentials: [{ key: "oauthToken", label: "OAuth token", required: true, secret: true }],
+		credentials: [{ key: "oauthToken", label: "OAuth 令牌", required: true, secret: true }],
 	},
 	"azure-storage": {
 		id: "azure-storage",
@@ -290,7 +290,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 			{ key: "container", label: "容器", type: "string", required: true },
 			{ key: "keyPrefix", label: "对象键前缀", type: "string" },
 			{ key: "prefix", label: "对象前缀", type: "string" },
-			{ key: "path", label: "Upload path", type: "string" },
+			{ key: "path", label: "上传路径", type: "string" },
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string" },
 			{ key: "cacheControl", label: "Cache-Control", type: "string" },
 		],
@@ -307,12 +307,12 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		reason: "Configure either native B2 application keys or S3-compatible access keys.",
 		options: [
-			{ key: "endpoint", label: "S3 endpoint", type: "string" },
-			{ key: "region", label: "S3 region", type: "string", default: "us-west-004" },
+			{ key: "endpoint", label: "S3 端点", type: "string" },
+			{ key: "region", label: "S3 区域", type: "string", default: "us-west-004" },
 			{ key: "bucket", label: "存储桶", type: "string", required: true },
 			{ key: "keyPrefix", label: "对象键前缀", type: "string" },
 			{ key: "prefix", label: "对象前缀", type: "string" },
-			{ key: "path", label: "Upload path", type: "string" },
+			{ key: "path", label: "上传路径", type: "string" },
 			{ key: "pathStyle", label: "路径式请求", type: "boolean", default: false },
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string" },
 			{ key: "cacheControl", label: "Cache-Control", type: "string" },
@@ -326,9 +326,9 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		credentials: [
 			{ key: "applicationKeyId", label: "应用密钥 ID", secret: false },
 			{ key: "applicationKey", label: "应用密钥", secret: true },
-			{ key: "accessKeyId", label: "S3 access key ID", secret: false },
-			{ key: "secretAccessKey", label: "S3 secret access key", secret: true },
-			{ key: "sessionToken", label: "S3 session token", secret: true },
+			{ key: "accessKeyId", label: "S3 访问密钥 ID", secret: false },
+			{ key: "secretAccessKey", label: "S3 私有访问密钥", secret: true },
+			{ key: "sessionToken", label: "S3 会话令牌", secret: true },
 		],
 	},
 	owncloud: {
@@ -340,12 +340,12 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		options: [
 			{ key: "host", label: "主机", type: "string", required: true },
 			{ key: "path", label: "远程路径", type: "string" },
-			{ key: "directLink", label: "Use direct link", type: "boolean", default: true },
-			{ key: "previewLink", label: "Use preview link", type: "boolean", default: false },
+			{ key: "directLink", label: "使用直链", type: "boolean", default: true },
+			{ key: "previewLink", label: "使用预览链接", type: "boolean", default: false },
 			{ key: "expiryDays", label: "有效天数", type: "number" },
 		],
 		credentials: [
-			{ key: "username", label: "Username", required: true, secret: false },
+			{ key: "username", label: "用户名", required: true, secret: false },
 			{ key: "password", label: "密码", required: true, secret: true },
 		],
 	},
@@ -357,11 +357,11 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		reason: "The public API is deprecated; a replacement endpoint is required.",
 		options: [
-			{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true },
-			{ key: "path", label: "Upload path", type: "string" },
+			{ key: "endpoint", label: "替换端点", type: "string", required: true },
+			{ key: "path", label: "上传路径", type: "string" },
 		],
 		credentials: [
-			{ key: "username", label: "Username", secret: false },
+			{ key: "username", label: "用户名", secret: false },
 			{ key: "password", label: "密码", secret: true },
 			{ key: "apiKey", label: "API 密钥", secret: true },
 		],
@@ -377,7 +377,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	sendspace: {
 		id: "sendspace",
-		label: "SendSpace-compatible endpoint",
+		label: "SendSpace 兼容端点",
 		family: "legacy-host",
 		status: "available",
 		directImage: true,
@@ -393,7 +393,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		reason: "The public service is offline; a replacement endpoint is required.",
 		options: [
-			{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true },
+			{ key: "endpoint", label: "替换端点", type: "string", required: true },
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string" },
 		],
 		credentials: [
@@ -409,8 +409,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		reason: "The public service is offline; a replacement endpoint is required.",
 		options: [
-			{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true },
-			{ key: "resultBaseUrl", label: "Result base URL", type: "string" },
+			{ key: "endpoint", label: "替换端点", type: "string", required: true },
+			{ key: "resultBaseUrl", label: "结果基础 URL", type: "string" },
 		],
 		credentials: [{ key: "apiKey", label: "API 密钥", required: true, secret: true }],
 	},
@@ -421,8 +421,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "available",
 		directImage: true,
 		options: [
-			{ key: "uploadUrl", label: "Upload URL", type: "string", required: true },
-			{ key: "resultBaseUrl", label: "Result base URL", type: "string" },
+			{ key: "uploadUrl", label: "上传 URL", type: "string", required: true },
+			{ key: "resultBaseUrl", label: "结果基础 URL", type: "string" },
 			{ key: "fileField", label: "多部分文件字段", type: "string", default: "files[]" },
 			{ key: "urlPath", label: "JSON URL 路径", type: "string", default: "files.0.url" },
 		],
@@ -446,19 +446,19 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		options: [
 			{ key: "apiUrl", label: "API 地址", type: "string", required: true },
-			{ key: "repositoryId", label: "Repository ID", type: "string", required: true },
+			{ key: "repositoryId", label: "仓库 ID", type: "string", required: true },
 			{ key: "path", label: "远程路径", type: "string" },
-			{ key: "raw", label: "Use raw link", type: "boolean", default: true },
+			{ key: "raw", label: "使用原始链接", type: "boolean", default: true },
 			{ key: "expiryDays", label: "有效天数", type: "number" },
 		],
 		credentials: [
 			{ key: "authToken", label: "认证令牌", required: true, secret: true },
-			{ key: "sharePassword", label: "Share password", secret: true },
+			{ key: "sharePassword", label: "共享密码", secret: true },
 		],
 	},
 	streamable: {
 		id: "streamable",
-		label: "Streamable",
+		label: "可流式",
 		family: "video-host",
 		status: "incompatible",
 		directImage: false,
@@ -482,7 +482,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "requires-account",
 		directImage: true,
 		reason: "The public service is offline; a replacement endpoint is required.",
-		options: [{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true }],
+		options: [{ key: "endpoint", label: "替换端点", type: "string", required: true }],
 		credentials: [{ key: "apiKey", label: "API 密钥", required: true, secret: true }],
 	},
 	"transfer-sh": {
@@ -492,7 +492,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "available",
 		directImage: true,
 		reason: "The defunct public endpoint is blocked; a self-hosted replacement is required.",
-		options: [{ key: "endpoint", label: "Replacement endpoint", type: "string", required: true }],
+		options: [{ key: "endpoint", label: "替换端点", type: "string", required: true }],
 		credentials: noFields,
 	},
 	plik: {
@@ -503,7 +503,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		options: [
 			{ key: "endpoint", label: "端点", type: "string", required: true },
-			{ key: "ttlSeconds", label: "TTL seconds", type: "number" },
+			{ key: "ttlSeconds", label: "TTL 秒数", type: "number" },
 			{ key: "removable", label: "允许删除", type: "boolean", default: true },
 		],
 		credentials: [{ key: "apiKey", label: "API 密钥", secret: true }],
@@ -530,13 +530,13 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	"shared-folder": {
 		id: "shared-folder",
-		label: "Shared folder",
+		label: "共享文件夹",
 		family: "filesystem",
 		status: "available",
 		directImage: true,
 		options: [
-			{ key: "root", label: "Root directory", type: "string", required: true },
-			{ key: "path", label: "Subfolder path", type: "string" },
+			{ key: "root", label: "根目录", type: "string", required: true },
+			{ key: "path", label: "子文件夹路径", type: "string" },
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string", required: true },
 		],
 		credentials: noFields,
@@ -553,7 +553,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	"custom-file-uploader": {
 		id: "custom-file-uploader",
-		label: "ShareX custom file uploader",
+		label: "ShareX 自定义文件上传器",
 		family: "sharex-custom",
 		status: "incompatible",
 		directImage: false,
@@ -568,7 +568,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "available",
 		directImage: true,
 		options: noFields,
-		credentials: [{ key: "userHash", label: "User hash", secret: true }],
+		credentials: [{ key: "userHash", label: "用户哈希", secret: true }],
 	},
 	litterbox: {
 		id: "litterbox",
@@ -578,7 +578,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		reason: "Uploads are temporary.",
 		options: [
-			{ key: "ttl", label: "Retention", type: "select", default: "24h", choices: ["1h", "12h", "24h", "72h"] },
+			{ key: "ttl", label: "保留期", type: "select", default: "24h", choices: ["1h", "12h", "24h", "72h"] },
 		],
 		credentials: noFields,
 	},
@@ -599,7 +599,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		status: "available",
 		directImage: true,
 		reason: "Public uploads are temporary.",
-		options: [{ key: "ttl", label: "Retention", type: "string", default: "1h" }],
+		options: [{ key: "ttl", label: "保留期", type: "string", default: "1h" }],
 		credentials: noFields,
 	},
 	discord: {
@@ -610,7 +610,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		directImage: true,
 		options: [
 			{ key: "content", label: "消息内容", type: "string" },
-			{ key: "threadId", label: "Thread ID", type: "string" },
+			{ key: "threadId", label: "线程 ID", type: "string" },
 		],
 		credentials: [{ key: "webhookUrl", label: "Webhook URL", required: true, secret: true }],
 	},
@@ -670,16 +670,16 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	ssh: {
 		id: "ssh",
-		label: "SSH reverse tunnel",
+		label: "SSH 反向隧道",
 		family: "tunnel",
 		status: "requires-account",
 		directImage: true,
-		options: [{ key: "host", label: "SSH host", type: "string", required: true }],
-		credentials: [{ key: "privateKey", label: "SSH private key", secret: true }],
+		options: [{ key: "host", label: "SSH 主机", type: "string", required: true }],
+		credentials: [{ key: "privateKey", label: "SSH 私钥", secret: true }],
 	},
 	command: {
 		id: "command",
-		label: "Uploader command",
+		label: "上传器命令",
 		family: "external-command",
 		status: "available",
 		directImage: true,
@@ -701,7 +701,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		family: "tunnel",
 		status: "available",
 		directImage: true,
-		options: [{ key: "publicBaseUrl", label: "Stable public base URL", type: "string" }],
+		options: [{ key: "publicBaseUrl", label: "稳定的公共基础 URL", type: "string" }],
 		credentials: [{ key: "token", label: "Pro 令牌", secret: true }],
 	},
 	devtunnel: {
@@ -735,16 +735,16 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 	},
 	"named-cloudflared": {
 		id: "named-cloudflared",
-		label: "Named Cloudflare Tunnel",
+		label: "命名 Cloudflare 隧道",
 		family: "tunnel",
 		status: "requires-account",
 		directImage: true,
 		options: [
 			{ key: "publicBaseUrl", label: "公共基础 URL", type: "string", required: true },
 			{ key: "configFile", label: "Cloudflared 配置文件", type: "string" },
-			{ key: "tunnelName", label: "Tunnel name or UUID", type: "string" },
+			{ key: "tunnelName", label: "隧道名称或 UUID", type: "string" },
 		],
-		credentials: [{ key: "tunnelToken", label: "Tunnel token", secret: true }],
+		credentials: [{ key: "tunnelToken", label: "隧道令牌", secret: true }],
 	},
 	r2: {
 		id: "r2",
@@ -766,8 +766,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		],
 		credentials: [
 			{ key: "accessKeyId", label: "访问密钥 ID", required: true, secret: false },
-			{ key: "secretAccessKey", label: "Secret access key", required: true, secret: true },
-			{ key: "sessionToken", label: "Session token", secret: true },
+			{ key: "secretAccessKey", label: "私有访问密钥", required: true, secret: true },
+			{ key: "sessionToken", label: "会话令牌", secret: true },
 		],
 	},
 	tigris: {
@@ -789,8 +789,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		],
 		credentials: [
 			{ key: "accessKeyId", label: "访问密钥 ID", required: true, secret: false },
-			{ key: "secretAccessKey", label: "Secret access key", required: true, secret: true },
-			{ key: "sessionToken", label: "Session token", secret: true },
+			{ key: "secretAccessKey", label: "私有访问密钥", required: true, secret: true },
+			{ key: "sessionToken", label: "会话令牌", secret: true },
 		],
 	},
 	minio: {
@@ -812,8 +812,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		],
 		credentials: [
 			{ key: "accessKeyId", label: "访问密钥 ID", required: true, secret: false },
-			{ key: "secretAccessKey", label: "Secret access key", required: true, secret: true },
-			{ key: "sessionToken", label: "Session token", secret: true },
+			{ key: "secretAccessKey", label: "私有访问密钥", required: true, secret: true },
+			{ key: "sessionToken", label: "会话令牌", secret: true },
 		],
 	},
 	garage: {
@@ -835,8 +835,8 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 		],
 		credentials: [
 			{ key: "accessKeyId", label: "访问密钥 ID", required: true, secret: false },
-			{ key: "secretAccessKey", label: "Secret access key", required: true, secret: true },
-			{ key: "sessionToken", label: "Session token", secret: true },
+			{ key: "secretAccessKey", label: "私有访问密钥", required: true, secret: true },
+			{ key: "sessionToken", label: "会话令牌", secret: true },
 		],
 	},
 } as const satisfies Record<string, BlobDestinationMetadata>;

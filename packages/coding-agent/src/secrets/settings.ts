@@ -18,7 +18,7 @@ export const cfgSecretsEnabled = register({
 		tab: "providers",
 		group: "隐私",
 		label: "隐藏密钥",
-		description: "Obfuscate configured secrets and redact credential-shaped tokens before sending to AI providers",
+		description: "在发送给 AI 服务商前混淆已配置的密钥并脱敏形似凭据的令牌",
 	},
 });
 // Process-wide fallback for requests outside a session; a session's own requests redact per its

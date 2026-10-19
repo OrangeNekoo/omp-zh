@@ -95,21 +95,21 @@ export const TINY_MODEL_DEVICE_SETTING_VALUES = [
 
 /** Submenu metadata for the `providers.tinyModelDevice` setting. */
 export const TINY_MODEL_DEVICE_SETTING_OPTIONS = [
-	{ value: "default", label: "默认", description: "CPU-only inference" },
-	{ value: "gpu", label: "GPU", description: "Accelerated provider (WebGPU/Metal, CUDA, or DirectML)" },
-	{ value: "cpu", label: "CPU", description: "CPU-only inference" },
-	{ value: MLX_DEVICE, label: "MLX", description: "Apple silicon GPU via mlx-lm (Python subprocess; macOS arm64)" },
-	{ value: "metal", label: "Metal", description: "Alias for MLX" },
-	{ value: "webgpu", label: "WebGPU", description: "WebGPU/Metal backend" },
-	{ value: "cuda", label: "CUDA", description: "NVIDIA CUDA (Linux x64)" },
-	{ value: "dml", label: "DirectML", description: "DirectML backend (Windows)" },
-	{ value: "coreml", label: "CoreML", description: "Apple CoreML (opt-in; can fail to load)" },
-	{ value: "auto", label: "自动", description: "Let ONNX Runtime choose a provider" },
-	{ value: "wasm", label: "WASM", description: "WebAssembly backend" },
-	{ value: "webnn", label: "WebNN", description: "WebNN backend" },
-	{ value: "webnn-gpu", label: "WebNN GPU", description: "WebNN GPU device" },
-	{ value: "webnn-cpu", label: "WebNN CPU", description: "WebNN CPU device" },
-	{ value: "webnn-npu", label: "WebNN NPU", description: "WebNN NPU device" },
+	{ value: "default", label: "默认", description: "纯 CPU 推理" },
+	{ value: "gpu", label: "GPU", description: "加速提供程序（WebGPU/Metal、CUDA 或 DirectML）" },
+	{ value: "cpu", label: "CPU", description: "纯 CPU 推理" },
+	{ value: MLX_DEVICE, label: "MLX", description: "通过 mlx-lm 使用 Apple 芯片 GPU（Python 子进程；macOS arm64）" },
+	{ value: "metal", label: "Metal", description: "MLX 的别名" },
+	{ value: "webgpu", label: "WebGPU", description: "WebGPU/Metal 后端" },
+	{ value: "cuda", label: "CUDA", description: "NVIDIA CUDA（Linux x64）" },
+	{ value: "dml", label: "DirectML", description: "DirectML 后端（Windows）" },
+	{ value: "coreml", label: "CoreML", description: "Apple CoreML（需主动启用；可能加载失败）" },
+	{ value: "auto", label: "自动", description: "让 ONNX Runtime 选择提供程序" },
+	{ value: "wasm", label: "WASM", description: "WebAssembly 后端" },
+	{ value: "webnn", label: "WebNN", description: "WebNN 后端" },
+	{ value: "webnn-gpu", label: "WebNN GPU", description: "WebNN GPU 设备" },
+	{ value: "webnn-cpu", label: "WebNN CPU", description: "WebNN CPU 设备" },
+	{ value: "webnn-npu", label: "WebNN NPU", description: "WebNN NPU 设备" },
 ] as const satisfies ReadonlyArray<{
 	value: (typeof TINY_MODEL_DEVICE_SETTING_VALUES)[number];
 	label: string;

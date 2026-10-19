@@ -69,20 +69,20 @@ export const TINY_MODEL_DTYPE_SETTING_VALUES = [
 
 /** Submenu metadata for the `providers.tinyModelDtype` setting. */
 export const TINY_MODEL_DTYPE_SETTING_OPTIONS = [
-	{ value: "default", label: "默认", description: "Each model's shipped dtype (currently q4)" },
-	{ value: "q4", label: "q4", description: "4-bit weights; smallest and fastest" },
-	{ value: "q4f16", label: "q4f16", description: "4-bit weights with fp16 activations" },
-	{ value: "q8", label: "q8", description: "8-bit quantization" },
-	{ value: "fp16", label: "fp16", description: "16-bit float; higher fidelity, larger" },
-	{ value: "fp32", label: "fp32", description: "Full precision; largest and slowest" },
-	{ value: "int8", label: "int8", description: "Signed 8-bit integer" },
-	{ value: "uint8", label: "uint8", description: "Unsigned 8-bit integer" },
-	{ value: "bnb4", label: "bnb4", description: "bitsandbytes 4-bit" },
-	{ value: "q2", label: "q2", description: "2-bit weights" },
-	{ value: "q2f16", label: "q2f16", description: "2-bit weights with fp16 activations" },
-	{ value: "q1", label: "q1", description: "1-bit weights" },
-	{ value: "q1f16", label: "q1f16", description: "1-bit weights with fp16 activations" },
-	{ value: "auto", label: "自动", description: "Let transformers.js choose per device" },
+	{ value: "default", label: "默认", description: "各模型自带的 dtype（当前为 q4）" },
+	{ value: "q4", label: "q4", description: "4 位权重；体积最小、速度最快" },
+	{ value: "q4f16", label: "q4f16", description: "4 位权重，fp16 激活" },
+	{ value: "q8", label: "q8", description: "8 位量化" },
+	{ value: "fp16", label: "fp16", description: "16 位浮点；保真度更高，体积更大" },
+	{ value: "fp32", label: "fp32", description: "全精度；体积最大、速度最慢" },
+	{ value: "int8", label: "int8", description: "有符号 8 位整数" },
+	{ value: "uint8", label: "uint8", description: "无符号 8 位整数" },
+	{ value: "bnb4", label: "bnb4", description: "bitsandbytes 4 位" },
+	{ value: "q2", label: "q2", description: "2 位权重" },
+	{ value: "q2f16", label: "q2f16", description: "2 位权重，fp16 激活" },
+	{ value: "q1", label: "q1", description: "1 位权重" },
+	{ value: "q1f16", label: "q1f16", description: "1 位权重，fp16 激活" },
+	{ value: "auto", label: "自动", description: "由 transformers.js 按设备选择" },
 ] as const satisfies ReadonlyArray<{
 	value: (typeof TINY_MODEL_DTYPE_SETTING_VALUES)[number];
 	label: string;

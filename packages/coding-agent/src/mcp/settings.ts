@@ -26,7 +26,7 @@ export const cfgMcpStartupTimeoutMs = register({
 		tab: "tools",
 		group: "发现与 MCP",
 		label: "MCP 启动窗口",
-		description: "Wait this many milliseconds for initial MCP tool discovery; 0 waits until connections settle",
+		description: "等待初始 MCP 工具发现的毫秒数；0 表示等到连接稳定",
 	},
 });
 
@@ -38,7 +38,7 @@ export const cfgMcpRenderMarkdownResults = register({
 		tab: "tools",
 		group: "发现与 MCP",
 		label: "MCP Markdown 结果",
-		description: "Render non-JSON MCP text results as Markdown in the transcript",
+		description: "在会话记录中把非 JSON 的 MCP 文本结果渲染为 Markdown",
 	},
 });
 effect(cfgMcpRenderMarkdownResults, setMcpRenderMarkdownResults);
@@ -64,6 +64,6 @@ export const cfgMcpNotificationDebounceMs = register({
 		group: "发现与 MCP",
 		label: "MCP 通知防抖",
 		description:
-			"Debounce window in milliseconds for MCP resource updates before injecting them into the conversation",
+			"MCP 资源更新在注入对话前的防抖窗口（毫秒）",
 	},
 });

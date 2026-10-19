@@ -261,7 +261,7 @@ export class BashInteractiveOverlayComponent implements Component {
 
 	#stateSpan(): TspSpan {
 		if (this.#state === "running") return span("running", "warning");
-		if (this.#state === "timed_out") return span("timed out", "warning");
+		if (this.#state === "timed_out") return span("已超时", "warning");
 		if (this.#state === "killed") return span("killed", "warning");
 		if (this.#exitCode === 0) return span("exit 0", "success");
 		if (this.#exitCode === undefined) return span("exited", "warning");

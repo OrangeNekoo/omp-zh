@@ -233,7 +233,7 @@ export class InspectorPanel implements Component {
 
 	/** File content as markdown source, cut to the preview budget until expanded. */
 	#nativePreviewSection(heading: string, raw: string): NativeNode {
-		if (!raw) return this.#nativeSection(heading, [text([span("(empty)", "dim")])]);
+		if (!raw) return this.#nativeSection(heading, [text([span("（空）", "dim")])]);
 		const lines = sanitizeDisplayText(raw).split("\n");
 		const cut = !this.#expanded && lines.length > PREVIEW_LINE_BUDGET;
 		const shown = cut ? lines.slice(0, PREVIEW_LINE_BUDGET - 1) : lines;
@@ -346,14 +346,14 @@ export class InspectorPanel implements Component {
 			case "skill": {
 				const data = skillInspectorData(ext);
 				const surface = kv([
-					["apply", data.alwaysApply ? [span("always apply", "accent")] : undefined],
+					["apply", data.alwaysApply ? [span("始终应用", "accent")] : undefined],
 					["globs", data.globs?.join(", ")],
 				]);
 				return {
 					...base,
 					description: data.description,
 					runtime: data.hidden
-						? [["Visibility", [span("hidden", "warning"), span("  omitted from the system-prompt skill list")]]]
+						? [["Visibility", [span("hidden", "warning"), span("  已从系统提示词技能列表中省略")]]]
 						: [],
 					sections: surface ? [keyed(surface, "surface")] : [],
 					preview: { heading: "Instruction", text: data.content },

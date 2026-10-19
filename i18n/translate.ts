@@ -93,6 +93,7 @@ function findReplacements(
 	code: string,
 	dictionary: Map<string, string>,
 	onHit: (range: Range, source: string, kind: string, text: string) => void,
+	onMatch?: (source: string) => void,
 ): void {
 	let ast: unknown;
 	try {
@@ -107,6 +108,8 @@ function findReplacements(
 		if (value === undefined) return;
 		const translated = resolve(value, dictionary);
 		if (translated === undefined || translated === value) return;
+		// 词典条目被源码命中，从「失效条目」中移除
+		onMatch?.(value);
 		if (typeof node.start !== "number" || typeof node.end !== "number") return;
 		onHit({ start: node.start, end: node.end }, value, kind, translated);
 	};
@@ -117,6 +120,7 @@ function findReplacements(
 		const value = node.quasis.map((q: any) => q.value.cooked ?? "").join("");
 		const translated = resolve(value, dictionary);
 		if (translated === undefined || translated === value) return;
+		onMatch?.(value);
 		onHit({ start: node.start, end: node.end }, value, kind, translated);
 	};
 
@@ -294,7 +298,8 @@ export function translateAll(options: { dryRun?: boolean; root?: string } = {}):
 	const root = options.root ?? ROOT;
 	const dictionary = loadDictionary();
 	const replacements: Replacement[] = [];
-	const missing = new Set<string>();
+	/** 词典中从未被源码命中的条目：上游改动文案后，这些键会失效。 */
+	const missing = new Set<string>(dictionary.keys());
 	let filesChanged = 0;
 
 	for (const directory of ["packages/tui/src", "packages/coding-agent/src"]) {
@@ -307,18 +312,24 @@ export function translateAll(options: { dryRun?: boolean; root?: string } = {}):
 			const lineStarts = computeLineStarts(code);
 			const internal: InternalReplacement[] = [];
 
-			findReplacements(relative, code, dictionary, (range, source, kind, text) => {
-				internal.push({
-					file: relative,
-					line: lineOf(lineStarts, range.start),
-					kind,
-					source,
-					text,
-					start: range.start,
-					end: range.end,
-					replacement: quoteLike(code.slice(range.start, range.end), text),
-				});
-			});
+			findReplacements(
+				relative,
+				code,
+				dictionary,
+				(range, source, kind, text) => {
+					internal.push({
+						file: relative,
+						line: lineOf(lineStarts, range.start),
+						kind,
+						source,
+						text,
+						start: range.start,
+						end: range.end,
+						replacement: quoteLike(code.slice(range.start, range.end), text),
+					});
+				},
+				source => missing.delete(source),
+			);
 
 			if (internal.length === 0) continue;
 			const uniqueItems = dedupeByRange(internal);
@@ -423,6 +434,20 @@ function main(): void {
 		process.stdout.write(`  ${String(count).padStart(4)}  ${file}\n`);
 	}
 	process.stdout.write(`报告：${path.relative(ROOT, REPORT_PATH)}\n`);
+
+	// 词典里已不再被源码命中的条目：上游改了文案、或该条已译成中文。
+	// 翻译是按原文精确匹配的，重跑时已翻译的条目自然不再命中——这不代表
+	// 词典失效，而是「本仓库源码已处于汉化状态」。因此只在有替换发生时才
+	// 提示，避免每次重跑都刷出全部条目。
+	if (result.missing.length > 0 && result.replacements.length > 0) {
+		process.stdout.write(
+			`\n本次未命中的词典条目：${result.missing.length} 条（多数已在此前译好）。` +
+				`\n示例：${result.missing
+					.slice(0, 5)
+					.map(s => JSON.stringify(s.slice(0, 50)))
+					.join(", ")}\n`,
+		);
+	}
 
 	if (showReport) {
 		for (const item of result.replacements.slice(0, 40)) {

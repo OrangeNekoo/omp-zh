@@ -165,7 +165,7 @@ function renderSubmission(s: Submission, options: RenderResultOptions, theme: Th
 				spinnerFrame: options.spinnerFrame,
 				title: TITLE,
 				description: s.target,
-				badge: s.overridden ? { label: "schema overridden", color: "warning" } : undefined,
+				badge: s.overridden ? { label: "schema 已覆盖", color: "warning" } : undefined,
 				meta: size ? [size] : undefined,
 			};
 			const phase: ToolCardPhase = !s.settled ? (running ? "running" : "partial") : failed ? "error" : "success";
