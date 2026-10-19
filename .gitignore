@@ -94,3 +94,7 @@ packages/coding-agent/bench/boot-baseline.json
 /.bazelrc.user
 
 .parity/
+
+# i18n 生成物（由 bun i18n/extract.ts / translate.ts 本地生成）
+i18n/extracted.json
+i18n/report.json

@@ -29,8 +29,9 @@ i18n/
   extract.ts           扫描源码，产出待翻译清单
   translate.ts         按词典重写 AST 字符串节点（幂等、带语法校验）
   apply-cli-name.ts    把 omp 改名成 omp-zh 的补丁
-  extracted.json       待翻译清单快照
-  report.json          最近一次替换的明细（文件、行号、原文、译文）
+  check-groups.ts      校验设置面板分组名是否同源翻译（CI 闸门）
+  extracted.json       待翻译清单快照（本地生成，已 gitignore）
+  report.json          最近一次替换的明细（本地生成，已 gitignore）
 ```
 
 `translate.ts` 不是文本替换：它用 Babel 解析 TypeScript，只重写被规则命中的**字符串字面量节点**，因此不会破坏注释、模板字符串或代码结构。写盘前还会重新解析一遍，语法不合法就中止。
@@ -157,7 +158,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    bun i18n/extract.ts
    ```
 
-   结果写入 `i18n/extracted.json`，并打印命中位置分布。
+   结果写入 `i18n/extracted.json`（已 gitignore，属本地快照），并打印命中位置分布。
 
 2. 在 `i18n/dictionary.json` 里补上「英文原文 → 简体中文」：
 
@@ -175,7 +176,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    bun i18n/translate.ts
    ```
 
-   脚本打印替换数量与涉及文件，并把明细写进 `i18n/report.json`。
+   脚本打印替换数量与涉及文件，并把明细写进 `i18n/report.json`（已 gitignore）。
 
 4. 校验：
 
@@ -213,13 +214,17 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 流程：
 
-1. 拉取 `can1357/oh-my-pi` 的目标分支
-2. 若已包含该提交则跳过
-3. 把 `i18n/` 与 `scripts/link-omp.sh` 暂存到临时目录
-4. 工作区切换到上游提交（丢弃旧的翻译结果）
-5. 还原 `i18n/`，执行 `bun i18n/translate.ts`
-6. 依次校验：提取器仍能命中、CLI 能启动、三个包的类型检查通过
-7. 执行 `bun i18n/apply-cli-name.ts` 重新套用 `omp-zh` 改名
+1. 拉取 `can1357/oh-my-pi` 的目标分支（默认 `main`）
+2. 若 `main` 已包含该提交则跳过
+3. 备份本 fork 自有的文件：`i18n/`、`README.md`、本工作流、`assets/`
+4. 工作区切换到上游提交，并清除旧翻译结果
+5. 还原上述自有文件，执行 `bun i18n/translate.ts`
+6. 执行 `bun i18n/apply-cli-name.ts` 重新套用 `omp-zh` 改名
+7. 依次通过四道闸门：
+   - 提取器命中数 ≥ 50（否则说明汉化规则已失效）
+   - 分组名校验 `bun i18n/check-groups.ts`
+   - `omp-zh --version` 必须输出 `omp-zh/*`
+   - `packages/utils`、`packages/tui`、`packages/coding-agent` 类型检查
 8. 提交并推送回 `main`
 
 任何一步失败都不会推送，避免把损坏的构建推到主分支。

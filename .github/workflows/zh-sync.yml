@@ -1,20 +1,22 @@
 name: Sync upstream and re-apply 汉化
 
-# 拉取上游 can1357/oh-my-pi 的 main，重放本仓库的汉化改动，验证后推送。
+# 拉取上游 can1357/oh-my-pi 的 main，在最新源码上重放汉化，校验后推送。
 #
-# 为什么这样做：上游每天都在更新界面文案与代码结构。若把汉化结果当作
-# 一次性补丁，上游一更新就会冲突。因此汉化被拆成两部分：
-#   1. i18n/dictionary.json —— 人工维护的英文→中文词典（可叠加、可审查）
+# 为什么重放而不是合并：上游每天都在改界面文案和代码结构。把汉化当成
+# 一次性 diff，上游一动就冲突。这里把汉化拆成两部分——
+#   1. i18n/dictionary.json —— 人工维护的英中词典
 #   2. i18n/*.ts —— 确定性的 AST 重写器（作用于当前上游源码）
-# 同步时重新执行一次重写器，而不是合并旧的翻译 diff，冲突面因此收敛到
-# 词典条目本身。
+# 同步时重新跑一次重写器，冲突面因此收敛到词典条目本身。
 #
-# 校验闸门：重写后源码必须仍能被解析、CLI 必须能启动、类型检查必须通过。
-# 任何一步失败都不会推送，避免把损坏的构建推到 main。
+# 本工作流只覆盖上游拥有的文件；本 fork 自有的文件（README、本工作流、
+# i18n/、assets 等）在切换上游源码前先备份，切换后原样还原。
+#
+# 校验闸门：重写后源码必须仍能解析、CLI 必须能启动、类型检查必须通过。
+# 任一步失败都不推送，避免把损坏的构建推到 main。
 
 on:
    schedule:
-      # 每天 UTC 03:17 跑一次（避开整点，减少 GitHub Actions 排队）
+      # 每天 UTC 03:17（避开整点，减少排队）
       - cron: "17 3 * * *"
    workflow_dispatch:
       inputs:
@@ -30,6 +32,9 @@ concurrency:
    group: zh-sync
    cancel-in-progress: false
 
+env:
+   UPSTREAM_REPO: can1357/oh-my-pi
+
 jobs:
    sync:
       name: Re-apply 汉化 onto upstream
@@ -39,7 +44,6 @@ jobs:
            uses: actions/checkout@v4
            with:
               fetch-depth: 0
-              # 用 fork 自己的 token 推送
               token: ${{ secrets.GITHUB_TOKEN }}
 
          - name: Setup Bun
@@ -53,46 +57,59 @@ jobs:
               git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
          - name: Fetch upstream
+           id: upstream
            run: |
-              git remote add upstream https://github.com/can1357/oh-my-pi.git || true
-              git fetch --no-tags upstream "${{ inputs.upstream_ref || 'main' }}"
-              UPSTREAM_SHA=$(git rev-parse FETCH_HEAD)
-              echo "UPSTREAM_SHA=$UPSTREAM_SHA" >> "$GITHUB_ENV"
-              echo "上游提交：$UPSTREAM_SHA"
+              git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+              git fetch --no-tags --depth=1 upstream "${{ inputs.upstream_ref || 'main' }}"
+              sha=$(git rev-parse FETCH_HEAD)
+              echo "sha=$sha" >> "$GITHUB_OUTPUT"
+              echo "上游提交：$sha"
 
          - name: Skip when already up to date
            id: check
            run: |
-              # 已经包含上游提交就不必重跑
-              if git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
+              # 该提交已在 main 的历史里就不必重跑
+              if git merge-base --is-ancestor "${{ steps.upstream.outputs.sha }}" HEAD; then
                  echo "need_sync=false" >> "$GITHUB_OUTPUT"
-                 echo "已在最新上游，跳过。"
+                 echo "已包含最新上游提交，跳过。"
               else
                  echo "need_sync=true" >> "$GITHUB_OUTPUT"
               fi
 
-         # 关键步骤：把汉化脚本与词典（本仓库自有文件）取出来，再切换到上游源码。
-         # 这样重写器总是作用于上游最新代码，而不是旧的翻译结果。
-         - name: Stage 汉化 tooling
+         # 本 fork 自有的文件：上游没有，或需要保持本仓库版本。
+         # 切换上游源码前备份，切换后还原。
+         - name: Back up fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
-              mkdir -p /tmp/zh-tooling
-              cp -R i18n /tmp/zh-tooling/i18n
-              cp -R scripts/link-omp.sh /tmp/zh-tooling/ 2>/dev/null || true
+              mkdir -p /tmp/fork-owned
+              cp -R i18n /tmp/fork-owned/i18n
+              cp README.md /tmp/fork-owned/README.md
+              mkdir -p /tmp/fork-owned/workflows
+              cp .github/workflows/zh-sync.yml /tmp/fork-owned/workflows/zh-sync.yml
+              # 上游没有的 fork 资产（如 logo）一并保留
+              if [ -d assets ]; then cp -R assets /tmp/fork-owned/assets; fi
 
-         - name: Reset working tree to upstream
+         - name: Switch tree to upstream source
            if: steps.check.outputs.need_sync == 'true'
            run: |
-              git checkout --detach "$UPSTREAM_SHA"
-              git clean -fdx -e node_modules || true
+              git checkout --force --detach "${{ steps.upstream.outputs.sha }}"
+              # 清掉上游源码之外的一切（含旧翻译结果），但保留 .git
+              git clean -fdx -e node_modules
 
-         - name: Restore 汉化 tooling
+         - name: Restore fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
               rm -rf i18n
-              cp -R /tmp/zh-tooling/i18n i18n
-              # 只保留词典、规则与脚本；report.json 是产物，不入库
+              cp -R /tmp/fork-owned/i18n i18n
+              # report.json 是产物，不入库
               rm -f i18n/report.json
+              cp /tmp/fork-owned/README.md README.md
+              mkdir -p .github/workflows
+              cp /tmp/fork-owned/workflows/zh-sync.yml .github/workflows/zh-sync.yml
+              if [ -d /tmp/fork-owned/assets ]; then
+                 rm -rf assets
+                 cp -R /tmp/fork-owned/assets assets
+              fi
 
          - name: Install dependencies
            if: steps.check.outputs.need_sync == 'true'
@@ -102,30 +119,43 @@ jobs:
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/translate.ts
 
-         - name: Verify translated sources still parse
+         - name: Apply omp-zh command name
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/apply-cli-name.ts
+
+         - name: Gate — 汉化必须命中源码
            if: steps.check.outputs.need_sync == 'true'
            run: |
-              # translate.ts 内部已在写盘前做过语法校验；这里再跑一次提取，
-              # 确认重写器对当前上游结构仍然生效（未命中任何位置说明规则失效）。
-              bun i18n/extract.ts --check
+              # 若规则全部失效（上游重构了 UI 文案结构），提取器会命中 0 条。
+              # 这种情况下重放等于什么都没做，必须停下来让人看，而不是静默推送。
+              bun i18n/extract.ts --check | tee /tmp/extract.log
+              count=$(grep -oE '[0-9]+ 条唯一界面文案' /tmp/extract.log | grep -oE '^[0-9]+' || echo 0)
+              echo "提取命中：$count 条"
+              if [ "$count" -lt 50 ]; then
+                 echo "::error::提取器仅命中 $count 条文案，汉化规则可能已失效，停止同步。"
+                 exit 1
+              fi
 
-         - name: Verify CLI boots
+         - name: Gate — 分组名必须与设置定义一致
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/check-groups.ts
+
+         - name: Gate — CLI 必须能启动
            if: steps.check.outputs.need_sync == 'true'
            run: |
-              bun packages/coding-agent/src/cli.ts --version
+              output=$(bun packages/coding-agent/src/cli.ts --version)
+              echo "$output"
+              case "$output" in
+                 omp-zh/*) ;;
+                 *) echo "::error::--version 未报告 omp-zh，停止同步。"; exit 1 ;;
+              esac
 
-         - name: Verify types
+         - name: Gate — 类型检查
            if: steps.check.outputs.need_sync == 'true'
            run: |
               (cd packages/utils && bun run check:types)
               (cd packages/tui && bun run check:types)
               (cd packages/coding-agent && bun run check:types)
-
-         - name: Restore omp-zh command name
-           if: steps.check.outputs.need_sync == 'true'
-           run: |
-              # 上游的 package.json 每次发布都会重写 bin 字段，改名必须重新套用。
-              bun i18n/apply-cli-name.ts
 
          - name: Commit and push
            if: steps.check.outputs.need_sync == 'true'
@@ -135,7 +165,7 @@ jobs:
                  echo "没有需要提交的改动。"
                  exit 0
               fi
-              SUBJECT=$(git log -1 --format=%s "$UPSTREAM_SHA")
-              git commit -m "chore(zh): sync upstream ${UPSTREAM_SHA:0:12} and re-apply 汉化" \
-                 -m "上游提交：$SUBJECT"
+              subject=$(git log -1 --format=%s "${{ steps.upstream.outputs.sha }}")
+              git commit -m "chore(zh): 同步上游 ${{ steps.upstream.outputs.sha }} 并重放汉化" \
+                 -m "上游提交：$subject"
               git push origin HEAD:main
