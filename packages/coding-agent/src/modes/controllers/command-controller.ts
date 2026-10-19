@@ -2045,7 +2045,7 @@ export class CommandController {
 		}
 		this.ctx.statusContainer.disposeChildren();
 
-		const cancelHint = `(${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`;
+		const cancelHint = `(${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`;
 		const label = isAuto ? `Auto-compacting context... ${cancelHint}` : `Compacting context... ${cancelHint}`;
 		const compactingLoader = new Loader(
 			this.ctx.ui,
@@ -2144,7 +2144,7 @@ export class CommandController {
 			this.ctx.ui,
 			spinner => theme.fg("accent", spinner),
 			text => theme.fg("muted", text),
-			`Generating handoff… (${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`,
+			`Generating handoff… (${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`,
 			getSymbolTheme().spinnerFrames,
 		);
 		this.ctx.statusContainer.addChild(handoffLoader);

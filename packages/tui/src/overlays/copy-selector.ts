@@ -818,7 +818,7 @@ export class CopySelectorComponent implements Component {
 				upDown,
 				blocks.length > 0 ? { keys: ["right"], label: "blocks" } : undefined,
 				{ keys: ["enter"], label: action },
-				this.#truncated ? { keys: ["a"], label: "earlier turns" } : undefined,
+				this.#truncated ? { keys: ["a"], label: "更早的轮次" } : undefined,
 				cancel,
 			];
 		}
@@ -1112,7 +1112,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 				if (message.output.trim()) blocks.push({ label: "output", content: message.output, entry });
 				break;
 			case "pythonExecution":
-				blocks.push({ label: "eval code", content: message.code, entry, language: "python" });
+				blocks.push({ label: "eval 代码", content: message.code, entry, language: "python" });
 				if (message.output.trim()) blocks.push({ label: "output", content: message.output, entry });
 				break;
 			default:
@@ -1131,7 +1131,7 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 			return { content: rawUserText(message), label: "user message" };
 		case "assistant": {
 			const text = assistantVisibleText(message);
-			if (text) return { content: text, label: "assistant message" };
+			if (text) return { content: text, label: "助手消息" };
 			break;
 		}
 		case "toolResult": {
@@ -1142,12 +1142,12 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 		case "bashExecution":
 			return {
 				content: [message.command, message.output].filter(part => part.trim()).join("\n"),
-				label: "bash execution",
+				label: "bash 执行",
 			};
 		case "pythonExecution":
 			return {
 				content: [message.code, message.output].filter(part => part.trim()).join("\n"),
-				label: "eval execution",
+				label: "eval 执行",
 			};
 		case "compactionSummary":
 		case "branchSummary":

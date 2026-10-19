@@ -847,7 +847,7 @@ export class RewindSelectorComponent implements Component {
 					upDown,
 					{ keys: ["left", "right"], label: columns.length > 0 ? "branches" : "user turns" },
 					{ keys: ["f"], label: "filter" },
-					this.#truncated ? { keys: ["a"], label: "earlier turns" } : undefined,
+					this.#truncated ? { keys: ["a"], label: "更早的轮次" } : undefined,
 				]),
 				actionBar([null, actionButton("取消", "cancel", { keys: "escape" }), rewind]),
 			];

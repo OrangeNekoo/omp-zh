@@ -412,7 +412,7 @@ export class HistorySearchComponent extends OverlayPanel {
 			empty: "No history yet",
 			actions: [
 				pickerAction("insert", "Insert", "enter", { primary: true }),
-				pickerAction("close", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
+				pickerAction("关闭", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
 			],
 		});
 	}

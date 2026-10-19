@@ -55,7 +55,7 @@ export function formatErrorBlock(
 		rows.push(
 			theme.fg(
 				"dim",
-				`${CONTINUATION_INDENT}… +${hidden} more line${hidden === 1 ? "" : "s"} (${expandKeyHint()} to expand)`,
+				`${CONTINUATION_INDENT}… +${hidden} more line${hidden === 1 ? "" : "s"} (${expandKeyHint()} to 展开)`,
 			),
 		);
 	}

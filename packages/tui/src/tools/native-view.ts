@@ -363,7 +363,7 @@ export function diagnosticsSection(
 	const shown = rows.slice(0, DIAGNOSTIC_ROWS);
 	const hidden = rows.length - shown.length;
 	if (hidden > 0) {
-		shown.push(text([span(`+${hidden} more`, "muted")], { role: "omp.tool.stats", key: "more" }));
+		shown.push(text([span(`另有 ${hidden} 项`, "muted")], { role: "omp.tool.stats", key: "more" }));
 	}
 	return node(
 		"section",

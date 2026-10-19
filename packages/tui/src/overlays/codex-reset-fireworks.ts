@@ -185,10 +185,10 @@ function drawBanner(
 	const esc = formatKeyHint("escape");
 	const subtitleText =
 		event.kind === "unscheduled-weekly-reset"
-			? `Weekly usage cleared early · ${esc} to return`
+			? `Weekly usage cleared early · ${esc} to 返回`
 			: event.added === 1
-				? `New reset banked · ${event.available} available · ${esc} to return`
-				: `${event.added} resets banked · ${event.available} available · ${esc} to return`;
+				? `New reset banked · ${event.available} available · ${esc} to 返回`
+				: `${event.added} resets banked · ${event.available} available · ${esc} to 返回`;
 	const title = truncateToWidth(titleText, innerWidth, "");
 	const subtitle = truncateToWidth(subtitleText, innerWidth, "");
 	const titleOffset = Math.floor((innerWidth - visibleWidth(title)) / 2);

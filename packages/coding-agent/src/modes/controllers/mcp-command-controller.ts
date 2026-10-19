@@ -957,7 +957,7 @@ export class MCPCommandController {
 							new Text(
 								theme.fg(
 									"muted",
-									`Waiting for authorization... (Press ${appKey(this.ctx.keybindings, "app.interrupt")} to cancel, 5 minute timeout)`,
+									`Waiting for authorization... (Press ${appKey(this.ctx.keybindings, "app.interrupt")} to 取消, 5 minute timeout)`,
 								),
 								1,
 								0,
@@ -1504,7 +1504,7 @@ export class MCPCommandController {
 					[
 						theme.fg("muted", "No MCP servers configured."),
 						"",
-						`Use ${theme.fg("accent", "/mcp add")} to add a server.`,
+						`Use ${theme.fg("accent", "/mcp add")} to 添加 a server.`,
 					].join("\n"),
 				);
 				return;
@@ -1721,7 +1721,7 @@ export class MCPCommandController {
 			const text = new Text(
 				theme.fg(
 					"muted",
-					`Testing connection to "${name}"... (${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`,
+					`Testing connection to "${name}"... (${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`,
 				),
 				1,
 				1,
@@ -2448,7 +2448,7 @@ export class MCPCommandController {
 
 	async #handleSmitheryLoginWithApiKey(): Promise<boolean> {
 		const apiKey = await this.#promptSmitheryApiKey(
-			`Smithery API key (${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`,
+			`Smithery API key (${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`,
 		);
 		if (!apiKey) return false;
 		await saveSmitheryApiKey(apiKey);

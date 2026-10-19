@@ -40,7 +40,7 @@ export class QueuedMessagesBand extends Container {
 			}
 		}
 		this.addChild(
-			new TruncatedText(theme.fg("dim", `  ${theme.tree.hook} ${formatKeyHint(dequeueKey)} to edit`), 1, 0),
+			new TruncatedText(theme.fg("dim", `  ${theme.tree.hook} ${formatKeyHint(dequeueKey)} to 编辑`), 1, 0),
 		);
 		const editTitle = `Edit  ${formatTooltipKey(dequeueKey)}`;
 

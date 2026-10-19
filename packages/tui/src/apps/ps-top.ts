@@ -724,14 +724,14 @@ export class PsTopComponent implements Component {
 			body.push(` ${chalk.bold(daemonLabel(daemon))}`);
 			body.push("");
 			const rows: KeyValueRow[] = [
-				{ label: "command:", value: collapseCommand(formatCommand(info.spec)) },
-				{ label: "cwd:", value: info.spec.cwd },
+				{ label: "命令：", value: collapseCommand(formatCommand(info.spec)) },
+				{ label: "cwd：", value: info.spec.cwd },
 			];
 			if (!TERMINAL_STATES[daemon.state])
 				rows.push({ label: "uptime:", value: formatDuration(Date.now() - daemon.startedAt) });
-			if (daemon.exitReason) rows.push({ label: "exit:", value: daemon.exitReason });
+			if (daemon.exitReason) rows.push({ label: "退出：", value: daemon.exitReason });
 			rows.push({ label: "restarts:", value: `${daemon.restartCount} (policy: ${info.spec.restart})` });
-			rows.push({ label: "owner:", value: daemon.owner ?? "-" });
+			rows.push({ label: "所有者：", value: daemon.owner ?? "-" });
 			this.#infoList.setRows(rows);
 			body.push(...this.#infoList.render(width));
 			body.push(`   pty: ${info.spec.pty}  persist: ${info.spec.persist}  detached: ${info.spec.detached}`);

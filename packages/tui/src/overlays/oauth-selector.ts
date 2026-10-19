@@ -558,7 +558,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 			children.push(
 				node(
 					"input",
-					{ text: this.#search.getValue(), cursor: this.#search.getCursor(), placeholder: "Type to search" },
+					{ text: this.#search.getValue(), cursor: this.#search.getCursor(), placeholder: "输入以搜索" },
 					undefined,
 					"search",
 				),

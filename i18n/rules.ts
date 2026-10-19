@@ -24,6 +24,8 @@ export const INCLUDE_FILES: readonly RegExp[] = [
 	/^packages\/tui\/src\/keybindings\.ts$/,
 	/^packages\/tui\/src\/app-keybindings\.ts$/,
 	/^packages\/tui\/src\/key-hint-format\.ts$/,
+	// 首次使用引导（场景标题、选项、说明）
+	/^packages\/tui\/src\/setup\/.*\.ts$/,
 
 	// ── 交互模式（状态提示、对话框、控制器） ────────────────────
 	/^packages\/coding-agent\/src\/modes\/.*\.ts$/,
@@ -34,7 +36,18 @@ export const INCLUDE_FILES: readonly RegExp[] = [
 
 	// ── 设置面板的 UI 元数据（label/description/group） ─────────
 	/^packages\/coding-agent\/src\/(?:.*\/)?settings\.ts$/,
+	// 设置分组散落在非 settings 命名的模块里（如 context-settings、ttsr-settings）
+	/^packages\/coding-agent\/src\/.*-settings\.ts$/,
 	/^packages\/coding-agent\/src\/config\/settings-ui\.ts$/,
+	// 设置项的枚举选项与显示映射
+	/^packages\/coding-agent\/src\/config\/service-tier\.ts$/,
+	// 设置面板里出现的第三方服务配置字段（图像上传目的地等）
+	/^packages\/coding-agent\/src\/blob-broker\/destinations\.ts$/,
+	// 设置里的模型/语音等选项清单
+	/^packages\/coding-agent\/src\/tiny\/(?:models|dtype|device)\.ts$/,
+	/^packages\/coding-agent\/src\/tts\/models\.ts$/,
+	/^packages\/coding-agent\/src\/stt\/models\.ts$/,
+	/^packages\/coding-agent\/src\/utils\/title-settings\.ts$/,
 
 	// ── 设置面板结构 ────────────────────────────────────────────
 	/^packages\/tui\/src\/overlays\/settings-defs\.ts$/,

@@ -11,7 +11,7 @@ export const cfgTtsrEnabled = register({
 	default: true,
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
+		group: "规则 (TTSR)",
 		label: "TTSR",
 		description: "Interrupt the agent mid-stream when output matches rule patterns (Time-Traveling Stream Rules)",
 	},
@@ -24,18 +24,18 @@ export const cfgTtsrJudge = register({
 	default: "auto",
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "Judged Rules",
+		group: "规则 (TTSR)",
+		label: "判定规则",
 		description:
 			"Ask the judge model role each `question` rule about completed replies, reasoning, and tool calls; a yes injects the rule as a warning",
 		options: [
 			{
 				value: "auto",
-				label: "Auto",
+				label: "自动",
 				description: "Judge only when the judge role resolves to a native TypeSafe jev model",
 			},
-			{ value: "on", label: "On", description: "Always judge, whichever model the judge role resolves to" },
-			{ value: "off", label: "Off", description: "Never judge; question rules stay inactive" },
+			{ value: "on", label: "开启", description: "Always judge, whichever model the judge role resolves to" },
+			{ value: "off", label: "关闭", description: "Never judge; question rules stay inactive" },
 		],
 	},
 });
@@ -47,8 +47,8 @@ export const cfgTtsrContextMode = register({
 	default: "discard",
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "TTSR Context Mode",
+		group: "规则 (TTSR)",
+		label: "TTSR 上下文模式",
 		description: "What to do with partial output when TTSR triggers",
 	},
 });
@@ -60,8 +60,8 @@ export const cfgTtsrInterruptMode = register({
 	default: "always",
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "TTSR Interrupt Mode",
+		group: "规则 (TTSR)",
+		label: "TTSR 中断模式",
 		description: "When to interrupt mid-stream vs inject warning after completion",
 		options: [
 			{ value: "always", label: "always", description: "Interrupt on prose and tool streams" },
@@ -79,8 +79,8 @@ export const cfgTtsrRepeatMode = register({
 	default: "once",
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "TTSR Repeat Mode",
+		group: "规则 (TTSR)",
+		label: "TTSR 重复模式",
 		description: "How rules can repeat: once per session or after a message gap",
 	},
 });
@@ -91,15 +91,15 @@ export const cfgTtsrRepeatGap = register({
 	default: 10,
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "TTSR Repeat Gap",
+		group: "规则 (TTSR)",
+		label: "TTSR 重复间隔",
 		description: "Messages before a rule can trigger again",
 		options: [
-			{ value: "5", label: "5 messages" },
-			{ value: "10", label: "10 messages" },
-			{ value: "15", label: "15 messages" },
-			{ value: "20", label: "20 messages" },
-			{ value: "30", label: "30 messages" },
+			{ value: "5", label: "5 条消息" },
+			{ value: "10", label: "10 条消息" },
+			{ value: "15", label: "15 条消息" },
+			{ value: "20", label: "20 条消息" },
+			{ value: "30", label: "30 条消息" },
 		],
 	},
 });
@@ -110,8 +110,8 @@ export const cfgTtsrBuiltinRules = register({
 	default: true,
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "Built-in Rules",
+		group: "规则 (TTSR)",
+		label: "内置规则",
 		description: "Load the default rules shipped with the agent (override individually with ttsr.disabledRules)",
 	},
 });
@@ -122,8 +122,8 @@ export const cfgTtsrDisabledRules = register({
 	default: [] as string[],
 	ui: {
 		tab: "context",
-		group: "Rules (TTSR)",
-		label: "Disabled Rules",
+		group: "规则 (TTSR)",
+		label: "已禁用的规则",
 		description: "Rule names to ignore entirely (applies to bundled defaults and your own rules)",
 	},
 });

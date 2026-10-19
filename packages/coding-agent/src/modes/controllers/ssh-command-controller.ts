@@ -270,7 +270,7 @@ export class SSHCommandController {
 					[
 						theme.fg("muted", "No SSH hosts configured."),
 						"",
-						`Use ${theme.fg("accent", "/ssh add")} to add a host.`,
+						`Use ${theme.fg("accent", "/ssh add")} to 添加 a host.`,
 					].join("\n"),
 				);
 				return;

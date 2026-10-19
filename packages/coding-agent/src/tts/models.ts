@@ -38,18 +38,18 @@ export interface TtsLocalModelSpec {
  * is the default voice. Grades are Kokoro's own `overallGrade` ratings.
  */
 export const KOKORO_VOICES: readonly TtsLocalVoiceSpec[] = [
-	{ id: "af_heart", label: "Heart (American female)" },
-	{ id: "af_bella", label: "Bella (American female)" },
+	{ id: "af_heart", label: "Heart（美式女声）" },
+	{ id: "af_bella", label: "Bella（美式女声）" },
 	{ id: "af_nicole", label: "Nicole (American female)" },
-	{ id: "af_aoede", label: "Aoede (American female)" },
-	{ id: "af_kore", label: "Kore (American female)" },
+	{ id: "af_aoede", label: "Aoede（美式女声）" },
+	{ id: "af_kore", label: "Kore（美式女声）" },
 	{ id: "af_sarah", label: "Sarah (American female)" },
-	{ id: "am_michael", label: "Michael (American male)" },
-	{ id: "am_fenrir", label: "Fenrir (American male)" },
-	{ id: "am_puck", label: "Puck (American male)" },
-	{ id: "bf_emma", label: "Emma (British female)" },
-	{ id: "bm_george", label: "George (British male)" },
-	{ id: "bm_fable", label: "Fable (British male)" },
+	{ id: "am_michael", label: "Michael（美式男声）" },
+	{ id: "am_fenrir", label: "Fenrir（美式男声）" },
+	{ id: "am_puck", label: "Puck（美式男声）" },
+	{ id: "bf_emma", label: "Emma（英式女声）" },
+	{ id: "bm_george", label: "George（英式男声）" },
+	{ id: "bm_fable", label: "Fable（英式男声）" },
 ] as const;
 
 /** Default voice within the default model — Kokoro's flagship grade-A voice. */
@@ -129,7 +129,7 @@ export const TTS_SPEED_MAX = 2.5;
 export const TTS_SPEED_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
 	{ value: "0.5", label: "0.5×" },
 	{ value: "0.75", label: "0.75×" },
-	{ value: "1", label: "1× (normal)" },
+	{ value: "1", label: "1×（正常）" },
 	{ value: "1.25", label: "1.25×" },
 	{ value: "1.5", label: "1.5×" },
 	{ value: "1.75", label: "1.75×" },

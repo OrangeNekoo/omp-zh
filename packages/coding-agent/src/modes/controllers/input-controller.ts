@@ -1158,7 +1158,7 @@ export class InputController {
 				if (command) {
 					if (this.ctx.session.isBashRunning) {
 						this.ctx.showWarning(
-							`A bash command is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to cancel it first.`,
+							`A bash command is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to 取消 it first.`,
 						);
 						this.ctx.editor.setText(text);
 						return;
@@ -1179,7 +1179,7 @@ export class InputController {
 				if (code) {
 					if (this.ctx.session.isEvalRunning) {
 						this.ctx.showWarning(
-							`A Python execution is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to cancel it first.`,
+							`A Python execution is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to 取消 it first.`,
 						);
 						this.ctx.editor.setText(text);
 						return;
@@ -1455,7 +1455,7 @@ export class InputController {
 		}
 		if (text && (text.startsWith("/") || text.startsWith("!") || parsePythonCommandInput(text))) {
 			this.ctx.showStatus(
-				`Only ${FOCUSED_VIEW_COMMAND_LIST} run here; other commands run in the main session — press ${formatDoubleTap("left")} to return first`,
+				`Only ${FOCUSED_VIEW_COMMAND_LIST} run here; other commands run in the main session — press ${formatDoubleTap("left")} to 返回第一项`,
 			);
 			return; // editor text not cleared: Editor does not auto-clear on submit
 		}
@@ -2531,7 +2531,7 @@ export class InputController {
 					{ label: LOCAL_FILE, description: "将文本保存到 local://paste 文件" },
 					{ label: INLINE, description: "将文本折叠为内联粘贴标记" },
 				],
-				{ helpText: `${editorKey("tui.select.cancel")} to paste inline` },
+				{ helpText: `${editorKey("tui.select.cancel")} to 粘贴 inline` },
 			);
 		} catch (error) {
 			logger.warn("large-paste menu failed", { error: error instanceof Error ? error.message : String(error) });
@@ -2678,7 +2678,7 @@ export class InputController {
 	cycleThinkingLevel(): void {
 		if (this.ctx.focusedAgentId) {
 			this.ctx.showStatus(
-				`Model/thinking apply to the main session — press ${formatDoubleTap("left")} to return first`,
+				`Model/thinking apply to the main session — press ${formatDoubleTap("left")} to 返回第一项`,
 			);
 			return;
 		}
@@ -2694,7 +2694,7 @@ export class InputController {
 	async cycleRoleModel(direction: "forward" | "backward" = "forward"): Promise<void> {
 		if (this.ctx.focusedAgentId) {
 			this.ctx.showStatus(
-				`Model/thinking apply to the main session — press ${formatDoubleTap("left")} to return first`,
+				`Model/thinking apply to the main session — press ${formatDoubleTap("left")} to 返回第一项`,
 			);
 			return;
 		}

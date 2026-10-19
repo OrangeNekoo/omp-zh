@@ -126,6 +126,10 @@ jobs:
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/translate.ts
 
+         - name: Apply 提示片段汉化
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/translate-hints.ts
+
          - name: Apply omp-zh command name
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/apply-cli-name.ts

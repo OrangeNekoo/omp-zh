@@ -3828,7 +3828,7 @@ export class ModelHubComponent implements Component {
 									k: [span("思考", "muted")],
 									v: getConfiguredThinkingLevelMetadata(assignment.thinkingLevel).label,
 								},
-								{ k: [span("Source", "muted")], v: assignment.autoSelected ? "auto-selected" : "configured" },
+								{ k: [span("来源", "muted")], v: assignment.autoSelected ? "auto-selected" : "configured" },
 							],
 						}),
 					);

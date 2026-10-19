@@ -164,7 +164,7 @@ export class BtwPanelComponent extends OverlayPanel {
 	}
 
 	#describeFooter(canFollowUp: boolean, canBranch: boolean): NativeNode {
-		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "to close" };
+		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "以关闭" };
 		switch (this.#state) {
 			case "running":
 				return hintsRow([{ ...esc, label: "to cancel" }]);
@@ -201,14 +201,14 @@ export class BtwPanelComponent extends OverlayPanel {
 		const esc = interruptKey();
 		switch (this.#state) {
 			case "running":
-				return theme.fg("muted", `${esc} to cancel`);
+				return theme.fg("muted", `${esc} to 取消`);
 			case "complete": {
 				const actions: string[] = [];
 				const copyKey = formatKeyHint("c");
-				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to copy again` : `${copyKey} to copy`);
+				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to 复制 again` : `${copyKey} to 复制`);
 				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to follow up`);
 				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to branch`);
-				actions.push(`${esc} to close`);
+				actions.push(`${esc} 关闭`);
 				if (this.#copied) {
 					return `${theme.fg("success", "✓ Copied to clipboard")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
 				}
@@ -217,9 +217,9 @@ export class BtwPanelComponent extends OverlayPanel {
 			case "branching":
 				return theme.fg("muted", `${theme.status.pending} Branching to chat…`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} to close`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 关闭`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} to close`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 关闭`);
 		}
 	}
 

@@ -11,7 +11,7 @@ export const cfgBrowserEnabled = register({
 	ui: {
 		tab: "tools",
 		group: "可用工具",
-		label: "Browser",
+		label: "浏览器",
 		description: "Enable the browser eval prelude for scripted Chromium automation (Puppeteer)",
 	},
 });
@@ -23,7 +23,7 @@ export const cfgBrowserCdpUrl = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Browser CDP URL",
+		label: "浏览器 CDP 地址",
 		description:
 			"Default HTTP CDP discovery endpoint (for example http://127.0.0.1:9222) to attach to instead of launching a browser. Explicit app.cdp_url or app.path on the tool call take precedence.",
 	},
@@ -36,7 +36,7 @@ export const cfgBrowserRelay = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Browser Relay",
+		label: "浏览器中继",
 		description:
 			"Drive your own Chrome tabs through the omp browser relay. Install the extension once (`omp browser-relay install`); the relay server auto-starts when the browser prelude needs it. Takes precedence over Browser CDP URL; set PI_BROWSER_RELAY=0 or PI_BROWSER_RELAY=1 to override.",
 	},
@@ -49,7 +49,7 @@ export const cfgBrowserRelayUrl = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Browser Relay URL",
+		label: "浏览器中继地址",
 		description: "omp browser relay endpoint (default http://127.0.0.1:9224).",
 	},
 });
@@ -61,7 +61,7 @@ export const cfgBrowserHeadless = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Headless Browser",
+		label: "无头浏览器",
 		description: "Launch browser in headless mode (disable to show browser UI)",
 	},
 });
@@ -73,7 +73,7 @@ export const cfgBrowserCmux = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "cmux Browser",
+		label: "cmux 浏览器",
 		description:
 			"Use cmux WKWebView surfaces for browser automation when a cmux socket is available. Set PI_BROWSER_CMUX=0 or PI_BROWSER_CMUX=1 to override.",
 	},
@@ -99,7 +99,7 @@ export const cfgBrowserFreezeOnTurnEnd = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Freeze Browser Tabs On Turn End",
+		label: "回合结束时冻结浏览器标签页",
 		description:
 			"Freeze OMP-owned headless browser tabs when a turn settles so animated pages stop burning CPU/GPU while idle. Tabs unfreeze automatically on next use; pass persist:true on open to opt a tab out.",
 	},
@@ -112,7 +112,7 @@ export const cfgBrowserIdleCloseSec = register({
 	ui: {
 		tab: "tools",
 		group: "Grep 与浏览器",
-		label: "Browser Idle Close Timeout",
+		label: "浏览器空闲关闭超时",
 		description:
 			"Close OMP-owned headless browser tabs and Tern browser picture-in-pictures idle longer than this many seconds (0 = never; session dispose still reaps). Never touches relay/CDP/spawned browsers or other sessions' tabs.",
 		options: [

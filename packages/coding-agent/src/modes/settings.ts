@@ -218,7 +218,7 @@ export const cfgStatusLineContextLine = register({
 			{
 				value: "embedded",
 				label: "已嵌入",
-				description: "Annotated line with the context percentage and window embedded in the gauge",
+				description: "带注释的行，上下文百分比与窗口嵌入仪表中",
 			},
 		],
 	},
@@ -1148,7 +1148,7 @@ export const cfgMarketplaceAutoUpdate = register({
 		description: "启动时检查插件更新",
 		options: [
 			{ value: "off", label: "关闭", description: "不检查插件更新" },
-			{ value: "notify", label: "通知", description: "Check on startup and notify when updates are available" },
+			{ value: "notify", label: "通知", description: "启动时检查并在有更新时通知" },
 			{ value: "auto", label: "自动", description: "启动时检查并自动安装更新" },
 		],
 	},

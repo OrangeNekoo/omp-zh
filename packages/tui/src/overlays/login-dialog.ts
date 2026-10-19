@@ -207,7 +207,7 @@ export class LoginDialogComponent extends OverlayPanel {
 			this.#contentContainer.addChild(new Text(theme.fg("dim", prompt), 0, 0));
 			this.#contentContainer.addChild(this.#input);
 			this.#contentContainer.addChild(
-				new Text(theme.fg("dim", `(${editorKey("tui.select.cancel")} to cancel)`), 0, 0),
+				new Text(theme.fg("dim", `(${editorKey("tui.select.cancel")} to 取消)`), 0, 0),
 			);
 		}
 		this.#nativeRoot = undefined;
@@ -257,10 +257,7 @@ export class LoginDialogComponent extends OverlayPanel {
 		this.#contentContainer.addChild(this.#input);
 		this.#contentContainer.addChild(
 			new Text(
-				theme.fg(
-					"dim",
-					`(${editorKey("tui.select.cancel")} to cancel, ${editorKey("tui.input.submit")} to submit)`,
-				),
+				theme.fg("dim", `(${editorKey("tui.select.cancel")} to 取消, ${editorKey("tui.input.submit")} to 提交)`),
 				0,
 				0,
 			),
@@ -291,7 +288,7 @@ export class LoginDialogComponent extends OverlayPanel {
 	showWaiting(message: string): void {
 		this.#contentContainer.addChild(new Spacer(1));
 		this.#contentContainer.addChild(new Text(theme.fg("dim", message), 0, 0));
-		this.#contentContainer.addChild(new Text(theme.fg("dim", `(${editorKey("tui.select.cancel")} to cancel)`), 0, 0));
+		this.#contentContainer.addChild(new Text(theme.fg("dim", `(${editorKey("tui.select.cancel")} to 取消)`), 0, 0));
 		this.#nativeSteps.push({ kind: "progress", message: plainText(message) });
 		this.#nativeRoot = undefined;
 		this.#tui.requestRender();

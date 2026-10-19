@@ -1251,7 +1251,7 @@ export class Sidebar {
 		const bodyField = descriptionEditor
 			? node("editor", {
 					...editorProps(descriptionEditor),
-					placeholder: "Description",
+					placeholder: "描述",
 					maxLines: 5,
 					role: "omp.app.git.body.on",
 				})

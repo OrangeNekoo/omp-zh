@@ -510,20 +510,20 @@ export class AgentsHubComponent implements Component {
 				action: { kind: "pick", property },
 			});
 			chips.push({
-				label: "pattern…",
+				label: "模式…",
 				styled: theme.fg("muted", "pattern…"),
 				action: { kind: "pattern", property },
 			});
 			if (agent.overrideModel) {
 				chips.push({
-					label: "clear override",
+					label: "清除覆盖",
 					styled: theme.fg("warning", "clear override"),
 					action: { kind: "set", property, value: undefined },
 				});
 			}
 		} else {
 			chips.push({
-				label: "agent default",
+				label: "代理默认",
 				styled: mark("agent default", current === undefined),
 				action: { kind: "set", property, value: undefined },
 			});
@@ -543,7 +543,7 @@ export class AgentsHubComponent implements Component {
 				action: { kind: "pick", property },
 			});
 			chips.push({
-				label: "pattern…",
+				label: "模式…",
 				styled: theme.fg("muted", "pattern…"),
 				action: { kind: "pattern", property },
 			});
@@ -1418,7 +1418,7 @@ export class AgentsHubComponent implements Component {
 				label: SOURCE_LABEL[source],
 				icon: source === "project" ? "folder" : source === "user" ? "user" : "box",
 				count: counts[source],
-				group: "Source",
+				group: "来源",
 				disabled: counts[source] === 0 ? `No ${source} agents` : undefined,
 			})),
 		];

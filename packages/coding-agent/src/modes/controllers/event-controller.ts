@@ -2465,7 +2465,7 @@ export class EventController {
 	 * label carries no dangling whitespace.
 	 */
 	#maintenanceEscHint(): string {
-		return this.ctx.focusedAgentId ? "" : ` (${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`;
+		return this.ctx.focusedAgentId ? "" : ` (${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`;
 	}
 
 	async #handleAutoCompactionStart(

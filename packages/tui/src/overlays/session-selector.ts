@@ -1136,7 +1136,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 				// "Current folder" scope - hint to try "all"
 				lines.push(
 					truncateToWidth(
-						theme.fg("muted", `No sessions in current folder. Press ${formatKeyHint("tab")} to view all.`),
+						theme.fg("muted", `No sessions in current folder. Press ${formatKeyHint("tab")} to 查看 all.`),
 						width,
 					),
 				);
@@ -1784,9 +1784,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		if (toggle) {
 			actions.push(pickerAction("scope", this.#scope === "all" ? "This folder" : "All projects", "tab"));
 		}
-		actions.push(
-			pickerAction("close", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
-		);
+		actions.push(pickerAction("关闭", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }));
 		const folder = this.#scopeLabel === false ? undefined : (this.#scopeLabel ?? path.basename(getProjectDir()));
 		const title = this.#pickerTitle;
 		const placeholder =

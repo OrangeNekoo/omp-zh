@@ -69,7 +69,7 @@ export const TINY_MODEL_DTYPE_SETTING_VALUES = [
 
 /** Submenu metadata for the `providers.tinyModelDtype` setting. */
 export const TINY_MODEL_DTYPE_SETTING_OPTIONS = [
-	{ value: "default", label: "Default", description: "Each model's shipped dtype (currently q4)" },
+	{ value: "default", label: "默认", description: "Each model's shipped dtype (currently q4)" },
 	{ value: "q4", label: "q4", description: "4-bit weights; smallest and fastest" },
 	{ value: "q4f16", label: "q4f16", description: "4-bit weights with fp16 activations" },
 	{ value: "q8", label: "q8", description: "8-bit quantization" },
@@ -82,7 +82,7 @@ export const TINY_MODEL_DTYPE_SETTING_OPTIONS = [
 	{ value: "q2f16", label: "q2f16", description: "2-bit weights with fp16 activations" },
 	{ value: "q1", label: "q1", description: "1-bit weights" },
 	{ value: "q1f16", label: "q1f16", description: "1-bit weights with fp16 activations" },
-	{ value: "auto", label: "Auto", description: "Let transformers.js choose per device" },
+	{ value: "auto", label: "自动", description: "Let transformers.js choose per device" },
 ] as const satisfies ReadonlyArray<{
 	value: (typeof TINY_MODEL_DTYPE_SETTING_VALUES)[number];
 	label: string;

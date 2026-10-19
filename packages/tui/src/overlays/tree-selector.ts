@@ -912,7 +912,7 @@ class TreeList implements Component {
 			} else if (this.getSearchQuery().length > 0) {
 				lines.push(truncateToWidth(theme.fg("muted", `No entries match search "${this.getSearchQuery()}"`), width));
 				lines.push(
-					truncateToWidth(theme.fg("muted", `Press ${formatKeyHint("backspace")} to clear the search`), width),
+					truncateToWidth(theme.fg("muted", `Press ${formatKeyHint("backspace")} to 清除 the search`), width),
 				);
 				lines.push(truncateToWidth(theme.fg("muted", `(0/${totalCount})${this.#getFilterLabel()}`), width));
 			} else {
@@ -927,7 +927,7 @@ class TreeList implements Component {
 					truncateToWidth(
 						theme.fg(
 							"muted",
-							`Press ${formatKeyHint("alt+a")} to show all, ${formatKeyHint("alt+d")} for default`,
+							`Press ${formatKeyHint("alt+a")} to 显示 all, ${formatKeyHint("alt+d")} for default`,
 						),
 						width,
 					),

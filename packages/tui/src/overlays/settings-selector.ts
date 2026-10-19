@@ -108,23 +108,23 @@ function settingsTabsNode(tabs: readonly Tab[], active: string | undefined): Nat
 function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 	const confirmKeys: readonly KeyName[] = actionHint("tui.select.confirm", "")?.keys ?? [];
 	const close = actionHint("tui.select.cancel", "close");
-	const switchTabs: NativeHint = { keys: ["left", "right"], label: "switch tabs" };
+	const switchTabs: NativeHint = { keys: ["left", "right"], label: "切换标签页" };
 	let hints: (NativeHint | undefined)[];
 	switch (mode) {
 		case "search":
 			hints = [
 				actionHint("tui.select.confirm", "change"),
-				{ keys: ["tab"], label: "jump tabs" },
+				{ keys: ["tab"], label: "跳转标签页" },
 				actionHint("tui.select.cancel", "exit search"),
 			];
 			break;
 		case "plugins":
-			hints = [{ keys: ["tab"], label: "switch tabs" }, close];
+			hints = [{ keys: ["tab"], label: "切换标签页" }, close];
 			break;
 		case "sections":
 			hints = [
 				actionHint(["tui.select.up", "tui.select.down"], "jump sections"),
-				{ keys: ["tab", ...confirmKeys], label: "to settings" },
+				{ keys: ["tab", ...confirmKeys], label: "到设置" },
 				switchTabs,
 				close,
 			];
@@ -132,10 +132,10 @@ function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 		case "rows":
 		case "rows-sections":
 			hints = [
-				{ keys: [...confirmKeys, "space"], label: "change" },
+				{ keys: [...confirmKeys, "space"], label: "更改" },
 				...(mode === "rows-sections"
-					? [{ keys: ["tab"], label: "jump sections" } satisfies NativeHint, switchTabs]
-					: [{ keys: ["tab"], label: "switch tabs" } satisfies NativeHint]),
+					? [{ keys: ["tab"], label: "跳转分节" } satisfies NativeHint, switchTabs]
+					: [{ keys: ["tab"], label: "切换标签页" } satisfies NativeHint]),
 				{ keys: [], label: "输入以搜索" },
 				close,
 			];
@@ -175,7 +175,7 @@ function createSettingsTextField(
 		secret,
 		initialValue: currentValue || undefined,
 		empty: "submit",
-		hint: `  ${editorKey("tui.input.submit")} to save · ${editorKey("tui.select.cancel")} to cancel · Clear field to unset`,
+		hint: `  ${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消 · Clear field to unset`,
 		onSubmit,
 		onCancel,
 		requestRender,
@@ -212,7 +212,7 @@ function createSettingsSelectField(
 		onSelectionChange,
 		onSubmit: onSelect,
 		onCancel,
-		hint: `  ${editorKey("tui.select.confirm")} to select · ${editorKey("tui.select.cancel")} to go back`,
+		hint: `  ${editorKey("tui.select.confirm")} to 选择 · ${editorKey("tui.select.cancel")} to 返回`,
 		footer,
 		requestRender,
 		picker,
@@ -279,10 +279,10 @@ class MultiSelectSubmenu extends Container {
 			this.#cursor = this.#options.findIndex(option => option.value === item.value);
 		};
 		this.#selectList.onCancel = this.#onClose;
-		const back = `${editorKey("tui.select.cancel")} to go back`;
+		const back = `${editorKey("tui.select.cancel")} to 返回`;
 		const hint = this.#ordered
 			? `  Click to toggle · drag selected items to reorder · ${formatKeyHints(["left", "right"])} move · 1-9 place · ${back}`
-			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to toggle · ${back}`;
+			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to 切换 · ${back}`;
 		this.#field = new FormField(this.#selectList, {
 			theme: formTheme,
 			label: this.#title,
@@ -458,7 +458,7 @@ class ProviderLimitsSubmenu extends Container {
 			items,
 			maxVisible: 12,
 			selectTheme: getSelectListTheme(),
-			hint: `  ${editorKey("tui.select.confirm")} to edit provider · ${editorKey("tui.select.cancel")} to go back`,
+			hint: `  ${editorKey("tui.select.confirm")} to 编辑 provider · ${editorKey("tui.select.cancel")} to 返回`,
 			onSubmit: value => {
 				if (value === "__clear_all") {
 					this.#settings.set("providers.maxInFlightRequests", {});
@@ -487,7 +487,7 @@ class ProviderLimitsSubmenu extends Container {
 					"Enter a positive number. Decimals round down. Clear the field to make this provider unlimited.",
 				initialValue: limits[provider]?.toString() ?? undefined,
 				empty: "submit",
-				hint: `  ${editorKey("tui.input.submit")} to save · ${editorKey("tui.select.cancel")} to cancel · Clear field to unset`,
+				hint: `  ${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消 · Clear field to unset`,
 				validate: value => {
 					if (value.trim() === "") return undefined;
 					const limit = Number(value.trim());
@@ -703,18 +703,18 @@ export class SettingsSelectorComponent implements Component {
 		const confirm = editorKey("tui.select.confirm");
 		const cancel = editorKey("tui.select.cancel");
 		const tab = formatKeyHint("tab");
-		const switchTabs = `${formatKeyHints(["left", "right"])} to switch tabs`;
+		const switchTabs = `${formatKeyHints(["left", "right"])} 切换标签页`;
 		if (this.#searchList) {
-			return `${confirm} to change · ${tab} to jump tabs · ${cancel} to exit search`;
+			return `${confirm} 更改 · ${tab} 跳转标签页 · ${cancel} 退出搜索`;
 		}
 		if (this.#currentTabId === "plugins") {
-			return `${tab} to switch tabs · ${cancel} to close`;
+			return `${tab} 切换标签页 · ${cancel} 关闭`;
 		}
 		if (this.#currentList?.sectionFocused) {
-			return `${editorKeys("tui.select.up", "tui.select.down")} to jump sections · ${tab}/${confirm} to settings · ${switchTabs} · ${cancel} to close`;
+			return `${editorKeys("tui.select.up", "tui.select.down")} 跳转分节 · ${tab}/${confirm} 到设置 · ${switchTabs} · ${cancel} 关闭`;
 		}
-		const nav = this.#hasSectionJump ? `${tab} to jump sections · ${switchTabs}` : `${tab} to switch tabs`;
-		return `${confirm}/${formatKeyHint("space")} to change · ${nav} · Type to search · ${cancel} to close`;
+		const nav = this.#hasSectionJump ? `${tab} 跳转分节 · ${switchTabs}` : `${tab} 切换标签页`;
+		return `${confirm}/${formatKeyHint("space")} 更改 · ${nav} · 输入以搜索 · ${cancel} 关闭`;
 	}
 
 	/** Single-line search banner: accent icon, editable query with live cursor, right-aligned match count. */

@@ -107,12 +107,12 @@ export function validateAgentServiceTierOverrides(value: unknown): Record<string
 }
 
 export const SERVICE_TIER_OPENAI_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierOpenAISettingValue>> = [
-	{ value: "none", label: "None", description: "Omit service_tier (standard processing)" },
-	{ value: "auto", label: "Auto", description: "Provider default tier selection" },
-	{ value: "default", label: "Default", description: "Standard priority processing" },
+	{ value: "none", label: "无", description: "Omit service_tier (standard processing)" },
+	{ value: "auto", label: "自动", description: "Provider default tier selection" },
+	{ value: "default", label: "默认", description: "Standard priority processing" },
 	{ value: "flex", label: "Flex", description: "Lower cost, higher latency when available" },
 	{ value: "scale", label: "Scale", description: "Scale Tier credits when available" },
-	{ value: "priority", label: "Priority", description: "Faster, higher cost (premium request)" },
+	{ value: "priority", label: "优先级", description: "Faster, higher cost (premium request)" },
 	{
 		value: "ultrafast",
 		label: "Ultrafast",
@@ -121,28 +121,28 @@ export const SERVICE_TIER_OPENAI_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTie
 ];
 
 export const SERVICE_TIER_ANTHROPIC_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierAnthropicSettingValue>> = [
-	{ value: "none", label: "None", description: "Standard processing" },
+	{ value: "none", label: "无", description: "Standard processing" },
 	{
 		value: "priority",
-		label: "Priority",
+		label: "优先级",
 		description: 'Fast mode (`speed: "fast"`) on supported direct Claude models; ignored on Bedrock/Vertex',
 	},
 ];
 
 export const SERVICE_TIER_GOOGLE_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierGoogleSettingValue>> = [
-	{ value: "none", label: "None", description: "Standard processing" },
+	{ value: "none", label: "无", description: "Standard processing" },
 	{ value: "flex", label: "Flex", description: "Lower cost, higher latency (Gemini API + Vertex)" },
-	{ value: "priority", label: "Priority", description: "Faster, higher reliability (Gemini API + Vertex)" },
+	{ value: "priority", label: "优先级", description: "Faster, higher reliability (Gemini API + Vertex)" },
 ];
 
 export const SERVICE_TIER_INHERIT_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierInheritSettingValue>> = [
-	{ value: "inherit", label: "Inherit", description: "Match the main agent's live per-family tiers" },
-	{ value: "none", label: "None", description: "Standard processing" },
-	{ value: "auto", label: "Auto", description: "Provider default tier selection (OpenAI family)" },
-	{ value: "default", label: "Default", description: "Standard priority processing (OpenAI family)" },
+	{ value: "inherit", label: "继承", description: "Match the main agent's live per-family tiers" },
+	{ value: "none", label: "无", description: "Standard processing" },
+	{ value: "auto", label: "自动", description: "Provider default tier selection (OpenAI family)" },
+	{ value: "default", label: "默认", description: "Standard priority processing (OpenAI family)" },
 	{ value: "flex", label: "Flex", description: "Flexible capacity tier (OpenAI/Google families)" },
 	{ value: "scale", label: "Scale", description: "Scale Tier credits (OpenAI family)" },
-	{ value: "priority", label: "Priority", description: "Priority on every supported family of the spawned model" },
+	{ value: "priority", label: "优先级", description: "Priority on every supported family of the spawned model" },
 	{ value: "ultrafast", label: "Ultrafast", description: "Ultrafast serving (OpenAI family, where available)" },
 ];
 

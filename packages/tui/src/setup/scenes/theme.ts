@@ -26,12 +26,12 @@ import type { SetupScene, SetupSceneController, SetupSceneHost } from "./types";
 type ThemeMode = "curated" | "all";
 
 const CURATED_ITEMS: readonly SelectItem[] = [
-	{ value: "auto", label: "Match terminal", description: "Titanium in dark terminals, Light in light terminals" },
-	{ value: "theme:titanium", label: "Titanium", description: "Default dark theme" },
-	{ value: "theme:light", label: "Light", description: "Default light theme" },
-	{ value: "colorblind", label: "Colorblind colors", description: "Adjust red/green contrast" },
-	{ value: "ansi", label: "ANSI-safe", description: "ASCII glyphs with the dark terminal theme" },
-	{ value: "browse", label: "Browse all…", description: "Show every built-in and custom theme" },
+	{ value: "auto", label: "跟随终端", description: "深色终端用 Titanium，浅色终端用 Light" },
+	{ value: "theme:titanium", label: "Titanium", description: "默认深色主题" },
+	{ value: "theme:light", label: "浅色", description: "默认浅色主题" },
+	{ value: "colorblind", label: "色盲配色", description: "调整红绿对比度" },
+	{ value: "ansi", label: "ANSI 安全模式", description: "深色终端主题下的 ASCII 字形" },
+	{ value: "browse", label: "浏览全部…", description: "显示所有内置与自定义主题" },
 ];
 
 function fillStyledLine(content: string, width: number): string {
@@ -96,7 +96,7 @@ function renderThemePreview(width: number): string[] {
 function describeThemePreview(): NativeNode {
 	return col(
 		[
-			text([span("Preview", "strong")]),
+			text([span("预览", "strong")]),
 			text([
 				span(`${theme.status.success} success`, "success"),
 				span("  "),
@@ -106,7 +106,7 @@ function describeThemePreview(): NativeNode {
 				span("  "),
 				span("accent", "accent"),
 			]),
-			text([span("Status line", "muted")]),
+			text([span("状态栏", "muted")]),
 			node("status", {}, [
 				node("seg", { spans: [span(`${theme.icon.model} sonnet`, "statusLineModel")], side: "left" }),
 				node("seg", { spans: [span("~/project", "statusLinePath")], side: "left" }),
@@ -114,7 +114,7 @@ function describeThemePreview(): NativeNode {
 				node("seg", { spans: [span(`${theme.icon.context} 42%`, "statusLineContext")], side: "right" }),
 				node("seg", { spans: [span(`${theme.icon.cost} 0.18`, "statusLineCost")], side: "right" }),
 			]),
-			text([span("Editor", "muted")]),
+			text([span("编辑器", "muted")]),
 			node("input", {
 				text: "Ask anything, edit files, run tools",
 				cursor: "Ask anything, edit files, run tools".length,
@@ -269,7 +269,7 @@ class ThemeSceneController implements SetupSceneController {
 					]),
 					describeThemePreview(),
 					this.#loadingAllThemes
-						? node("spinner", { label: [span("Loading themes…", "dim")] }, undefined, "loading")
+						? node("spinner", { label: [span("正在加载主题…", "dim")] }, undefined, "loading")
 						: this.#selectList,
 				];
 				if (this.#message)
@@ -435,7 +435,7 @@ class ThemeSceneController implements SetupSceneController {
 /** Preview and persist the terminal color theme. */
 export const themeSetupScene: SetupScene = {
 	id: "theme",
-	title: "Pick a theme",
+	title: "选择主题",
 	minVersion: 1,
 	mount: host => new ThemeSceneController(host),
 };

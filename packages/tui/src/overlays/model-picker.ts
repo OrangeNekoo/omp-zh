@@ -494,7 +494,7 @@ export class ModelPickerComponent implements Component {
 			},
 			{ keys: [], label: "输入以搜索" },
 		];
-		if (mode === "session") hints.push({ keys: ["@"], label: "quick roles" });
+		if (mode === "session") hints.push({ keys: ["@"], label: "快捷角色" });
 		hints.push(actionHint("tui.select.cancel", "close"));
 		if (this.#taskModeKey !== undefined && !this.#roleMode && mode !== "selection") {
 			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "session model" : "task model" });

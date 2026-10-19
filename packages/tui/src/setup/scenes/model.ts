@@ -163,7 +163,7 @@ class ModelSceneController implements SetupSceneController {
 /** Setup step that assigns one available model to the persisted default role. */
 export const modelSetupScene: SetupScene = {
 	id: "model",
-	title: "Choose your default model",
+	title: "选择你的默认模型",
 	minVersion: 1,
 	mount: host => new ModelSceneController(host),
 };

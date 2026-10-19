@@ -135,7 +135,7 @@ const ACTIVITY_HINTS: readonly NativeHint[] = [
 	{ keys: ["f"], label: "filter" },
 	{ keys: ["s"], label: "scope" },
 	{ keys: ["/"], label: "search" },
-	{ keys: ["escape"], label: "close" },
+	{ keys: ["escape"], label: "关闭" },
 ];
 /** Recent-activity entries the native inspector lists for the selected agent. */
 const NATIVE_RECENT_ACTIVITY = 20;
@@ -185,7 +185,7 @@ function agentHints(nextView: string): readonly NativeHint[] {
 		{ keys: ["/"], label: "filter" },
 		{ keys: ["r"], label: "revive" },
 		{ keys: ["x"], label: "kill" },
-		{ keys: ["escape"], label: "close" },
+		{ keys: ["escape"], label: "关闭" },
 	];
 }
 

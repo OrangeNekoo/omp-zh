@@ -95,7 +95,7 @@ export const TINY_MODEL_DEVICE_SETTING_VALUES = [
 
 /** Submenu metadata for the `providers.tinyModelDevice` setting. */
 export const TINY_MODEL_DEVICE_SETTING_OPTIONS = [
-	{ value: "default", label: "Default", description: "CPU-only inference" },
+	{ value: "default", label: "默认", description: "CPU-only inference" },
 	{ value: "gpu", label: "GPU", description: "Accelerated provider (WebGPU/Metal, CUDA, or DirectML)" },
 	{ value: "cpu", label: "CPU", description: "CPU-only inference" },
 	{ value: MLX_DEVICE, label: "MLX", description: "Apple silicon GPU via mlx-lm (Python subprocess; macOS arm64)" },
@@ -104,7 +104,7 @@ export const TINY_MODEL_DEVICE_SETTING_OPTIONS = [
 	{ value: "cuda", label: "CUDA", description: "NVIDIA CUDA (Linux x64)" },
 	{ value: "dml", label: "DirectML", description: "DirectML backend (Windows)" },
 	{ value: "coreml", label: "CoreML", description: "Apple CoreML (opt-in; can fail to load)" },
-	{ value: "auto", label: "Auto", description: "Let ONNX Runtime choose a provider" },
+	{ value: "auto", label: "自动", description: "Let ONNX Runtime choose a provider" },
 	{ value: "wasm", label: "WASM", description: "WebAssembly backend" },
 	{ value: "webnn", label: "WebNN", description: "WebNN backend" },
 	{ value: "webnn-gpu", label: "WebNN GPU", description: "WebNN GPU device" },

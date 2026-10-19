@@ -197,7 +197,7 @@ function writeContentOf(args: unknown): string {
 
 function formatLineCountSuffix(lineCount: number, uiTheme: Theme): string {
 	if (lineCount <= 0) return "";
-	return uiTheme.fg("dim", ` · ${lineCount} line${lineCount === 1 ? "" : "s"}`);
+	return uiTheme.fg("dim", ` · ${lineCount} 行`);
 }
 
 function normalizeDisplayText(text: unknown): string {
@@ -373,7 +373,7 @@ function formatStreamingContent(
 
 		let text = "\n\n";
 		if (hidden > 0) {
-			text += `${uiTheme.fg("dim", `… (${hidden} earlier line${hidden === 1 ? "" : "s"})`)}\n`;
+			text += `${uiTheme.fg("dim", `… （前面还有 ${hidden} 行）`)}\n`;
 		}
 		for (let i = 0; i < visibleLines.length; i++) {
 			const lineNum = startIndex + i + 1;
@@ -580,7 +580,7 @@ function writeToolHead(
 		target: rawPath ? sanitizeText(displayPath(rawPath)) : undefined,
 		targetKind: "path",
 		href: fileHref(details?.resolvedPath),
-		meta: lineCount > 0 ? [`${lineCount} line${lineCount === 1 ? "" : "s"}`] : undefined,
+		meta: lineCount > 0 ? [`${lineCount} 行`] : undefined,
 		badges: badges.length > 0 ? badges : undefined,
 	};
 }

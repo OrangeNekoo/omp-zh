@@ -120,6 +120,24 @@ function findReplacements(
 		onHit({ start: node.start, end: node.end }, value, kind, translated);
 	};
 
+	/** 选项对象：只翻译 `label` 与 `description`。 */
+	const translateOptionObject = (object: any): void => {
+		for (const property of object.properties ?? []) {
+			if (property.type !== "ObjectProperty") continue;
+			const optionKey = property.key;
+			const optionName =
+				optionKey.type === "Identifier"
+					? optionKey.name
+					: optionKey.type === "StringLiteral"
+						? optionKey.value
+						: null;
+			if (optionName !== "label" && optionName !== "description") continue;
+			const optionValue = property.value;
+			if (optionValue.type === "StringLiteral") consider(optionValue, `option:${optionName}`, optionValue.value);
+			else if (optionValue.type === "TemplateLiteral") considerTemplate(optionValue, `option:${optionName}`);
+		}
+	};
+
 	traverse(ast, {
 		/** 与 extract.ts 的界面文案常量规则保持一致。 */
 		VariableDeclarator(p: any) {
@@ -156,26 +174,16 @@ function findReplacements(
 					}
 				}
 			}
-			// 子菜单选项：{ value: "x", label: "…", description: "…" }
-			if (value.type === "ObjectExpression") {
-				for (const property of value.properties) {
-					if (property.type !== "ObjectProperty") continue;
-					const optionKey = property.key;
-					const optionName =
-						optionKey.type === "Identifier"
-							? optionKey.name
-							: optionKey.type === "StringLiteral"
-								? optionKey.value
-								: null;
-					if (optionName !== "label" && optionName !== "description") continue;
-					const optionValue = property.value;
-					if (optionValue.type === "StringLiteral") {
-						consider(optionValue, `option:${optionName}`, optionValue.value);
-					} else if (optionValue.type === "TemplateLiteral") {
-						considerTemplate(optionValue, `option:${optionName}`);
-					}
+			// 子菜单选项：`options: [{ value, label, description }]` 或内联的
+			// `{ value, label, description }` 对象。选项文本同样显示给用户，
+			// 必须翻译。
+			const isOptionsProperty = name === "options" || name === "choices";
+			if (isOptionsProperty && value.type === "ArrayExpression") {
+				for (const element of value.elements) {
+					if (element?.type === "ObjectExpression") translateOptionObject(element);
 				}
 			}
+			if (value.type === "ObjectExpression") translateOptionObject(value);
 		},
 		CallExpression(p: any) {
 			const callee = p.node.callee;
@@ -345,6 +353,32 @@ export function translateAll(options: { dryRun?: boolean; root?: string } = {}):
 	};
 }
 
+/**
+ * 翻译纯文本资源：`tips.txt`（欢迎界面的提示语，每行一条）。
+ *
+ * TypeScript 之外的资源无法走 AST 流程，但它们是首次启动最显眼的文案，
+ * 必须覆盖。以整行精确匹配翻译，未命中的行原样保留。
+ */
+function translateTipsFile(root: string, dryRun: boolean): number {
+	const file = path.join(root, "packages/tui/src/prompt/tips.txt");
+	const dictionaryFile = path.join(import.meta.dir, "tips-zh.json");
+	if (!fs.existsSync(file) || !fs.existsSync(dictionaryFile)) return 0;
+
+	const dictionary = JSON.parse(fs.readFileSync(dictionaryFile, "utf8")) as Record<string, string>;
+	const lines = fs.readFileSync(file, "utf8").split("\n");
+	let changed = 0;
+	const translated = lines.map(line => {
+		const text = dictionary[line];
+		if (text === undefined || text === line) return line;
+		changed++;
+		return text;
+	});
+	if (changed > 0 && !dryRun) {
+		fs.writeFileSync(file, translated.join("\n"), "utf8");
+	}
+	return changed;
+}
+
 function computeLineStarts(code: string): number[] {
 	const starts = [0];
 	for (let i = 0; i < code.length; i++) {
@@ -371,6 +405,10 @@ function main(): void {
 	process.stdout.write(`词典条目：${dictionary.size}\n`);
 
 	const result = translateAll({ dryRun });
+	const tipsChanged = translateTipsFile(ROOT, dryRun);
+	if (tipsChanged > 0) {
+		process.stdout.write(`欢迎提示语（tips.txt）替换 ${tipsChanged} 行\n`);
+	}
 	// dry-run 只是预演，不能把真实报告覆盖成空内容。
 	if (!dryRun) {
 		fs.writeFileSync(REPORT_PATH, `${JSON.stringify(result.replacements, null, 2)}\n`);

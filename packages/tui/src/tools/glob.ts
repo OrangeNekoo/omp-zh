@@ -261,8 +261,8 @@ export const globToolRenderer = {
 		);
 
 		const truncationReasons: string[] = [];
-		if (details?.resultLimitReached) truncationReasons.push(`limit ${details.resultLimitReached} results`);
-		if (limits?.resultLimit) truncationReasons.push(`limit ${limits.resultLimit.reached} results`);
+		if (details?.resultLimitReached) truncationReasons.push(`上限 ${details.resultLimitReached} 条结果`);
+		if (limits?.resultLimit) truncationReasons.push(`上限 ${limits.resultLimit.reached} 条结果`);
 		if (truncation) truncationReasons.push(truncation.truncatedBy === "lines" ? "line limit" : "size limit");
 		const artifactId = truncation && "artifactId" in truncation ? truncation.artifactId : undefined;
 		if (artifactId) truncationReasons.push(formatFullOutputReference(artifactId));
@@ -357,8 +357,8 @@ export const globToolRenderer = {
 			};
 		}
 		const reasons: string[] = [];
-		if (details.resultLimitReached) reasons.push(`limit ${details.resultLimitReached} results`);
-		if (limits?.resultLimit) reasons.push(`limit ${limits.resultLimit.reached} results`);
+		if (details.resultLimitReached) reasons.push(`上限 ${details.resultLimitReached} 条结果`);
+		if (limits?.resultLimit) reasons.push(`上限 ${limits.resultLimit.reached} 条结果`);
 		if (truncation) reasons.push(truncation.truncatedBy === "lines" ? "line limit" : "size limit");
 		const artifactId = truncation && "artifactId" in truncation ? truncation.artifactId : undefined;
 		if (artifactId) reasons.push(formatFullOutputReference(artifactId));

@@ -124,7 +124,7 @@ class ComposerSceneController implements SetupSceneController {
 					text([span(`Select a layout; live preview updates below. Press ${confirm} to confirm.`, "muted")]),
 					this.#selectList,
 					col([
-						text([span("Preview:", "muted")]),
+						text([span("预览：", "muted")]),
 						ansi(renderComposerShapePreview(this.#currentShape, cx.cols, this.#host.ctx.statusLine).join("\n"), {
 							cols: cx.cols,
 						}),
@@ -154,7 +154,7 @@ class ComposerSceneController implements SetupSceneController {
 /** Select and persist the prompt composer layout. */
 export const composerSetupScene: SetupScene = {
 	id: "composer-shape",
-	title: "Choose composer shape",
+	title: "选择输入框形状",
 	minVersion: 2,
 	mount: host => new ComposerSceneController(host),
 };

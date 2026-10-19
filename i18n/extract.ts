@@ -57,6 +57,31 @@ function collectSources(dir: string, out: string[] = []): string[] {
 	return out;
 }
 
+/** 样式 token 词汇表：这些词的组合是渲染属性，不是界面文案。 */
+const STYLE_TOKENS: ReadonlySet<string> = new Set([
+	"accent",
+	"dim",
+	"muted",
+	"strong",
+	"mono",
+	"num",
+	"bold",
+	"italic",
+	"emphasis",
+	"warning",
+	"error",
+	"success",
+	"info",
+	"neutral",
+]);
+
+/** 是否是由样式词构成的 token 串（`accent strong`、`dim mono` 等）。 */
+function isStyleToken(value: string): boolean {
+	const words = value.trim().toLowerCase().split(/\s+/);
+	if (words.length < 2 || words.length > 3) return false;
+	return words.every(word => STYLE_TOKENS.has(word));
+}
+
 /**
  * 是否是「像一句给人看的英文」。
  *
@@ -73,8 +98,10 @@ export function looksLikeUiProse(value: string, options: { allowSingleToken?: bo
 	// 全大写且超过 4 个字符的是常量名；LSP、Git、API 这类缩写是正常文案
 	if (/^[A-Z][A-Z0-9_]*$/.test(value) && (value.length > 4 || value.includes("_"))) return false;
 	if (/^(tui|app|editor|select|composer|model|session|tools|status)\./.test(value)) return false;
-	// 主题 token（如 accent strong、dim mono）
-	if (/^[a-z]+(?: [a-z]+)+$/.test(value) && value.split(" ").length <= 2) return false;
+	// 主题 token（如 accent strong、dim mono）。只排除已知样式词组合：
+	// `switch tabs`、`jump sections` 这类界面提示同样是小写短语，不能
+	// 用「两个小写单词」一概而论。
+	if (isStyleToken(value)) return false;
 	// 文件/模块/协议字符串
 	if (/\.(ts|tsx|js|json|md|yml|yaml|toml|rs|py|sh|css|node)$/.test(value)) return false;
 	if (/^(node:|https?:\/\/|\/|\.\/|\.\.\/|@[a-z])/.test(value)) return false;
@@ -110,7 +137,15 @@ export function extractFromSource(
 	const allowWholeFile = allowsWholeFileLiterals(relativePath);
 
 	const record = (value: string, kind: string) => {
-		if (looksLikeUiProse(value, { allowSingleToken: kind === "array-literal" })) onHit(value, kind);
+		if (
+			looksLikeUiProse(value, {
+				// 数组元素与界面属性（label/title/hint…）里的单词本身就是完整文案，
+				// 例如底部提示行的 `change`、`close`。
+				allowSingleToken: kind === "array-literal" || kind.startsWith("prop:") || kind.startsWith("call:"),
+			})
+		) {
+			onHit(value, kind);
+		}
 	};
 
 	traverse(ast, {
@@ -147,8 +182,37 @@ export function extractFromSource(
 		ObjectProperty(p: any) {
 			const key = p.node.key;
 			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
-			if (!name || !TRANSLATABLE_PROPERTIES.has(name)) return;
+			if (!name) return;
 			const value = p.node.value;
+
+			/** 选项对象：只取 `label` 与 `description`。 */
+			const recordOptionObject = (object: any): void => {
+				for (const property of object.properties ?? []) {
+					if (property.type !== "ObjectProperty") continue;
+					const optionKey = property.key;
+					const optionName =
+						optionKey.type === "Identifier"
+							? optionKey.name
+							: optionKey.type === "StringLiteral"
+								? optionKey.value
+								: null;
+					if (optionName !== "label" && optionName !== "description") continue;
+					const optionValue = property.value;
+					if (optionValue.type === "StringLiteral") record(optionValue.value, `option:${optionName}`);
+					else if (optionValue.type === "TemplateLiteral" && optionValue.expressions.length === 0) {
+						record(optionValue.quasis.map((q: any) => q.value.cooked ?? "").join(""), `option:${optionName}`);
+					}
+				}
+			};
+
+			// 子菜单选项：`options: [{ value, label, description }]`
+			if ((name === "options" || name === "choices") && value.type === "ArrayExpression") {
+				for (const element of value.elements) {
+					if (element?.type === "ObjectExpression") recordOptionObject(element);
+				}
+			}
+
+			if (!TRANSLATABLE_PROPERTIES.has(name)) return;
 			if (value.type === "StringLiteral") record(value.value, `prop:${name}`);
 			else if (value.type === "TemplateLiteral" && value.expressions.length === 0) {
 				record(value.quasis.map((q: any) => q.value.cooked ?? "").join(""), `prop:${name}`);

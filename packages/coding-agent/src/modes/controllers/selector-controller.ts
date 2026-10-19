@@ -1590,7 +1590,7 @@ export class SelectorController {
 							this.ctx.ui,
 							spinner => theme.fg("accent", spinner),
 							text => theme.fg("muted", text),
-							`Summarizing branch... (${appKey(this.ctx.keybindings, "app.interrupt")} to cancel)`,
+							`Summarizing branch... (${appKey(this.ctx.keybindings, "app.interrupt")} to 取消)`,
 							getSymbolTheme().spinnerFrames,
 						);
 						this.ctx.statusContainer.addChild(summaryLoader);

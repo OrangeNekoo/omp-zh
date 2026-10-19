@@ -82,7 +82,7 @@ export class ReportPanel extends OverlayPanel {
 		this.#body = options.body;
 		this.#onClose = options.onClose;
 		this.#maxRows = options.maxRows;
-		this.#closeHint = `${options.closeKey} to close`;
+		this.#closeHint = `${options.closeKey} 关闭`;
 		this.#view = new ScrollView(options.body, {
 			height: 0,
 			scrollbar: "auto",
@@ -101,7 +101,7 @@ export class ReportPanel extends OverlayPanel {
 	 * its own {@link handleInput} closes it, so the hint names that key.
 	 */
 	holdFocus(): void {
-		this.#closeHint = `${editorKey("tui.select.cancel")} to close`;
+		this.#closeHint = `${editorKey("tui.select.cancel")} 关闭`;
 	}
 
 	/**

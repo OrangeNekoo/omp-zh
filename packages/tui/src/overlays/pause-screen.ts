@@ -93,7 +93,7 @@ export function renderPauseScreen(width: number, height: number, elapsedMs: numb
 		content.push(centerLine(theme.bold(theme.fg("accent", `▌▌ ${TITLE}`)), width).trimEnd());
 		content.push("");
 		content.push(centerLine(theme.fg("dim", `paused for ${formatClock(elapsedMs)}`), width).trimEnd());
-		content.push(centerLine(theme.fg("dim", `${esc} to resume`), width).trimEnd());
+		content.push(centerLine(theme.fg("dim", `${esc} to 恢复`), width).trimEnd());
 	} else {
 		if (sessionName) {
 			content.push(centerLine(theme.bold(sessionName), width).trimEnd());

@@ -77,7 +77,7 @@ function formatPrIdentifier(pr: string | string[] | undefined, fit: FitText = tr
 		const parts = pr.map(p => extractIssueId(p, fit)).filter((p): p is string => p !== undefined);
 		if (parts.length === 0) return undefined;
 		if (parts.length > 3) {
-			return `${parts.slice(0, 3).join(", ")}, +${parts.length - 3} more`;
+			return `${parts.slice(0, 3).join(", ")}, 另有 ${parts.length - 3} 项`;
 		}
 		return parts.join(", ");
 	}
@@ -268,7 +268,7 @@ function renderFailedLogs(
 
 		if (!expanded && tailLines.length > previewLimit) {
 			const remaining = tailLines.length - previewLimit;
-			lines.push(theme.fg("dim", `  … ${remaining} more log lines ${formatExpandHint(theme, false, true)}`));
+			lines.push(theme.fg("dim", `  … 另有 ${remaining} 行日志 ${formatExpandHint(theme, false, true)}`));
 		}
 	}
 
@@ -310,7 +310,7 @@ function buildWatchSections(
 
 	const failed = renderFailedLogs(watch.failedLogs ?? [], width, theme, options.expanded);
 	if (failed.length > 0) {
-		sections.push({ label: "failed logs", content: failed });
+		sections.push({ label: "失败日志", content: failed });
 	}
 
 	return sections;
@@ -473,7 +473,7 @@ function describeWatch(watch: GhRunWatchViewDetails, isError: boolean): NativeTo
 			watch.note ? noteText(watch.note) : undefined,
 			...runs,
 			failed.length > 0
-				? node("section", { head: [span("failed logs", "error")], tone: "error" }, failed, "failed")
+				? node("section", { head: [span("失败日志", "error")], tone: "error" }, failed, "failed")
 				: undefined,
 		]),
 	};

@@ -11,8 +11,8 @@ export const cfgTelemetryOtlpExportEnabled = register({
 	default: true,
 	ui: {
 		tab: "providers",
-		group: "Privacy",
-		label: "OTLP Telemetry Export",
+		group: "隐私",
+		label: "OTLP 遥测导出",
 		description:
 			"Allow OMP to export traces, logs, and metrics using OTEL_* endpoints. Changes take effect on the next launch.",
 	},

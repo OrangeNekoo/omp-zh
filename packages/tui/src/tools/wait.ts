@@ -514,7 +514,7 @@ function bodyLines(
 	);
 	const hidden = preview.hidden;
 	if (hidden > 0) {
-		lines.push(`${indent}${quote} ${theme.fg("dim", `… +${hidden} more ${hidden === 1 ? "line" : "lines"}`)}`);
+		lines.push(`${indent}${quote} ${theme.fg("dim", `… 另有 ${hidden} 行`)}`);
 	}
 	return lines;
 }

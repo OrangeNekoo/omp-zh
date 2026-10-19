@@ -12,12 +12,15 @@
 
 | 汉化 | 不汉化 |
 | --- | --- |
-| 设置面板的标签页、分组、开关名称与说明 | 系统提示词（`packages/coding-agent/src/prompts/**`） |
+| 设置面板的标签页、分组、开关名称、说明与选项 | 系统提示词（`packages/coding-agent/src/prompts/**`） |
 | 斜杠命令的名称与说明文字 | 工具的 `description` 与提示词 |
 | 弹窗、选择器、审批对话框的按钮与标题 | 代码里的标识符、枚举值、协议字段 |
 | 状态栏、工具卡片的标题与状态文字 | 配置键名、环境变量名、路径 |
 | 输入框占位符、空状态、错误提示 | 模型名称、服务商名称 |
-| CLI `--help` 的命令与参数说明 | 日志与内部诊断信息 |
+| 首次使用引导（选择模型、字形、主题、登录） | 日志与内部诊断信息 |
+| 欢迎界面的提示语（tips） | 工具返回给模型的输出文本 |
+| 设置面板底部与各对话框的操作提示行 | 代码注释 |
+| CLI `--help` 的命令与参数说明 | |
 
 汉化以**数据驱动**方式实现，而不是把英文硬改成中文：
 
@@ -31,6 +34,8 @@ i18n/
   apply-cli-name.ts    把 omp 改名成 omp-zh 的补丁
   check-groups.ts      校验设置面板分组名是否同源翻译（CI 闸门）
   fetch-native.ts      从 npm 拉取当前平台的预编译原生模块
+  translate-hints.ts   翻译 `${键位} to 动作` 这类拼接式提示
+  tips-zh.json         欢迎界面提示语（tips.txt）的对照词典
   extracted.json       待翻译清单快照（本地生成，已 gitignore）
   report.json          最近一次替换的明细（本地生成，已 gitignore）
 ```
@@ -284,8 +289,12 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - `packages/utils`、`packages/tui`、`packages/coding-agent` 三个包 `check:types` 通过
 - `oxlint` 0 warning / 0 error
 - 设置面板 10 个标签页、59 个分组全部汉化，且 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值 100% 对齐
+- 设置项的名称、说明与选项（含 `options` 子菜单的 label/description）已汉化
+- 首次使用引导的 5 个场景（登录、模型、字形、输入框、主题）已汉化
+- 欢迎界面 34 条提示语已汉化
+- 设置面板底部与各对话框的操作提示行已汉化
 - 斜杠命令描述汉化 82/86
-- 翻译器幂等：连续执行两次，第二次替换数为 0
+- 翻译器与提示片段翻译器均幂等：连续执行两次，第二次替换数为 0
 
 ---
 

@@ -856,7 +856,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 			if (record && this.#canFollowUp(record)) actions.push(rawKeyHint(["f", "enter"], "follow up"));
 			if (record && getBtwCopyText(record) !== undefined) {
 				if (this.#isCopied(record))
-					actions.push(theme.fg("success", `✓ copied · ${formatKeyHint("c")} to copy again`));
+					actions.push(theme.fg("success", `✓ copied · ${formatKeyHint("c")} to 复制 again`));
 				else actions.push(rawKeyHint("c", inner < 40 ? "copy" : "copy answer"));
 			}
 		}

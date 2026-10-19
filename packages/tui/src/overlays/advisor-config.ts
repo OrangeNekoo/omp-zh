@@ -1639,7 +1639,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"tools",
 			list,
-			`${editorKey("tui.select.confirm")} / click toggle · select Done or ${editorKey("tui.select.cancel")} to apply (empty = no tools; read/grep/glob = default)`,
+			`${editorKey("tui.select.confirm")} / click toggle · select Done or ${editorKey("tui.select.cancel")} to 应用 (empty = no tools; read/grep/glob = default)`,
 			{
 				title: "工具",
 				subtitle: `What ${this.#doc.advisors[index]?.name || "the advisor"} may call. None grants no tools; read, grep and glob are the default.`,

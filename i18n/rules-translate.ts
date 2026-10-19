@@ -37,6 +37,8 @@ const COUNT_UNITS: Readonly<Record<string, UnitTranslation>> = {
 
 const DURATION_RE = /^(\d+)\s+(second|minute|hour|day|week|month|year)s?$/;
 const COUNT_RE = /^(\d+)\s+(item|line|step|task|note|request|token|agent|file|message|session)s?$/i;
+/** 上下文窗口标签：`100K tokens`、`1M tokens`。 */
+const TOKEN_LABEL_RE = /^(\d+(?:\.\d+)?[KM]?)\s+tokens?$/i;
 
 /**
  * 尝试用规则翻译一条文案。
@@ -57,6 +59,10 @@ export function translateByRule(source: string): string | undefined {
 		const unit = COUNT_UNITS[count[2].toLowerCase()];
 		if (unit) return `${amount} ${unit.plural ?? unit.singular}`;
 	}
+
+	// 上下文窗口标签保留数字与单位，只把 tokens 换成中文
+	const tokenLabel = TOKEN_LABEL_RE.exec(source);
+	if (tokenLabel) return `${tokenLabel[1]} 令牌`;
 
 	return undefined;
 }

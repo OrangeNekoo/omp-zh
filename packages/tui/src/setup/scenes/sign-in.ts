@@ -238,8 +238,8 @@ export class SignInScene implements SetupSceneController {
 						"text",
 						{
 							spans: [
-								span("Browser login: ", "accent"),
-								span("Open login URL", "accent link", { href: authUrl }),
+								span("浏览器登录：", "accent"),
+								span("打开登录链接", "accent link", { href: authUrl }),
 								span(` (clipboard copy attempted; ${copyKey} retries)`, "dim"),
 							],
 						},
@@ -259,7 +259,7 @@ export class SignInScene implements SetupSceneController {
 							"text",
 							{
 								spans: [
-									span("Local shortcut (this machine only): ", "dim"),
+									span("本地快捷方式（仅本机）：", "dim"),
 									span(launchUrl, "dim link", { href: launchUrl }),
 								],
 								wrap: "char",
@@ -296,12 +296,7 @@ export class SignInScene implements SetupSceneController {
 			}
 			return col(
 				[
-					node(
-						"text",
-						{ spans: [span("Pick a provider to sign in — you can connect more than one.", "muted")] },
-						undefined,
-						"intro",
-					),
+					node("text", { spans: [span("选择要登录的服务商 — 可以连接多个。", "muted")] }, undefined, "intro"),
 					this.#selector,
 					...tail,
 				],
@@ -366,8 +361,7 @@ export class SignInScene implements SetupSceneController {
 					this.#statusLines = [...this.#statusLines, { text: message, color: "dim" }];
 					this.#host.requestRender();
 				},
-				onManualCodeInput: signal =>
-					this.#showPrompt({ message: "Paste the authorization code (or full redirect URL):" }, signal),
+				onManualCodeInput: signal => this.#showPrompt({ message: "粘贴授权码（或完整重定向 URL）：" }, signal),
 			});
 			// Provider-scoped online refresh so the just-persisted credential re-runs
 			// discovery instead of reusing a fresh authoritative cache row (#5780).
@@ -483,7 +477,7 @@ export class SignInScene implements SetupSceneController {
 /** Onboarding scene for provider sign-in. */
 export const providersSetupScene: SetupScene = {
 	id: "providers",
-	title: "Sign in to your providers",
+	title: "登录你的服务商",
 	minVersion: 1,
 	mount: host => new SignInScene(host),
 };
