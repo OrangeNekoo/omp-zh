@@ -725,7 +725,7 @@ export class PsTopComponent implements Component {
 			body.push("");
 			const rows: KeyValueRow[] = [
 				{ label: "命令：", value: collapseCommand(formatCommand(info.spec)) },
-				{ label: "cwd:", value: info.spec.cwd },
+				{ label: "工作目录：", value: info.spec.cwd },
 			];
 			if (!TERMINAL_STATES[daemon.state])
 				rows.push({ label: "运行时长：", value: formatDuration(Date.now() - daemon.startedAt) });

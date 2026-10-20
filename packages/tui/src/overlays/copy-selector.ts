@@ -1092,7 +1092,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 					const command = commandFromToolCall(content);
 					if (command) {
 						blocks.push({
-							label: command.kind === "bash" ? "bash command" : "eval 代码",
+							label: command.kind === "bash" ? "bash 命令" : "eval 代码",
 							content: command.code,
 							entry,
 							kind: "command",

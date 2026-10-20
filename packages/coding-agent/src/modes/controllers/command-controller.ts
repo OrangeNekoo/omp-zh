@@ -2057,7 +2057,7 @@ export class CommandController {
 		const compactionStartMs = Date.now();
 		compactingLoader.setWorkingRow(
 			() => ({
-				label: isAuto ? "Auto-compacting context…" : "Compacting context…",
+				label: isAuto ? "正在自动压缩上下文…" : "正在压缩上下文…",
 				startedAt: compactionStartMs,
 				variant: { kind: "compaction" },
 				interruptKey: this.ctx.maintenanceInterruptKey(),

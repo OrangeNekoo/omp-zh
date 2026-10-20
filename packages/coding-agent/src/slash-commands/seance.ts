@@ -129,10 +129,10 @@ async function chooseSeanceModel(
 				? "Choose another model"
 				: await ctx.showHookSelector("用以下方式查看此会话", [
 						{
-							label: "Use saved model",
+							label: "使用已保存的模型",
 							description: "使用当前角色模型，或此会话保存的默认模型",
 						},
-						{ label: "Choose another model", description: "为本次查看选择一次性模型" },
+						{ label: "选择其他模型", description: "为本次查看选择一次性模型" },
 					]);
 		if (choice === "Use saved model") {
 			void launchSeance(ctx, sourceSession);

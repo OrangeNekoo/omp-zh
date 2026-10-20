@@ -427,7 +427,7 @@ export class ModelPickerComponent implements Component {
 				query,
 				cursor,
 				placeholder:
-					mode === "task" || mode === "selection" ? "搜索模型…" : "Search models, @ for quick roles…",
+					mode === "task" || mode === "selection" ? "搜索模型…" : "搜索模型，输入 @ 快速切换角色…",
 				columns: MODEL_PICKER_COLUMNS,
 				...catalogue,
 				order: view.order,
@@ -485,19 +485,19 @@ export class ModelPickerComponent implements Component {
 				keys: ["enter"],
 				label:
 					mode === "role"
-						? "apply role model"
+						? "应用角色模型"
 						: mode === "task"
-							? "use for Task subagents"
+							? "用于任务子代理"
 							: mode === "selection"
-								? "select model"
-								: "use for this session",
+								? "选择模型"
+								: "用于本次会话",
 			},
 			{ keys: [], label: "输入以搜索" },
 		];
 		if (mode === "session") hints.push({ keys: ["@"], label: "快捷角色" });
 		hints.push(actionHint("tui.select.cancel", "close"));
 		if (this.#taskModeKey !== undefined && !this.#roleMode && mode !== "selection") {
-			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "会话模型" : "task model" });
+			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "会话模型" : "任务模型" });
 		}
 		// `card` directly: the task-mode tone is a common prop `overlayCard` doesn't take.
 		const node = card(

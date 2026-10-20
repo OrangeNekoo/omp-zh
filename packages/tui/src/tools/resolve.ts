@@ -97,7 +97,7 @@ export const resolveRenderer = {
 				title: "解决",
 				description: args.action,
 				badge: {
-					label: args.action === "apply" ? "proposed -> resolved" : "proposed -> rejected",
+					label: args.action === "apply" ? "提议 → 已解决" : "提议 → 已拒绝",
 					color: args.action === "apply" ? "success" : "warning",
 				},
 				meta: reason ? [uiTheme.fg("muted", reason)] : undefined,

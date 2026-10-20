@@ -499,7 +499,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		const advisor = shared ? undefined : doc.advisors[index];
 		const pages: TspPrefsProps["pages"][number][] = doc.advisors.map((a, i) => ({
 			id: `advisor:${i}`,
-			label: a.name || "(unnamed)",
+			label: a.name || "（未命名）",
 			icon: "advisor",
 			group: "顾问",
 		}));
@@ -535,7 +535,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 					hint: model ? undefined : `Uses the advisor role default (${this.#defaultModelLabel ?? "unset"}).`,
 					changed: model ? true : undefined,
 					defaultLabel: model ? (this.#defaultModelLabel ?? "advisor role default") : undefined,
-					control: { k: "action", label: model || this.#defaultModelLabel || "advisor role default", act: "edit" },
+					control: { k: "action", label: model || this.#defaultModelLabel || "顾问角色默认值", act: "edit" },
 				},
 				{
 					id: "reviewMode",
@@ -1574,7 +1574,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		const items: SelectItem[] = [
 			{
 				value: SYNC_BACKLOG_INHERIT,
-				label: current === undefined ? "inherit (current)" : "inherit",
+				label: current === undefined ? "沿用（当前）" : "inherit",
 				description: `Follow the global advisor.syncBacklog setting (currently "${global}").`,
 			},
 			...ADVISOR_SYNC_BACKLOG_MODES.map(mode => ({

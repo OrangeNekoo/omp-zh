@@ -164,15 +164,15 @@ export class BtwPanelComponent extends OverlayPanel {
 	}
 
 	#describeFooter(canFollowUp: boolean, canBranch: boolean): NativeNode {
-		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "以关闭" };
+		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "关闭" };
 		switch (this.#state) {
 			case "running":
-				return hintsRow([{ ...esc, label: "以取消" }]);
+				return hintsRow([{ ...esc, label: "取消" }]);
 			case "complete": {
 				const hints: NativeHint[] = [];
-				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "to copy again" : "to copy" });
-				if (canFollowUp) hints.push({ keys: ["f"], label: "以跟进" });
-				if (canBranch) hints.push({ keys: ["b"], label: "到分支" });
+				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "再次复制" : "复制" });
+				if (canFollowUp) hints.push({ keys: ["f"], label: "追问" });
+				if (canBranch) hints.push({ keys: ["b"], label: "分支" });
 				hints.push(esc);
 				if (!this.#copied) return hintsRow(hints);
 				return statusHintsRow([span("✓ 已复制到剪贴板", "success")], hints);
@@ -206,8 +206,8 @@ export class BtwPanelComponent extends OverlayPanel {
 				const actions: string[] = [];
 				const copyKey = formatKeyHint("c");
 				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to 复制 again` : `${copyKey} to 复制`);
-				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to follow up`);
-				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to branch`);
+				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to 追问`);
+				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to 分支`);
 				actions.push(`${esc} to 关闭`);
 				if (this.#copied) {
 					return `${theme.fg("success", "✓ 已复制到剪贴板")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;

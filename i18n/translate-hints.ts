@@ -28,6 +28,8 @@ const ACTIONS: Readonly<Record<string, string>> = {
 	"expand all": "全部展开",
 	"collapse all": "全部折叠",
 	"go back": "返回",
+	"follow up": "追问",
+	"branch": "分支",
 	"it first": "先中断",
 	"cancel it first": "先中断",
 	"jump sections": "跳转分节",

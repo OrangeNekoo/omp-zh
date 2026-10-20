@@ -1734,7 +1734,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		if (this.#onDelete) hints.push({ keys: ["delete", "backspace"], label: "delete" });
 		hints.push({ keys: ["enter"], label: "select" });
 		if (this.#sessionList.onToggleScope) {
-			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "current folder" : "all projects" });
+			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "当前目录" : "所有项目" });
 		}
 		hints.push({ keys: [boundKeys("app.interrupt", ["escape"])[0] ?? "escape"], label: "cancel" });
 		const result = overlayCard("omp.overlay.sessions", tabs ? this.#title : this.title, [

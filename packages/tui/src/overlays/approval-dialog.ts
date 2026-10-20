@@ -173,7 +173,7 @@ export class ApprovalDialogComponent implements Component {
 				label: this.#rememberAlways ? grant.alwaysLabel : grant.label,
 				answer: `grant${index}` as const,
 			})),
-			{ label: grants.length > 0 ? "Approve Once" : "批准", answer: "once" },
+			{ label: grants.length > 0 ? "批准一次" : "批准", answer: "once" },
 			...(this.options.session ? [{ label: this.options.session.label, answer: "session" as const }] : []),
 			{ label: "拒绝", answer: "deny" },
 		];

@@ -1730,7 +1730,7 @@ export class PlanReviewOverlay implements Component {
 			const section = this.#sections[sectionIndex]!;
 			const count = section.annotations.length;
 			return item(`h${sectionIndex}`, {
-				label: section.title || "(untitled)",
+				label: section.title || "（无标题）",
 				value: count > 0 ? [span(`✎${count}`, "warning")] : undefined,
 				role: `omp.plan.toc.depth${section.level - this.#tocBaseLevel}`,
 			});

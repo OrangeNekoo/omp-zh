@@ -1342,7 +1342,7 @@ export class CustomEditor extends Editor {
 							actions: transcribing ? undefined : { click: "dictation.toggle" },
 						},
 						starting || transcribing
-							? [node("spinner", { label: starting ? "Starting…" : "Transcribing…" }, undefined, "pending")]
+							? [node("spinner", { label: starting ? "正在启动…" : "正在转写…" }, undefined, "pending")]
 							: compact([
 									node("icon", { name: recording ? "stop" : "mic" }, undefined, "icon"),
 									recording && node("text", { text: "Recording · Stop", wrap: "none" }, undefined, "label"),
