@@ -154,7 +154,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				: redeemable
 					? theme.fg("success", countLabel)
 					: theme.fg("dim", countLabel);
-			const activeTag = account.active ? theme.fg("muted", " (active)") : "";
+			const activeTag = account.active ? theme.fg("muted", "（活动）") : "";
 			const safeLabel = oneLine(account.label);
 			const providerTag = theme.fg(
 				"muted",
@@ -182,7 +182,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 
 		if (total === 0) {
 			this.#listContainer.addChild(
-				new TruncatedText(theme.fg("muted", "No provider accounts with saved resets"), 0, 0),
+				new TruncatedText(theme.fg("muted", "没有保存了重置额度的服务商账户"), 0, 0),
 			);
 		}
 
@@ -363,7 +363,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				.filter(account => account.active)
 				.map(account => this.#menu.adapter.getKey(account)),
 			selected: this.#menu.selectedKey ?? null,
-			empty: "No provider accounts with saved resets",
+			empty: "没有保存了重置额度的服务商账户",
 			actions: [pickerAction("confirm", "Spend reset", "enter", { primary: true }), CLOSE_ACTION],
 			confirm,
 		});

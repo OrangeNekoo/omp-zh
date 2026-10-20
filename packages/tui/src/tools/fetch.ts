@@ -196,7 +196,7 @@ export function describeReadUrlResult(result: {
 		body: compact([
 			shown.length > 0
 				? text([span(plainText(shown.map(line => line.trimEnd()).join("\n")), "dim")], { wrap: "word" })
-				: noteText("(no content)"),
+				: noteText("（无内容）"),
 			stats,
 			truncated
 				? text(
@@ -261,23 +261,23 @@ export function renderReadUrlResult(
 	const contentLines = contentBody.split("\n").filter(l => l.trim());
 
 	const metadataLines: string[] = [
-		`${uiTheme.fg("muted", "Content-Type:")} ${details.contentType || "unknown"}`,
-		`${uiTheme.fg("muted", "Method:")} ${details.method}`,
+		`${uiTheme.fg("muted", "Content-Type：")} ${details.contentType || "unknown"}`,
+		`${uiTheme.fg("muted", "方法：")} ${details.method}`,
 	];
 	if (hasRedirect) {
 		metadataLines.push(
-			`${uiTheme.fg("muted", "Final URL:")} ${formatReadUrlMetadataValue(details.finalUrl, uiTheme)}`,
+			`${uiTheme.fg("muted", "最终 URL：")} ${formatReadUrlMetadataValue(details.finalUrl, uiTheme)}`,
 		);
 	}
 	const lineLabel = `${lineCount} line${lineCount === 1 ? "" : "s"}`;
-	metadataLines.push(`${uiTheme.fg("muted", "Lines:")} ${lineLabel}`);
-	metadataLines.push(`${uiTheme.fg("muted", "Chars:")} ${charCount}`);
+	metadataLines.push(`${uiTheme.fg("muted", "行数：")} ${lineLabel}`);
+	metadataLines.push(`${uiTheme.fg("muted", "字符数：")} ${charCount}`);
 	if (truncated) {
 		metadataLines.push(uiTheme.fg("warning", `${uiTheme.status.warning} Output truncated`));
 		if (truncation?.artifactId) metadataLines.push(formatStyledArtifactReference(truncation.artifactId, uiTheme));
 	}
 	if (hasNotes) {
-		metadataLines.push(`${uiTheme.fg("muted", "Notes:")} ${details.notes.join("; ")}`);
+		metadataLines.push(`${uiTheme.fg("muted", "备注：")} ${details.notes.join("; ")}`);
 	}
 
 	let lastExpanded: boolean | undefined;
@@ -301,7 +301,7 @@ export function renderReadUrlResult(
 				contentPreviewLines =
 					previewLines.length > 0
 						? previewLines.map(line => uiTheme.fg("dim", line))
-						: [uiTheme.fg("dim", "(no content)")];
+						: [uiTheme.fg("dim", "（无内容）")];
 				if (remaining > 0) {
 					const hint = formatExpandHint(uiTheme, expanded, true);
 					contentPreviewLines.push(uiTheme.fg("muted", `… ${remaining} more lines${hint ? ` ${hint}` : ""}`));
@@ -313,8 +313,8 @@ export function renderReadUrlResult(
 				header,
 				phase: truncated ? "warning" : "success",
 				sections: [
-					{ label: uiTheme.fg("toolTitle", "Metadata"), content: metadataLines },
-					{ label: uiTheme.fg("toolTitle", "Content Preview"), content: contentPreviewLines },
+					{ label: uiTheme.fg("toolTitle", "元数据"), content: metadataLines },
+					{ label: uiTheme.fg("toolTitle", "内容预览"), content: contentPreviewLines },
 				],
 				applyBg: false,
 			};

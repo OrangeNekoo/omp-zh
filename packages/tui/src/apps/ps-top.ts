@@ -440,8 +440,8 @@ export class PsTopComponent implements Component {
 								id: "current",
 								label:
 									this.#target.dir !== undefined || this.#target.global !== undefined
-										? "Target"
-										: "This project",
+										? "目标"
+										: "本项目",
 							},
 							{ id: "all", label: "所有范围" },
 						],
@@ -558,7 +558,7 @@ export class PsTopComponent implements Component {
 								selected && selected.scope.runtimeDir === report.scope.runtimeDir
 									? stableKey(flatKey(selected))
 									: null,
-							empty: "No processes",
+							empty: "无进程",
 							role: "omp.ps.processes",
 						},
 						report.daemons.map(daemon => describeProcess(report.scope, daemon)),
@@ -580,16 +580,16 @@ export class PsTopComponent implements Component {
 		}
 		const { daemon, spec } = info;
 		const items: { k: string; v: TspText }[] = [
-			{ k: "Command", v: [span(collapseCommand(formatCommand(spec)), "mono")] },
-			{ k: "Directory", v: [span(spec.cwd, "path")] },
+			{ k: "命令", v: [span(collapseCommand(formatCommand(spec)), "mono")] },
+			{ k: "目录", v: [span(spec.cwd, "path")] },
 		];
 		if (daemon.pid !== undefined && !TERMINAL_STATES[daemon.state])
 			items.push({ k: "PID", v: [span(String(daemon.pid), "num")] });
-		if (daemon.exitReason) items.push({ k: "Exit", v: [span(daemon.exitReason, "error")] });
-		items.push({ k: "Restarts", v: `${daemon.restartCount} (policy ${spec.restart})` });
-		items.push({ k: "Owner", v: daemon.owner ?? "—" });
+		if (daemon.exitReason) items.push({ k: "退出", v: [span(daemon.exitReason, "error")] });
+		items.push({ k: "重启次数", v: `${daemon.restartCount} (policy ${spec.restart})` });
+		items.push({ k: "所有者", v: daemon.owner ?? "—" });
 		const flags = [spec.pty && "pty", spec.persist && "persist", spec.detached && "detached"].filter(Boolean);
-		items.push({ k: "Flags", v: flags.length > 0 ? flags.join(" · ") : "—" });
+		items.push({ k: "标志", v: flags.length > 0 ? flags.join(" · ") : "—" });
 		const body: NativeNode[] = [];
 		if (!TERMINAL_STATES[daemon.state]) {
 			body.push(
@@ -679,7 +679,7 @@ export class PsTopComponent implements Component {
 		for (const report of this.#reports) {
 			body.push({ text: ` ${scopeHeader(report.scope)}` });
 			if (report.daemons.length === 0) {
-				body.push({ text: chalk.dim("   no processes") });
+				body.push({ text: chalk.dim("   无进程") });
 			} else {
 				body.push({ text: chalk.dim(renderRow([...TABLE_HEADER])) });
 				for (const row of report.daemons) {
@@ -693,7 +693,7 @@ export class PsTopComponent implements Component {
 			}
 			body.push({ text: "" });
 		}
-		if (body.length === 0) body.push({ text: chalk.dim(" No daemon broker scopes found.") });
+		if (body.length === 0) body.push({ text: chalk.dim(" 未找到守护进程作用域。") });
 
 		// Keep the selected logical row visible through refreshes and resizes.
 		const selectedLine = body.findIndex(line => line.flat === this.#selected);
@@ -725,12 +725,12 @@ export class PsTopComponent implements Component {
 			body.push("");
 			const rows: KeyValueRow[] = [
 				{ label: "命令：", value: collapseCommand(formatCommand(info.spec)) },
-				{ label: "cwd：", value: info.spec.cwd },
+				{ label: "cwd:", value: info.spec.cwd },
 			];
 			if (!TERMINAL_STATES[daemon.state])
-				rows.push({ label: "uptime:", value: formatDuration(Date.now() - daemon.startedAt) });
+				rows.push({ label: "运行时长：", value: formatDuration(Date.now() - daemon.startedAt) });
 			if (daemon.exitReason) rows.push({ label: "退出：", value: daemon.exitReason });
-			rows.push({ label: "restarts:", value: `${daemon.restartCount} (policy: ${info.spec.restart})` });
+			rows.push({ label: "重启次数：", value: `${daemon.restartCount} (policy: ${info.spec.restart})` });
 			rows.push({ label: "所有者：", value: daemon.owner ?? "-" });
 			this.#infoList.setRows(rows);
 			body.push(...this.#infoList.render(width));
@@ -783,7 +783,9 @@ function scopeSpans(scope: PsScope): TspSpan[] {
 			: [span("project "), span(scope.projectDir ?? path.basename(scope.runtimeDir), "strong path")];
 	spans.push(span(" — ", "dim"));
 	spans.push(
-		scope.brokerPid !== undefined ? span(`broker pid ${scope.brokerPid}`, "success") : span("代理未运行", "dim"),
+		scope.brokerPid !== undefined
+			? span(`broker pid ${scope.brokerPid}`, "success")
+			: span("代理未运行", "dim"),
 	);
 	return spans;
 }

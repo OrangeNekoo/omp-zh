@@ -39,7 +39,7 @@ function parseSeanceArgs(args: string): ParsedSeanceArgs {
 async function launchSeance(ctx: InteractiveModeContext, sourceSession: string, model?: string): Promise<void> {
 	const taskTool = ctx.session.agent.state.tools.find(tool => tool.name === "task");
 	if (!taskTool) {
-		ctx.showError("The task tool is not available for /seance.");
+		ctx.showError("/seance 不可用 task 工具。");
 		return;
 	}
 	const params: TaskParams = {
@@ -127,12 +127,12 @@ async function chooseSeanceModel(
 		const choice =
 			source.modelSelectors.length === 0
 				? "Choose another model"
-				: await ctx.showHookSelector("Consult this session with", [
+				: await ctx.showHookSelector("用以下方式查看此会话", [
 						{
 							label: "Use saved model",
-							description: "Use the active role or default model saved with this session",
+							description: "使用当前角色模型，或此会话保存的默认模型",
 						},
-						{ label: "Choose another model", description: "Select a one-off model for this consultation" },
+						{ label: "Choose another model", description: "为本次查看选择一次性模型" },
 					]);
 		if (choice === "Use saved model") {
 			void launchSeance(ctx, sourceSession);
@@ -151,7 +151,7 @@ async function chooseSeanceModel(
 export const SEANCE_SLASH_COMMAND: SlashCommandSpec = {
 	name: "seance",
 	icon: "ghost",
-	description: "Consult a saved session without resuming it",
+	description: "查看已保存的会话但不继续它",
 	inlineHint: "[session id|path] [--model selector]",
 	allowArgs: true,
 	handleTui: async (command, runtime) => {

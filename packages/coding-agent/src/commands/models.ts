@@ -3,7 +3,7 @@
  */
 
 import { MODEL_KINDS, type ModelKind } from "@oh-my-pi/pi-catalog/types";
-import { APP_NAME } from "@oh-my-pi/pi-utils";
+import { CLI_NAME } from "@oh-my-pi/pi-utils";
 import { Args, Command, Flags } from "@oh-my-pi/pi-utils/cli";
 import { modelsHelp as commandHelp } from "../cli/command-help";
 import { resolveModelsArgs, runModelsCommand } from "../cli/models-cli";
@@ -14,43 +14,43 @@ export default class Models extends Command {
 	static description = commandHelp.description;
 	static args = {
 		action: Args.string({
-			description: "ls (default) | find | refresh | <provider>",
+			description: "ls（默认）| find | refresh | <provider>",
 			required: false,
 		}),
 		pattern: Args.string({
-			description: "Filter/search substring, or provider name (required for find)",
+			description: "筛选/搜索子串，或服务商名（find 必填）",
 			required: false,
 		}),
 	};
 
 	static flags = {
-		json: Flags.boolean({ description: "Output JSON" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
 		kind: Flags.string({
-			description: "Catalog kind to list",
+			description: "要列出的目录类型",
 			options: MODEL_KIND_OPTIONS,
 			default: "chat",
 		}),
 		extension: Flags.string({
 			char: "e",
-			description: "Load an extension file before listing (repeatable)",
+			description: "列出前加载扩展文件（可重复）",
 			multiple: true,
 		}),
 		"no-extensions": Flags.boolean({
-			description: "Disable extension discovery (explicit -e paths still work)",
+			description: "禁用扩展自动发现（显式 -e 路径仍可用）",
 		}),
 		config: Flags.string({
-			description: "Load an extra config.yml-style overlay for this run (repeatable)",
+			description: "为本次运行加载额外的 config.yml 风格配置层（可重复）",
 			multiple: true,
 		}),
 	};
 
 	static examples = [
-		`# List available chat models, grouped by provider\n  ${APP_NAME} models`,
-		`# List models of every catalog kind\n  ${APP_NAME} models --kind all`,
-		`# List one provider's models (any provider name works)\n  ${APP_NAME} models openai-codex`,
-		`# Find models by substring\n  ${APP_NAME} models find minimax`,
-		`# Force a fresh catalog fetch (replaces rm -rf ~/.omp/models.db)\n  ${APP_NAME} models refresh`,
-		`# Machine-readable output\n  ${APP_NAME} models --json`,
+		`# List available chat models, grouped by provider\n  ${CLI_NAME} models`,
+		`# List models of every catalog kind\n  ${CLI_NAME} models --kind all`,
+		`# List one provider's models (any provider name works)\n  ${CLI_NAME} models openai-codex`,
+		`# Find models by substring\n  ${CLI_NAME} models find minimax`,
+		`# Force a fresh catalog fetch (replaces rm -rf ~/.omp/models.db)\n  ${CLI_NAME} models refresh`,
+		`# Machine-readable output\n  ${CLI_NAME} models --json`,
 	];
 
 	async run(): Promise<void> {

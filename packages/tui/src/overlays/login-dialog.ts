@@ -257,7 +257,10 @@ export class LoginDialogComponent extends OverlayPanel {
 		this.#contentContainer.addChild(this.#input);
 		this.#contentContainer.addChild(
 			new Text(
-				theme.fg("dim", `(${editorKey("tui.select.cancel")} to 取消, ${editorKey("tui.input.submit")} to 提交)`),
+				theme.fg(
+					"dim",
+					`(${editorKey("tui.select.cancel")} to 取消, ${editorKey("tui.input.submit")} to 提交)`,
+				),
 				0,
 				0,
 			),

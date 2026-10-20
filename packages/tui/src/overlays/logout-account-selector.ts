@@ -77,7 +77,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 		for (let i = startIndex; i < endIndex; i++) {
 			const account = items[i];
 			if (!account) continue;
-			const activeTag = account.active ? theme.fg("muted", " (active)") : "";
+			const activeTag = account.active ? theme.fg("muted", "（活动）") : "";
 			const detail = account.detail ? theme.fg("dim", `  ${account.detail}`) : "";
 			if (i === this.#menu.selectedIndex) {
 				rows.push(`${theme.fg("accent", `${theme.nav.cursor} ${account.label}`)}${activeTag}${detail}`);
@@ -98,7 +98,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 		}
 
 		if (total === 0) {
-			this.#listContainer.addChild(new TruncatedText(theme.fg("muted", "No stored accounts to log out"), 0, 0));
+			this.#listContainer.addChild(new TruncatedText(theme.fg("muted", "没有可登出的已存账户"), 0, 0));
 		}
 
 		this.#listContainer.addChild(
@@ -161,7 +161,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 				}))),
 				current: this.#accounts.filter(account => account.active).map(account => String(account.credentialId)),
 				selected: this.#menu.selectedKey ?? null,
-				empty: "No stored accounts to log out",
+				empty: "没有可登出的已存账户",
 				actions: [pickerAction("confirm", "Sign out", "enter", { primary: true, danger: true }), CLOSE_ACTION],
 			});
 			return this.#pickerRoot;
@@ -184,7 +184,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 				"list",
 				{
 					selected: this.#menu.selectedKey ?? null,
-					empty: "No stored accounts to log out",
+					empty: "没有可登出的已存账户",
 					max: { lines: LOGOUT_SELECTOR_MAX_VISIBLE },
 				},
 				this.#nativeItems,

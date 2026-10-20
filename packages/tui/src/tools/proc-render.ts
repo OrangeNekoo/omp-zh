@@ -268,7 +268,7 @@ export function renderProcRead(
 				},
 				theme,
 			),
-			...(items.length ? [] : [theme.fg("dim", "No background jobs or services.")]),
+			...(items.length ? [] : [theme.fg("dim", "没有后台任务或服务。")]),
 		];
 	}, options);
 }
@@ -485,6 +485,6 @@ export function describeProcRead(
 	if (agents.length) counts.push(`${agents.length} agents`);
 	return {
 		head: toolHead(title, id ? span(safe(id), "accent") : undefined, counts.join(" · ")),
-		body: [node("list", { empty: "No background jobs or services.", role: "omp.tool.proc.table" }, items)],
+		body: [node("list", { empty: "没有后台任务或服务。", role: "omp.tool.proc.table" }, items)],
 	};
 }

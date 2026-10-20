@@ -53,7 +53,7 @@ async function handleUsageResetCommand(
 		return;
 	}
 	if (accounts.length === 0) {
-		await output("No provider accounts found. Use /login to add one.");
+		await output("未找到服务商账户。用 /login 添加。");
 		return;
 	}
 	if (!arg.trim()) {
@@ -84,12 +84,12 @@ async function handleJobsKillCommand(
 ): Promise<void> {
 	const target = arg.trim();
 	if (!target) {
-		await output("Usage: /jobs kill <id>|all");
+		await output("用法：/jobs kill <id>|all");
 		return;
 	}
 	const snapshot = session.getAsyncJobSnapshot({ recentLimit: 0 });
 	if (!snapshot) {
-		await output("Async background jobs are unavailable in this session.");
+		await output("本会话不支持异步后台任务。");
 		return;
 	}
 	if (target === "all") {
@@ -122,7 +122,7 @@ async function handleSessionPinCommand(
 	output: SlashCommandRuntime["output"],
 ): Promise<void> {
 	if (session.isStreaming) {
-		await output("Cannot pin an account while the session is streaming.");
+		await output("会话正在输出时无法固定账户。");
 		return;
 	}
 	let accountList: SessionOAuthAccountList | undefined;
@@ -133,7 +133,7 @@ async function handleSessionPinCommand(
 		return;
 	}
 	if (!accountList) {
-		await output("Select a model before pinning a provider account.");
+		await output("固定服务商账户前请先选择模型。");
 		return;
 	}
 	const provider = getOAuthProviders().find(candidate => candidate.id === accountList.provider);
@@ -207,7 +207,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "todo",
 		icon: "todo",
 		description: "查看或修改代理的待办列表",
-		acpDescription: "Manage todos",
+		acpDescription: "管理待办",
 		acpInputHint: "<subcommand>",
 		subcommands: [
 			{ name: "edit", description: "在 $EDITOR 中打开待办（Markdown 往返）" },
@@ -245,7 +245,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "session",
 		icon: "session",
 		description: "会话管理命令",
-		acpDescription: "Show or configure the current session",
+		acpDescription: "显示或配置当前会话",
 		acpInputHint: "[info|delete|pin [account]]",
 		subcommands: [
 			{ name: "info", description: "显示会话信息和统计" },
@@ -270,9 +270,9 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				return commandConsumed();
 			}
 			if (verb === "delete" && !rest) {
-				if (runtime.session.isStreaming) return usage("Cannot delete the session while streaming.", runtime);
+				if (runtime.session.isStreaming) return usage("输出过程中无法删除会话。", runtime);
 				const sessionFile = runtime.sessionManager.getSessionFile();
-				if (!sessionFile) return usage("No session file to delete (in-memory session).", runtime);
+				if (!sessionFile) return usage("没有可删除的会话文件（内存会话）。", runtime);
 				// Route through the active SessionManager so the persist writer is
 				// closed before the file is deleted. Constructing a fresh
 				// FileSessionStorage and calling deleteSessionWithArtifacts leaves
@@ -292,7 +292,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				await handleSessionPinCommand(rest, runtime.session, runtime.output);
 				return commandConsumed();
 			}
-			return usage("Usage: /session [info|delete|pin [account]]", runtime);
+			return usage("用法：/session [info|delete|pin [account]]", runtime);
 		},
 		handleTui: async (command, runtime) => {
 			const { verb, rest } = parseSubcommand(command.args);
@@ -314,7 +314,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!verb || (verb === "info" && !rest)) {
 				await runtime.ctx.handleSessionCommand();
 			} else {
-				runtime.ctx.showStatus("Usage: /session [info|delete|pin [account]]");
+				runtime.ctx.showStatus("用法：/session [info|delete|pin [account]]");
 			}
 			clearSubmittedText(runtime);
 		},
@@ -323,7 +323,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "jobs",
 		icon: "jobs",
 		description: "显示异步后台任务状态",
-		acpDescription: "Show background jobs",
+		acpDescription: "显示后台任务",
 		acpInputHint: "[full|kill <id>|kill all]",
 		subcommands: [
 			{ name: "full", description: "显示完整、未截断的命令行" },
@@ -341,12 +341,12 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				await handleJobsKillCommand(rest, runtime.session, runtime.output);
 				return commandConsumed();
 			}
-			if (rest || (verb && verb !== "full")) return usage("Usage: /jobs [full|kill <id>|kill all]", runtime);
+			if (rest || (verb && verb !== "full")) return usage("用法：/jobs [full|kill <id>|kill all]", runtime);
 			const full = verb === "full";
 			const tree = runtime.session.getAsyncJobTree();
 			if (!tree || (tree.running.length === 0 && tree.recent.length === 0)) {
 				await runtime.output(
-					"No background jobs running. (Background jobs run async tools — e.g. long-running bash, debug, or task subagents that would otherwise tie up a turn. They appear here while alive and briefly after (until their result is delivered; at most ~5 minutes).)",
+					"没有运行中的后台任务。（后台任务运行异步工具 — 如长时间 bash、调试或任务子代理，否则它们会占用一整轮。任务存活期间及其结束后短暂时间内会显示在这里（直到结果送达；最多约 5 分钟）。）",
 				);
 				return commandConsumed();
 			}
@@ -382,7 +382,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (verb === "kill") {
 				await handleJobsKillCommand(rest, runtime.ctx.session, text => runtime.ctx.showStatus(text));
 			} else if (rest || (verb && verb !== "full")) {
-				runtime.ctx.showStatus("Usage: /jobs [full|kill <id>|kill all]");
+				runtime.ctx.showStatus("用法：/jobs [full|kill <id>|kill all]");
 			} else {
 				await runtime.ctx.handleJobsCommand({ full: verb === "full" });
 			}
@@ -393,7 +393,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "usage",
 		icon: "gauge",
 		description: "显示服务商用量和限制",
-		acpDescription: "Show token usage",
+		acpDescription: "显示令牌用量",
 		acpInputHint: "[show|reset [provider/credential-id|provider/active]]",
 		subcommands: [
 			{ name: "show", description: "显示服务商用量和限制" },
@@ -414,7 +414,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				await handleUsageResetCommand(rest, runtime.session, runtime.output);
 				return commandConsumed();
 			}
-			return usage("Usage: /usage [show|reset [provider/credential-id|provider/active]]", runtime);
+			return usage("用法：/usage [show|reset [provider/credential-id|provider/active]]", runtime);
 		},
 		handleTui: async (command, runtime) => {
 			const { verb, rest } = parseSubcommand(command.args);
@@ -432,7 +432,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus("Usage: /usage [show|reset [provider/credential-id|provider/active]]");
+			runtime.ctx.showStatus("用法：/usage [show|reset [provider/credential-id|provider/active]]");
 			clearSubmittedText(runtime);
 		},
 	},
@@ -446,7 +446,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const parsed = parseStatsDashboardArgs(command.args);
 			if ("error" in parsed) return usage(parsed.error, runtime);
 
-			await runtime.output("Syncing session files...");
+			await runtime.output("正在同步会话文件…");
 			try {
 				const result = await launchSessionStatsDashboard(parsed, runtime);
 				await runtime.output(result.message);
@@ -475,7 +475,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "changelog",
 		icon: "news",
 		description: "显示变更日志条目",
-		acpDescription: "Show changelog",
+		acpDescription: "显示变更日志",
 		acpInputHint: "[full|last [N]]",
 		subcommands: [
 			{ name: "full", description: "显示完整变更日志" },
@@ -489,7 +489,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const allEntries = await parseChangelog(changelogPath);
 			const entriesToShow = selectChangelogEntries(allEntries, view);
 			if (entriesToShow.length === 0) {
-				await runtime.output("No changelog entries found.");
+				await runtime.output("未找到变更日志条目。");
 				return commandConsumed();
 			}
 			await runtime.output(renderChangelogEntries(entriesToShow).markdown);
@@ -513,7 +513,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "tools",
 		icon: "tools",
 		description: "显示代理当前可见的工具",
-		acpDescription: "Show available tools",
+		acpDescription: "显示可用工具",
 		getTuiAutocompleteDescription: runtime => {
 			const active = runtime.ctx.session.getActiveToolNames().length;
 			const all = runtime.ctx.session.getAllToolNames().length;
@@ -523,7 +523,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const active = runtime.session.getActiveToolNames();
 			const all = runtime.session.getAllToolNames();
 			if (all.length === 0) {
-				await runtime.output("No tools are available.");
+				await runtime.output("没有可用工具。");
 				return commandConsumed();
 			}
 			const lines = all.map(name => `${active.includes(name) ? "*" : "-"} ${name}`);
@@ -542,7 +542,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "context",
 		icon: "context",
 		description: "显示预估上下文用量明细",
-		acpDescription: "Show context usage",
+		acpDescription: "显示上下文用量",
 		getTuiAutocompleteDescription: runtime => {
 			const usage = runtime.ctx.session.getContextUsage();
 			if (!usage) return "Context: unavailable";
@@ -624,7 +624,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const [keyword, ...extra] = args.split(/\s+/);
 				if (extra.length > 0) {
 					clearSubmittedText(runtime);
-					runtime.ctx.showError("Usage: /fork [pane|window|tab]");
+					runtime.ctx.showError("用法：/fork [pane|window|tab]");
 					return;
 				}
 				switch (keyword?.toLowerCase()) {
@@ -637,7 +637,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						break;
 					default:
 						clearSubmittedText(runtime);
-						runtime.ctx.showError("Usage: /fork [pane|window|tab]");
+						runtime.ctx.showError("用法：/fork [pane|window|tab]");
 						return;
 				}
 			}
@@ -686,9 +686,9 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				}
 				const submitted = manualInput.submit(args);
 				if (submitted) {
-					runtime.ctx.showStatus("OAuth callback received; completing login…");
+					runtime.ctx.showStatus("已收到 OAuth 回调；正在完成登录…");
 				} else {
-					runtime.ctx.showWarning("No OAuth login is waiting for a manual callback.");
+					runtime.ctx.showWarning("没有等待手动回调的 OAuth 登录。");
 				}
 				clearSubmittedText(runtime);
 				return;
@@ -735,7 +735,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "mcp",
 		icon: "mcp",
 		description: "管理 MCP 服务器（添加、列出、移除、测试）",
-		acpDescription: "Manage MCP servers",
+		acpDescription: "管理 MCP 服务器",
 		inlineHint: "<subcommand>",
 		subcommands: [
 			{

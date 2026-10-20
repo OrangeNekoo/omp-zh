@@ -49,7 +49,7 @@ export const cfgIsolationBackend = register({
 		description: "子代理隔离与工作树克隆使用的后端",
 		options: [
 			{ value: "auto", label: "自动", description: "让 PAL 选择最佳可用后端" },
-			{ value: "apfs", label: "APFS", description: "macOS clonefile reflink (APFS)" },
+			{ value: "apfs", label: "APFS", description: "macOS clonefile 重链接（APFS）" },
 			{ value: "btrfs", label: "btrfs", description: "btrfs 子卷快照" },
 			{ value: "zfs", label: "ZFS", description: "ZFS 快照 + 克隆" },
 			{ value: "reflink", label: "Reflink", description: "Linux FICLONE 逐文件 reflink" },
@@ -62,7 +62,7 @@ export const cfgIsolationBackend = register({
 			{
 				value: "block-clone",
 				label: "阻止克隆",
-				description: "Windows FSCTL_DUPLICATE_EXTENTS_TO_FILE (NTFS/ReFS)",
+				description: "Windows FSCTL_DUPLICATE_EXTENTS_TO_FILE（NTFS/ReFS）",
 			},
 			{
 				value: "rcopy",

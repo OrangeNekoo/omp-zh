@@ -120,7 +120,7 @@ export class SessionInfoOverlay implements Component {
 		role: "omp.overlay.sessionInfo",
 		size: "md",
 		anchor: "center",
-		head: "Session info",
+		head: "会话信息",
 	} as const;
 	readonly #host: SessionInfoOverlayHost;
 	readonly #onClose: () => void;
@@ -200,18 +200,18 @@ export class SessionInfoOverlay implements Component {
 		// The report prints the append-only context mode after the message counts;
 		// it is a provider setting, so it joins the Provider group when there is one.
 		const parsed = parseKvReport(this.#infoSource);
-		const hasProvider = parsed.some(section => section.head === "Provider");
+		const hasProvider = parsed.some(section => section.head === "服务商");
 		const moved: KvReportEntry[] = [];
 		const sections = parsed.map(section => ({
 			head: section.head,
 			entries: section.entries.filter(entry => {
-				if (!hasProvider || section.head === "Provider" || !("k" in entry) || entry.k !== "Append-Only")
+				if (!hasProvider || section.head === "服务商" || !("k" in entry) || entry.k !== "仅追加")
 					return true;
 				moved.push(entry);
 				return false;
 			}),
 		}));
-		sections.find(section => section.head === "Provider")?.entries.push(...moved);
+		sections.find(section => section.head === "服务商")?.entries.push(...moved);
 		const body: NativeChild[] = [];
 		const stats: { head: string; key: string; items: { k: string; v: TspSpan[] }[] }[] = [];
 		const flushStats = (): void => {
@@ -226,7 +226,7 @@ export class SessionInfoOverlay implements Component {
 					if (!("k" in entry)) rest.push(text(entry.line, { wrap: "word", role: "omp.info.note" }));
 					else if (entry.k === "ID")
 						identity.unshift(identityField("ID", [span(joined(entry.v), "mono")], "id", "Copy session ID"));
-					else if (entry.k === "File") {
+					else if (entry.k === "文件") {
 						const path = joined(entry.v);
 						identity.push(
 							path.includes("/")
@@ -247,13 +247,13 @@ export class SessionInfoOverlay implements Component {
 				pairs.length === entries.length &&
 				pairs.every(p => NUMERIC.test(joined(p.v).trim()))
 			) {
-				const cost = head === "Cost";
+				const cost = head === "费用";
 				stats.push({
 					head,
 					key: `s${index}`,
 					items: pairs.map(p => ({
 						k: sentenceCase(p.k),
-						v: [span(cost && p.k === "Total" ? `$${joined(p.v).trim()}` : joined(p.v).trim(), "mono")],
+						v: [span(cost && p.k === "合计" ? `$${joined(p.v).trim()}` : joined(p.v).trim(), "mono")],
 					})),
 				});
 				continue;
@@ -263,7 +263,7 @@ export class SessionInfoOverlay implements Component {
 				node(
 					"section",
 					{ head: sentenceCase(head), role: "omp.info.group" },
-					this.#describeEntries(entries, head === "Provider"),
+					this.#describeEntries(entries, head === "服务商"),
 					`s${index}`,
 				),
 			);
@@ -312,7 +312,7 @@ export class SessionInfoOverlay implements Component {
 			{ lines: 0, children: [] },
 		];
 		for (const g of groups) {
-			const total = g.items.length > 1 ? g.items.find(item => item.k === "Total") : undefined;
+			const total = g.items.length > 1 ? g.items.find(item => item.k === "合计") : undefined;
 			const items = total ? g.items.filter(item => item !== total) : g.items;
 			const children: NativeChild[] = [node("kv", { items, layout: "grid", role: "omp.info.nums" })];
 			if (total) children.push(node("kv", { items: [total], layout: "grid", role: "omp.info.total" }));

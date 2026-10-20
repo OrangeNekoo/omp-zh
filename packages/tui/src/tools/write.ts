@@ -197,7 +197,7 @@ function writeContentOf(args: unknown): string {
 
 function formatLineCountSuffix(lineCount: number, uiTheme: Theme): string {
 	if (lineCount <= 0) return "";
-	return uiTheme.fg("dim", ` · ${lineCount} 行`);
+	return uiTheme.fg("dim", ` · ${lineCount} line${lineCount === 1 ? "" : "s"}`);
 }
 
 function normalizeDisplayText(text: unknown): string {
@@ -373,7 +373,7 @@ function formatStreamingContent(
 
 		let text = "\n\n";
 		if (hidden > 0) {
-			text += `${uiTheme.fg("dim", `… （前面还有 ${hidden} 行）`)}\n`;
+			text += `${uiTheme.fg("dim", `… (${hidden} earlier line${hidden === 1 ? "" : "s"})`)}\n`;
 		}
 		for (let i = 0; i < visibleLines.length; i++) {
 			const lineNum = startIndex + i + 1;
@@ -389,7 +389,7 @@ function formatStreamingContent(
 	// the native-scrollback commit boundary at the top of the block, so a long
 	// expanded preview could never scroll-append mid-stream.
 	const spinner = spinnerFrame !== undefined ? `${formatStatusIcon("running", uiTheme, spinnerFrame)} ` : "";
-	return `${bodyText}${spinner}${uiTheme.fg("dim", `… (streaming)`)}`;
+	return `${bodyText}${spinner}${uiTheme.fg("dim", "…（流式输出中）")}`;
 }
 
 function wrapWritePreviewRows(lines: string[], width: number): string[] {
@@ -580,7 +580,7 @@ function writeToolHead(
 		target: rawPath ? sanitizeText(displayPath(rawPath)) : undefined,
 		targetKind: "path",
 		href: fileHref(details?.resolvedPath),
-		meta: lineCount > 0 ? [`${lineCount} 行`] : undefined,
+		meta: lineCount > 0 ? [`${lineCount} line${lineCount === 1 ? "" : "s"}`] : undefined,
 		badges: badges.length > 0 ? badges : undefined,
 	};
 }
@@ -750,7 +750,7 @@ export const writeToolRenderer = {
 		const lineSuffix = formatLineCountSuffix(lineCount, uiTheme);
 		const execSuffix =
 			!isPartial && result.details?.madeExecutable
-				? `${uiTheme.fg("dim", " · ")}${uiTheme.fg("success", "made executable!")}`
+				? `${uiTheme.fg("dim", " · ")}${uiTheme.fg("success", "已设为可执行！")}`
 				: "";
 		const header = renderStatusLine(
 			{

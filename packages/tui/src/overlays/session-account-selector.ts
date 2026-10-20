@@ -48,7 +48,7 @@ export class SessionAccountSelectorComponent extends OverlayPanel {
 			return {
 				value,
 				label: account.label,
-				description: account.active ? "active for this session" : undefined,
+				description: account.active ? "本会话生效" : undefined,
 			};
 		});
 

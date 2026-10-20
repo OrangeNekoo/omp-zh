@@ -670,7 +670,7 @@ interface CardRowLayout {
 
 export class UsageDashboardComponent implements Component {
 	/** The terminal draws the sheet: a large glass overlay titled Usage. */
-	readonly nativeOverlay = { role: "omp.overlay.usage", size: "lg", anchor: "center", head: "Usage" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.usage", size: "lg", anchor: "center", head: "用量" } as const;
 	#options: UsageDashboardOptions;
 	#reports: UsageReport[];
 	#cards: ProviderCard[];
@@ -815,7 +815,7 @@ export class UsageDashboardComponent implements Component {
 		}
 
 		if (card.unlimited) {
-			lines.push(`  ${theme.fg("dim", "no limits")}`);
+			lines.push(`  ${theme.fg("dim", "无限制")}`);
 			return lines;
 		}
 
@@ -853,7 +853,7 @@ export class UsageDashboardComponent implements Component {
 	}
 
 	#renderCardsGrid(innerWidth: number): string[] {
-		if (this.#cards.length === 0) return [theme.fg("dim", "No usage data available.")];
+		if (this.#cards.length === 0) return [theme.fg("dim", "无可用用量数据。")];
 		const active = this.#cards.filter(card => !card.idle);
 		const idle = this.#cards.filter(card => card.idle);
 		const columns = Math.max(1, Math.floor((innerWidth + CARD_GUTTER) / (CARD_MIN_WIDTH + CARD_GUTTER)));
@@ -969,7 +969,7 @@ export class UsageDashboardComponent implements Component {
 			return [theme.fg("dim", detail ? `Usage history unavailable (${detail}).` : "Usage history unavailable.")];
 		}
 		const points = this.#activity;
-		if (!points) return [theme.fg("dim", "Loading usage history…")];
+		if (!points) return [theme.fg("dim", "正在加载用量历史…")];
 
 		const labelWidth = 2;
 		const weeks = Math.max(4, Math.min(53, Math.floor((innerWidth - labelWidth) / 2)));
@@ -978,7 +978,7 @@ export class UsageDashboardComponent implements Component {
 		const reset = "\x1b[39m";
 
 		summary.push(
-			`${theme.bold(theme.fg("accent", "Activity"))} ${theme.fg("dim", `${formatActivityTotals(layout)} · last ${weeks} weeks`)}${this.#syncing ? theme.fg("dim", " · syncing…") : ""}`,
+			`${theme.bold(theme.fg("accent", "活动"))} ${theme.fg("dim", `${formatActivityTotals(layout)} · last ${weeks} weeks`)}${this.#syncing ? theme.fg("dim", " · syncing…") : ""}`,
 		);
 		summary.push("");
 
@@ -1126,7 +1126,11 @@ export class UsageDashboardComponent implements Component {
 				}),
 			);
 		} else if (latestFetchedAt) {
-			checked.push(text([span("已更新", "dim")]), elapsed(Date.now() - latestFetchedAt), text([span("ago", "dim")]));
+			checked.push(
+				text([span("已更新", "dim")]),
+				elapsed(Date.now() - latestFetchedAt),
+				text([span("ago", "dim")]),
+			);
 		}
 		const children: NativeChild[] = [
 			node(
@@ -1202,10 +1206,15 @@ export class UsageDashboardComponent implements Component {
 			const children: NativeChild[] = [
 				node("icon", { name: "gauge" }, undefined, "icon"),
 				text([span("暂无用量")], { role: "omp.usage.empty.title" }),
-				text([span("一旦已登录的服务商报告用量，配额就会显示在此处，日历也会随你的使用填充。", "muted")], {
-					role: "omp.usage.empty.body",
-					wrap: "word",
-				}),
+				text(
+					[
+						span(
+							"一旦已登录的服务商报告用量，配额就会显示在此处，日历也会随你的使用填充。",
+							"muted",
+						),
+					],
+					{ role: "omp.usage.empty.body", wrap: "word" },
+				),
 			];
 			if (notes.length > 0) children.push(node("col", { gap: "xs" }, notes, "footnotes"));
 			return [node("col", { role: "omp.usage.empty", gap: "sm", align: "center" }, children, "empty")];
@@ -1709,7 +1718,7 @@ export class UsageDashboardComponent implements Component {
 				}
 				const cols: TspTableColumn[] = [
 					{ id: "limit", head: "Limit", grow: 1, priority: 4 },
-					{ id: "account", head: "Account", truncate: "middle", priority: 1 },
+					{ id: "account", head: "账户", truncate: "middle", priority: 1 },
 					{ id: "left", head: "Left", align: "end", priority: 3 },
 					{ id: "reset", head: "Resets", align: "end", priority: 2 },
 				];

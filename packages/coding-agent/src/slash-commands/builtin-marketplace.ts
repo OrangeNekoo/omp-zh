@@ -46,7 +46,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 		name: "marketplace",
 		icon: "cart",
 		description: "管理插件市场源和已安装插件",
-		acpDescription: "Manage plugins from marketplaces",
+		acpDescription: "从插件市场管理插件",
 		acpInputHint: "<subcommand>",
 		subcommands: [
 			{ name: "add", description: "添加插件市场源", usage: "<source>" },
@@ -73,7 +73,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					const marketplaces = await manager.listMarketplaces();
 					if (marketplaces.length === 0) {
 						await runtime.output(
-							"No marketplaces configured.\n\nGet started:\n  /marketplace add anthropics/claude-plugins-official\n\nThen browse with /marketplace discover",
+							"未配置插件市场。\n\n开始使用：\n  /marketplace add anthropics/claude-plugins-official\n\n然后用 /marketplace discover 浏览",
 						);
 					} else {
 						const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
@@ -109,7 +109,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 			}
 			if ((verb === "install" || verb === "uninstall") && !rest) {
 				return usage(
-					"Interactive plugin pickers are TUI-only. Pass an explicit name@marketplace argument.",
+					"交互式插件选择器仅在 TUI 中可用。请显式传入 name@marketplace 参数。",
 					runtime,
 				);
 			}
@@ -117,14 +117,14 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				const manager = await createMarketplaceManager(runtime);
 				switch (verb) {
 					case "add": {
-						if (!rest) return usage("Usage: /marketplace add <source>", runtime);
+						if (!rest) return usage("用法：/marketplace add <source>", runtime);
 						const entry = await manager.addMarketplace(rest);
 						await runtime.output(`Added marketplace: ${entry.name}`);
 						return commandConsumed();
 					}
 					case "remove":
 					case "rm": {
-						if (!rest) return usage("Usage: /marketplace remove <name>", runtime);
+						if (!rest) return usage("用法：/marketplace remove <name>", runtime);
 						await manager.removeMarketplace(rest);
 						await runtime.output(`Removed marketplace: ${rest}`);
 						return commandConsumed();
@@ -142,7 +142,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					case "list": {
 						const marketplaces = await manager.listMarketplaces();
 						if (marketplaces.length === 0) {
-							await runtime.output("No marketplaces configured.");
+							await runtime.output("未配置插件市场。");
 						} else {
 							const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
 							await runtime.output(`Marketplaces:\n${lines.join("\n")}`);
@@ -193,7 +193,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					case "installed": {
 						const installed = await manager.listInstalledPlugins();
 						if (installed.length === 0) {
-							await runtime.output("No marketplace plugins installed");
+							await runtime.output("未安装市场插件");
 						} else {
 							const lines = installed.map(
 								p => `  ${p.id} [${p.scope}]${p.shadowedBy ? " [shadowed]" : ""} (${p.entries.length} entry)`,
@@ -216,7 +216,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						}
 						const results = await manager.upgradeAllPlugins();
 						if (results.length === 0) {
-							await runtime.output("All marketplace plugins are up to date");
+							await runtime.output("所有市场插件均为最新");
 						} else {
 							await runtime.reloadPlugins();
 							const lines = results.map(r => `  ${r.pluginId}: ${r.from} -> ${r.to}`);
@@ -265,7 +265,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				switch (sub) {
 					case "add": {
 						if (!rest) {
-							runtime.ctx.showStatus("Usage: /marketplace add <source>");
+							runtime.ctx.showStatus("用法：/marketplace add <source>");
 							return;
 						}
 						const entry = await mgr.addMarketplace(rest);
@@ -275,7 +275,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					case "remove":
 					case "rm": {
 						if (!rest) {
-							runtime.ctx.showStatus("Usage: /marketplace remove <name>");
+							runtime.ctx.showStatus("用法：/marketplace remove <name>");
 							return;
 						}
 						await mgr.removeMarketplace(rest);
@@ -298,10 +298,10 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							const marketplaces = await mgr.listMarketplaces();
 							if (marketplaces.length === 0) {
 								runtime.ctx.showStatus(
-									"No marketplaces configured. Try:\n  /marketplace add anthropics/claude-plugins-official",
+									"未配置插件市场。试试：\n  /marketplace add anthropics/claude-plugins-official",
 								);
 							} else {
-								runtime.ctx.showStatus("No plugins available in configured marketplaces");
+								runtime.ctx.showStatus("已配置的市场中没有可用插件");
 							}
 						} else {
 							const lines = plugins.map(
@@ -347,7 +347,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					case "installed": {
 						const installed = await mgr.listInstalledPlugins();
 						if (installed.length === 0) {
-							runtime.ctx.showStatus("No marketplace plugins installed");
+							runtime.ctx.showStatus("未安装市场插件");
 						} else {
 							const lines = installed.map(
 								p => `  ${p.id} [${p.scope}]${p.shadowedBy ? " [shadowed]" : ""} (${p.entries.length} entry)`,
@@ -371,7 +371,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						} else {
 							const results = await mgr.upgradeAllPlugins();
 							if (results.length === 0) {
-								runtime.ctx.showStatus("All marketplace plugins are up to date");
+								runtime.ctx.showStatus("所有市场插件均为最新");
 							} else {
 								const lines = results.map(r => `  ${r.pluginId}: ${r.from} -> ${r.to}`);
 								runtime.ctx.showStatus(`Upgraded ${results.length} plugin(s):\n${lines.join("\n")}`);
@@ -405,7 +405,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						const marketplaces = await mgr.listMarketplaces();
 						if (marketplaces.length === 0) {
 							runtime.ctx.showStatus(
-								"No marketplaces configured.\n\nGet started:\n  /marketplace add anthropics/claude-plugins-official\n\nThen browse plugins with /marketplace or /marketplace discover",
+								"未配置插件市场。\n\n开始使用：\n  /marketplace add anthropics/claude-plugins-official\n\n然后用 /marketplace 或 /marketplace discover 浏览插件",
 							);
 						} else {
 							const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
@@ -427,7 +427,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 		aliases: ["plugin"],
 		icon: "package",
 		description: "查看并管理已安装插件",
-		acpDescription: "Manage plugins",
+		acpDescription: "管理插件",
 		acpInputHint: "[list|enable|disable]",
 		subcommands: [
 			{ name: "list", description: "列出所有已安装插件（npm + 市场）" },
@@ -490,15 +490,15 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 		name: "reload-plugins",
 		icon: "restart",
 		description: "重新加载所有插件（技能、命令、Hook、工具、代理、MCP）",
-		acpDescription: "Reload all plugins",
+		acpDescription: "重新加载所有插件",
 		handle: async (_command, runtime) => {
 			await runtime.reloadPlugins();
-			await runtime.output("Plugins reloaded.");
+			await runtime.output("插件已重新加载。");
 			return commandConsumed();
 		},
 		handleTui: async (_command, runtime) => {
 			await reloadTuiPluginState(runtime.ctx);
-			runtime.ctx.showStatus("Plugins reloaded.");
+			runtime.ctx.showStatus("插件已重新加载。");
 			clearSubmittedText(runtime);
 		},
 	},

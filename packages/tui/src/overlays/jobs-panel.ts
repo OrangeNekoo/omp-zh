@@ -6,17 +6,19 @@
  * (cwd, live pids, exit code, artifact) and live output.
  */
 import type { TspSpan, TspTone } from "@oh-my-pi/pi-wire";
-import { formatDuration } from "@oh-my-pi/pi-utils";
+import { formatDuration, sanitizeText } from "@oh-my-pi/pi-utils";
 import type { Component } from "../tui";
 import { matchesSelectCancel, matchesSelectDown, matchesSelectUp } from "../keybinding-matchers";
 import { matchesKey } from "../keys";
-import { truncateToWidth } from "../utils";
+import { replaceTabs, truncateToWidth, wrapTextWithAnsi } from "../utils";
 import { collapseCommand } from "../apps/ps-data";
+import { PREVIEW_LIMITS, shortenEmbeddedPaths } from "../render/render-utils";
 import { ansi, code, col, compact, item, node, row, span, stableKey, text } from "../native/describe";
 import type { DescribeContext, NativeChild, NativeNode, NativeUiEvent } from "../native/node";
 import { actionBar, actionButton, selectList } from "../native/overlay";
 import { theme } from "../theme/theme";
 import { buildJobTree, type JobTreeAgent, type JobTreeRow, jobTreeGuide } from "./job-tree";
+import { describeJobWidget, type JobWidgetView, renderJobWidgetLines } from "../tools/job-widget";
 
 /** One async job as the session snapshots it. */
 export interface JobsPanelJob {
@@ -54,6 +56,8 @@ export interface JobsPanelDetail {
 	readonly output?: string;
 	/** Artifact holding the full output when `output` is cut. */
 	readonly artifactId?: string;
+	/** The job's live widget (frozen once it settles), drawn above the output. */
+	readonly widget?: JobWidgetView;
 }
 
 /** The session behind a {@link JobsSheet}. */
@@ -119,7 +123,7 @@ export class JobsSheet implements Component {
 		role: "omp.overlay.jobs",
 		size: "lg",
 		anchor: "center",
-		head: "Background jobs",
+		head: "后台任务",
 	} as const;
 	readonly #source: JobsSheetSource;
 	#selectedId: string | undefined;
@@ -149,6 +153,7 @@ export class JobsSheet implements Component {
 			detail?.pids.join(" "),
 			detail?.exitCode,
 			detail?.artifactId,
+			detail?.widget ? `${detail.widget.updatedAt}:${detail.widget.state}` : "",
 			jobs.some(job => job.status === "running") ? Math.floor(now / 1000) : "",
 		].join("|");
 		const output = detail?.output;
@@ -198,6 +203,17 @@ export class JobsSheet implements Component {
 		}
 		const detail = selected && this.#source.inspect(selected.id);
 		if (detail) {
+			// Rows show the cut label; the selected job's command wraps here,
+			// bounded so a long script never pushes the facts and output off the sheet.
+			if (detail.command) {
+				const commandRows = wrapTextWithAnsi(
+					shortenEmbeddedPaths(replaceTabs(sanitizeText(detail.command))),
+					Math.max(1, width - 3),
+				);
+				for (const line of commandRows.slice(0, PREVIEW_LIMITS.EXPANDED_LINES)) lines.push(`   ${line}`);
+				const hidden = commandRows.length - PREVIEW_LIMITS.EXPANDED_LINES;
+				if (hidden > 0) lines.push(truncateToWidth(`   … ${hidden} more command lines`, width));
+			}
 			const facts = compact([
 				detail.cwd && `cwd ${detail.cwd}`,
 				detail.pids.length > 0 && `pid ${detail.pids.join(", ")}`,
@@ -205,6 +221,11 @@ export class JobsSheet implements Component {
 				detail.artifactId && `artifact://${detail.artifactId}`,
 			]);
 			if (facts.length > 0) lines.push(truncateToWidth(`   ${facts.join(" · ")}`, width));
+			if (detail.widget) {
+				for (const line of renderJobWidgetLines(detail.widget, Math.max(0, width - 3), theme)) {
+					lines.push(`   ${line}`);
+				}
+			}
 			for (const line of this.#tailLines(selected.id, detail.output ?? "")) {
 				if (line) lines.push(truncateToWidth(`   ${line}`, width));
 			}
@@ -382,11 +403,11 @@ function describeDetail(
 	const command = detail?.command ?? (job.type === "task" ? undefined : job.label);
 	const pids = detail?.pids ?? [];
 	const facts = compact([
-		job.agentId ? { k: "Agent", v: [span(job.agentId, "mono")] } : undefined,
-		detail?.cwd ? { k: "Directory", v: [span(detail.cwd, "path")] } : undefined,
+		job.agentId ? { k: "代理", v: [span(job.agentId, "mono")] } : undefined,
+		detail?.cwd ? { k: "目录", v: [span(detail.cwd, "path")] } : undefined,
 		pids.length > 0 && { k: pids.length > 1 ? "PIDs" : "PID", v: [span(pids.join(", "), "num")] },
-		exit !== undefined && { k: "Exit code", v: [span(String(exit), exit === 0 ? "success" : "error")] },
-		detail?.artifactId ? { k: "Full output", v: [span(`artifact://${detail.artifactId}`, "mono")] } : undefined,
+		exit !== undefined && { k: "退出码", v: [span(String(exit), exit === 0 ? "success" : "error")] },
+		detail?.artifactId ? { k: "完整输出", v: [span(`artifact://${detail.artifactId}`, "mono")] } : undefined,
 	]);
 	const children = compact<NativeChild>([
 		row(
@@ -401,7 +422,7 @@ function describeDetail(
 					...(settled ? { stopped: age } : {}),
 					format: "short",
 					role: "omp.jobs.age",
-					title: settled ? "Ran for" : "Running for",
+					title: settled ? "运行时长" : "已运行",
 				}),
 				text([span(`${job.type} · ${job.id}`, "mono")], { role: "omp.jobs.id", wrap: "none", truncate: "end" }),
 				node("spacer", { grow: 1 }),
@@ -413,6 +434,7 @@ function describeDetail(
 			? code(command, { lang: "bash", wrap: true, preview: { lines: 4 }, role: "omp.jobs.command" })
 			: text(job.label, { role: "omp.jobs.title", wrap: "word" }),
 		facts.length > 0 && node("kv", { items: facts, role: "omp.jobs.facts" }),
+		detail?.widget && node("col", { role: "omp.jobs.widget" }, [describeJobWidget(detail.widget)], "widget"),
 		node(
 			"col",
 			{ role: "omp.jobs.out", gap: "sm" },

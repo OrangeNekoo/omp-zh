@@ -612,7 +612,7 @@ export const BUILTIN_BLOB_DESTINATIONS = {
 			{ key: "content", label: "消息内容", type: "string" },
 			{ key: "threadId", label: "线程 ID", type: "string" },
 		],
-		credentials: [{ key: "webhookUrl", label: "Webhook URL", required: true, secret: true }],
+		credentials: [{ key: "webhookUrl", label: "Webhook 地址", required: true, secret: true }],
 	},
 	"provider-files": {
 		id: "provider-files",

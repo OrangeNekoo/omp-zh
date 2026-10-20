@@ -68,7 +68,7 @@ const GROUPS: readonly { readonly title: string; readonly rows: readonly Shortcu
 
 /** The shortcuts overlay; any of `?`, escape or `q` closes it. */
 export class GitHelpSheet implements Component {
-	readonly nativeOverlay = { role: "omp.overlay.hotkeys", head: "Keyboard shortcuts", size: "lg" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.hotkeys", head: "键盘快捷键", size: "lg" } as const;
 	readonly #close: () => void;
 	#native: NativeNode | undefined;
 
@@ -119,7 +119,7 @@ export class GitHelpSheet implements Component {
 		const keyWidth = Math.max(
 			...GROUPS.flatMap(group => group.rows.map(row => visibleWidth(row.keys.map(formatKeyHint).join(" ")))),
 		);
-		const lines = [truncateToWidth(` ${theme.bold("Keyboard shortcuts")}`, width), ""];
+		const lines = [truncateToWidth(` ${theme.bold("键盘快捷键")}`, width), ""];
 		for (const group of GROUPS) {
 			lines.push(truncateToWidth(` ${theme.fg("muted", group.title)}`, width));
 			for (const row of group.rows) {

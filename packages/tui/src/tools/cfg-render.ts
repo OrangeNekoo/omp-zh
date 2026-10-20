@@ -65,7 +65,7 @@ export function renderCfgRead(
 			{
 				icon: result === undefined ? "pending" : result.isError ? "error" : "info",
 				title: "配置",
-				description: (details?.path ?? parseCfgUrl(url)?.segments.join(".")) || "all settings",
+				description: (details?.path ?? parseCfgUrl(url)?.segments.join(".")) || "全部设置",
 				meta,
 			},
 			theme,
@@ -92,8 +92,8 @@ export function describeCfgRead(
 		meta.push(details.count === 1 ? "1 setting" : `${details.count} settings`);
 		if (details.modified) meta.push(`${details.modified} modified`);
 	}
-	if (result?.isError) return errorView("Config", firstText(result) || "Settings read failed.", description, ...meta);
-	const head = toolHead("Config", description, ...meta);
+	if (result?.isError) return errorView("配置", firstText(result) || "Settings read failed.", description, ...meta);
+	const head = toolHead("配置", description, ...meta);
 	if (!result) return { head };
 	const listing = plainText(safe(firstText(result).trimEnd()));
 	return {
@@ -113,8 +113,8 @@ export function describeCfgWrite(
 	const target = parseCfgUrl(url);
 	const path = details?.path ?? target?.segments.join(".");
 	const save = details?.save ?? target?.save ?? false;
-	if (result?.isError) return errorView("Config", firstText(result) || "Settings write failed.", path);
-	const head = toolHead("Config", path);
+	if (result?.isError) return errorView("配置", firstText(result) || "Settings write failed.", path);
+	const head = toolHead("配置", path);
 	head.push(span(" "), span(save ? "persist" : "session", save ? "accent strong" : "muted"));
 	if (details?.outcome === "declined") head.push(span(" "), span("declined", "warning strong"));
 	if (details?.outcome === "unchanged") head.push(span(" "), span("unchanged", "muted"));

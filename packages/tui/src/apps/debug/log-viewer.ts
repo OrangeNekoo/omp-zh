@@ -938,7 +938,7 @@ export class DebugLogViewerComponent implements Component {
 									: `l${cursorLog}`,
 						current: selected.length > 1 ? selected.map(index => `l${index}`) : [],
 						total: model.logCount,
-						empty: query ? "No matching log entries" : "No log entries",
+						empty: query ? "无匹配日志条目" : "无日志条目",
 						message: this.#statusMessage,
 						actions: [
 							pickerAction("copy", "Copy", "ctrl+c", { primary: true }),
@@ -1015,7 +1015,7 @@ export class DebugLogViewerComponent implements Component {
 		let anchor: DebugViewerFrameContent["body"]["anchor"];
 
 		if (rendered.length === 0) {
-			lines.push(theme.fg("muted", "no matches"));
+			lines.push(theme.fg("muted", "无匹配"));
 			mapping.push(undefined);
 		} else {
 			for (const entry of rendered) {
@@ -1041,7 +1041,7 @@ export class DebugLogViewerComponent implements Component {
 	#summaryText(): string {
 		const selected = this.#model.getSelectedCount();
 		const expanded = this.#model.expandedCount;
-		const limitText = this.#model.historyLimitReached ? `  ${theme.fg("warning", "history limit reached")}` : "";
+		const limitText = this.#model.historyLimitReached ? `  ${theme.fg("warning", "已达历史记录上限")}` : "";
 		return `${theme.fg("muted", "showing")} ${theme.fg("accent", `${this.#model.visibleLogCount}/${this.#model.logCount}`)}  ${theme.fg("muted", "selected")} ${theme.fg(selected > 0 ? "accent" : "muted", String(selected))}  ${theme.fg("muted", "expanded")} ${theme.fg(expanded > 0 ? "accent" : "muted", String(expanded))}${limitText}`;
 	}
 
@@ -1052,11 +1052,11 @@ export class DebugLogViewerComponent implements Component {
 	#filterText(): string {
 		const value = this.#filter.getValue();
 		const [field = ""] = this.#filter.render(visibleWidth(value) + 1);
-		const query = value.length === 0 ? field + theme.fg("muted", "type to filter") : theme.fg("accent", field);
+		const query = value.length === 0 ? field + theme.fg("muted", "输入以筛选") : theme.fg("accent", field);
 		const pidStatus = this.#model.isProcessFilterEnabled()
-			? theme.fg("success", "pid on")
-			: theme.fg("muted", "pid off");
-		const loading = this.#loadingOlder ? `  ${theme.fg("warning", "loading older…")}` : "";
+			? theme.fg("success", "显示 pid")
+			: theme.fg("muted", "关闭 pid");
+		const loading = this.#loadingOlder ? `  ${theme.fg("warning", "正在加载更早记录…")}` : "";
 		return `${theme.fg("muted", "filter")} ${query}  ${pidStatus}${loading}`;
 	}
 

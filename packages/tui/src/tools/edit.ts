@@ -424,7 +424,7 @@ function renderInlineEditRow(
 					? undefined
 					: uiTheme.styledSymbol(isDelete ? "tool.delete" : "tool.move", "accent"),
 				op: opts.op,
-				title: isDelete ? "Delete" : "Move",
+				title: isDelete ? "删除" : "移动",
 				rawPath: opts.rawPath,
 				rename: opts.rename,
 				linkPath: opts.linkPath,
@@ -573,7 +573,7 @@ function formatStreamingDiff(
 		if (tail.hidden) {
 			// Exact hidden line/hunk counts require scanning the discarded prefix,
 			// which would make every streaming update scale with the complete diff.
-			rendered += `${uiTheme.fg("dim", "… (content above)")}\n`;
+			rendered += `${uiTheme.fg("dim", "…（内容见上）")}\n`;
 		}
 		rendered += renderDiffColored(tail.content, { filePath: rawPath, theme: uiTheme });
 		return rendered;
@@ -1353,7 +1353,7 @@ function editToolHead(facts: EditHeadFacts): NativeToolHead {
 			? `${displayPath(sanitizeText(facts.path))}${facts.line ? `:${facts.line}` : ""}`
 			: undefined;
 	return {
-		title: multi ? "Edit" : getOperationTitle(facts.op),
+		title: multi ? "编辑" : getOperationTitle(facts.op),
 		target,
 		targetKind: multi ? "text" : "path",
 		href: multi ? undefined : facts.href,

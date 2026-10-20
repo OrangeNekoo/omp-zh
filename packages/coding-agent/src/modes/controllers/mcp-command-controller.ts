@@ -17,6 +17,7 @@ import {
 	fetchResourceMetadataScopes,
 	loadAllMCPConfigs,
 	MCPManager,
+	OAuthIssuerMismatchError,
 	type OAuthEndpoints,
 } from "../../mcp";
 import { connectToServer, disconnectServer, listTools } from "../../mcp/client";
@@ -257,7 +258,7 @@ export class MCPAuthorizationLinkPrompt implements Component {
 	render(width: number): readonly string[] {
 		const link = urlHyperlinkAlways(this.#fullUrl, "Click here to authorize");
 		const lines: string[] = [
-			` ${theme.fg("success", "Open authorization URL:")}`,
+			` ${theme.fg("success", "打开授权 URL：")}`,
 			` ${theme.fg("accent", link)}`,
 			...wrapUrlRows("Copy URL:", this.#fullUrl, width),
 		];
@@ -502,7 +503,7 @@ export class MCPCommandController {
 		const helpText = [
 			"Manage Model Context Protocol (MCP) servers for external tool integrations.",
 			"",
-			theme.fg("accent", "Commands:"),
+			theme.fg("accent", "命令："),
 			"  /mcp add              Add a new MCP server (interactive wizard)",
 			"  /mcp add <name> [--scope project|user] [--url <url> --transport http|sse] [--token <token>] [-- <command...>]",
 			"  /mcp list             List all configured MCP servers",
@@ -749,8 +750,14 @@ export class MCPCommandController {
 									authResult.resourceMetadataUrl,
 									{ protectedScopes: authResult.scopes },
 								);
-							} catch {
-								// Ignore discovery error and handle below.
+							} catch (discoveryError) {
+								// Name a misconfigured advertised server; other failures fall through below.
+								if (discoveryError instanceof OAuthIssuerMismatchError) {
+									this.ctx.showError(
+										`Authentication required for "${parsed.initialName}": ${discoveryError.message}`,
+									);
+									return;
+								}
 							}
 						}
 						if (oauth && !oauth.scopes && authResult.resourceMetadataUrl) {
@@ -949,9 +956,9 @@ export class MCPCommandController {
 						// Show auth URL prominently in chat as one block
 						const block = new TranscriptBlock();
 						this.ctx.present(block);
-						block.addChild(new Text(theme.fg("accent", "━━━ OAuth Authorization Required ━━━"), 1, 0));
+						block.addChild(new Text(theme.fg("accent", "━━━ 需要 OAuth 授权 ━━━"), 1, 0));
 						block.addChild(new Spacer(1));
-						block.addChild(new Text(theme.fg("muted", "Preparing browser authorization..."), 1, 0));
+						block.addChild(new Text(theme.fg("muted", "正在准备浏览器授权…"), 1, 0));
 						block.addChild(new Spacer(1));
 						block.addChild(
 							new Text(
@@ -982,7 +989,7 @@ export class MCPCommandController {
 						block.addChild(new Spacer(1));
 						block.addChild(new Text(theme.fg("success", "→ Attempting to open browser..."), 1, 0));
 						block.addChild(new Spacer(1));
-						block.addChild(new Text(theme.fg("muted", "Alternative if browser did not open:"), 1, 0));
+						block.addChild(new Text(theme.fg("muted", "浏览器未打开时的替代方式："), 1, 0));
 						block.addChild(new MCPAuthorizationLinkPrompt(info.url, info.launchUrl));
 						this.ctx.ui.requestRender();
 					},
@@ -1034,7 +1041,7 @@ export class MCPCommandController {
 
 			this.ctx.present([
 				new Spacer(1),
-				new Text(theme.fg("success", "✓ Authorization completed in browser."), 1, 0),
+				new Text(theme.fg("success", "✓ 已在浏览器中完成授权。"), 1, 0),
 			]);
 
 			// Deterministic per-URL id: every profile resolves its own credential row
@@ -1411,11 +1418,11 @@ export class MCPCommandController {
 				lines.push(theme.fg("success", `${theme.status.enabled} Successfully connected to server`));
 				lines.push("");
 			} else if (isConnecting) {
-				lines.push(theme.fg("muted", `◌ Server is connecting in background...`));
+				lines.push(theme.fg("muted", "◌ 服务器正在后台连接…"));
 				lines.push(theme.fg("muted", `  Run ${theme.fg("accent", `/mcp test ${name}`)} in a few seconds.`));
 				lines.push("");
 			} else {
-				lines.push(theme.fg("warning", `⚠ Server added but not yet connected`));
+				lines.push(theme.fg("warning", "⚠ 服务器已添加但尚未连接"));
 				lines.push(theme.fg("muted", `  Run ${theme.fg("accent", `/mcp test ${name}`)} to test the connection.`));
 				lines.push("");
 			}
@@ -1445,7 +1452,7 @@ export class MCPCommandController {
 		this.#showMessage(
 			[
 				"",
-				theme.fg("muted", "Server creation cancelled."),
+				theme.fg("muted", "服务器创建已取消。"),
 				"",
 				theme.fg(
 					"dim",
@@ -1502,7 +1509,7 @@ export class MCPCommandController {
 				this.#showReport(
 					"MCP Servers",
 					[
-						theme.fg("muted", "No MCP servers configured."),
+						theme.fg("muted", "未配置 MCP 服务器。"),
 						"",
 						`Use ${theme.fg("accent", "/mcp add")} to 添加 a server.`,
 					].join("\n"),
@@ -1514,7 +1521,7 @@ export class MCPCommandController {
 
 			// Show user-level servers
 			if (userServers.length > 0) {
-				lines.push(theme.fg("accent", "User level") + theme.fg("muted", ` (${userPathLabel}):`));
+				lines.push(theme.fg("accent", "用户级") + theme.fg("muted", ` (${userPathLabel}):`));
 				for (const name of userServers) {
 					const config = userConfig.mcpServers![name];
 					const type = config.type ?? "stdio";
@@ -1524,12 +1531,12 @@ export class MCPCommandController {
 							: (this.ctx.mcpManager?.getConnectionStatus(name) ?? "disconnected");
 					const status =
 						state === "inactive"
-							? theme.fg("warning", " ◌ inactive")
+							? theme.fg("warning", " ◌ 未启用")
 							: state === "connected"
-								? theme.fg("success", " ● connected")
+								? theme.fg("success", " ● 已连接")
 								: state === "connecting"
-									? theme.fg("muted", " ◌ connecting")
-									: theme.fg("muted", " ○ not connected");
+									? theme.fg("muted", " ◌ 连接中")
+									: theme.fg("muted", " ○ 未连接");
 					lines.push(`  ${theme.fg("accent", name)}${status} ${theme.fg("dim", `[${type}]`)}`);
 				}
 				lines.push("");
@@ -1537,7 +1544,7 @@ export class MCPCommandController {
 
 			// Show project-level servers
 			if (projectServers.length > 0) {
-				lines.push(theme.fg("accent", "Project level") + theme.fg("muted", ` (${projectPathLabel}):`));
+				lines.push(theme.fg("accent", "项目级") + theme.fg("muted", ` (${projectPathLabel}):`));
 				for (const name of projectServers) {
 					const config = projectConfig.mcpServers![name];
 					const type = config.type ?? "stdio";
@@ -1547,12 +1554,12 @@ export class MCPCommandController {
 							: (this.ctx.mcpManager?.getConnectionStatus(name) ?? "disconnected");
 					const status =
 						state === "inactive"
-							? theme.fg("warning", " ◌ inactive")
+							? theme.fg("warning", " ◌ 未启用")
 							: state === "connected"
-								? theme.fg("success", " ● connected")
+								? theme.fg("success", " ● 已连接")
 								: state === "connecting"
-									? theme.fg("muted", " ◌ connecting")
-									: theme.fg("muted", " ○ not connected");
+									? theme.fg("muted", " ◌ 连接中")
+									: theme.fg("muted", " ○ 未连接");
 					lines.push(`  ${theme.fg("accent", name)}${status} ${theme.fg("dim", `[${type}]`)}`);
 				}
 				lines.push("");
@@ -1566,10 +1573,10 @@ export class MCPCommandController {
 						const state = this.ctx.mcpManager!.getConnectionStatus(name);
 						const status =
 							state === "connected"
-								? theme.fg("success", " ● connected")
+								? theme.fg("success", " ● 已连接")
 								: state === "connecting"
-									? theme.fg("muted", " ◌ connecting")
-									: theme.fg("muted", " ○ not connected");
+									? theme.fg("muted", " ◌ 连接中")
+									: theme.fg("muted", " ○ 未连接");
 						lines.push(`  ${theme.fg("accent", name)}${status}`);
 					}
 					lines.push("");
@@ -1579,9 +1586,9 @@ export class MCPCommandController {
 			// Show servers disabled via /mcp disable (from third-party configs)
 			const relevantDisabled = [...disabledServerNames].filter(n => !configServerNames.has(n));
 			if (relevantDisabled.length > 0) {
-				lines.push(theme.fg("accent", "Disabled") + theme.fg("muted", " (discovered servers):"));
+				lines.push(theme.fg("accent", "已禁用") + theme.fg("muted", " （已发现的服务）："));
 				for (const name of relevantDisabled) {
-					lines.push(`  ${theme.fg("accent", name)}${theme.fg("warning", " ◌ disabled")}`);
+					lines.push(`  ${theme.fg("accent", name)}${theme.fg("warning", " ◌ 已禁用")}`);
 				}
 				lines.push("");
 			}
@@ -1605,7 +1612,7 @@ export class MCPCommandController {
 		const { name, scope } = parsed.value;
 
 		if (!name) {
-			this.ctx.showError("Server name required. Usage: /mcp remove <name> [--scope project|user]");
+			this.ctx.showError("需要服务器名。用法：/mcp remove <name> [--scope project|user]");
 			return;
 		}
 
@@ -1642,7 +1649,7 @@ export class MCPCommandController {
 	 */
 	async #handleTest(name: string | undefined): Promise<void> {
 		if (!name) {
-			this.ctx.showError("Server name required. Usage: /mcp test <name>");
+			this.ctx.showError("需要服务器名。用法：/mcp test <name>");
 			return;
 		}
 
@@ -1854,10 +1861,10 @@ export class MCPCommandController {
 					const state = await this.#waitForServerConnectionWithAnimation(name);
 					const status =
 						state === "connected"
-							? theme.fg("success", "Connected")
+							? theme.fg("success", "已连接")
 							: state === "connecting"
-								? theme.fg("muted", "Connecting")
-								: theme.fg("warning", "Not connected yet");
+								? theme.fg("muted", "连接中")
+								: theme.fg("warning", "尚未连接");
 					this.#showMessage(
 						[
 							"",
@@ -1898,10 +1905,10 @@ export class MCPCommandController {
 				const state = await this.#waitForServerConnectionWithAnimation(name);
 				status =
 					state === "connected"
-						? theme.fg("success", "Connected")
+						? theme.fg("success", "已连接")
 						: state === "connecting"
-							? theme.fg("muted", "Connecting")
-							: theme.fg("warning", "Not connected yet");
+							? theme.fg("muted", "连接中")
+							: theme.fg("warning", "尚未连接");
 			}
 
 			const lines = [
@@ -1925,7 +1932,7 @@ export class MCPCommandController {
 
 	async #handleUnauth(name: string | undefined): Promise<void> {
 		if (!name) {
-			this.ctx.showError("Server name required. Usage: /mcp unauth <name>");
+			this.ctx.showError("需要服务器名。用法：/mcp unauth <name>");
 			return;
 		}
 
@@ -1989,7 +1996,7 @@ export class MCPCommandController {
 		options: { silent?: boolean; reload?: boolean; authChallenge?: MCPAuthChallenge } = {},
 	): Promise<MCPServerConfig | undefined> {
 		if (!name) {
-			if (!options.silent) this.ctx.showError("Server name required. Usage: /mcp reauth <name>");
+			if (!options.silent) this.ctx.showError("需要服务器名。用法：/mcp reauth <name>");
 			return;
 		}
 
@@ -2119,7 +2126,7 @@ export class MCPCommandController {
 							? theme.fg("success", "connected")
 							: state === "connecting"
 								? theme.fg("muted", "connecting")
-								: theme.fg("warning", "not connected")
+								: theme.fg("warning", "未连接")
 					}`,
 					"",
 				];
@@ -2141,7 +2148,7 @@ export class MCPCommandController {
 
 	async #handleReload(): Promise<void> {
 		try {
-			this.#showMessage(["", theme.fg("muted", "Reloading MCP servers and runtime tools..."), ""].join("\n"));
+			this.#showMessage(["", theme.fg("muted", "正在重新加载 MCP 服务器与运行时工具…"), ""].join("\n"));
 			await this.reloadServers();
 			const manager = this.ctx.mcpManager;
 			const connectedCount = manager?.getConnectedServers().length ?? 0;
@@ -2166,11 +2173,11 @@ export class MCPCommandController {
 	 */
 	async #handleReconnect(name: string | undefined): Promise<void> {
 		if (!name) {
-			this.ctx.showError("Server name required. Usage: /mcp reconnect <name>");
+			this.ctx.showError("需要服务器名。用法：/mcp reconnect <name>");
 			return;
 		}
 		if (!this.ctx.mcpManager) {
-			this.ctx.showError("MCP manager not available.");
+			this.ctx.showError("MCP 管理器不可用。");
 			return;
 		}
 
@@ -2227,7 +2234,7 @@ export class MCPCommandController {
 			return;
 		}
 
-		const errorLines = ["", theme.fg("warning", "Some servers failed to connect:"), ""];
+		const errorLines = ["", theme.fg("warning", "部分服务器连接失败："), ""];
 		for (const [serverName, error] of errors.entries()) {
 			errorLines.push(`  ${serverName}: ${error}`);
 		}
@@ -2279,7 +2286,7 @@ export class MCPCommandController {
 	 */
 	async #handleResources(): Promise<void> {
 		if (!this.ctx.mcpManager) {
-			this.ctx.showError("No MCP manager available.");
+			this.ctx.showError("没有可用的 MCP 管理器。");
 			return;
 		}
 
@@ -2301,7 +2308,7 @@ export class MCPCommandController {
 				lines.push(`  ${theme.fg("success", r.uri)}${mime}${desc}`);
 			}
 			if (templates.length > 0) {
-				lines.push(`  ${theme.fg("muted", "Templates:")}`);
+				lines.push(`  ${theme.fg("muted", "模板：")}`);
 				for (const t of templates) {
 					const desc = t.description ? ` ${theme.fg("dim", t.description)}` : "";
 					lines.push(`    ${theme.fg("accent", t.uriTemplate)}${desc}`);
@@ -2311,7 +2318,7 @@ export class MCPCommandController {
 		}
 
 		if (!hasAny) {
-			lines.push(theme.fg("muted", "No resources available on connected servers."));
+			lines.push(theme.fg("muted", "已连接的服务器没有可用资源。"));
 		}
 		this.#showReport("MCP Resources", lines.join("\n"));
 	}
@@ -2321,7 +2328,7 @@ export class MCPCommandController {
 	 */
 	async #handlePrompts(): Promise<void> {
 		if (!this.ctx.mcpManager) {
-			this.ctx.showError("No MCP manager available.");
+			this.ctx.showError("没有可用的 MCP 管理器。");
 			return;
 		}
 
@@ -2351,7 +2358,7 @@ export class MCPCommandController {
 		}
 
 		if (!hasAny) {
-			lines.push(theme.fg("muted", "No prompts available on connected servers."));
+			lines.push(theme.fg("muted", "已连接的服务器没有可用提示词。"));
 		}
 		this.#showReport("MCP Prompts", lines.join("\n"));
 	}
@@ -2361,7 +2368,7 @@ export class MCPCommandController {
 	 */
 	async #handleNotifications(): Promise<void> {
 		if (!this.ctx.mcpManager) {
-			this.ctx.showError("No MCP manager available.");
+			this.ctx.showError("没有可用的 MCP 管理器。");
 			return;
 		}
 
@@ -2369,7 +2376,7 @@ export class MCPCommandController {
 		const servers = this.ctx.mcpManager.getConnectedServers();
 		const statusIcon = enabled ? theme.fg("success", "enabled") : theme.fg("warning", "disabled");
 		const lines: string[] = [];
-		lines.push(`  Status: ${statusIcon}  ${theme.fg("dim", "(mcp.notifications setting)")}`);
+		lines.push(`  Status: ${statusIcon}  ${theme.fg("dim", "（mcp.notifications 设置）")}`);
 		lines.push("");
 
 		let hasAny = false;
@@ -2402,8 +2409,8 @@ export class MCPCommandController {
 					enabled && subCount > 0
 						? theme.fg("success", `subscribed (${subCount} URI${subCount !== 1 ? "s" : ""})`)
 						: enabled
-							? theme.fg("muted", "no active subscriptions")
-							: theme.fg("dim", "inactive (notifications disabled)");
+							? theme.fg("muted", "无活跃订阅")
+							: theme.fg("dim", "未启用（通知已关闭）");
 				lines.push(`  ${check} resources/subscribe  ${subStatus}`);
 				if (enabled && subscribedUris && subscribedUris.size > 0) {
 					for (const uri of subscribedUris) {
@@ -2411,13 +2418,13 @@ export class MCPCommandController {
 					}
 				}
 			} else if (supportsResources) {
-				lines.push(`  ${cross} resources/subscribe  ${theme.fg("dim", "not supported")}`);
+				lines.push(`  ${cross} resources/subscribe  ${theme.fg("dim", "不支持")}`);
 			}
 			lines.push("");
 		}
 
 		if (!hasAny) {
-			lines.push(theme.fg("muted", "No servers support notifications."));
+			lines.push(theme.fg("muted", "没有服务器支持通知。"));
 		}
 		this.#showReport("MCP Notifications", lines.join("\n"));
 	}
@@ -2432,7 +2439,7 @@ export class MCPCommandController {
 			if (input === undefined) return null;
 			const apiKey = input.trim();
 			if (!apiKey) {
-				this.ctx.showError("Smithery API key cannot be empty.");
+				this.ctx.showError("Smithery API 密钥不能为空。");
 				continue;
 			}
 			try {
@@ -2452,7 +2459,7 @@ export class MCPCommandController {
 		);
 		if (!apiKey) return false;
 		await saveSmitheryApiKey(apiKey);
-		this.ctx.showStatus("Smithery API key saved.");
+		this.ctx.showStatus("Smithery API 密钥已保存。");
 		return true;
 	}
 
@@ -2491,9 +2498,9 @@ export class MCPCommandController {
 		this.#showMessage(
 			[
 				"",
-				theme.bold("Smithery Login"),
-				theme.fg("muted", "Browser authorization started. Complete auth in your browser."),
-				theme.fg("dim", "Authorize URL:"),
+				theme.bold("Smithery 登录"),
+				theme.fg("muted", "浏览器授权已启动。请在浏览器中完成授权。"),
+				theme.fg("dim", "授权 URL："),
 				theme.fg("accent", session.authUrl),
 				theme.fg("dim", `Fallback: ${fallbackLoginUrl}`),
 				"",
@@ -2508,7 +2515,7 @@ export class MCPCommandController {
 		const apiKey = await this.#waitForSmitheryCliApiKey(session.sessionId, new AbortController().signal);
 		await this.#validateSmitheryApiKey(apiKey);
 		await saveSmitheryApiKey(apiKey);
-		this.ctx.showStatus("Smithery API key saved.");
+		this.ctx.showStatus("Smithery API 密钥已保存。");
 		return true;
 	}
 
@@ -2517,7 +2524,7 @@ export class MCPCommandController {
 			[
 				"",
 				theme.fg("muted", `Smithery authentication required (${reason}).`),
-				theme.fg("muted", "If browser auth fails, you can paste an API key."),
+				theme.fg("muted", "如果浏览器认证失败，可以粘贴 API 密钥。"),
 				"",
 			].join("\n"),
 		);
@@ -2579,7 +2586,7 @@ export class MCPCommandController {
 	async #handleSmitheryLogin(): Promise<void> {
 		const ok = await this.#promptSmitheryLogin("login");
 		if (!ok) {
-			this.ctx.showStatus("Smithery login cancelled.");
+			this.ctx.showStatus("Smithery 登录已取消。");
 		}
 	}
 
@@ -2606,7 +2613,7 @@ export class MCPCommandController {
 			if (input === undefined) return null;
 			const proposed = input.trim() || defaultName;
 			if (!proposed) {
-				this.ctx.showError("Server name cannot be empty.");
+				this.ctx.showError("服务器名不能为空。");
 				continue;
 			}
 			const filePath = getMCPConfigPath(scope, getProjectDir());
@@ -2680,12 +2687,12 @@ export class MCPCommandController {
 		const defaultName = await this.#nextAvailableServerName(scope, baseName);
 		const serverName = await this.#promptDeploymentServerName(scope, defaultName);
 		if (!serverName) {
-			this.ctx.showStatus("MCP deploy cancelled.");
+			this.ctx.showStatus("MCP 部署已取消。");
 			return;
 		}
 		const inputValues = await this.#promptRequiredRegistryInputs(result);
 		if (inputValues === null) {
-			this.ctx.showStatus("MCP deploy cancelled.");
+			this.ctx.showStatus("MCP 部署已取消。");
 			return;
 		}
 		const config = this.#applyRegistryInputOverrides(result.config, inputValues);
@@ -2721,7 +2728,7 @@ export class MCPCommandController {
 
 			const selected = await this.#pickRegistryResult(results, parsed.keyword);
 			if (!selected) {
-				this.ctx.showStatus("MCP Smithery selection cancelled.");
+				this.ctx.showStatus("MCP Smithery 选择已取消。");
 				return;
 			}
 

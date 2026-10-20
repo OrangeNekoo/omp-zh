@@ -242,7 +242,7 @@ export const astEditToolRenderer = {
 		const meta = [...summaryParts];
 		if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 		meta.push(`searched ${filesSearched}`);
-		if (limitReached) meta.push(uiTheme.fg("warning", "limit reached"));
+		if (limitReached) meta.push(uiTheme.fg("warning", "已达上限"));
 		const rewriteCount = args?.ops?.length ?? 0;
 		const description = rewriteCount === 1 ? patternPreview(args?.ops?.[0]?.pat) : undefined;
 
@@ -307,7 +307,7 @@ export const astEditToolRenderer = {
 
 		const extraLines: string[] = [];
 		if (limitReached) {
-			extraLines.push(uiTheme.fg("warning", "limit reached; narrow path"));
+			extraLines.push(uiTheme.fg("warning", "已达上限；请缩小路径"));
 		}
 		if (details?.parseErrors?.length) {
 			extraLines.push(

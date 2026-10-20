@@ -11,9 +11,9 @@ import { Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { applyBinaryPatch } from "@oh-my-pi/pi-natives";
 import {
+	CLI_NAME,
 	$which,
 	APP_NAME,
-	CLI_NAME,
 	compareVersions,
 	formatBytes,
 	getProjectDir,
@@ -1053,7 +1053,7 @@ async function pruneBunCacheAfterGlobalInstall(): Promise<BunInstallCachePruneRe
 }
 
 /**
- * Resolve the path that the CLI command maps to in the user's PATH.
+ * Resolve the path that `omp` maps to in the user's PATH.
  */
 function resolveOmpPath(): string | undefined {
 	return $which(CLI_NAME) ?? undefined;
@@ -1069,7 +1069,7 @@ function resolveOmpPath(): string | undefined {
  */
 export function parseReportedVersion(output: string): string | undefined {
 	if (!output.startsWith(`${CLI_NAME}/`)) return undefined;
-	return output.slice(APP_NAME.length + 1).match(/^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/)?.[1];
+	return output.slice(CLI_NAME.length + 1).match(/^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/)?.[1];
 }
 
 async function reportedVersionAtPath(binaryPath: string): Promise<string | undefined> {

@@ -85,7 +85,7 @@ class GlyphSceneController implements SetupSceneController {
 		if (!this.#step) {
 			this.#step = new WizardStep({
 				kind: "choice",
-				intro: new Text(theme.fg("muted", "If a row shows boxes, tofu, or misaligned icons, pick another."), 0, 0),
+				intro: new Text(theme.fg("muted", "如果某行显示方块、豆腐块或图标错位，请换一个选项。"), 0, 0),
 				content: this.#selectList,
 				minContentLines: GLYPH_ITEMS.length,
 				fitContent: () => {
@@ -100,10 +100,10 @@ class GlyphSceneController implements SetupSceneController {
 	/** Hint line over the preset list; the list (sample glyphs as item detail) describes itself. */
 	describe(): NativeNode {
 		return this.#native.get([this.#selectList], () =>
-			col([text([span("如果某行显示方块、豆腐块或图标错位，请换一个选项。", "muted")]), this.#selectList], {
-				gap: "sm",
-				role: "omp.setup.glyph",
-			}),
+			col(
+				[text([span("如果某行显示方块、豆腐块或图标错位，请换一个选项。", "muted")]), this.#selectList],
+				{ gap: "sm", role: "omp.setup.glyph" },
+			),
 		);
 	}
 

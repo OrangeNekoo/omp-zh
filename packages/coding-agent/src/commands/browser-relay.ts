@@ -21,16 +21,16 @@ export default class BrowserRelay extends Command {
 	};
 
 	static flags = {
-		port: Flags.integer({ char: "p", description: "Port to listen on", default: DEFAULT_RELAY_PORT }),
-		token: Flags.string({ description: "Require the extension to present this token" }),
+		port: Flags.integer({ char: "p", description: "监听端口", default: DEFAULT_RELAY_PORT }),
+		token: Flags.string({ description: "要求扩展出示此令牌" }),
 		dir: Flags.string({
-			description: "Extension install directory (install; default ~/.omp/browser-relay/extension)",
+			description: "扩展安装目录（install；默认 ~/.omp/browser-relay/extension）",
 		}),
 		"no-group": Flags.boolean({
-			description: "Don't gather controllable tabs into an 'omp' tab group",
+			description: "不把可控标签页归入 'omp' 标签组",
 			default: false,
 		}),
-		verbose: Flags.boolean({ char: "v", description: "Log relay traffic summaries to stderr", default: false }),
+		verbose: Flags.boolean({ char: "v", description: "将中继流量摘要记录到 stderr", default: false }),
 	};
 
 	static examples = [

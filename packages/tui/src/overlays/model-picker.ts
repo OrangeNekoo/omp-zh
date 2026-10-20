@@ -417,7 +417,7 @@ export class ModelPickerComponent implements Component {
 		const cycleKey = editorKey("app.model.cycleForward") || formatKeyHint("ctrl+p");
 		const node = picker(
 			{
-				title: mode === "task" ? "Switch task model" : mode === "selection" ? "Select model" : "Switch model",
+				title: mode === "task" ? "切换任务模型" : mode === "selection" ? "选择模型" : "切换模型",
 				subtitle,
 				icon: "cpu",
 				noun: mode === "role" ? "roles" : "models",
@@ -427,7 +427,7 @@ export class ModelPickerComponent implements Component {
 				query,
 				cursor,
 				placeholder:
-					mode === "task" || mode === "selection" ? "Search models…" : "Search models, @ for quick roles…",
+					mode === "task" || mode === "selection" ? "搜索模型…" : "Search models, @ for quick roles…",
 				columns: MODEL_PICKER_COLUMNS,
 				...catalogue,
 				order: view.order,
@@ -435,7 +435,7 @@ export class ModelPickerComponent implements Component {
 				selected,
 				...(current ? { current: [current] } : {}),
 				total: this.#browser.baseCount,
-				empty: mode === "role" ? `No quick roles in the ${cycleKey} cycle` : "No models available",
+				empty: mode === "role" ? `No quick roles in the ${cycleKey} cycle` : "无可用模型",
 				actions: compact([
 					pickerAction(
 						"use",
@@ -497,13 +497,13 @@ export class ModelPickerComponent implements Component {
 		if (mode === "session") hints.push({ keys: ["@"], label: "快捷角色" });
 		hints.push(actionHint("tui.select.cancel", "close"));
 		if (this.#taskModeKey !== undefined && !this.#roleMode && mode !== "selection") {
-			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "session model" : "task model" });
+			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "会话模型" : "task model" });
 		}
 		// `card` directly: the task-mode tone is a common prop `overlayCard` doesn't take.
 		const node = card(
 			{
 				role: "omp.overlay.model-picker",
-				head: mode === "task" ? "Switch Task Model" : mode === "selection" ? "Select Model" : "Switch Model",
+				head: mode === "task" ? "切换任务模型" : mode === "selection" ? "选择模型" : "切换模型",
 				tone: this.#taskMode ? "error" : undefined,
 			},
 			[text([status], { wrap: "word" }), this.#browser, hintsRow(hints)],

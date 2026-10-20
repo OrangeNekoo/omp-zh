@@ -25,7 +25,10 @@ import {
 	TRANSLATABLE_CONSTRUCTORS,
 	TRANSLATABLE_PROPERTIES,
 	allowsWholeFileLiterals,
+	displayTextArgumentIndex,
 	isIncludedFile,
+	looksLikeProseValue,
+	PROSE_ONLY_PROPERTIES,
 } from "./rules";
 import { translateByRule } from "./rules-translate";
 
@@ -34,6 +37,15 @@ const traverse = (traverseModule as unknown as { default?: unknown }).default ??
 const ROOT = path.join(import.meta.dir, "..");
 const DICTIONARY_PATH = path.join(import.meta.dir, "dictionary.json");
 const REPORT_PATH = path.join(import.meta.dir, "report.json");
+
+/**
+ * 模板插值在词典键里的占位符。
+ *
+ * 词典用 `\u0000` 表示插值位置，例如
+ * `"Switch model for this session (same as \u0000); accepts …"`。
+ * 它不会出现在任何界面文案里，因此不会与真实字符冲突。
+ */
+const PLACEHOLDER = "\u0000";
 
 export interface Replacement {
 	readonly file: string;
@@ -114,10 +126,58 @@ function findReplacements(
 		onHit({ start: node.start, end: node.end }, value, kind, translated);
 	};
 
-	/** 处理模板字符串：仅当没有插值时才整体替换。 */
+	/** 无插值模板字符串的字面内容；有插值时由调用方跳过。 */
+	const templateText = (node: any): string =>
+		node.quasis.map((quasi: any) => quasi.value.cooked ?? "").join("");
+
+	/**
+	 * 模板字符串里带插值的整句文案。
+	 *
+	 * `Switch model for this session (same as ${key})` 这类文案的英文在
+	 * 插值两侧，AST 只能看到片段。这里把插值替换成占位符 `\u0000`，
+	 * 用占位符形态在词典里查整句，再把译文按占位符切回源码片段。
+	 */
+	const considerInterpolatedTemplate = (node: any, kind: string): void => {
+		const quasis: any[] = node.quasis;
+		if (quasis.length < 2) return;
+		const parts = quasis.map(quasi => quasi.value.cooked ?? "");
+		const templateKey = parts.join(PLACEHOLDER);
+		const translated = dictionary.get(templateKey);
+		if (translated === undefined || translated === templateKey) return;
+		const translatedParts = translated.split(PLACEHOLDER);
+		// 占位符数量必须一致，否则无法安全映射回插值。
+		if (translatedParts.length !== parts.length) return;
+		onMatch?.(templateKey);
+		for (const [index, quasi] of quasis.entries()) {
+			const value = parts[index];
+			const text = translatedParts[index];
+			if (text === value) continue;
+			if (typeof quasi.start !== "number" || typeof quasi.end !== "number") continue;
+			onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, escapeTemplatePart(text));
+		}
+	};
+
+	/** 处理模板字符串：无插值时整体替换，有插值时走占位符整句匹配。 */
 	const considerTemplate = (node: any, kind: string): void => {
-		if (node.type !== "TemplateLiteral" || node.expressions.length > 0) return;
-		const value = node.quasis.map((q: any) => q.value.cooked ?? "").join("");
+		if (node.type !== "TemplateLiteral") return;
+		if (node.expressions.length > 0) {
+			// `examples` 是「注释 + 命令」拼成的帮助片段，命令名走插值。
+			// 只逐段翻译无插值的字面片段，插值本身原样保留。
+			if (kind === "prop:examples") {
+				for (const quasi of node.quasis) {
+					const value = quasi.value.cooked ?? "";
+					const translated = dictionary.get(value);
+					if (translated === undefined || translated === value) continue;
+					onMatch?.(value);
+					if (typeof quasi.start !== "number" || typeof quasi.end !== "number") continue;
+					onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, escapeTemplatePart(translated));
+				}
+				return;
+			}
+			considerInterpolatedTemplate(node, kind);
+			return;
+		}
+		const value = templateText(node);
 		const translated = resolve(value, dictionary);
 		if (translated === undefined || translated === value) return;
 		onMatch?.(value);
@@ -169,13 +229,39 @@ function findReplacements(
 			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
 			if (!name) return;
 			const value = p.node.value;
+			/** 宽泛属性（head/k/action…）只接受句子形态的值，避免改坏协议枚举。 */
+			const proseOnly = PROSE_ONLY_PROPERTIES[name] === true;
+			const accept = (text: string): boolean => !proseOnly || looksLikeProseValue(text);
+			/** 属性值可能是三元/逻辑表达式（`lead: ok ? "…" : "…"`），逐个分支处理。 */
+			const considerExpression = (expression: any, kind: string): void => {
+				if (expression.type === "StringLiteral") {
+					if (accept(expression.value)) consider(expression, kind, expression.value);
+				} else if (expression.type === "TemplateLiteral") {
+					if (accept(templateText(expression))) considerTemplate(expression, kind);
+				} else if (expression.type === "ConditionalExpression") {
+					considerExpression(expression.consequent, kind);
+					considerExpression(expression.alternate, kind);
+				} else if (expression.type === "LogicalExpression") {
+					considerExpression(expression.left, kind);
+					considerExpression(expression.right, kind);
+				} else if (expression.type === "ObjectMethod") {
+					// `get description() { return `…${key}…`; }`：描述由 getter 拼出，
+					// 只处理其中的 return 语句。
+					for (const statement of expression.body.body ?? []) {
+						if (statement.type === "ReturnStatement" && statement.argument) {
+							considerExpression(statement.argument, kind);
+						}
+					}
+				}
+			};
 			if (TRANSLATABLE_PROPERTIES.has(name)) {
-				if (value.type === "StringLiteral") consider(value, `prop:${name}`, value.value);
-				else if (value.type === "TemplateLiteral") considerTemplate(value, `prop:${name}`);
-				else if (value.type === "ArrayExpression" && /^(labels|hints|groups)$/.test(name)) {
+				if (value.type === "ArrayExpression" && /^(labels|hints|groups|examples)$/.test(name)) {
 					for (const element of value.elements) {
 						if (element?.type === "StringLiteral") consider(element, `prop:${name}[]`, element.value);
+						else if (element?.type === "TemplateLiteral") considerTemplate(element, `prop:${name}`);
 					}
+				} else {
+					considerExpression(value, `prop:${name}`);
 				}
 			}
 			// 子菜单选项：`options: [{ value, label, description }]` 或内联的
@@ -189,6 +275,18 @@ function findReplacements(
 			}
 			if (value.type === "ObjectExpression") translateOptionObject(value);
 		},
+		/** `get description() { return `…`; }`：getter 形式的界面文案。 */
+		ObjectMethod(p: any) {
+			const key = p.node.key;
+			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
+			if (!name || !TRANSLATABLE_PROPERTIES.has(name)) return;
+			for (const statement of p.node.body?.body ?? []) {
+				if (statement.type !== "ReturnStatement" || !statement.argument) continue;
+				const argument = statement.argument;
+				if (argument.type === "StringLiteral") consider(argument, `prop:${name}`, argument.value);
+				else if (argument.type === "TemplateLiteral") considerTemplate(argument, `prop:${name}`);
+			}
+		},
 		CallExpression(p: any) {
 			const callee = p.node.callee;
 			const name =
@@ -197,10 +295,24 @@ function findReplacements(
 					: callee.type === "MemberExpression" && callee.property.type === "Identifier"
 						? callee.property.name
 						: null;
-			if (!name || !TRANSLATABLE_CALLS.has(name)) return;
-			const first = p.node.arguments[0];
-			if (first?.type === "StringLiteral") consider(first, `call:${name}`, first.value);
-			else if (first?.type === "TemplateLiteral") considerTemplate(first, `call:${name}`);
+			if (!name) return;
+			if (TRANSLATABLE_CALLS.has(name)) {
+				const first = p.node.arguments[0];
+				if (first?.type === "StringLiteral") consider(first, `call:${name}`, first.value);
+				else if (first?.type === "TemplateLiteral") considerTemplate(first, `call:${name}`);
+				return;
+			}
+			// `theme.fg("muted", "…")`、`chalk.dim("…")`、`console.log("…")`：
+			// 展示文案在第 2/1/1 个实参上，只有整串命中词典才会替换。
+			const objectName =
+				callee.type === "MemberExpression" && callee.object.type === "Identifier"
+					? callee.object.name
+					: null;
+			const index = displayTextArgumentIndex(objectName, name);
+			if (index === undefined) return;
+			const argument = p.node.arguments[index];
+			if (argument?.type === "StringLiteral") consider(argument, `display:${objectName}.${name}`, argument.value);
+			else if (argument?.type === "TemplateLiteral") considerTemplate(argument, `display:${objectName}.${name}`);
 		},
 		NewExpression(p: any) {
 			const callee = p.node.callee;
@@ -240,6 +352,11 @@ function quoteLike(original: string, translated: string): string {
 	if (quote === '"') body = body.replace(/"/g, '\\"');
 	else body = body.replace(/'/g, "\\'");
 	return `${quote}${body}${quote}`;
+}
+
+/** 模板字符串片段里只需转义反引号、反斜杠与美元符号。 */
+function escapeTemplatePart(translated: string): string {
+	return translated.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 }
 
 /** 写盘前的语法校验：翻译结果必须仍是合法 TypeScript。 */
@@ -317,6 +434,10 @@ export function translateAll(options: { dryRun?: boolean; root?: string } = {}):
 				code,
 				dictionary,
 				(range, source, kind, text) => {
+					// 模板字符串的字面片段替换的是片段内容本身，不能加引号。
+					const replacement = kind.endsWith("#part")
+						? escapeTemplatePart(text)
+						: quoteLike(code.slice(range.start, range.end), text);
 					internal.push({
 						file: relative,
 						line: lineOf(lineStarts, range.start),
@@ -325,7 +446,7 @@ export function translateAll(options: { dryRun?: boolean; root?: string } = {}):
 						text,
 						start: range.start,
 						end: range.end,
-						replacement: quoteLike(code.slice(range.start, range.end), text),
+						replacement,
 					});
 				},
 				source => missing.delete(source),

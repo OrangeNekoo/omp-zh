@@ -664,7 +664,7 @@ export class ExtensionDashboard implements Component {
 				hits: view.hits,
 				selected: view.selected,
 				total: this.#state.tabFiltered.length,
-				empty: "No extensions found for this provider.",
+				empty: "此服务商没有可用扩展。",
 				actions: this.#pickerActions(this.#mainList.selectedSwitch()),
 				focus: "list",
 			},
@@ -741,7 +741,7 @@ export class ExtensionDashboard implements Component {
 			actionButton(selected?.on === false ? "Enable" : selected ? "Disable" : "Toggle", "toggle", {
 				keys: "space",
 				tone: "accent",
-				title: selected?.blocked ?? (selected ? undefined : "Select an extension"),
+				title: selected?.blocked ?? (selected ? undefined : "选择扩展"),
 			}),
 			actionButton(expanded ? "Collapse" : "Expand", "expand", { keys: this.#expandKey() }),
 		];

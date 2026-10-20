@@ -119,7 +119,7 @@ function turnItem(target: OutlineTarget, detail?: TspText): NativeNode {
 	return node(
 		"item",
 		{
-			label: label || "(empty)",
+			label: label || "（空）",
 			detail: detail ?? (time || undefined),
 			value: detail !== undefined && time ? [span(time, "dim")] : undefined,
 			role,
@@ -706,7 +706,7 @@ export class CopySelectorComponent implements Component {
 		const focused = this.#blocks?.[this.#blockSelected];
 		const action = this.deps.actionLabel ?? "copy";
 		const props: TspPickerProps = {
-			title: this.deps.title ?? "Copy",
+			title: this.deps.title ?? "复制",
 			...(this.deps.title ? {} : { subtitle: "选择要放入剪贴板的内容" }),
 			icon: "clipboard",
 			noun: "turns",
@@ -718,7 +718,7 @@ export class CopySelectorComponent implements Component {
 			items: this.#pickerItems.of(this.#targets),
 			selected: target?.turnId ?? null,
 			total: this.#targets.length,
-			empty: "Nothing to copy",
+			empty: "没有可复制的内容",
 			focus: descended ? "preview" : "list",
 			actions: compact([
 				pickerAction("pick", `${action[0]!.toUpperCase()}${action.slice(1)}`, "enter", { primary: true }),
@@ -772,7 +772,7 @@ export class CopySelectorComponent implements Component {
 				row([text([span("‹ 返回", "accent")], { actions: { click: "back" } })], { gap: "md" }),
 				node(
 					"list",
-					{ selected: String(this.#blockSelected), empty: "No blocks" },
+					{ selected: String(this.#blockSelected), empty: "无内容块" },
 					this.#blocks.map((item, index) => {
 						const lines = item.content.split("\n").length;
 						return node(
@@ -797,7 +797,7 @@ export class CopySelectorComponent implements Component {
 			children.push(
 				node(
 					"list",
-					{ selected: target?.turnId ?? null, virtual: true, max: 0.5, empty: "Nothing to copy" },
+					{ selected: target?.turnId ?? null, virtual: true, max: 0.5, empty: "没有可复制的内容" },
 					this.#transcriptItems(),
 					"list",
 				),
@@ -933,7 +933,7 @@ export class CopySelectorComponent implements Component {
 			header: [
 				this.deps.title
 					? theme.bold(this.deps.title)
-					: `${theme.cmd.copy} ${theme.bold("Copy")}${theme.sep.dot}${theme.fg("dim", "pick what to put on the clipboard")}`,
+					: `${theme.cmd.copy} ${theme.bold("复制")}${theme.sep.dot}${theme.fg("dim", "选择要放入剪贴板的内容")}`,
 			],
 			body: {
 				lines: composed.lines,
@@ -1092,7 +1092,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 					const command = commandFromToolCall(content);
 					if (command) {
 						blocks.push({
-							label: command.kind === "bash" ? "bash command" : "eval code",
+							label: command.kind === "bash" ? "bash command" : "eval 代码",
 							content: command.code,
 							entry,
 							kind: "command",

@@ -343,12 +343,12 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 		const pending = runtime.lastRunSummary;
 		if (pending) {
 			const items: { k: string; v: TspText }[] = [
-				{ k: "Pending run", v: `#${pending.runNumber}` },
+				{ k: "待运行", v: `#${pending.runNumber}` },
 				{
 					k: "Result",
 					v: `${pending.passed ? "passed" : "failed"}${pending.parsedPrimary !== null ? `  ${state.metricName} ${formatNum(pending.parsedPrimary, state.metricUnit)}` : ""}`,
 				},
-				{ k: "Next action", v: "finish log_experiment before starting another run." },
+				{ k: "下一步操作", v: "先完成 log_experiment 再开始下一次运行。" },
 			];
 			if (!runtime.autoresearchMode) items.push({ k: "Mode", v: "off" });
 			return [node("kv", { items, layout: "grid" }, undefined, "summary")];
@@ -359,9 +359,9 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 					"kv",
 					{
 						items: [
-							{ k: "Current segment", v: "0 runs" },
-							{ k: "Baseline", v: "pending" },
-							{ k: "Next action", v: "run and log the baseline experiment." },
+							{ k: "当前区段", v: "0 runs" },
+							{ k: "基线", v: "pending" },
+							{ k: "下一步操作", v: "运行并记录基线实验。" },
 						],
 						layout: "grid",
 					},
@@ -381,7 +381,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 	const best = findBestResult(state);
 	const items: { k: string; v: TspText }[] = [
 		{
-			k: "Current segment",
+			k: "当前区段",
 			v: [
 				span(`${current.length} runs  `),
 				span(`${counts.keep} kept`, "success"),
@@ -391,16 +391,16 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 			],
 		},
 		{
-			k: "Baseline",
+			k: "基线",
 			v: `${formatNum(baseline, state.metricUnit)}${baselineRunNumber ? ` (#${baselineRunNumber})` : ""}`,
 		},
 	];
 	if (state.results.length > current.length) {
-		items.push({ k: "Archived", v: `${state.results.length - current.length} runs from earlier segments` });
+		items.push({ k: "已归档", v: `${state.results.length - current.length} runs from earlier segments` });
 	}
 	if (runtime.lastRunSummary) {
 		items.push({
-			k: "Pending run",
+			k: "待运行",
 			v: [
 				span(`#${runtime.lastRunSummary.runNumber} (${runtime.lastRunSummary.passed ? "passed" : "failed"})`),
 				span(" — log_experiment required", "warning"),
@@ -431,7 +431,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 				),
 			)
 			.filter((detail): detail is string => Boolean(detail));
-		if (details.length > 0) items.push({ k: "Secondary", v: details.join("  ") });
+		if (details.length > 0) items.push({ k: "次要", v: details.join("  ") });
 	}
 
 	const cols: TspTableColumn[] = [
@@ -877,16 +877,16 @@ function describeRuns(
 	);
 	const cols: TspTableColumn[] = [
 		{ id: "run", head: "#", align: "end", priority: 3 },
-		{ id: "status", head: "Outcome", priority: 4 },
+		{ id: "status", head: "结果", priority: 4 },
 		{ id: "metric", head: head(state.metricName, state.metricUnit), align: "end", priority: 5 },
-		{ id: "change", head: "vs baseline", align: "end", priority: 4 },
+		{ id: "change", head: "对比基线", align: "end", priority: 4 },
 		...state.secondaryMetrics.map((metric, index): TspTableColumn => ({
 			id: `secondary${index}`,
 			head: head(metric.name, metric.unit),
 			align: "end",
 			priority: 1,
 		})),
-		{ id: "commit", head: "Commit", priority: 2 },
+		{ id: "commit", head: "提交", priority: 2 },
 		{ id: "description", head: "Change", truncate: "end", grow: 1, priority: 3 },
 	];
 	const rows = indexed
@@ -1023,7 +1023,7 @@ function renderCollapsedLine(runtime: AutoresearchDashboardRuntime, state: Exper
 	} else if (state.bestMetric !== null) {
 		parts.push(theme.fg("warning", `baseline ${formatNum(state.bestMetric, state.metricUnit)}`));
 	} else {
-		parts.push(theme.fg("warning", `no kept runs yet`));
+		parts.push(theme.fg("warning", "暂无保留的运行"));
 	}
 	if (state.confidence !== null) {
 		const confidenceColor = state.confidence >= 2 ? "success" : state.confidence >= 1 ? "warning" : "error";
@@ -1069,7 +1069,7 @@ export function renderDashboardLines(
 				truncateToWidth("Next action: run and log the baseline experiment.", width),
 			];
 		}
-		return [theme.fg("dim", "No experiments logged yet.")];
+		return [theme.fg("dim", "尚未记录实验。")];
 	}
 
 	const current = currentResults(state.results, state.currentSegment);

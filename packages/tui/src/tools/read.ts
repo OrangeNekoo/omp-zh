@@ -609,7 +609,7 @@ export const readToolRenderer = {
 				phase: "success",
 				sections: [
 					{
-						label: uiTheme.fg("toolTitle", "Details"),
+						label: uiTheme.fg("toolTitle", "详情"),
 						content: lines.length > 0 ? lines : [uiTheme.fg("dim", "(image)")],
 					},
 				],

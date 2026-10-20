@@ -2,9 +2,9 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import {
+	CLI_NAME,
 	$env,
 	$which,
-	CLI_NAME,
 	isBunTestRuntime,
 	isCompiledBinary,
 	isExecutable,
@@ -128,7 +128,7 @@ export function resolveExecutablePath(): string {
 			// Prefer the original launcher when invoked with an absolute path
 			isFullyQualifiedPath(argv0) ? argv0 : null,
 			!isPath ? $which(argv0, { requireAbsolutePaths: true, cache: WhichCachePolicy.Bypass }) : null,
-			// Generic fallback to finding the CLI command on PATH
+			// Generic fallback to finding "omp" on PATH
 			$which(CLI_NAME, { requireAbsolutePaths: true, cache: WhichCachePolicy.Bypass }),
 		];
 		for (const candidate of candidates) {

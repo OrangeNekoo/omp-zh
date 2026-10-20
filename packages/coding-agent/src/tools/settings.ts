@@ -305,25 +305,33 @@ export const cfgToolsApproval = register({
 });
 
 // Default tool approval mode (interaction tab, but governs the tool wrapper).
-//   "always-ask" — auto-approves read-tier tools only; prompts for write/exec.
-//   "write"      — auto-approves read and write-tier tools; prompts for exec.
-//   "yolo"       — auto-approves every tier.
+//   "always-ask"        — auto-approves read-tier tools only; prompts for write/exec.
+//   "always-ask-cached" — like always-ask, but file reads and writes can be approved
+//                         for a file or folder, this session or across sessions.
+//   "write"             — auto-approves read and write-tier tools; prompts for exec.
+//   "yolo"              — auto-approves every tier.
 export const cfgToolsApprovalMode = register({
 	id: "tools.approvalMode",
 	type: "enum",
-	values: ["always-ask", "write", "yolo"] as const,
+	values: ["always-ask", "always-ask-cached", "write", "yolo"] as const,
 	default: "yolo",
 	ui: {
 		tab: "interaction",
 		group: "批准",
 		label: "工具批准",
 		description:
-			"工具调用的默认批准行为。'Always ask' 只自动批准只读工具。'Write' 自动批准读取与工作区写入工具。'Yolo' 自动批准所有层级；用户策略仍可要求确认或阻止。",
+			"工具调用的默认批准方式。“总是询问”只自动批准只读工具；“询问并记住”还会在读取文件前询问，并可记住某个文件或目录；“写入”自动批准读取与工作区写入类工具；“Yolo”自动批准所有层级，但用户策略仍可能提示或阻止。",
 		options: [
 			{
 				value: "always-ask",
 				label: "总是询问",
 				description: "自动批准只读工具；对写入与执行类工具要求确认。",
+			},
+			{
+				value: "always-ask-cached",
+				label: "询问并记住",
+				description:
+					"读写文件前先询问，回答可记住该文件或其目录（本会话或所有会话）；执行类工具仍需确认。",
 			},
 			{
 				value: "write",
@@ -935,6 +943,19 @@ export const cfgAsyncMaxJobs = register({
 	protocolDefault: ["rpc"],
 	type: "number",
 	default: 100,
+});
+
+export const cfgAsyncWidgets = register({
+	id: "async.widgets",
+	type: "boolean",
+	default: true,
+	ui: {
+		tab: "tools",
+		group: "执行",
+		label: "实时任务小组件",
+		description:
+			"为每个运行中的后台任务绘制实时小组件（由其输出派生的图表、进度条、状态网格），显示在 wait 卡片、任务胶囊与任务面板中。`widget` 模型角色（默认 `smol`）为每个任务编写一份规格；后续更新无需再调用模型",
+	},
 });
 
 export const cfgToolsXdev = register({

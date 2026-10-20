@@ -7,7 +7,7 @@ export default class Bench extends Command {
 	static description = commandHelp.description;
 	static args = {
 		models: Args.string({
-			description: "Model selectors (provider/model or fuzzy id, e.g. opus)",
+			description: "模型选择器（provider/model 或模糊 id，如 opus）",
 			required: true,
 			multiple: true,
 		}),
@@ -19,31 +19,31 @@ export default class Bench extends Command {
 				"Requests per model (default: 10 chat, 5 prefill/generation, 9 mix); with --detailed, per phase (default: 4)",
 		}),
 		"max-tokens": Flags.integer({
-			description: "Max output tokens per request (default: chat 512, prefill 64, generation 2048, cache 64)",
+			description: "每次请求的最大输出令牌数（默认：chat 512、prefill 64、generation 2048、cache 64）",
 		}),
-		prompt: Flags.string({ description: "Custom prompt text (chat and generation profiles only)" }),
+		prompt: Flags.string({ description: "自定义提示词文本（仅 chat 与 generation 负载）" }),
 		profile: Flags.string({
 			description:
-				"Benchmark workload (default chat): chat (balanced, measures TTFT and tok/s), prefill (large cache-busted input, measures input processing), generation (long forced output, measures sustained decode), mix (rotates all three)",
+				"基准负载（默认 chat）：chat（均衡，测量 TTFT 与 tok/s）、prefill（大体积绕过缓存的输入，测量输入处理）、generation（强制长输出，测量持续解码）、mix（轮换三者）",
 			options: ["chat", "prefill", "generation", "mix"],
 		}),
 		"prefill-bytes": Flags.integer({
-			description: "Synthetic input size for prefill challenges (default: 32768, capped by the context window)",
+			description: "prefill 压力测试的合成输入大小（默认：32768，受上下文窗口限制）",
 		}),
 		detailed: Flags.boolean({
 			description:
-				"Run single-user (1 concurrent), parallel (--par concurrent, with aggregate tok/s and scaling), and prefill phases per model",
+				"对每个模型依次运行单用户（1 并发）、并行（--par 并发，含汇总 tok/s 与扩展比）与 prefill 阶段",
 		}),
 		"service-tier": Flags.string({
-			description: "Service tier applied per model family (default: configured `tier.*` settings; `none` omits it)",
+			description: "按模型系列应用服务层级（默认：已配置的 `tier.*` 设置；`none` 表示省略）",
 			options: SERVICE_TIER_OPENAI_VALUES,
 		}),
-		json: Flags.boolean({ description: "Output JSON" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
 		par: Flags.integer({
 			description: "Execute runs with N parallel queries/requests (default: 4); --detailed's parallel phase width",
 		}),
 		cache: Flags.boolean({
-			description: "Run independent cold/warm prompt-cache pairs (not supported for openai-codex-responses)",
+			description: "运行独立的冷/热提示词缓存配对（openai-codex-responses 不支持）",
 		}),
 		"cache-prefix-file": Flags.string({ description: "Stable prompt prefix file for --cache" }),
 		"cache-prefix-bytes": Flags.integer({ description: "Stable prefix byte budget for --cache (default: 8192)" }),

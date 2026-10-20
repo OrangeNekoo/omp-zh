@@ -88,7 +88,7 @@ function retainComponent(contents: string[], header: string, getExpanded: () => 
 /** Retained memories as a list, clamped to the collapsed item budget. */
 function describeRetain(contents: string[], summary?: string): NativeToolView {
 	return {
-		head: toolHead("Retain", summary),
+		head: toolHead("保留", summary),
 		inline: true,
 		body:
 			contents.length > 0
@@ -146,7 +146,7 @@ export const retainToolRenderer = {
 	): NativeToolView | undefined {
 		return retainResultMemo.get(result, [], () => {
 			if (result.isError)
-				return { ...errorView("Retain", resultText(result).trim() || "Retain failed"), inline: true };
+				return { ...errorView("保留", resultText(result).trim() || "Retain failed"), inline: true };
 			return describeRetain(retainContents(args), resultText(result).trim().replace(/\.$/, ""));
 		});
 	},
@@ -274,7 +274,7 @@ export const reflectToolRenderer = {
 		);
 	},
 	describeCall(args: QueryRenderArgs): NativeToolView {
-		return { head: toolHead("Reflect", args.query?.trim()), inline: true };
+		return { head: toolHead("反思", args.query?.trim()), inline: true };
 	},
 	describeResult(
 		result: { content: Array<{ type: string; text?: string }>; isError?: boolean },
@@ -284,10 +284,10 @@ export const reflectToolRenderer = {
 		return reflectResultMemo.get(result, [], () => {
 			const query = args?.query?.trim();
 			const answer = resultText(result).trim();
-			if (result.isError) return { ...errorView("Reflect", answer || "Reflect failed", query), inline: true };
+			if (result.isError) return { ...errorView("反思", answer || "Reflect failed", query), inline: true };
 			const shown = answer.split("\n").slice(0, PREVIEW_LIMITS.OUTPUT_EXPANDED).join("\n").trim();
 			return {
-				head: toolHead("Reflect", query),
+				head: toolHead("反思", query),
 				inline: true,
 				body: shown ? [md(shown, { role: "omp.memory.reflect" })] : [],
 				preview: { lines: PREVIEW_LIMITS.OUTPUT_COLLAPSED },

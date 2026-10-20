@@ -514,7 +514,7 @@ export const cfgTuiCodexResetFireworks = register({
 		group: "显示",
 		label: "Codex 重置烟花",
 		get description() {
-			return `Celebrate unscheduled Codex weekly usage resets and newly banked saved resets with a top-third fireworks overlay that remains until ${formatKeyHint("escape")}`;
+			return `当 Codex 每周用量意外重置或有新的已存重置入账时，在屏幕上部三分之一处显示烟花浮层，直到 ${formatKeyHint("escape")}`;
 		},
 	},
 });
@@ -579,7 +579,7 @@ export const cfgTuiMouse = register({
 		label: "鼠标点击聚焦",
 		get description() {
 			const shift = formatKeyHint("shift");
-			return `Capture mouse clicks in the main session so live subagent cards and HUD rows focus on click, with a hover highlight on the target. Native text selection becomes ${shift}+drag and wheel scroll becomes ${shift}+wheel while on`;
+			return `在主会话中捕获鼠标点击，让运行中的子代理卡片与 HUD 行可点击聚焦，并高亮悬停目标。启用后原生文本选择变为 ${shift}+拖动，滚轮滚动变为 ${shift}+滚轮`;
 		},
 	},
 });
@@ -807,7 +807,7 @@ export const cfgTuiVimMode = register({
 		group: "输入",
 		label: "Vim 编辑模式",
 		get description() {
-			return `Modal prompt editing. ${formatKeyHint("escape")} leaves Insert mode; Normal mode has hjkl, 0, $, ^, w, b, e, gg, G, counts, x/D/C, dd/yy, p and u; operators take motions or text objects (diw, ca(, dap); v/V start a Visual selection that y copies and d deletes`;
+			return `模态提示词编辑。${formatKeyHint("escape")} 退出插入模式；普通模式支持 hjkl、0、$、^、w、b、e、gg、G、计数、x/D/C、dd/yy、p 与 u；操作符可搭配动作或文本对象（diw、ca(、dap）；v/V 进入可视选择，y 复制、d 删除`;
 		},
 	},
 });
@@ -886,7 +886,7 @@ export const cfgComposerRecallClearedDrafts = register({
 		group: "输入",
 		label: "恢复已清除的草稿",
 		get description() {
-			return `Keep drafts cleared with ${formatKeyHint("ctrl+c")} in local ${formatKeyHints(["up", "down"])} history until exit; disabling affects future clears`;
+			return `在本地 ${formatKeyHint("ctrl+c")} 历史中用 ${formatKeyHints(["up", "down"])} 清除的草稿会保留到退出；禁用后只影响后续清除`;
 		},
 	},
 });
@@ -901,7 +901,7 @@ export const cfgDoubleEscapeAction = register({
 		group: "输入",
 		label: "双击 Escape 操作",
 		get description() {
-			return `What pressing ${formatKeyHint("escape")} twice with an empty editor does: open the transcript rewind selector, open the session tree, or nothing`;
+			return `在空编辑器中连按两次 ${formatKeyHint("escape")} 的行为：打开会话回退选择器、打开会话树，或不做任何事`;
 		},
 	},
 });
@@ -988,7 +988,7 @@ export const cfgSpellingAutocomplete = register({
 		group: "输入",
 		label: "单词自动补全",
 		get description() {
-			return `Show predicted word completions as inline hints: ${formatKeyHint("tab")} accepts with a space, ${formatKeyHint("right")} without`;
+			return `以内联提示显示预测的词补全：${formatKeyHint("tab")} 接受并加空格，${formatKeyHint("right")} 接受不加空格`;
 		},
 		options: [
 			{ value: "off", label: "关闭", description: "无单词补全" },
@@ -1019,7 +1019,7 @@ export const cfgComposerPredictions = register({
 		group: "输入",
 		label: "输入框预测",
 		get description() {
-			return `After a completed turn, ask the active model to predict your next message and show it as ghost text in the empty composer; ${formatKeyHint("tab")} or ${formatKeyHint("right")} inserts it without sending. Extra usage: every completed turn sends one more billed request over the whole conversation (counted in /stats)`;
+			return `每轮完成后，让当前模型预测你的下一条消息，并以幽灵文本显示在空输入框中；${formatKeyHint("tab")} 或 ${formatKeyHint("right")} 可插入而不发送。额外消耗：每个完成的轮次都会额外发送一次覆盖整段对话的计费请求（计入 /stats）`;
 		},
 	},
 });

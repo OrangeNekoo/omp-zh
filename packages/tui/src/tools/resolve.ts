@@ -150,7 +150,7 @@ export const resolveRenderer = {
 	},
 
 	describeCall(args: Partial<ResolveInvocation>): NativeToolView {
-		const head: TspSpan[] = toolHead("Resolve", args.action);
+		const head: TspSpan[] = toolHead("解决", args.action);
 		if (args.action) {
 			head.push(
 				span(" "),

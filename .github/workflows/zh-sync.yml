@@ -134,6 +134,14 @@ jobs:
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/apply-cli-name.ts
 
+         - name: Sync report-key comparisons
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-report-keys.ts
+
+         - name: Patch .gitignore
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-gitignore.ts
+
          - name: Gate — 汉化必须命中源码
            if: steps.check.outputs.need_sync == 'true'
            run: |
@@ -161,6 +169,22 @@ jobs:
                  *) echo "::error::--version 未报告 omp-zh，停止同步。"; exit 1 ;;
               esac
 
+         - name: Gate — 重写器必须幂等
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 重放本身应当收敛：第二次执行不能再改动任何源码，
+              # 否则说明规则之间存在互相覆盖（例如词典链式命中）。
+              bun i18n/translate.ts --dry-run | tee /tmp/translate.log
+              if ! grep -q '替换 0 处' /tmp/translate.log; then
+                 echo "::error::翻译器不幂等，第二次运行仍有替换，停止同步。"
+                 exit 1
+              fi
+              bun i18n/translate-hints.ts --dry-run | tee /tmp/hints.log
+              if ! grep -q '提示片段替换 0 处' /tmp/hints.log; then
+                 echo "::error::提示片段翻译器不幂等，停止同步。"
+                 exit 1
+              fi
+
          - name: Gate — 类型检查
            if: steps.check.outputs.need_sync == 'true'
            run: |
@@ -176,7 +200,16 @@ jobs:
                  echo "没有需要提交的改动。"
                  exit 0
               fi
+              # 当前 HEAD 是上游提交（detached），但本地 `main` 仍指向 fork 的
+              # 旧提交。把结果作为「fork main + 上游」的合并提交：main 的历史
+              # 因此包含上游提交，下一次同步的「是否已包含」判断才有意义，
+              # 推送也始终是快进。
               subject=$(git log -1 --format=%s "${{ steps.upstream.outputs.sha }}")
-              git commit -m "chore(zh): 同步上游 ${{ steps.upstream.outputs.sha }} 并重放汉化" \
-                 -m "上游提交：$subject"
-              git push origin HEAD:main
+              tree=$(git write-tree)
+              commit=$(git commit-tree "$tree" \
+                 -p main \
+                 -p "${{ steps.upstream.outputs.sha }}" \
+                 -m "chore(zh): 同步上游 ${{ steps.upstream.outputs.sha }} 并重放汉化" \
+                 -m "上游提交：$subject" \
+                 -m "上游父提交：${{ steps.upstream.outputs.sha }}")
+              git push origin "$commit:main"

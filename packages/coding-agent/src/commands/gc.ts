@@ -9,26 +9,26 @@ import { collectGcErrors, type GcCommandArgs, runGcCommand } from "../cli/gc-cli
 export default class Gc extends Command {
 	static description = commandHelp.description;
 	static flags = {
-		apply: Flags.boolean({ description: "Apply changes (default is dry-run)" }),
-		json: Flags.boolean({ description: "Output JSON" }),
-		"agent-dir": Flags.string({ description: "Agent directory to maintain" }),
-		blobs: Flags.boolean({ description: "Sweep unreferenced blobs" }),
-		archive: Flags.boolean({ description: "Archive cold sessions" }),
-		wal: Flags.boolean({ description: "Checkpoint history/model database WAL files" }),
+		apply: Flags.boolean({ description: "应用更改（默认仅试运行）" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
+		"agent-dir": Flags.string({ description: "要维护的代理目录" }),
+		blobs: Flags.boolean({ description: "清扫未被引用的数据块" }),
+		archive: Flags.boolean({ description: "归档冷会话" }),
+		wal: Flags.boolean({ description: "检查点历史/模型数据库的 WAL 文件" }),
 		stale: Flags.boolean({
-			description: "Prune dangling session markers/breadcrumbs and old debug reports and collab replicas",
+			description: "清理悬空的会话标记/面包屑，以及旧调试报告与协作副本",
 		}),
 		compress: Flags.boolean({
-			description: "Store idle sessions with filesystem compression in place (APFS, NTFS)",
+			description: "就地使用文件系统压缩存储空闲会话（APFS、NTFS）",
 		}),
-		"cold-archive-after-days": Flags.integer({ description: "Minimum session age before archiving" }),
-		"retain-newest-global": Flags.integer({ description: "Always keep this many newest sessions active" }),
-		"retain-newest-per-cwd": Flags.integer({ description: "Always keep this many newest sessions per cwd active" }),
+		"cold-archive-after-days": Flags.integer({ description: "归档前会话的最小存在时长" }),
+		"retain-newest-global": Flags.integer({ description: "始终保留这么多个最新会话处于活跃状态" }),
+		"retain-newest-per-cwd": Flags.integer({ description: "每个目录始终保留这么多个最新会话处于活跃状态" }),
 		"stale-retain-newest": Flags.integer({
-			description: "Always keep this many newest debug reports and collab replicas",
+			description: "始终保留这么多个最新的调试报告与协作副本",
 		}),
-		"stale-retain-days": Flags.integer({ description: "Minimum debug report/collab replica age before pruning" }),
-		"compress-after-days": Flags.integer({ description: "Minimum idle days before compressing a session" }),
+		"stale-retain-days": Flags.integer({ description: "清理前调试报告/协作副本的最小保留时长" }),
+		"compress-after-days": Flags.integer({ description: "压缩会话前的最小空闲天数" }),
 	};
 
 	async run(): Promise<void> {

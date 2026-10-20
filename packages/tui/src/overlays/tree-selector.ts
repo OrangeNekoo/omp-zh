@@ -256,7 +256,7 @@ class TreeList implements Component {
 		initialSelectedId?: string,
 	) {
 		this.#filterMode = initialFilterMode;
-		this.searchInput.prompt = `${theme.fg("muted", "Search:")} `;
+		this.searchInput.prompt = `${theme.fg("muted", "搜索：")} `;
 		this.searchInput.placeholder = "Type to search";
 		this.#multipleRoots = tree.length > 1;
 		this.#indexSession(tree);
@@ -907,7 +907,7 @@ class TreeList implements Component {
 			//    `model_change` + `thinking_level_change` (both hidden by the default filter)
 			//    read as "broken /tree" — see #1909.
 			if (totalCount === 0) {
-				lines.push(truncateToWidth(theme.fg("muted", "No entries found"), width));
+				lines.push(truncateToWidth(theme.fg("muted", "未找到条目"), width));
 				lines.push(truncateToWidth(theme.fg("muted", `(0/0)${this.#getFilterLabel()}`), width));
 			} else if (this.getSearchQuery().length > 0) {
 				lines.push(truncateToWidth(theme.fg("muted", `No entries match search "${this.getSearchQuery()}"`), width));
@@ -1418,7 +1418,11 @@ class LabelInput implements Component {
 
 	/** The picker preview while editing: the prompt and the label `Input` (save/cancel sit in the action bar). */
 	get preview(): readonly NativeChild[] {
-		this.#preview ??= [text("标签", { role: "omp.picker.title" }), text([span("留空以移除", "muted")]), this.#input];
+		this.#preview ??= [
+			text("标签", { role: "omp.picker.title" }),
+			text([span("留空以移除", "muted")]),
+			this.#input,
+		];
 		return this.#preview;
 	}
 
@@ -1430,7 +1434,7 @@ class LabelInput implements Component {
 
 	render(width: number): readonly string[] {
 		const lines: string[] = [];
-		lines.push(truncateToWidth(theme.fg("muted", "Label (empty to remove):"), width));
+		lines.push(truncateToWidth(theme.fg("muted", "标签（留空以移除）："), width));
 		lines.push(...this.#input.render(width));
 		const cancel = interruptKey();
 		lines.push(truncateToWidth(theme.fg("dim", `${formatKeyHint("enter")}: save  ${cancel}: cancel`), width));
@@ -1588,7 +1592,10 @@ export class TreeSelectorComponent extends OverlayPanel {
 			empty: view.empty,
 			focus: label ? "preview" : "list",
 			actions: label
-				? [pickerAction("label-save", "Save label", "enter", { primary: true }), { ...CLOSE_ACTION, label: "取消" }]
+				? [
+						pickerAction("label-save", "Save label", "enter", { primary: true }),
+						{ ...CLOSE_ACTION, label: "取消" },
+					]
 				: [
 						pickerAction("switch", "Switch", "enter", { primary: true }),
 						pickerAction("summarize", "Summarize & switch", "shift+enter"),

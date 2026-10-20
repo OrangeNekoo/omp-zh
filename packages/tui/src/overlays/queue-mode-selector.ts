@@ -57,10 +57,10 @@ export class QueueModeSelectorComponent extends OverlayPanel {
 				item.value === "one-at-a-time"
 					? {
 							label: "一次一个",
-							detail: "Each queued message gets its own turn",
+							detail: "每条排队消息各占一轮",
 							badges: [{ text: "recommended" }],
 						}
-					: { label: "全部一起", detail: "Queued messages are sent together in one turn" },
+					: { label: "全部一起", detail: "排队的消息会在同一轮一起发送" },
 		});
 	}
 

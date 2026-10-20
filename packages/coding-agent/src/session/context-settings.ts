@@ -519,7 +519,8 @@ export const cfgSnapcompactShape = register({
 			{
 				value: "8x8r-bw",
 				label: "8x8 重复，黑色",
-				description: "unscii 方块单元，黑色墨水，每行打印两次，副本位于浅色高亮带上。",
+				description:
+					"unscii 方块单元，黑色墨水，每行打印两次，副本位于浅色高亮带上。",
 			},
 			{
 				value: "8x8r-sent",
@@ -574,12 +575,14 @@ export const cfgSnapcompactShape = register({
 			{
 				value: "8on22-bw",
 				label: "8x13，22px 间距（行距），黑色",
-				description: "8x22 单元上的 8x13 字形 — 额外行距避免行间拥挤。OpenAI/Google 的默认值。",
+				description:
+					"8x22 单元上的 8x13 字形 — 额外行距避免行间拥挤。OpenAI/Google 的默认值。",
 			},
 			{
 				value: "11on16-bw",
 				label: "8x13，11px 字距（跟踪），黑色",
-				description: "11x16 单元上的 8x13 字形 — 额外字距避免字符粘连。Anthropic 的默认值。",
+				description:
+					"11x16 单元上的 8x13 字形 — 额外字距避免字符粘连。Anthropic 的默认值。",
 			},
 			{
 				value: "silver16-bw",

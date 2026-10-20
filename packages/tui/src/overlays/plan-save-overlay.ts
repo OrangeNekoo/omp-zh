@@ -26,7 +26,7 @@ export class PlanSaveOverlay implements Component, Focusable {
 	constructor(suggestedPath: string, done: (result: PlanSaveOverlayResult | undefined) => void) {
 		this.#suggestedPath = suggestedPath;
 		this.#done = done;
-		this.#input.prompt = theme.fg("dim", "Path: ");
+		this.#input.prompt = theme.fg("dim", "路径：");
 		this.#input.onSubmit = value => this.#done({ path: value.trim() || this.#suggestedPath });
 		this.#input.onEscape = () => this.#done(undefined);
 		this.#panel = new OverlayPanel("Save and quit");
@@ -71,7 +71,7 @@ export class PlanSaveOverlay implements Component, Focusable {
 	}
 
 	/** A small glass sheet titled "Save and quit". */
-	readonly nativeOverlay = { role: "omp.overlay.planSave", size: "sm", head: "Save and quit" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.planSave", size: "sm", head: "保存并退出" } as const;
 
 	describe(): NativeNode {
 		this.#input.focused = this.#focused;

@@ -779,7 +779,7 @@ function contextShareRow(
 function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefined {
 	const snap = breakdown.snapcompact;
 	if (!snap) return undefined;
-	const head = text([span("Snapcompact", "strong"), span(" · estimated savings on the wire", "dim")], {
+	const head = text([span("快照压缩", "strong"), span(" · 预计传输节省", "dim")], {
 		role: "omp.context.snap.head",
 	});
 	if (!snap.visionCapable) {
@@ -821,7 +821,7 @@ function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefine
 	if (snap.savedTokens > 0) {
 		lines.push({
 			label: "下一个请求",
-			detail: "tokens on the wire",
+			detail: "传输中的令牌数",
 			value: span(`~${formatNumber(Math.max(0, breakdown.usedTokens - snap.savedTokens))}`, "strong"),
 		});
 	}
@@ -987,7 +987,7 @@ export class ContextUsageView extends Container {
  */
 export function renderContextUsage(breakdown: ContextBreakdown, theme: Theme): string {
 	if (breakdown.contextWindow <= 0) {
-		return theme.fg("muted", "Context usage is unavailable: no model is selected for this session.");
+		return theme.fg("muted", "上下文用量不可用：本会话未选择模型。");
 	}
 
 	const cells = planCells(breakdown);

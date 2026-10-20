@@ -30,9 +30,9 @@ const USAGE: Record<SessionAction, string> = {
 };
 
 const UNPACK_NOTE: Record<UnpackMode, string> = {
-	created: "Unpacked session",
-	replaced: "Replaced the local copy of this session",
-	forked: "The local copy of this session diverged; unpacked as a fork",
+	created: "已解包会话",
+	replaced: "已替换此会话的本地副本",
+	forked: "此会话的本地副本已分叉；已作为分叉解包",
 };
 
 function isSessionAction(value: string): value is SessionAction {
@@ -44,23 +44,23 @@ export default class Session extends Command {
 
 	static args = {
 		action: Args.string({
-			description: "pack, unpack, or moved",
+			description: "pack、unpack 或 moved",
 			required: true,
 			options: ACTIONS,
 		}),
 		source: Args.string({
-			description: "Session .jsonl path or id (pack, moved); archive path (unpack)",
+			description: "会话 .jsonl 路径或 id（pack、moved）；归档路径（unpack）",
 			required: false,
 		}),
 		output: Args.string({
-			description: "Archive file to write (pack)",
+			description: "要写入的归档文件（pack）",
 			required: false,
 		}),
 	};
 
 	static flags = {
-		cwd: Flags.string({ description: "Directory the session continues in on this machine (unpack)" }),
-		to: Flags.string({ description: "Where the session went, e.g. a machine name (moved)" }),
+		cwd: Flags.string({ description: "会话在本机继续时所在的目录（unpack）" }),
+		to: Flags.string({ description: "会话去往何处，如机器名（moved）" }),
 	};
 
 	static examples = [

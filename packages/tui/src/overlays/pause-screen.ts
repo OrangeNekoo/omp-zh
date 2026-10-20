@@ -246,7 +246,10 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 				keyed(hero, "hero"),
 				keyed(facts, "facts"),
 				actionBar([
-					keyed(text([span("每个代理从其停止处继续。", "muted")], { role: "omp.pause.note" }), "note"),
+					keyed(
+						text([span("每个代理从其停止处继续。", "muted")], { role: "omp.pause.note" }),
+						"note",
+					),
 					null,
 					actionButton("恢复", "resume", {
 						keys: resumeKey,

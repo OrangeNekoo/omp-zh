@@ -683,7 +683,7 @@ export class SettingsList implements Component {
 			selected: this.getSelectedItem()?.id ?? null,
 			filter: this.#filterQuery.trim() || undefined,
 			empty:
-				this.#items.length === 0 ? (this.#options.emptyText ?? "No settings available") : "No matching settings",
+				this.#items.length === 0 ? (this.#options.emptyText ?? "没有可用设置") : "无匹配的设置",
 			max:
 				typeof cachedMax === "object" && cachedMax.lines === this.#maxVisible
 					? cachedMax
@@ -737,10 +737,12 @@ export class SettingsList implements Component {
 
 	#hintText(): string {
 		const jumpHint =
-			this.#sections().length >= 2 ? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} 跳转分节 · ` : "";
+			this.#sections().length >= 2
+				? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} to 跳转分节 · `
+				: "";
 		return (
 			this.#options.hint ??
-			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} 更改 · ${jumpHint}输入以搜索 · ${editorKey("tui.select.cancel")} 取消`
+			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to 更改 · ${jumpHint}Type to search · ${editorKey("tui.select.cancel")} to 取消`
 		);
 	}
 

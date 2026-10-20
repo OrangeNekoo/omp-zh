@@ -69,13 +69,13 @@ export class OmfgController {
 	async start(complaint: string): Promise<void> {
 		const trimmedComplaint = complaint.trim();
 		if (!trimmedComplaint) {
-			this.ctx.showStatus("Usage: /omfg <complaint>");
+			this.ctx.showStatus("用法：/omfg <complaint>");
 			return;
 		}
 
 		const model = this.ctx.session.model;
 		if (!model) {
-			this.ctx.showError("No active model available for /omfg.");
+			this.ctx.showError("/omfg 没有可用的模型。");
 			return;
 		}
 
@@ -106,7 +106,7 @@ export class OmfgController {
 				if (!candidate.validated) {
 					request.component.setStatus("confirming", "Couldn't confirm a conversation match.");
 					const shouldSave = await this.ctx.showHookConfirm(
-						"Validation",
+						"校验",
 						"Couldn't confirm this rule matches the conversation. Save anyway?",
 						OMFG_DIALOG,
 					);
@@ -217,7 +217,7 @@ export class OmfgController {
 		for (;;) {
 			request.component.setStatus("saving", "Choose where to save or amend the TTSR rule…");
 			const location = await this.ctx.showHookSelector(
-				"Save TTSR rule where?",
+				"TTSR 规则保存到哪里？",
 				[PROJECT_OPTION, GLOBAL_OPTION, AMEND_OPTION],
 				OMFG_DIALOG,
 			);
@@ -243,7 +243,7 @@ export class OmfgController {
 			const target = this.#resolveTarget(location, candidate.rule.name);
 			if (await Bun.file(target.filePath).exists()) {
 				const shouldOverwrite = await this.ctx.showHookConfirm(
-					"Overwrite TTSR rule?",
+					"覆盖 TTSR 规则？",
 					`${shortenPath(target.filePath)} already exists. Overwrite it?`,
 					OMFG_DIALOG,
 				);

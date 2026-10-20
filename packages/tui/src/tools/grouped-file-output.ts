@@ -396,7 +396,7 @@ export function describeGroupedOutput(
 		const chip = current.suffix
 			? { text: current.suffix.replace(/^\(|\)$/g, "") }
 			: count > 0
-				? { text: String(count), title: count === 1 ? "1 match" : `${count} matches` }
+				? { text: String(count), title: count === 1 ? "1 个匹配" : `${count} matches` }
 				: undefined;
 		const head = fileRow(current.path, { chip, key: "file" });
 		files.push(

@@ -21,7 +21,10 @@ import {
 	TRANSLATABLE_CONSTRUCTORS,
 	TRANSLATABLE_PROPERTIES,
 	allowsWholeFileLiterals,
+	displayTextArgumentIndex,
 	isIncludedFile,
+	looksLikeProseValue,
+	PROSE_ONLY_PROPERTIES,
 } from "./rules";
 
 const traverse = (traverseModule as unknown as { default?: unknown }).default ?? traverseModule;
@@ -148,6 +151,10 @@ export function extractFromSource(
 		}
 	};
 
+	/** 无插值模板字符串的字面内容。 */
+	const templateText = (node: any): string =>
+		node.quasis.map((quasi: any) => quasi.value.cooked ?? "").join("");
+
 	traverse(ast, {
 		/**
 		 * 界面文案常量：`const SCOPE_LABELS = { user: "Every project", … }`。
@@ -184,6 +191,8 @@ export function extractFromSource(
 			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
 			if (!name) return;
 			const value = p.node.value;
+			const proseOnly = PROSE_ONLY_PROPERTIES[name] === true;
+			const accept = (text: string): boolean => !proseOnly || looksLikeProseValue(text);
 
 			/** 选项对象：只取 `label` 与 `description`。 */
 			const recordOptionObject = (object: any): void => {
@@ -213,12 +222,49 @@ export function extractFromSource(
 			}
 
 			if (!TRANSLATABLE_PROPERTIES.has(name)) return;
-			if (value.type === "StringLiteral") record(value.value, `prop:${name}`);
-			else if (value.type === "TemplateLiteral" && value.expressions.length === 0) {
-				record(value.quasis.map((q: any) => q.value.cooked ?? "").join(""), `prop:${name}`);
-			} else if (value.type === "ArrayExpression" && /^(labels|hints|groups)$/.test(name)) {
+			/** 属性值可能是三元/逻辑表达式，逐个分支处理。 */
+			const recordExpression = (expression: any, kind: string): void => {
+				if (expression.type === "StringLiteral") {
+					if (accept(expression.value)) record(expression.value, kind);
+				} else if (expression.type === "TemplateLiteral" && expression.expressions.length === 0) {
+					const text = templateText(expression);
+					if (accept(text)) record(text, kind);
+				} else if (expression.type === "ConditionalExpression") {
+					recordExpression(expression.consequent, kind);
+					recordExpression(expression.alternate, kind);
+				} else if (expression.type === "LogicalExpression") {
+					recordExpression(expression.left, kind);
+					recordExpression(expression.right, kind);
+				} else if (expression.type === "ObjectMethod") {
+					for (const statement of expression.body.body ?? []) {
+						if (statement.type === "ReturnStatement" && statement.argument) {
+							recordExpression(statement.argument, kind);
+						}
+					}
+				}
+			};
+			if (value.type === "ArrayExpression" && /^(labels|hints|groups|examples)$/.test(name)) {
 				for (const element of value.elements) {
 					if (element?.type === "StringLiteral") record(element.value, `prop:${name}[]`);
+					else if (element?.type === "TemplateLiteral") {
+						for (const quasi of element.quasis) record(quasi.value.cooked ?? "", `prop:${name}`);
+					}
+				}
+			} else {
+				recordExpression(value, `prop:${name}`);
+			}
+		},
+		/** `get description() { return `…`; }`：getter 形式的界面文案。 */
+		ObjectMethod(p: any) {
+			const key = p.node.key;
+			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
+			if (!name || !TRANSLATABLE_PROPERTIES.has(name)) return;
+			for (const statement of p.node.body?.body ?? []) {
+				if (statement.type !== "ReturnStatement" || !statement.argument) continue;
+				const argument = statement.argument;
+				if (argument.type === "StringLiteral") record(argument.value, `prop:${name}`);
+				else if (argument.type === "TemplateLiteral") {
+					for (const quasi of argument.quasis) record(quasi.value.cooked ?? "", `prop:${name}`);
 				}
 			}
 		},
@@ -230,12 +276,26 @@ export function extractFromSource(
 					: callee.type === "MemberExpression" && callee.property.type === "Identifier"
 						? callee.property.name
 						: null;
-			if (!name || !TRANSLATABLE_CALLS.has(name)) return;
-			const first = p.node.arguments[0];
-			if (first?.type === "StringLiteral") record(first.value, `call:${name}`);
-			else if (first?.type === "TemplateLiteral" && first.expressions.length === 0) {
-				record(first.quasis.map((q: any) => q.value.cooked ?? "").join(""), `call:${name}`);
+			if (!name) return;
+			const recordArgument = (index: number, kind: string): void => {
+				const argument = p.node.arguments[index];
+				if (argument?.type === "StringLiteral") record(argument.value, kind);
+				else if (argument?.type === "TemplateLiteral" && argument.expressions.length === 0) {
+					record(templateText(argument), kind);
+				}
+			};
+			if (TRANSLATABLE_CALLS.has(name)) {
+				recordArgument(0, `call:${name}`);
+				return;
 			}
+			// 与 translate.ts 保持一致：样式包装函数与 console 的展示文案
+			const objectName =
+				callee.type === "MemberExpression" && callee.object.type === "Identifier"
+					? callee.object.name
+					: null;
+			const index = displayTextArgumentIndex(objectName, name);
+			if (index === undefined) return;
+			recordArgument(index, `display:${objectName}.${name}`);
 		},
 		NewExpression(p: any) {
 			const callee = p.node.callee;

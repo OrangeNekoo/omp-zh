@@ -1,4 +1,5 @@
 import { runPauseScreen } from "@oh-my-pi/pi-tui/overlays/pause-screen";
+import { clearApprovalGrants } from "../tools/approval-cache";
 import { clearSubmittedText } from "./helpers/draft";
 import { shutdownHandlerTui } from "./builtin-lifecycle";
 import { commandConsumed, errorMessage, usage } from "./helpers/parse";
@@ -20,7 +21,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const spaceIdx = command.args.indexOf(" ");
 			const toolName = spaceIdx === -1 ? command.args : command.args.slice(0, spaceIdx);
 			const prompt = spaceIdx === -1 ? "" : command.args.slice(spaceIdx + 1).trim();
-			if (!toolName) return usage("Usage: /force:<tool-name> [prompt]", runtime);
+			if (!toolName) return usage("用法：/force:<tool-name> [prompt]", runtime);
 			try {
 				runtime.session.setForcedToolChoice(toolName);
 			} catch (err) {
@@ -35,7 +36,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const prompt = spaceIdx === -1 ? "" : command.args.slice(spaceIdx + 1).trim();
 
 			if (!toolName) {
-				runtime.ctx.showError("Usage: /force:<tool-name> [prompt]");
+				runtime.ctx.showError("用法：/force:<tool-name> [prompt]");
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -80,6 +81,16 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		handleTui: async (_command, runtime) => {
 			clearSubmittedText(runtime);
 			await runPauseScreen(runtime.ctx);
+		},
+	},
+	{
+		name: "forget-approvals",
+		icon: "trash",
+		description: "清除“询问并记住”记录的所有文件与目录批准",
+		handle: async (_command, runtime) => {
+			clearApprovalGrants(runtime.settings.getAgentDir());
+			await runtime.output("已遗忘记住的批准；下次读写将再次询问。");
+			return commandConsumed();
 		},
 	},
 	{

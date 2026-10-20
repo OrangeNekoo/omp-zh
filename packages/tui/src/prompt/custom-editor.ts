@@ -1282,7 +1282,7 @@ export class CustomEditor extends Editor {
 					gap: "xs",
 					align: "center",
 					tone: facts.model.tone,
-					title: modelKey ? `Switch model  ${formatTooltipKey(modelKey)}` : "Switch model",
+					title: modelKey ? `Switch model  ${formatTooltipKey(modelKey)}` : "切换模型",
 					actions: { click: "status.model" },
 				},
 				[
@@ -1332,12 +1332,12 @@ export class CustomEditor extends Editor {
 							align: "center",
 							tone: recording ? "error" : starting || transcribing ? "pending" : undefined,
 							title: recording
-								? "Stop recording and transcribe"
+								? "停止录音并转写"
 								: starting
-									? "Cancel dictation"
+									? "取消听写"
 									: transcribing
-										? "Transcribing dictation"
-										: "Start dictation",
+										? "正在转写听写"
+										: "开始听写",
 							// The model can take a while to load on first use, so a start stays cancellable.
 							actions: transcribing ? undefined : { click: "dictation.toggle" },
 						},
@@ -1368,7 +1368,7 @@ export class CustomEditor extends Editor {
 					{
 						role: "omp.composer.send",
 						keys: ["enter"],
-						title: dictating ? "Finish dictation before sending" : `Send  ${formatTooltipKey("enter")}`,
+						title: dictating ? "发送前请先结束听写" : `Send  ${formatTooltipKey("enter")}`,
 						tone: dictating ? "muted" : undefined,
 						actions: dictating ? undefined : { click: "submit" },
 					},
@@ -1380,7 +1380,8 @@ export class CustomEditor extends Editor {
 		const mode = keyed(
 			row(
 				compact([
-					shell.excluded && node("icon", { name: "eye-off", title: "不发送给模型" }, undefined, "excluded"),
+					shell.excluded &&
+						node("icon", { name: "eye-off", title: "不发送给模型" }, undefined, "excluded"),
 					node(
 						"text",
 						{ spans: [span(shell.kind, shell.kind === "bash" ? "bashMode" : "pythonMode")], wrap: "none" },

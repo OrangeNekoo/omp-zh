@@ -111,6 +111,6 @@ export function scopeHeader(scope: PsScope): string {
 			? `global ${chalk.bold(scope.service ?? path.basename(scope.runtimeDir))}`
 			: `project ${chalk.bold(scope.projectDir ?? path.basename(scope.runtimeDir))}`;
 	const broker =
-		scope.brokerPid !== undefined ? chalk.green(`broker pid ${scope.brokerPid}`) : chalk.dim("broker not running");
+		scope.brokerPid !== undefined ? chalk.green(`broker pid ${scope.brokerPid}`) : chalk.dim("代理未运行");
 	return `${label} ${chalk.dim("—")} ${broker}`;
 }

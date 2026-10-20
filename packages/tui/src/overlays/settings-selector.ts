@@ -442,7 +442,7 @@ class ProviderLimitsSubmenu extends Container {
 			return {
 				value: provider,
 				label: provider,
-				description: limit === undefined ? "Unlimited" : `Limit: ${limit}`,
+				description: limit === undefined ? "无限制" : `Limit: ${limit}`,
 			};
 		});
 		const clearItem: SelectItem[] =
@@ -703,18 +703,18 @@ export class SettingsSelectorComponent implements Component {
 		const confirm = editorKey("tui.select.confirm");
 		const cancel = editorKey("tui.select.cancel");
 		const tab = formatKeyHint("tab");
-		const switchTabs = `${formatKeyHints(["left", "right"])} 切换标签页`;
+		const switchTabs = `${formatKeyHints(["left", "right"])} to 切换标签页`;
 		if (this.#searchList) {
-			return `${confirm} 更改 · ${tab} 跳转标签页 · ${cancel} 退出搜索`;
+			return `${confirm} to 更改 · ${tab} to 跳转标签页 · ${cancel} to 退出搜索`;
 		}
 		if (this.#currentTabId === "plugins") {
-			return `${tab} 切换标签页 · ${cancel} 关闭`;
+			return `${tab} to 切换标签页 · ${cancel} to 关闭`;
 		}
 		if (this.#currentList?.sectionFocused) {
-			return `${editorKeys("tui.select.up", "tui.select.down")} 跳转分节 · ${tab}/${confirm} 到设置 · ${switchTabs} · ${cancel} 关闭`;
+			return `${editorKeys("tui.select.up", "tui.select.down")} to 跳转分节 · ${tab}/${confirm} to settings · ${switchTabs} · ${cancel} to 关闭`;
 		}
-		const nav = this.#hasSectionJump ? `${tab} 跳转分节 · ${switchTabs}` : `${tab} 切换标签页`;
-		return `${confirm}/${formatKeyHint("space")} 更改 · ${nav} · 输入以搜索 · ${cancel} 关闭`;
+		const nav = this.#hasSectionJump ? `${tab} to 跳转分节 · ${switchTabs}` : `${tab} to 切换标签页`;
+		return `${confirm}/${formatKeyHint("space")} to 更改 · ${nav} · Type to search · ${cancel} to 关闭`;
 	}
 
 	/** Single-line search banner: accent icon, editable query with live cursor, right-aligned match count. */
@@ -742,7 +742,7 @@ export class SettingsSelectorComponent implements Component {
 		const tabLines = this.#tabBar.render(innerWidth);
 		const searching = this.#searchList !== null;
 		const showPreview = !searching && this.#currentTabId === "appearance";
-		const previewLines = showPreview ? ["", theme.fg("muted", "Preview:"), this.#getStatusPreviewString()] : [];
+		const previewLines = showPreview ? ["", theme.fg("muted", "预览："), this.#getStatusPreviewString()] : [];
 
 		// Fixed chrome: top border, tabs, divider, [search row], divider, hint, bottom border.
 		const fixedRows = 1 + tabLines.length + 1 + (searching ? 1 : 0) + 1 + 1 + 1;
@@ -1884,7 +1884,7 @@ export class SettingsSelectorComponent implements Component {
 		if (this.#callbacks.getStatusLinePreview) {
 			return this.#callbacks.getStatusLinePreview();
 		}
-		return theme.fg("dim", "(preview not available)");
+		return theme.fg("dim", "（预览不可用）");
 	}
 
 	/**

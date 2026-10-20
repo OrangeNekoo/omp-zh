@@ -71,12 +71,12 @@ interface GoalRenderArgs {
 function describeGoalResult(result: ToolRenderResult<GoalToolDetails>, args?: GoalRenderArgs): NativeToolView {
 	const details = result.details;
 	const description = describeOp(details?.op ?? args?.op);
-	if (result.isError) return errorView("Goal", resultText(result) || "Goal tool failed", description);
+	if (result.isError) return errorView("目标", resultText(result) || "Goal tool failed", description);
 	const goal = details?.goal ?? null;
-	if (!goal) return { head: toolHead("Goal", description, "no active goal"), tone: "warning" };
+	if (!goal) return { head: toolHead("目标", description, "no active goal"), tone: "warning" };
 
 	const head = [
-		...toolHead("Goal", description),
+		...toolHead("目标", description),
 		span(" "),
 		span(goal.status, `${goalBadgeColor(goal.status)} strong`),
 	];
@@ -187,7 +187,7 @@ export const goalToolRenderer = {
 	},
 
 	describeCall(args: GoalRenderArgs): NativeToolView {
-		const head: TspSpan[] = toolHead("Goal", describeOp(args.op));
+		const head: TspSpan[] = toolHead("目标", describeOp(args.op));
 		const objective = args.objective?.trim();
 		if (args.op === "create" && objective) head.push(span(" "), span(`"${objective}"`, "muted"));
 		if (args.op === "create" && args.token_budget !== undefined) {

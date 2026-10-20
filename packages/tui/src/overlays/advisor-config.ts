@@ -501,7 +501,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			id: `advisor:${i}`,
 			label: a.name || "(unnamed)",
 			icon: "advisor",
-			group: "Advisors",
+			group: "顾问",
 		}));
 		pages.push({ id: "shared", label: "共享指令", icon: "doc", group: "所有顾问" });
 
@@ -593,7 +593,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				},
 				{ id: "delete", label: "删除此顾问", control: { k: "action", label: "删除", act: "delete" } },
 			];
-			sections.push({ id: "advisor", title: advisor.name || "Advisor", rows });
+			sections.push({ id: "advisor", title: advisor.name || "顾问", rows });
 		} else {
 			sections.push({
 				id: "shared",
@@ -616,7 +616,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 					id: "save",
 					label: "保存并应用",
 					hint: "写入此文件并在无需重启的情况下重新加载实时顾问。",
-					warning: this.#dirty ? "Unsaved changes" : undefined,
+					warning: this.#dirty ? "未保存的更改" : undefined,
 					control: { k: "action", label: "保存", act: "save" },
 				},
 				{
@@ -653,12 +653,12 @@ export class AdvisorConfigOverlayComponent implements Component {
 				? (this.#active.getSelectedItem()?.value ?? null)
 				: null;
 		const props: TspPrefsProps = {
-			title: this.#dirty ? "Advisors · unsaved" : "Advisors",
+			title: this.#dirty ? "顾问 · 未保存" : "顾问",
 			pages,
 			page: shared ? "shared" : `advisor:${index}`,
 			lead: shared
-				? "Instructions every advisor gets before its own."
-				: "An advisor watches the session and leaves notes; set its model, tools and instructions here.",
+				? "每个顾问都会先收到的通用指令。"
+				: "顾问会观察会话并留下备注；在此设置它的模型、工具与指令。",
 			sections,
 			focus,
 			editing,
@@ -754,7 +754,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				selected: browser.pickerSelected,
 				...(this.#modelCurrent ? { current: [this.#modelCurrent] } : {}),
 				total: browser.baseCount,
-				empty: "No models available",
+				empty: "无可用模型",
 				actions: [
 					pickerAction("use", "Use for advisor", "enter", { primary: true }),
 					browser.query.length > 0 ? { ...CLOSE_ACTION, label: "清除搜索" } : CLOSE_ACTION,
@@ -983,11 +983,11 @@ export class AdvisorConfigOverlayComponent implements Component {
 			text([span(advisor.name || "(unnamed)", "strong")]),
 			node("kv", {
 				items: [
-					{ k: "Enabled", v: advisor.enabled === false ? "○ off" : "● on" },
-					{ k: "Model", v: model },
-					{ k: "Tools", v: formatAdvisorTools(advisor.tools, "no tools") },
-					{ k: "Review", v: formatReviewCadence(advisor) },
-					{ k: "Sync backlog", v: this.#syncBacklogLabel(advisor) },
+					{ k: "已启用", v: advisor.enabled === false ? "○ 关闭" : "● 开启" },
+					{ k: "模型", v: model },
+					{ k: "工具", v: formatAdvisorTools(advisor.tools, "no tools") },
+					{ k: "审查", v: formatReviewCadence(advisor) },
+					{ k: "同步积压", v: this.#syncBacklogLabel(advisor) },
 				],
 			}),
 			text([span("说明：", "dim")]),
@@ -1000,12 +1000,12 @@ export class AdvisorConfigOverlayComponent implements Component {
 				`${liveStat.tokens.output.toLocaleString()} out`,
 			];
 			if (liveStat.tokens.cacheRead > 0) spendParts.push(`${liveStat.tokens.cacheRead.toLocaleString()} cache`);
-			const usage: { k: string; v: string }[] = [{ k: "Tokens", v: spendParts.join(", ") }];
-			if (liveStat.cost > 0) usage.push({ k: "Cost", v: `$${liveStat.cost.toFixed(4)}` });
+			const usage: { k: string; v: string }[] = [{ k: "令牌", v: spendParts.join(", ") }];
+			if (liveStat.cost > 0) usage.push({ k: "费用", v: `$${liveStat.cost.toFixed(4)}` });
 			if (liveStat.contextWindow > 0) {
 				const pct = Math.round((liveStat.contextTokens / liveStat.contextWindow) * 100);
 				usage.push({
-					k: "Context",
+					k: "上下文",
 					v: `${liveStat.contextTokens.toLocaleString()}/${liveStat.contextWindow.toLocaleString()} (${pct}%)`,
 				});
 			}
@@ -1085,7 +1085,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		// until a successful save rewrites the file without them.
 		const warnings = this.#doc.warnings?.length
 			? [
-					theme.fg("warning", "⚠ Config problems — dropped while loading:"),
+					theme.fg("warning", "⚠ 配置问题 — 加载时已丢弃："),
 					...sanitizeDisplayWarnings(this.#doc.warnings).flatMap(warning =>
 						wrap(warning, bodyWidth).map(line => theme.fg("warning", line)),
 					),
@@ -1100,9 +1100,9 @@ export class AdvisorConfigOverlayComponent implements Component {
 			if (advisor) return [...warnings, ...this.#advisorPreview(advisor, bodyWidth)];
 		}
 		if (value === "shared") {
-			const lines = [...warnings, theme.bold("Shared instructions"), ""];
+			const lines = [...warnings, theme.bold("共享指令"), ""];
 			const text = this.#doc.instructions?.trim();
-			lines.push(...(text ? wrap(text, bodyWidth) : [theme.fg("muted", "(none)")]));
+			lines.push(...(text ? wrap(text, bodyWidth) : [theme.fg("muted", "（无）")]));
 			return lines.map(line => truncateToWidth(line, bodyWidth));
 		}
 		const help =
@@ -1125,20 +1125,20 @@ export class AdvisorConfigOverlayComponent implements Component {
 		const lines = [
 			theme.bold(advisor.name || "(unnamed)"),
 			"",
-			`${theme.fg("dim", "Enabled:")} ${advisor.enabled === false ? "○ off" : "● on"}`,
-			`${theme.fg("dim", "Model:")} ${model}`,
-			`${theme.fg("dim", "Tools:")} ${tools}`,
-			`${theme.fg("dim", "Review:")} ${formatReviewCadence(advisor)}`,
-			`${theme.fg("dim", "Sync backlog:")} ${syncBacklog}`,
+			`${theme.fg("dim", "已启用：")} ${advisor.enabled === false ? "○ off" : "● on"}`,
+			`${theme.fg("dim", "模型：")} ${model}`,
+			`${theme.fg("dim", "工具：")} ${tools}`,
+			`${theme.fg("dim", "审查：")} ${formatReviewCadence(advisor)}`,
+			`${theme.fg("dim", "同步积压：")} ${syncBacklog}`,
 			"",
-			theme.fg("dim", "Instructions:"),
+			theme.fg("dim", "说明："),
 		];
 		const instr = advisor.instructions?.trim();
-		lines.push(...(instr ? wrap(instr, bodyWidth) : [theme.fg("muted", "(none)")]));
+		lines.push(...(instr ? wrap(instr, bodyWidth) : [theme.fg("muted", "（无）")]));
 		// Show live usage stats when available from the session.
 		const liveStat = this.#cb.getAdvisorStats?.()?.find(s => s.name === (advisor.name || "default"));
 		if (liveStat && (liveStat.status === "running" || liveStat.status === "quota_exhausted")) {
-			lines.push("", theme.fg("dim", "Usage:"));
+			lines.push("", theme.fg("dim", "用法："));
 			const spendParts: string[] = [
 				`${liveStat.tokens.input.toLocaleString()} in`,
 				`${liveStat.tokens.output.toLocaleString()} out`,
@@ -1319,7 +1319,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			{
 				value: "toggleEnabled",
 				label: "已启用",
-				description: advisor.enabled === false ? "○ off" : "● on",
+				description: advisor.enabled === false ? "○ 关闭" : "● 开启",
 			},
 			{ value: "model", label: "模型", description: modelDescription },
 			{ value: "reviewMode", label: "审查模式", description: reviewMode },
@@ -1486,9 +1486,9 @@ export class AdvisorConfigOverlayComponent implements Component {
 				icon: "thinking",
 				noun: "levels",
 				current: current === undefined ? [] : [current],
-				confirm: "Use level",
+				confirm: "使用该等级",
 				decorate: item => {
-					if (!item.value) return { label: "模型默认", detail: "No level; the provider decides." };
+					if (!item.value) return { label: "模型默认", detail: "不指定等级；由服务商决定。" };
 					const level = parseThinkingLevel(item.value);
 					const dot = `thinking${item.value.charAt(0).toUpperCase()}${item.value.slice(1)}`;
 					return {
@@ -1511,8 +1511,8 @@ export class AdvisorConfigOverlayComponent implements Component {
 			label: mode === current ? `${mode} (current)` : mode,
 			description:
 				mode === "turn"
-					? "Review every primary turn (tool-call round)."
-					: "Review only at agent end (once per run).",
+					? "审查每个主要回合（工具调用轮）。"
+					: "仅在代理结束时审查（每次运行一次）。",
 		}));
 		const list = new SelectList(items, Math.max(1, items.length), getSelectListTheme());
 		list.setSelectedIndex(ADVISOR_REVIEW_MODES.indexOf(current));

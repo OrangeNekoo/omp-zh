@@ -97,8 +97,8 @@ const STATUS: Record<BtwHistoryRecord["status"], { label: string; color: ThemeCo
 	interrupted: { label: "已中断", color: "warning" },
 };
 
-const SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "lg", head: "BTW history" } as const;
-const EMPTY_SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "md", head: "BTW history" } as const;
+const SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "lg", head: "附带问答历史" } as const;
+const EMPTY_SHEET = { role: "omp.overlay.btwHistory", anchor: "center", size: "md", head: "附带问答历史" } as const;
 
 /** A status worth naming next to an answer natively; an answered question needs none. */
 function describeStatus(status: BtwHistoryTurn["status"]): TspSpan[] | undefined {
@@ -301,7 +301,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 
 	#openComposer(record: BtwHistoryRecord): void {
 		const input = new Input();
-		input.prompt = theme.fg("accent", "Follow up: ");
+		input.prompt = theme.fg("accent", "追问：");
 		input.placeholder = "Ask about this answer…";
 		if (this.#options.spaceHoldKeys !== undefined) input.spaceHold.keys = this.#options.spaceHoldKeys;
 		input.spaceHold.handler = this.#options.spaceHold?.(input);
@@ -637,10 +637,14 @@ export class BtwHistoryPanel implements Component, Focusable {
 			{ role: "omp.btw.empty", align: "center", gap: "sm" },
 			[
 				text("暂无附带问题", { role: "omp.btw.empty.title" }),
-				text([span("提一个附带问题，使用 "), span("/btw <question>", "code"), span("。答案不会进入主对话。")], {
-					role: "omp.btw.empty.hint",
-					wrap: "word",
-				}),
+				text(
+					[
+						span("提一个附带问题，使用 "),
+						span("/btw <question>", "code"),
+						span("。答案不会进入主对话。"),
+					],
+					{ role: "omp.btw.empty.hint", wrap: "word" },
+				),
 			],
 			"empty",
 		);
@@ -678,7 +682,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 		const rowSpan = width < 36 && height >= 2 ? 2 : 1;
 		this.#listHeight = Math.max(1, Math.floor(height / rowSpan));
 		if (this.#records.length === 0) {
-			return new Text(theme.fg("muted", "No side questions yet.\n\nUse /btw QUESTION to start one."), 0, 0)
+			return new Text(theme.fg("muted", "还没有附带提问。\n\n用 /btw 问题 开始一个。"), 0, 0)
 				.render(width)
 				.slice(0, height);
 		}
@@ -750,7 +754,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 				width,
 			),
 			"",
-			theme.bold(theme.fg("accent", "Question")),
+			theme.bold(theme.fg("accent", "问题")),
 			...question.render(width),
 			"",
 			theme.bold(theme.fg("accent", "Answer")),
@@ -765,7 +769,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 			);
 		if (turn.error) lines.push("", ...wrapTextWithAnsi(theme.fg("error", sanitizeErrorLine(turn.error)), width));
 		if (turn.status === "interrupted")
-			lines.push("", ...wrapTextWithAnsi(theme.fg("muted", "Not resumed in this view."), width));
+			lines.push("", ...wrapTextWithAnsi(theme.fg("muted", "未在此视图中恢复。"), width));
 		return {
 			turn: {
 				question: turn.question,
@@ -789,7 +793,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 			const inner = Math.max(1, width - 1);
 			const lines: string[] = [];
 			if (record && this.#isCopied(record)) {
-				lines.push(...wrapTextWithAnsi(theme.fg("success", "✓ Copied to clipboard"), inner), "");
+				lines.push(...wrapTextWithAnsi(theme.fg("success", "✓ 已复制到剪贴板"), inner), "");
 			}
 			if (record) {
 				const turns = getBtwTurns(record);
@@ -802,7 +806,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 				this.#turns.length = turns.length;
 			} else {
 				lines.push(
-					...wrapTextWithAnsi(theme.fg("muted", "No side questions yet. Use /btw QUESTION to start one."), inner),
+					...wrapTextWithAnsi(theme.fg("muted", "还没有附带提问。用 /btw 问题 开始一个。"), inner),
 				);
 			}
 			this.#detailRecord = record;

@@ -4,7 +4,9 @@
 
 命令名改为 **`omp-zh`**，配置目录与上游完全共用（`~/.omp`），因此可以和原版 `omp` 并存、共享同一份登录状态、会话历史与设置。
 
-> 上游版本：`18.12.2` · 本项目跟随上游滚动更新
+> 上游版本：`18.12.3` · 本项目跟随上游滚动更新
+>
+> 本项目**不是** oh-my-pi 的一部分，问题请提交到[本仓库 Issues](https://github.com/OrangeNekoo/omp-zh/issues)，勿向上游作者反馈。详见文末[声明](#声明)。
 
 ---
 
@@ -35,6 +37,8 @@ i18n/
   check-groups.ts      校验设置面板分组名是否同源翻译（CI 闸门）
   fetch-native.ts      从 npm 拉取当前平台的预编译原生模块
   translate-hints.ts   翻译 `${键位} to 动作` 这类拼接式提示
+  patch-report-keys.ts 让 `/session` 等面板的解析比较跟随译文
+  patch-gitignore.ts   在上游 .gitignore 上补本 fork 的忽略项
   tips-zh.json         欢迎界面提示语（tips.txt）的对照词典
   extracted.json       待翻译清单快照（本地生成，已 gitignore）
   report.json          最近一次替换的明细（本地生成，已 gitignore）
@@ -157,6 +161,56 @@ bun setup    # 依次：安装依赖 → 构建原生模块 → 链接命令
 
 ---
 
+## 更新已安装的 omp-zh
+
+上游每天都在发版，本仓库把汉化作为可重放的补丁维护。更新方式取决于你当初的安装方式。
+
+### 源码 / `bun link` 安装
+
+```sh
+cd omp-zh
+git pull --ff-only                 # 拉取本仓库最新的「上游 + 汉化」提交
+bun install                        # 依赖可能随上游变动
+bun i18n/fetch-native.ts --force   # 原生模块版本跟着上游走，强制刷新
+bun packages/coding-agent/src/cli.ts --version   # 确认输出 omp-zh/<新版本>
+```
+
+`bun link` 指向源码目录，因此 `git pull` 之后命令立即生效，无需重新 link。
+
+> 仓库自身已包含重放后的汉化源码，**不需要**在本地再跑
+> `i18n/translate.ts`。只有在你修改了词典、想自行重放时才需要执行那套脚本。
+
+### 独立二进制安装
+
+```sh
+cd omp-zh
+git pull --ff-only
+bun install
+bun i18n/fetch-native.ts --force
+bun run --cwd=packages/coding-agent build
+cp packages/coding-agent/dist/omp ~/.local/bin/omp-zh   # 或你放二进制的目录
+chmod +x ~/.local/bin/omp-zh
+omp-zh --version
+```
+
+### 全局 npm 安装
+
+本仓库没有发布到 npm，`omp-zh update` 也不适用（它指向上游的发布渠道）。
+全局安装请按上面的「源码」或「二进制」方式重新构建并覆盖旧命令。
+
+### 只想要上游、不想要汉化
+
+本仓库与上游共用配置目录 `~/.omp`，因此可以直接改回原版命令：
+
+```sh
+bun install -g @oh-my-pi/pi-coding-agent   # 或按上游 README 的方式安装
+omp --version
+```
+
+`~/.omp` 下的登录状态、会话、设置与插件无需迁移。
+
+---
+
 ## 使用
 
 ```sh
@@ -164,7 +218,7 @@ omp-zh                          # 进入交互式终端界面
 omp-zh "列出 src 下所有 ts 文件"
 omp-zh -p "解释这个仓库的架构"     # 一次性输出，不进 TUI
 omp-zh --help                   # 查看全部参数
-omp-zh --version                # omp-zh/18.12.2
+omp-zh --version                # omp-zh/18.12.3
 ```
 
 ### 与上游共存
@@ -200,7 +254,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    终端同时打印覆盖率：
 
    ```
-   翻译状态：已汉化 788 条，未译 160 条（其中值得人工翻译的 78 条）
+   翻译状态：已汉化 1109 条，未译 208 条（其中值得人工翻译的 98 条）
    ```
 
    统计会排除专有名词、参数名、数值标签与快捷键，剩下的才是真正的工作量。
@@ -235,8 +289,11 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 改 `i18n/rules.ts`：
 
 - `INCLUDE_FILES` / `EXCLUDE_FILES`：允许/禁止汉化的文件
-- `TRANSLATABLE_PROPERTIES`：允许翻译的对象属性名（`label`、`description`、`title`……）
-- `TRANSLATABLE_CALLS`：允许翻译的 UI 构建函数
+- `TRANSLATABLE_PROPERTIES`：允许翻译的对象属性名（`label`、`description`、`title`、`head`、`k`……）
+- `TRANSLATABLE_CALLS`：允许翻译的 UI 构建函数（含 `showStatus`、`showError`、`output` 等）
+- `PROSE_ONLY_PROPERTIES`：既可能装显示文案、也可能装协议枚举的属性（`action`、`word`、`escape`……）。
+  只有「多词短语或以大写字母开头」的值才会翻译，`action: "copy"` 这类枚举保持原样
+- `displayTextArgumentIndex`：`theme.fg("dim", "…")`、`chalk.dim("…")`、`console.log("…")` 里文案所在的实参下标
 - `WHOLE_FILE_LITERALS`：整文件按字面量处理的文件
 
 规则采用「文件范围 + 语法位置」双重约束。要扩大覆盖，新增属性名或文件规则即可，不需要改动翻译逻辑。
@@ -248,6 +305,10 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - 保留专有名词：`Bash`、`GitHub`、`LSP`、`MCP`、`OAuth`、`Hindsight`、`Mnemopi` 等不译。
 - 不翻译含占位符的命令用法串（如 `<name> [--scope project|user]`）。
 - 带快捷键后缀的文案保留后缀：`"Add a note  n"` → `"添加备注  n"`。
+- **带插值的整句**：模板字符串里的 `${…}` 在词典键中写作 `\u0000` 占位符。例如
+  `` `Switch model for this session (same as ${key})` `` 对应键
+  `"Switch model for this session (same as \u0000)"`。译文里占位符的数量必须与原文一致，
+  否则该条会被跳过（避免把插值错位）。
 
 ---
 
@@ -263,14 +324,19 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 2. 若 `main` 已包含该提交则跳过
 3. 备份本 fork 自有的文件：`i18n/`、`README.md`、本工作流、`assets/`
 4. 工作区切换到上游提交，并清除旧翻译结果
-5. 还原上述自有文件，执行 `bun i18n/translate.ts`
-6. 执行 `bun i18n/apply-cli-name.ts` 重新套用 `omp-zh` 改名
-7. 依次通过四道闸门：
+5. 还原上述自有文件，依次执行：
+   - `bun i18n/translate.ts` — 词典翻译
+   - `bun i18n/translate-hints.ts` — `${键位} to 动作` 拼接提示
+   - `bun i18n/apply-cli-name.ts` — 重新套用 `omp-zh` 改名
+   - `bun i18n/patch-report-keys.ts` — 面板解析比较跟随译文
+   - `bun i18n/patch-gitignore.ts` — 补回本 fork 的忽略项
+6. 依次通过闸门：
    - 提取器命中数 ≥ 50（否则说明汉化规则已失效）
    - 分组名校验 `bun i18n/check-groups.ts`
    - `omp-zh --version` 必须输出 `omp-zh/*`
+   - 两个翻译器二次运行必须为 0 替换（幂等）
    - `packages/utils`、`packages/tui`、`packages/coding-agent` 类型检查
-8. 提交并推送回 `main`
+7. 提交并推送回 `main`
 
 任何一步失败都不会推送，避免把损坏的构建推到主分支。
 
@@ -281,37 +347,49 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - 上游对**已有文案**的修改：词典按原文精确匹配，命中即翻译
 - 上游新增**未收录**的文案：保持英文，不报错、不中断同步
 - 上游代码结构调整：重写器基于 AST 与语法位置，不依赖行号
+- 带插值的文案：插值两侧的英文按 `\u0000` 占位符整句匹配，`${…}` 本身原样保留
 - `package.json#bin` 被上游重写：`apply-cli-name.ts` 每次重新套用
+- `/session` 等「先产出报告再解析」的面板：`patch-report-keys.ts` 让解析方的英文比较跟随译文
 - 分组名一致性：词典同时覆盖 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值，避免设置面板分组错乱
 
 **无法自动完成：**
 
 - **新文案的翻译本身**。脚本不调用机器翻译：未收录的文案保持英文，等待人工补词典。这是有意为之——机翻容易产出术语不一致、语气生硬的界面。
 - **上游结构性重构**。若上游把 `label: "…"` 改成别的 API，规则需同步更新。此时 CI 会在「提取器仍能命中」这步失败并停止推送，不会静默漏译。
-- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（约 46 个，集中在 `packages/tui/test`）。它们是断言问题而非功能问题，因此 CI 不跑全量测试。
+- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（当前约 96 个，集中在 `packages/tui/test`）。它们是断言问题而非功能问题，因此 CI 不跑全量测试。
 
-结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 1230 条，覆盖主要界面；剩余未译条目多为长技术描述，按需补充即可。
+结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 3730 条，覆盖主要界面；剩余未译条目多为专有名词、模型名与长技术描述，按需补充即可。
 
 ---
 
 ## 已验证的状态
 
-- `omp-zh --version` → `omp-zh/18.12.2`
-- `omp-zh --help` 正常输出
+- `omp-zh --version` → `omp-zh/18.12.3`
+- `omp-zh --help` 正常输出，参数说明与 `EXAMPLES` 注释已汉化
 - `packages/utils`、`packages/tui`、`packages/coding-agent` 三个包 `check:types` 通过
-- `oxlint` 0 warning / 0 error
 - 设置面板 10 个标签页、59 个分组全部汉化，且 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值 100% 对齐
 - 设置项的名称、说明与选项（含 `options` 子菜单的 label/description）已汉化
 - 设置项下方的长段说明文字已汉化（`session`、`tools`、`modes`、`task`、`context` 等主要模块）
-- 首次使用引导的 5 个场景（登录、模型、字形、输入框、主题）已汉化
+- 首次使用引导的场景（登录、模型、字形、输入框、主题）已汉化
 - 欢迎界面 34 条提示语已汉化
 - 设置面板底部与各对话框的操作提示行已汉化
-- 斜杠命令描述汉化 82/86
-- 词典收录 2607 条；界面文案累计汉化约 790 条，剩余未译多为专有名词与数值标签
-- 翻译器与提示片段翻译器均幂等：连续执行两次，第二次替换数为 0
+- 状态栏、工具卡片标题/状态词、`/session` 信息面板、任务面板与快捷键表已汉化
+- 斜杠命令描述汉化 87/87
+- 词典收录 3734 条；提取器统计的界面文案已汉化 1109 条
+- 翻译器、提示片段翻译器与报告键补丁均幂等：连续执行两次，第二次替换数为 0
 
 ---
 
 ## 许可证
 
 本仓库是 [can1357/oh-my-pi](https://github.com/can1357/oh-my-pi) 的衍生作品，遵循上游的 MIT 许可证，见 [LICENSE](LICENSE)。上游版权归 Stencil Labs, Inc. 所有。
+
+---
+
+## 声明
+
+**本项目不是 [oh-my-pi](https://github.com/can1357/oh-my-pi) 的一部分**，也不是其官方中文版。它是第三方维护的简体中文界面分支，所有汉化、打包与发布均由本仓库独立完成，与上游作者、Stencil Labs, Inc. 无关。
+
+上游团队不负责本仓库的代码、构建产物或安装脚本，也**不会**处理与本项目相关的问题。遇到任何问题——汉化错误、漏译、构建失败、命令行为异常——请**不要向上游作者反馈**，而应提交到本仓库的 [Issues](https://github.com/OrangeNekoo/omp-zh/issues)。
+
+如果你在使用中发现了属于上游本身的缺陷（与汉化无关），请先在本仓库确认不是汉化引入的，再自行决定是否按上游的贡献流程反馈。

@@ -9,10 +9,10 @@ import { anonymizeHelp as commandHelp } from "../cli/command-help";
 export default class Anonymize extends Command {
 	static description = commandHelp.description;
 	static args = {
-		session: Args.string({ description: "Session file path or id prefix (default: most recent for cwd)" }),
+		session: Args.string({ description: "会话文件路径或 id 前缀（默认：当前目录最新的会话）" }),
 	};
 	static flags = {
-		out: Flags.string({ char: "o", description: "Output directory (default: ./<session-file>.anon)" }),
+		out: Flags.string({ char: "o", description: "输出目录（默认：./<session-file>.anon）" }),
 	};
 
 	static examples = [

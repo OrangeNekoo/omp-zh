@@ -18,19 +18,20 @@ import { expandWindowsLongPath } from "@oh-my-pi/pi-natives/path";
 import { engines, version } from "../package.json" with { type: "json" };
 import { isEnoent, isEnotdir } from "./fs-error";
 
-/** App name (e.g. "omp"). Internal identity: log files, XDG roots, upstream attribution. */
+/** App name (e.g. "omp") */
 export const APP_NAME: string = "omp";
 
 /**
  * Command name users type, shown in help/usage text and `--version`.
  *
  * The 汉化 fork ships as `omp-zh` while keeping every internal identity on
- * {@link APP_NAME}: the config directory stays `~/.omp`, log files stay
+ * APP_NAME: the config directory stays `~/.omp`, log files stay
  * `omp.<day>.<pid>.log`, XDG roots stay under the `omp` app root, and the
  * inference User-Agent stays `omp/<version>` so other tools and gateways still
  * recognise the installation.
  */
 export const CLI_NAME: string = "omp-zh";
+
 
 /** Public homepage that inference gateways (OpenRouter, Vercel AI Gateway) credit omp traffic to. */
 export const APP_URL: string = "https://omp.sh/";
@@ -171,12 +172,33 @@ function standardizeProjectPath(p: string): string {
 	return process.platform === "win32" ? expandWindowsLongPath(p) : standardizeMacOSPath(p);
 }
 
-export function resolveEquivalentPath(inputPath: string): string {
+export interface EquivalentPathOptions {
+	/**
+	 * Resolve a path that does not exist yet through its deepest existing ancestor, keeping the
+	 * missing suffix, so a symlinked parent canonicalizes the same before and after the path appears.
+	 */
+	throughMissing?: boolean;
+}
+
+export function resolveEquivalentPath(inputPath: string, options?: EquivalentPathOptions): string {
 	const resolvedPath = path.resolve(inputPath);
 	try {
 		return fs.realpathSync(resolvedPath);
 	} catch {
-		return resolvedPath;
+		if (!options?.throughMissing) return resolvedPath;
+	}
+	const missing: string[] = [];
+	let current = resolvedPath;
+	for (;;) {
+		const parent = path.dirname(current);
+		if (parent === current) return resolvedPath;
+		missing.unshift(path.basename(current));
+		current = parent;
+		try {
+			return path.join(fs.realpathSync(current), ...missing);
+		} catch {
+			// Keep walking: a higher ancestor may exist.
+		}
 	}
 }
 

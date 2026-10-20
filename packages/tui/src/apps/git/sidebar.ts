@@ -1149,7 +1149,7 @@ export class Sidebar {
 						text(area === "unstaged" ? "Unstaged" : "Staged"),
 						text([span(String(files.length), "num")], { role: "omp.app.git.count" }),
 					],
-					{ gap: "xs", align: "center", actions: { click: `fold-${area}` }, title: folded ? "Show" : "Hide" },
+					{ gap: "xs", align: "center", actions: { click: `fold-${area}` }, title: folded ? "显示" : "隐藏" },
 				),
 				row(files.length > 0 ? actions : [], { gap: "xs", align: "center", role: "omp.app.git.acts" }),
 			],
@@ -1183,7 +1183,7 @@ export class Sidebar {
 					entries.map(entry => this.#describeEntry(entry)),
 					{
 						selected: selected ? this.#nativeKey(selected.target) : null,
-						empty: area === "unstaged" ? "Nothing to stage" : "Nothing staged yet",
+						empty: area === "unstaged" ? "没有可暂存的内容" : "还没有已暂存内容",
 						role: "omp.app.git.files",
 						actions: { click: "select", dblclick: "activate" },
 					},
@@ -1296,8 +1296,8 @@ export class Sidebar {
 								actions: canCommit ? { click: "commit" } : undefined,
 								title:
 									this.#model.staged.length > 0
-										? "Commit the staged changes"
-										: "Stage everything, then commit",
+										? "提交已暂存改动"
+										: "暂存所有改动后提交",
 							}),
 						],
 						{ justify: "between", align: "center", role: "omp.app.git.foot" },
@@ -1538,7 +1538,7 @@ export class Sidebar {
 			sectionHeaderRow(
 				`${unstagedFolded ? "▸" : "▾"} Unstaged Files (${this.#model.unstaged.length})`,
 				[
-					{ action: "Stage All", target: { kind: "stage-all" } },
+					{ action: "全部暂存", target: { kind: "stage-all" } },
 					{ action: wand, target: { kind: "stage-ai" } },
 				],
 				unstaged,
@@ -1550,7 +1550,7 @@ export class Sidebar {
 		if (this.#aiPromptOpen) rows.push(this.#aiPromptRow(width, isSelected));
 		if (!unstagedFolded) {
 			rows.push(...this.#entryRows(this.#model.unstaged, "unstaged"));
-			if (this.#model.unstaged.length === 0) rows.push({ text: theme.fg("dim", "   no unstaged files") });
+			if (this.#model.unstaged.length === 0) rows.push({ text: theme.fg("dim", "   没有未暂存文件") });
 		}
 		rows.push({ text: "" });
 		const staged: SectionTarget = { kind: "section", area: "staged" };
@@ -1558,7 +1558,7 @@ export class Sidebar {
 		rows.push(
 			sectionHeaderRow(
 				`${stagedFolded ? "▸" : "▾"} Staged Files (${this.#model.staged.length})`,
-				[{ action: "Unstage All", target: { kind: "unstage-all" } }],
+				[{ action: "全部取消暂存", target: { kind: "unstage-all" } }],
 				staged,
 				width,
 				isSelected(staged),
@@ -1567,7 +1567,7 @@ export class Sidebar {
 		);
 		if (!stagedFolded) {
 			rows.push(...this.#entryRows(this.#model.staged, "staged"));
-			if (this.#model.staged.length === 0) rows.push({ text: theme.fg("dim", "   no staged files") });
+			if (this.#model.staged.length === 0) rows.push({ text: theme.fg("dim", "   没有已暂存文件") });
 		}
 		return rows;
 	}
@@ -1577,7 +1577,7 @@ export class Sidebar {
 		const bar = isSelected(target) ? theme.fg("accent", "▎") : theme.fg("borderMuted", "▏");
 		const line =
 			this.aiInput.getValue().length === 0 && !this.aiInput.focused
-				? theme.fg("dim", "What should we stage?")
+				? theme.fg("dim", "要暂存什么？")
 				: (this.aiInput.render(width - 4)[0] ?? "");
 		return { text: ` ${bar}${line}`, target };
 	}
@@ -1597,7 +1597,7 @@ export class Sidebar {
 		const summaryTarget: Target = { kind: "summary" };
 		const summaryLen = this.summary.getValue().length;
 		const counter = theme.fg(summaryLen > SUMMARY_LIMIT ? "warning" : "dim", String(SUMMARY_LIMIT - summaryLen));
-		const summaryLabel = theme.fg("muted", "Commit summary");
+		const summaryLabel = theme.fg("muted", "提交摘要");
 		rows.push({
 			text: ` ${summaryLabel}${" ".repeat(Math.max(1, width - 2 - visibleWidth(summaryLabel) - visibleWidth(counter)))}${counter}`,
 		});
@@ -1609,7 +1609,7 @@ export class Sidebar {
 		const descriptionLines = this.#descriptionField.render(width - 4);
 		const descriptionBar = isSelected(descriptionTarget) ? theme.fg("accent", "▎") : theme.fg("borderMuted", "▏");
 		if (this.description.getText().length === 0 && !this.#descriptionField.focused) {
-			rows.push({ text: ` ${descriptionBar}${theme.fg("dim", "Description")}`, target: descriptionTarget });
+			rows.push({ text: ` ${descriptionBar}${theme.fg("dim", "描述")}`, target: descriptionTarget });
 		} else {
 			for (const line of descriptionLines.length > 0 ? descriptionLines : [""]) {
 				rows.push({ text: ` ${descriptionBar}${line}`, target: descriptionTarget });
@@ -1641,7 +1641,7 @@ export class Sidebar {
 		const rows: Row[] = [];
 		const head = this.#model.headCommit;
 		if (!head) {
-			rows.push({ text: "" }, { text: theme.fg("dim", " No commits yet") });
+			rows.push({ text: "" }, { text: theme.fg("dim", " 还没有提交") });
 			return rows;
 		}
 		for (const line of Bun.wrapAnsi(theme.bold(head.subject), width - 2).split("\n")) {
@@ -1672,7 +1672,7 @@ export class Sidebar {
 		rows.push({ text: theme.fg("success", ` Working tree clean — showing committed ${head.shortSha}`) });
 		rows.push({ text: theme.fg("borderMuted", "─".repeat(Math.max(0, width))) });
 		if (!head.filesLoaded) {
-			rows.push({ text: theme.fg("dim", " Loading changed files…") });
+			rows.push({ text: theme.fg("dim", " 正在加载变更文件…") });
 			return rows;
 		}
 

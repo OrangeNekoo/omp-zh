@@ -151,7 +151,7 @@ export const globToolRenderer = {
 			},
 			uiTheme,
 		);
-		return new Text(text, 1, 0);
+		return new Text(text, 0, 0);
 	},
 
 	renderResult(
@@ -165,7 +165,7 @@ export const globToolRenderer = {
 
 		if (result.isError || details?.error) {
 			const errorText = details?.error || result.content?.find(c => c.type === "text")?.text || "Unknown error";
-			return new Text(formatErrorMessage(errorText, uiTheme), 1, 0);
+			return new Text(formatErrorMessage(errorText, uiTheme), 0, 0);
 		}
 
 		const hasDetailedData = details?.fileCount !== undefined;
@@ -178,7 +178,7 @@ export const globToolRenderer = {
 				textContent.includes("No files found") ||
 				textContent.trim() === ""
 			) {
-				return new Text(formatEmptyMessage("No files found", uiTheme), 1, 0);
+				return new Text(formatEmptyMessage("未找到文件", uiTheme), 0, 0);
 			}
 
 			const lines = textContent.split("\n").filter(l => l.trim());
@@ -207,7 +207,6 @@ export const globToolRenderer = {
 					);
 					return [header, ...listLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
 				},
-				{ paddingX: 1 },
 			);
 		}
 
@@ -238,13 +237,13 @@ export const globToolRenderer = {
 					title: "Glob",
 					titleColor: "toolTitle",
 					description: formatGlobRenderPaths(args),
-					meta: emptyTimedOut ? ["0 files", uiTheme.fg("warning", "timed out")] : ["0 files"],
+					meta: emptyTimedOut ? ["0 files", uiTheme.fg("warning", "已超时")] : ["0 files"],
 				},
 				uiTheme,
 			);
 			const lines = [header, formatEmptyMessage(emptyLabel, uiTheme)];
 			if (missingNote) lines.push(missingNote);
-			return new Text(lines.join("\n"), 1, 0);
+			return new Text(lines.join("\n"), 0, 0);
 		}
 		const meta: string[] = [formatCount("file", fileCount)];
 		if (details?.scopePath) meta.push(`in ${details.scopePath}`);
@@ -261,8 +260,8 @@ export const globToolRenderer = {
 		);
 
 		const truncationReasons: string[] = [];
-		if (details?.resultLimitReached) truncationReasons.push(`上限 ${details.resultLimitReached} 条结果`);
-		if (limits?.resultLimit) truncationReasons.push(`上限 ${limits.resultLimit.reached} 条结果`);
+		if (details?.resultLimitReached) truncationReasons.push(`limit ${details.resultLimitReached} results`);
+		if (limits?.resultLimit) truncationReasons.push(`limit ${limits.resultLimit.reached} results`);
 		if (truncation) truncationReasons.push(truncation.truncatedBy === "lines" ? "line limit" : "size limit");
 		const artifactId = truncation && "artifactId" in truncation ? truncation.artifactId : undefined;
 		if (artifactId) truncationReasons.push(formatFullOutputReference(artifactId));
@@ -298,7 +297,6 @@ export const globToolRenderer = {
 				);
 				return [header, ...fileLines, ...extraLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
 			},
-			{ paddingX: 1 },
 		);
 	},
 	describeCall(args: GlobRenderArgs): NativeToolView {
@@ -349,7 +347,7 @@ export const globToolRenderer = {
 				// `truncated` on an empty result means the scan timed out mid-walk.
 				tool: {
 					...globNativeHead(args, compact(["0 files", scope])),
-					note: timedOut || truncated ? "timed out" : undefined,
+					note: timedOut || truncated ? "已超时" : undefined,
 				},
 				tone: "warning",
 				inline: true,
@@ -357,8 +355,8 @@ export const globToolRenderer = {
 			};
 		}
 		const reasons: string[] = [];
-		if (details.resultLimitReached) reasons.push(`上限 ${details.resultLimitReached} 条结果`);
-		if (limits?.resultLimit) reasons.push(`上限 ${limits.resultLimit.reached} 条结果`);
+		if (details.resultLimitReached) reasons.push(`limit ${details.resultLimitReached} results`);
+		if (limits?.resultLimit) reasons.push(`limit ${limits.resultLimit.reached} results`);
 		if (truncation) reasons.push(truncation.truncatedBy === "lines" ? "line limit" : "size limit");
 		const artifactId = truncation && "artifactId" in truncation ? truncation.artifactId : undefined;
 		if (artifactId) reasons.push(formatFullOutputReference(artifactId));

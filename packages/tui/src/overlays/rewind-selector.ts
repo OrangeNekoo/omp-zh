@@ -845,7 +845,7 @@ export class RewindSelectorComponent implements Component {
 				text([span(`${at + 1}/${of}`, "dim")], { wrap: "none" }),
 				hintsRow([
 					upDown,
-					{ keys: ["left", "right"], label: columns.length > 0 ? "branches" : "user turns" },
+					{ keys: ["left", "right"], label: columns.length > 0 ? "branches" : "用户回合" },
 					{ keys: ["f"], label: "filter" },
 					this.#truncated ? { keys: ["a"], label: "更早的轮次" } : undefined,
 				]),
@@ -939,7 +939,7 @@ export class RewindSelectorComponent implements Component {
 	}
 
 	#header(): string {
-		return `${theme.icon.rewind} ${theme.bold("Rewind")}${theme.sep.dot}${theme.fg("dim", "pick the point to continue from")}`;
+		return `${theme.icon.rewind} ${theme.bold("回退")}${theme.sep.dot}${theme.fg("dim", "选择要继续的位置")}`;
 	}
 
 	/** Only the matching items of the current path, concatenated; no branch strip. */
@@ -962,7 +962,7 @@ export class RewindSelectorComponent implements Component {
 		const lines = matches.length > 0 ? composed.lines : [theme.fg("muted", `  No items match "${query}"`)];
 		const count =
 			matches.length === 0
-				? theme.fg("error", "no matches")
+				? theme.fg("error", "无匹配")
 				: theme.fg("dim", `${selected >= 0 ? selected + 1 : "-"}/${matches.length}`);
 		const upDown = editorKeys("tui.select.up", "tui.select.down");
 		const keys = `${upDown} step  ${formatKeyHints(["left", "right"])} user turns  ${formatKeyHint("enter")} rewind  ${editorKey("tui.select.cancel")} show all`;

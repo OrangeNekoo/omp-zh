@@ -92,9 +92,9 @@ export const astGrepToolRenderer = {
 			if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 			if (filesSearched > 0) meta.push(`searched ${filesSearched}`);
 			const header = renderStatusLine({ icon: "warning", title: "AST 搜索", description, meta }, uiTheme);
-			const lines = [header, formatEmptyMessage("No matches found", uiTheme)];
+			const lines = [header, formatEmptyMessage("未找到匹配项", uiTheme)];
 			if (details?.parseErrors?.length) {
-				lines.push(uiTheme.fg("warning", "Query may be mis-scoped; narrow `path` before concluding absence"));
+				lines.push(uiTheme.fg("warning", "查询范围可能过大；在断定不存在前请缩小 `path`"));
 				appendParseErrorsBulletList(lines, details.parseErrors, uiTheme, details.parseErrorsTotal);
 			}
 			return new Text(lines.join("\n"), 0, 0);
@@ -104,7 +104,7 @@ export const astGrepToolRenderer = {
 		const meta = [...summaryParts];
 		if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 		meta.push(`searched ${filesSearched}`);
-		if (limitReached) meta.push(uiTheme.fg("warning", "limit reached"));
+		if (limitReached) meta.push(uiTheme.fg("warning", "已达上限"));
 		const description = args?.pat;
 		const header = renderStatusLine(
 			{
@@ -180,7 +180,7 @@ export const astGrepToolRenderer = {
 
 		const extraLines: string[] = [];
 		if (limitReached) {
-			extraLines.push(uiTheme.fg("warning", "limit reached; narrow path or use skip"));
+			extraLines.push(uiTheme.fg("warning", "已达上限；请缩小路径或使用 skip"));
 		}
 		if (details?.parseErrors?.length) {
 			extraLines.push(
@@ -214,7 +214,7 @@ export const astGrepToolRenderer = {
 		const scopePaths = toPathList(args.path ?? args.paths);
 		if (scopePaths.length) meta.push(`in ${scopePaths.join(", ")}`);
 		if (args.skip !== undefined && args.skip > 0) meta.push(`skip:${args.skip}`);
-		return { head: toolHead("AST Grep", span(args.pat ?? "?", "code"), ...meta) };
+		return { head: toolHead("AST 搜索", span(args.pat ?? "?", "code"), ...meta) };
 	},
 
 	describeResult(
@@ -226,7 +226,7 @@ export const astGrepToolRenderer = {
 		const pattern = span(args?.pat ?? "?", "code");
 		if (result.isError) {
 			return {
-				head: toolHead("AST Grep", pattern),
+				head: toolHead("AST 搜索", pattern),
 				tone: "error",
 				body: [errorText(resultText(result) || "Unknown error")],
 			};
@@ -253,12 +253,12 @@ export const astGrepToolRenderer = {
 			if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 			if (filesSearched > 0) meta.push(`searched ${filesSearched}`);
 			return {
-				head: toolHead("AST Grep", pattern, ...meta),
+				head: toolHead("AST 搜索", pattern, ...meta),
 				tone: "warning",
 				body: compact<NativeChild>([
-					noteText("No matches found"),
+					noteText("未找到匹配项"),
 					parseErrors.length > 0 &&
-						noteText("Query may be mis-scoped; narrow `path` before concluding absence", "warning"),
+						noteText("查询范围可能过大；在断定不存在前请缩小 `path`", "warning"),
 					parseNote,
 				]),
 			};
@@ -266,7 +266,7 @@ export const astGrepToolRenderer = {
 		const meta = [formatCount("match", matchCount), formatCount("file", details?.fileCount ?? 0)];
 		if (details?.scopePath) meta.push(`in ${details.scopePath}`);
 		meta.push(`searched ${filesSearched}`);
-		const head = toolHead("AST Grep", pattern, ...meta);
+		const head = toolHead("AST 搜索", pattern, ...meta);
 		if (limitReached) head.push(span(" 已达上限", "warning"));
 		const allLines = (details?.displayContent ?? resultText(result)).split("\n");
 		const kept = groupLineIndicesByBlank(allLines)
@@ -279,7 +279,7 @@ export const astGrepToolRenderer = {
 			head,
 			body: compact<NativeChild>([
 				...describeGroupedOutput(kept),
-				limitReached && noteText("limit reached; narrow path or use skip", "warning"),
+				limitReached && noteText("已达上限；请缩小路径或使用 skip", "warning"),
 				parseNote,
 			]),
 			preview: { lines: COLLAPSED_MATCH_LIMIT },

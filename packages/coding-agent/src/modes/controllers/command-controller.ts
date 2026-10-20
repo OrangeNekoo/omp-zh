@@ -345,7 +345,7 @@ export class CommandController {
 		try {
 			const { outputPath, useUserThemes } = parseExportArgs(text.slice("/export".length));
 			if (outputPath === "--copy" || outputPath === "clipboard" || outputPath === "copy") {
-				this.ctx.showWarning("Use /dump to copy the session to clipboard.");
+				this.ctx.showWarning("用 /dump 把会话复制到剪贴板。");
 				return;
 			}
 
@@ -361,7 +361,7 @@ export class CommandController {
 	async handleTraceCommand(): Promise<void> {
 		const sessionFile = this.ctx.session.sessionFile;
 		if (!sessionFile) {
-			this.ctx.showWarning("No session file yet — send a message first.");
+			this.ctx.showWarning("还没有会话文件 — 请先发送一条消息。");
 			return;
 		}
 		try {
@@ -381,7 +381,7 @@ export class CommandController {
 		try {
 			const formatted = this.ctx.session.formatSessionAsText();
 			if (!formatted) {
-				this.ctx.showError("No messages to dump yet.");
+				this.ctx.showError("还没有可导出的消息。");
 				return;
 			}
 			// Build the LLM request JSON sidecar first so its path (and a
@@ -418,7 +418,7 @@ export class CommandController {
 		try {
 			const archive = await write();
 			if (!archive) {
-				this.ctx.showError("No messages to dump yet.");
+				this.ctx.showError("还没有可导出的消息。");
 				return;
 			}
 			await copyToClipboard(archive.path);
@@ -434,15 +434,15 @@ export class CommandController {
 		try {
 			const advisorHistory = this.ctx.session.formatAdvisorHistoryAsText({ compact: !isRaw });
 			if (advisorHistory === null) {
-				this.ctx.showError("Advisor is not active for this session.");
+				this.ctx.showError("本会话未启用顾问。");
 				return;
 			}
 			if (!advisorHistory) {
-				this.ctx.showError("Advisor has no history yet.");
+				this.ctx.showError("顾问还没有历史记录。");
 				return;
 			}
 			copyToClipboard(advisorHistory);
-			this.ctx.showStatus("Advisor history copied to clipboard");
+			this.ctx.showStatus("顾问历史已复制到剪贴板");
 		} catch (error: unknown) {
 			this.ctx.showError(
 				`Failed to copy advisor history: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -456,7 +456,7 @@ export class CommandController {
 			const renderedLines = this.ctx.chatContainer.render(width).map(line => replaceTabs(Bun.stripANSI(line)));
 			const rendered = renderedLines.join("\n").trimEnd();
 			if (!rendered) {
-				this.ctx.showError("No messages to dump yet.");
+				this.ctx.showError("还没有可导出的消息。");
 				return;
 			}
 			const tmpPath = path.join(os.tmpdir(), `${Snowflake.next()}-tmp.txt`);
@@ -492,7 +492,7 @@ export class CommandController {
 		};
 		loader.onAbort = () => {
 			restoreEditor();
-			this.ctx.showStatus("Share cancelled");
+			this.ctx.showStatus("分享已取消");
 		};
 
 		// Custom share scripts keep their legacy contract: they receive a path
@@ -515,7 +515,7 @@ export class CommandController {
 					if (parts.length > 0) this.ctx.showStatus(parts.join("\n"));
 					if (result.url) this.openInBrowser(result.url);
 				} else {
-					this.ctx.showStatus("Session shared");
+					this.ctx.showStatus("会话已分享");
 				}
 			} catch (err) {
 				if (!loader.signal.aborted) {
@@ -562,8 +562,8 @@ export class CommandController {
 		const normalizedPremiumRequests = Math.round((premiumRequests + Number.EPSILON) * 100) / 100;
 
 		let info = "";
-		info += `${theme.fg("dim", "File:")} ${stats.sessionFile ?? "In-memory"}\n`;
-		info += `${theme.fg("dim", "ID:")} ${stats.sessionId}\n`;
+		info += `${theme.fg("dim", "文件：")} ${stats.sessionFile ?? "In-memory"}\n`;
+		info += `${theme.fg("dim", "ID：")} ${stats.sessionId}\n`;
 		const builds = runtimeIdentityHistory(this.ctx.session.sessionManager.getEntries());
 		const running = currentRuntimeIdentity();
 		// A source checkout's diff hash changes with each edit, so a long-lived session can collect
@@ -579,12 +579,12 @@ export class CommandController {
 			info += `${theme.fg("dim", key)} ${replaceTabs(sanitizeText(formatRuntimeIdentity(build)))}\n`;
 		}
 		if (!sameRuntimeIdentity(builds[builds.length - 1], running)) {
-			info += `${theme.fg("dim", "Running:")} ${replaceTabs(sanitizeText(formatRuntimeIdentity(running)))}\n`;
+			info += `${theme.fg("dim", "运行中：")} ${replaceTabs(sanitizeText(formatRuntimeIdentity(running)))}\n`;
 		}
-		info += `\n${theme.bold("Provider")}\n`;
+		info += `\n${theme.bold("服务商")}\n`;
 		const model = this.ctx.session.model;
 		if (!model) {
-			info += `${theme.fg("dim", "No model selected")}\n`;
+			info += `${theme.fg("dim", "未选择模型")}\n`;
 		} else {
 			const authMode = resolveProviderAuthMode(this.ctx.session.modelRegistry.authStorage, model.provider);
 			const credentialSource = this.ctx.session.modelRegistry.authStorage.keys.describe(
@@ -606,16 +606,16 @@ export class CommandController {
 					.map(
 						([id, count]) => `${replaceTabs(sanitizeText(id))}${count > 1 ? theme.fg("dim", ` ×${count}`) : ""}`,
 					);
-				info += `${theme.fg("dim", "Served:")} ${routed.join(", ")}\n`;
+				info += `${theme.fg("dim", "已服务：")} ${routed.join(", ")}\n`;
 			}
 		}
 		info += `\n`;
-		info += `${theme.bold("Messages")}\n`;
-		info += `${theme.fg("dim", "User:")} ${stats.userMessages}\n`;
-		info += `${theme.fg("dim", "Assistant:")} ${stats.assistantMessages}\n`;
-		info += `${theme.fg("dim", "Tool Calls:")} ${stats.toolCalls}\n`;
-		info += `${theme.fg("dim", "Tool Results:")} ${stats.toolResults}\n`;
-		info += `${theme.fg("dim", "Total:")} ${stats.totalMessages}\n\n`;
+		info += `${theme.bold("消息")}\n`;
+		info += `${theme.fg("dim", "用户：")} ${stats.userMessages}\n`;
+		info += `${theme.fg("dim", "助手：")} ${stats.assistantMessages}\n`;
+		info += `${theme.fg("dim", "工具调用：")} ${stats.toolCalls}\n`;
+		info += `${theme.fg("dim", "工具结果：")} ${stats.toolResults}\n`;
+		info += `${theme.fg("dim", "合计：")} ${stats.totalMessages}\n\n`;
 		// Append-only context
 		{
 			const setting = cfgProviderAppendOnlyContext.get(this.ctx.settings);
@@ -623,36 +623,36 @@ export class CommandController {
 			const mode = shouldEnableAppendOnlyContext(setting, model);
 			const activeLabel = mode ? theme.fg("success", "active") : theme.fg("dim", "inactive");
 			const settingLabel = setting === "auto" ? `${setting} (${model?.provider ?? "?"})` : setting;
-			info += `${theme.fg("dim", "Append-Only:")} ${activeLabel} (setting: ${settingLabel})\n`;
+			info += `${theme.fg("dim", "仅追加：")} ${activeLabel} (setting: ${settingLabel})\n`;
 		}
-		info += `${theme.bold("Tokens")}\n`;
-		info += `${theme.fg("dim", "Input:")} ${stats.tokens.input.toLocaleString()}\n`;
-		info += `${theme.fg("dim", "Output:")} ${stats.tokens.output.toLocaleString()}\n`;
+		info += `${theme.bold("令牌")}\n`;
+		info += `${theme.fg("dim", "输入：")} ${stats.tokens.input.toLocaleString()}\n`;
+		info += `${theme.fg("dim", "输出：")} ${stats.tokens.output.toLocaleString()}\n`;
 		if (stats.tokens.cacheRead > 0) {
-			info += `${theme.fg("dim", "Cache Read:")} ${stats.tokens.cacheRead.toLocaleString()}\n`;
+			info += `${theme.fg("dim", "缓存读取：")} ${stats.tokens.cacheRead.toLocaleString()}\n`;
 		}
 		if (stats.tokens.cacheWrite > 0) {
-			info += `${theme.fg("dim", "Cache Write:")} ${stats.tokens.cacheWrite.toLocaleString()}\n`;
+			info += `${theme.fg("dim", "缓存写入：")} ${stats.tokens.cacheWrite.toLocaleString()}\n`;
 		}
-		info += `${theme.fg("dim", "Total:")} ${stats.tokens.total.toLocaleString()}\n`;
+		info += `${theme.fg("dim", "合计：")} ${stats.tokens.total.toLocaleString()}\n`;
 
 		if (stats.cost > 0 || normalizedPremiumRequests > 0 || stats.credits !== undefined) {
-			info += `\n${theme.bold("Cost")}\n`;
+			info += `\n${theme.bold("费用")}\n`;
 			if (stats.cost > 0) {
-				info += `${theme.fg("dim", "Total:")} ${stats.cost.toFixed(4)}\n`;
+				info += `${theme.fg("dim", "合计：")} ${stats.cost.toFixed(4)}\n`;
 			}
 			if (normalizedPremiumRequests > 0) {
-				info += `${theme.fg("dim", "Premium Requests:")} ${normalizedPremiumRequests.toLocaleString()}\n`;
+				info += `${theme.fg("dim", "高级请求：")} ${normalizedPremiumRequests.toLocaleString()}\n`;
 			}
 			if (stats.credits !== undefined) {
-				info += `${theme.fg("dim", "Credits:")} ${formatCreditValue(stats.credits.cost)}\n`;
-				info += `${theme.fg("dim", "Committed Credits:")} ${formatCreditValue(stats.credits.committedCost)}\n`;
-				info += `${theme.fg("dim", "Committed ACU:")} ${formatCreditValue(stats.credits.acuCost)}\n`;
+				info += `${theme.fg("dim", "额度：")} ${formatCreditValue(stats.credits.cost)}\n`;
+				info += `${theme.fg("dim", "已用额度：")} ${formatCreditValue(stats.credits.committedCost)}\n`;
+				info += `${theme.fg("dim", "已用 ACU：")} ${formatCreditValue(stats.credits.acuCost)}\n`;
 			}
 		}
 
 		if (this.ctx.lspServers && this.ctx.lspServers.length > 0) {
-			info += `\n${theme.bold("LSP Servers")}\n`;
+			info += `\n${theme.bold("LSP 服务器")}\n`;
 			for (const server of this.ctx.lspServers) {
 				const statusColor =
 					server.status === "ready"
@@ -670,9 +670,9 @@ export class CommandController {
 
 		if (this.ctx.mcpManager) {
 			const mcpServers = this.ctx.mcpManager.getConnectedServers();
-			info += `\n${theme.bold("MCP Servers")}\n`;
+			info += `\n${theme.bold("MCP 服务器")}\n`;
 			if (mcpServers.length === 0) {
-				info += `${theme.fg("dim", "None connected")}\n`;
+				info += `${theme.fg("dim", "未连接任何服务")}\n`;
 			} else {
 				for (const name of mcpServers) {
 					const conn = this.ctx.mcpManager.getConnection(name);
@@ -738,7 +738,7 @@ export class CommandController {
 							: "dim";
 				info += `\n${theme.fg(color, glyph)} ${theme.bold(a.name)} ${theme.fg("dim", `[${label}]`)}\n`;
 				if (a.model) {
-					info += `${theme.fg("dim", "Model:")} ${a.model.provider}/${a.model.id}\n`;
+					info += `${theme.fg("dim", "模型：")} ${a.model.provider}/${a.model.id}\n`;
 				}
 				if (a.model && usageReports) {
 					const identity = resolveActiveAdvisorAccount(a.model.provider, a.sessionId);
@@ -755,17 +755,17 @@ export class CommandController {
 						a.contextWindow > 0
 							? `${a.contextTokens.toLocaleString()} / ${a.contextWindow.toLocaleString()} (${Math.round((a.contextTokens / a.contextWindow) * 100)}%)`
 							: `${a.contextTokens.toLocaleString()}`;
-					info += `${theme.fg("dim", "Context:")} ${ctx}\n`;
-					info += `${theme.fg("dim", "Messages:")} ${a.messages.total.toLocaleString()}\n`;
-					info += `${theme.fg("dim", "Spend:")} ${a.tokens.input.toLocaleString()} in / ${a.tokens.output.toLocaleString()} out`;
+					info += `${theme.fg("dim", "上下文：")} ${ctx}\n`;
+					info += `${theme.fg("dim", "消息数：")} ${a.messages.total.toLocaleString()}\n`;
+					info += `${theme.fg("dim", "花费：")} ${a.tokens.input.toLocaleString()} in / ${a.tokens.output.toLocaleString()} out`;
 					if (a.cost > 0) info += `, $${a.cost.toFixed(4)}`;
 					info += "\n";
 				}
 			}
 			if (stats.active) {
-				info += `\n${theme.bold("Totals")}\n`;
-				info += `${theme.fg("dim", "Tokens:")} ${stats.tokens.total.toLocaleString()}\n`;
-				if (stats.cost > 0) info += `${theme.fg("dim", "Cost:")} $${stats.cost.toFixed(4)}\n`;
+				info += `\n${theme.bold("汇总")}\n`;
+				info += `${theme.fg("dim", "令牌：")} ${stats.tokens.total.toLocaleString()}\n`;
+				if (stats.cost > 0) info += `${theme.fg("dim", "费用：")} $${stats.cost.toFixed(4)}\n`;
 			}
 			this.showCommandReport({
 				title: `Advisor Status (${stats.advisors.length} advisors)`,
@@ -783,8 +783,8 @@ export class CommandController {
 			info += `${theme.fg(a.status === "running" ? "success" : "error", glyph)} ${a.name} ${theme.fg("dim", `[${label}]`)}\n\n`;
 		}
 		if (model) {
-			info += `${theme.bold("Provider")}\n`;
-			info += `${theme.fg("dim", "Model:")} ${model.provider}/${model.id}\n`;
+			info += `${theme.bold("服务商")}\n`;
+			info += `${theme.fg("dim", "模型：")} ${model.provider}/${model.id}\n`;
 		}
 		if (model && usageReports) {
 			const identity = resolveActiveAdvisorAccount(model.provider, stats.advisors[0]?.sessionId);
@@ -795,28 +795,28 @@ export class CommandController {
 				(report, limit) => !identity || limitMatchesActiveAccount(report, limit, identity),
 			);
 			if (quota) {
-				info += `\n${theme.bold("Quota")}\n`;
+				info += `\n${theme.bold("配额")}\n`;
 				info += `${theme.fg("dim", quota)}\n`;
 			}
 		}
-		info += `\n${theme.bold("Messages")}\n`;
-		info += `${theme.fg("dim", "User:")} ${stats.messages.user.toLocaleString()}\n`;
-		info += `${theme.fg("dim", "Assistant:")} ${stats.messages.assistant.toLocaleString()}\n`;
-		info += `${theme.fg("dim", "Total:")} ${stats.messages.total.toLocaleString()}\n`;
-		info += `\n${theme.bold("Context")}\n`;
+		info += `\n${theme.bold("消息")}\n`;
+		info += `${theme.fg("dim", "用户：")} ${stats.messages.user.toLocaleString()}\n`;
+		info += `${theme.fg("dim", "助手：")} ${stats.messages.assistant.toLocaleString()}\n`;
+		info += `${theme.fg("dim", "合计：")} ${stats.messages.total.toLocaleString()}\n`;
+		info += `\n${theme.bold("上下文")}\n`;
 		if (stats.contextWindow > 0) {
 			const percent = Math.round((stats.contextTokens / stats.contextWindow) * 100);
-			info += `${theme.fg("dim", "Tokens:")} ${stats.contextTokens.toLocaleString()} / ${stats.contextWindow.toLocaleString()} (${percent}%)\n`;
+			info += `${theme.fg("dim", "令牌：")} ${stats.contextTokens.toLocaleString()} / ${stats.contextWindow.toLocaleString()} (${percent}%)\n`;
 		} else {
-			info += `${theme.fg("dim", "Tokens:")} ${stats.contextTokens.toLocaleString()}\n`;
+			info += `${theme.fg("dim", "令牌：")} ${stats.contextTokens.toLocaleString()}\n`;
 		}
-		info += `\n${theme.bold("Spend")}\n`;
-		info += `${theme.fg("dim", "Input:")} ${stats.tokens.input.toLocaleString()}\n`;
-		info += `${theme.fg("dim", "Output:")} ${stats.tokens.output.toLocaleString()}\n`;
+		info += `\n${theme.bold("花费")}\n`;
+		info += `${theme.fg("dim", "输入：")} ${stats.tokens.input.toLocaleString()}\n`;
+		info += `${theme.fg("dim", "输出：")} ${stats.tokens.output.toLocaleString()}\n`;
 		if (stats.tokens.cacheRead > 0) {
-			info += `${theme.fg("dim", "Cache Read:")} ${stats.tokens.cacheRead.toLocaleString()}\n`;
+			info += `${theme.fg("dim", "缓存读取：")} ${stats.tokens.cacheRead.toLocaleString()}\n`;
 		}
-		if (stats.cost > 0) info += `${theme.fg("dim", "Cost:")} $${stats.cost.toFixed(4)}\n`;
+		if (stats.cost > 0) info += `${theme.fg("dim", "费用：")} $${stats.cost.toFixed(4)}\n`;
 		this.showCommandReport({ title: "顾问状态", body: new Text(info.trim(), 0, 0) });
 	}
 
@@ -830,7 +830,7 @@ export class CommandController {
 		const full = options?.full === true;
 		const tree = this.ctx.viewSession.getAsyncJobTree();
 		if (!tree) {
-			this.ctx.showWarning("Async background jobs are unavailable in this session.");
+			this.ctx.showWarning("本会话不支持异步后台任务。");
 			return;
 		}
 		if (isNativeRendering() && !full) {
@@ -840,9 +840,9 @@ export class CommandController {
 
 		const now = Date.now();
 		const columns = this.ctx.ui.terminal.columns ?? 100;
-		let info = `${theme.fg("dim", "Running:")} ${tree.running.length}\n`;
+		let info = `${theme.fg("dim", "运行中：")} ${tree.running.length}\n`;
 		if (tree.running.length === 0 && tree.recent.length === 0) {
-			info += `\n${theme.fg("dim", "No async jobs yet.")}`;
+			info += `\n${theme.fg("dim", "还没有异步任务。")}`;
 			this.showCommandReport({ title: "后台任务", body: new Text(info, 0, 0) });
 			return;
 		}
@@ -886,7 +886,7 @@ export class CommandController {
 		if (!usageReports) {
 			const provider = this.ctx.session as { fetchUsageReports?: () => Promise<UsageReport[] | null> };
 			if (!provider.fetchUsageReports) {
-				this.ctx.showWarning("Usage reporting is not configured for this session.");
+				this.ctx.showWarning("本会话未配置用量上报。");
 				return;
 			}
 			try {
@@ -923,7 +923,7 @@ export class CommandController {
 		const hint =
 			view.kind === "full"
 				? ""
-				: `\n\n${theme.fg("dim", "Use")} ${theme.bold("/changelog full")} ${theme.fg("dim", "to view the complete changelog.")}`;
+				: `\n\n${theme.fg("dim", "Use")} ${theme.bold("/changelog full")} ${theme.fg("dim", "查看完整变更日志。")}`;
 
 		this.#showMarkdownPanel(title, changelogMarkdown + hint);
 	}
@@ -956,7 +956,7 @@ export class CommandController {
 	handleContextCommand(): void {
 		const breakdown = computeSessionContextBreakdown(this.ctx.session, { snapcompactSavings: true });
 		if (breakdown.contextWindow <= 0) {
-			this.ctx.showWarning("Context usage is unavailable: no model is selected for this session.");
+			this.ctx.showWarning("上下文用量不可用：本会话未选择模型。");
 			return;
 		}
 		// Natively the body is `/context`'s own card (meters, legend, compaction mark).
@@ -981,7 +981,7 @@ export class CommandController {
 				this.ctx.session,
 			);
 			if (!payload) {
-				this.ctx.showWarning("Memory payload is empty (memory backend off, disabled, or no memory available).");
+				this.ctx.showWarning("记忆内容为空（记忆后端未启用、已禁用，或没有可用记忆）。");
 				return;
 			}
 			this.#showMarkdownPanel("Memory Injection Payload", payload);
@@ -992,7 +992,7 @@ export class CommandController {
 			try {
 				await backend.clear(agentDir, this.ctx.sessionManager.getCwd(), this.ctx.session);
 				await this.ctx.session.refreshBaseSystemPrompt();
-				this.ctx.showStatus("Memory data cleared and system prompt refreshed.");
+				this.ctx.showStatus("记忆数据已清除，系统提示词已刷新。");
 			} catch (error) {
 				this.ctx.showError(`Memory clear failed: ${error instanceof Error ? error.message : String(error)}`);
 			}
@@ -1002,7 +1002,7 @@ export class CommandController {
 		if (action === "enqueue" || action === "rebuild") {
 			try {
 				await backend.enqueue(agentDir, this.ctx.sessionManager.getCwd(), this.ctx.session);
-				this.ctx.showStatus("Memory consolidation enqueued.");
+				this.ctx.showStatus("记忆整合已排队。");
 			} catch (error) {
 				this.ctx.showError(`Memory enqueue failed: ${error instanceof Error ? error.message : String(error)}`);
 			}
@@ -1029,7 +1029,7 @@ export class CommandController {
 		if (action === "sync") {
 			try {
 				await backend.enqueue(agentDir, this.ctx.sessionManager.getCwd(), this.ctx.session);
-				this.ctx.showStatus("Memory consolidation ran.");
+				this.ctx.showStatus("记忆整合已执行。");
 			} catch (error) {
 				this.ctx.showError(`Memory sync failed: ${error instanceof Error ? error.message : String(error)}`);
 			}
@@ -1056,7 +1056,7 @@ export class CommandController {
 			return;
 		}
 
-		this.ctx.showError("Usage: /memory <view|stats|diagnose|clear|reset|enqueue|rebuild|queue|sync|mm ...>");
+		this.ctx.showError("用法：/memory <view|stats|diagnose|clear|reset|enqueue|rebuild|queue|sync|mm ...>");
 	}
 
 	async #handleMentalModelsSubcommand(argumentText: string): Promise<void> {
@@ -1068,11 +1068,11 @@ export class CommandController {
 		const state = this.ctx.session.getHindsightSessionState();
 		const primary = state && !state.aliasOf ? state : undefined;
 		if (!primary) {
-			this.ctx.showError("Hindsight backend is not active for this session.");
+			this.ctx.showError("本会话未启用 Hindsight 后端。");
 			return;
 		}
 		if (!primary.config.mentalModelsEnabled) {
-			this.ctx.showError("Mental models are disabled (hindsight.mentalModelsEnabled = false).");
+			this.ctx.showError("心智模型已禁用（hindsight.mentalModelsEnabled = false）。");
 			return;
 		}
 
@@ -1081,14 +1081,14 @@ export class CommandController {
 				await this.#mmList(primary);
 				return;
 			case "show":
-				if (!arg) return this.ctx.showError("Usage: /memory mm show <id>");
+				if (!arg) return this.ctx.showError("用法：/memory mm show <id>");
 				await this.#mmShow(primary, arg);
 				return;
 			case "refresh":
 				await this.#mmRefresh(primary, arg);
 				return;
 			case "history":
-				if (!arg) return this.ctx.showError("Usage: /memory mm history <id>");
+				if (!arg) return this.ctx.showError("用法：/memory mm history <id>");
 				await this.#mmHistory(primary, arg);
 				return;
 			case "seed":
@@ -1099,11 +1099,11 @@ export class CommandController {
 				return;
 			case "delete":
 			case "remove":
-				if (!arg) return this.ctx.showError("Usage: /memory mm delete <id>");
+				if (!arg) return this.ctx.showError("用法：/memory mm delete <id>");
 				await this.#mmDelete(primary, arg);
 				return;
 			default:
-				this.ctx.showError("Usage: /memory mm <list|show|refresh|history|seed|reload|delete>");
+				this.ctx.showError("用法：/memory mm <list|show|refresh|history|seed|reload|delete>");
 		}
 	}
 
@@ -1278,9 +1278,9 @@ export class CommandController {
 	async #mmReload(state: HindsightSessionState): Promise<void> {
 		const ok = await reloadMentalModelsForSession(state.session);
 		if (ok) {
-			this.ctx.showStatus("Mental-model cache reloaded.");
+			this.ctx.showStatus("心智模型缓存已重新加载。");
 		} else {
-			this.ctx.showError("Reload failed (Hindsight backend not active or mental models disabled).");
+			this.ctx.showError("重新加载失败（Hindsight 后端未启用或心智模型已禁用）。");
 		}
 	}
 
@@ -1337,7 +1337,7 @@ export class CommandController {
 	async handleFreshCommand(): Promise<void> {
 		const result = this.ctx.session.freshSession();
 		if (!result) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before refreshing provider state.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再刷新服务商状态。");
 			return;
 		}
 		const stateLabel = result.closedProviderSessions === 1 ? "provider state" : "provider states";
@@ -1355,7 +1355,7 @@ export class CommandController {
 		}
 		const result = await this.ctx.session.resetSessionContext();
 		if (!result) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before resetting the context.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再重置上下文。");
 			return;
 		}
 		// Drop the rendered transcript so the UI matches the now-empty model
@@ -1379,7 +1379,7 @@ export class CommandController {
 
 	async handleDeleteCommand(): Promise<void> {
 		if (!this.ctx.sessionManager.getSessionFile()) {
-			this.ctx.showError("Nothing to delete (in-memory session)");
+			this.ctx.showError("没有可删除的内容（内存会话）");
 			return;
 		}
 		await this.#runNewSessionFlow({ drop: true }, "Session deleted");
@@ -1397,7 +1397,7 @@ export class CommandController {
 		// An in-place fork moves this process onto the new file; a running turn
 		// would finish there and leave the original transcript cut mid-turn.
 		if (this.ctx.session.isStreaming) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before forking.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再分叉。");
 			return;
 		}
 		if (this.ctx.loadingAnimation) {
@@ -1414,7 +1414,7 @@ export class CommandController {
 
 		const success = await this.ctx.session.fork();
 		if (!success) {
-			this.ctx.showError("Fork failed (session not persisted or cancelled)");
+			this.ctx.showError("分叉失败（会话未持久化或已取消）");
 			return;
 		}
 
@@ -1448,7 +1448,7 @@ export class CommandController {
 
 		if (this.ctx.session.isStreaming) {
 			const confirmed = await this.ctx.showHookConfirm(
-				"Fork while a response is running?",
+				"响应仍在进行时仍要分叉？",
 				"The child may not include the partial response. Continue opening a fork? The current session will keep running here.",
 			);
 			if (!confirmed) return;
@@ -1456,25 +1456,25 @@ export class CommandController {
 
 		const initialSessionFile = this.ctx.sessionManager.getSessionFile();
 		if (!initialSessionFile) {
-			this.ctx.showError("Cannot open a fork in another terminal: the current session has not been persisted yet.");
+			this.ctx.showError("无法在另一个终端打开分叉：当前会话尚未持久化。");
 			return;
 		}
 
 		const childArgs = restartArgv(dependencies.argv(), undefined, FORK_LAUNCH_OVERRIDES);
 		if (hasForkApiKeyOverride(childArgs)) {
 			this.ctx.showError(
-				"Cannot open a fork in another terminal when --api-key was supplied at startup; the key cannot be forwarded without exposing it in the multiplexer command. Configure provider credentials in the auth store and retry.",
+				"启动时通过 --api-key 提供密钥的情况下，无法在另一个终端打开分叉；转发该密钥会在多路复用命令中泄露。请在认证存储中配置服务商凭据后重试。",
 			);
 			return;
 		}
 		const shellGrammar = placementInfo.shellGrammar;
 		if (shellGrammar === "posix") {
 			const confirmed = await this.ctx.showHookConfirm(
-				"Confirm destination shell compatibility",
+				"确认目标 shell 兼容性",
 				"This fork command uses POSIX shell syntax. Continue only if the destination's configured interactive shell accepts POSIX syntax; this cannot be inferred from the current terminal.",
 			);
 			if (!confirmed) {
-				this.ctx.showWarning("Fork cancelled: POSIX shell compatibility was not confirmed for the destination.");
+				this.ctx.showWarning("分叉已取消：未确认目标端的 POSIX shell 兼容性。");
 				return;
 			}
 		}
@@ -1483,20 +1483,20 @@ export class CommandController {
 			await this.ctx.sessionManager.flush();
 		} catch (error) {
 			logger.error("Failed to flush the session before opening a terminal fork", { error });
-			this.ctx.showError("Cannot open a fork in another terminal: failed to save the current session.");
+			this.ctx.showError("无法在另一个终端打开分叉：保存当前会话失败。");
 			return;
 		}
 
 		const sessionFile = this.ctx.sessionManager.getSessionFile();
 		if (!sessionFile) {
-			this.ctx.showError("Cannot open a fork in another terminal: the current session is no longer persisted.");
+			this.ctx.showError("无法在另一个终端打开分叉：当前会话已不再持久化。");
 			return;
 		}
 		const sourceSessionFile = path.resolve(sessionFile);
 		try {
 			await fs.access(sourceSessionFile);
 		} catch {
-			this.ctx.showError("Cannot open a fork in another terminal: the persisted session transcript is unavailable.");
+			this.ctx.showError("无法在另一个终端打开分叉：持久化的会话记录不可用。");
 			return;
 		}
 
@@ -1623,7 +1623,7 @@ export class CommandController {
 	 */
 	async handleMoveCommand(targetPath?: string): Promise<void> {
 		if (this.ctx.session.isStreaming) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before moving.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再移动。");
 			return;
 		}
 
@@ -1642,7 +1642,7 @@ export class CommandController {
 
 		const unquoted = stripOuterDoubleQuotes(input);
 		if (!unquoted) {
-			this.ctx.showError("Usage: /move <path>");
+			this.ctx.showError("用法：/move <path>");
 			return;
 		}
 
@@ -1673,7 +1673,7 @@ export class CommandController {
 		const moved = await this.#withSessionMove(async () => {
 			if (!isDirectory) {
 				const confirmed = await this.ctx.showHookConfirm(
-					"Create directory?",
+					"创建目录？",
 					`"${path.basename(resolvedPath)}" does not exist. Create it?`,
 				);
 				if (!confirmed) return false;
@@ -1705,7 +1705,7 @@ export class CommandController {
 		options: { keepChanges?: boolean } = {},
 	): Promise<SessionWorktree | undefined> {
 		if (this.ctx.session.isStreaming) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before creating a worktree.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再创建工作树。");
 			return undefined;
 		}
 		let created: SessionWorktree | undefined;
@@ -1818,7 +1818,7 @@ export class CommandController {
 			const stored = await persistence;
 			if (!isCurrent()) return;
 			if (!stored) {
-				this.ctx.showError("Session name cannot be empty.");
+				this.ctx.showError("会话名不能为空。");
 				return;
 			}
 			const name = sessionManager.getSessionName()!;
@@ -1833,7 +1833,7 @@ export class CommandController {
 		const isDeferred = this.ctx.session.isStreaming;
 		const shouldPersistCwd = isPersistentShellCdCommand(command);
 		if (isDeferred && shouldPersistCwd) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before changing directories.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再切换目录。");
 			return;
 		}
 
@@ -1981,7 +1981,7 @@ export class CommandController {
 		const messageCount = entries.filter(e => e.type === "message").length;
 
 		if (messageCount < 2) {
-			this.ctx.showWarning("Nothing to compact (no messages yet)");
+			this.ctx.showWarning("没有可压缩的内容（还没有消息）");
 			return "ok";
 		}
 
@@ -2024,7 +2024,7 @@ export class CommandController {
 			(result.imagesDropped ?? 0) +
 			(result.thinkingBlocksDropped ?? 0);
 		if (dropped === 0) {
-			this.ctx.showStatus("Nothing to shake.");
+			this.ctx.showStatus("没有可抖动的内容。");
 			return;
 		}
 		this.ctx.rebuildChatFromMessages();
@@ -2097,7 +2097,7 @@ export class CommandController {
 		} catch (error) {
 			if (error instanceof CompactionCancelledError) {
 				outcome = "cancelled";
-				this.ctx.showError("Compaction cancelled");
+				this.ctx.showError("压缩已取消");
 			} else {
 				outcome = "failed";
 				const message = error instanceof Error ? error.message : String(error);
@@ -2118,11 +2118,11 @@ export class CommandController {
 
 	async handleHandoffCommand(customInstructions?: string): Promise<void> {
 		if (this.ctx.session.isStreaming) {
-			this.ctx.showWarning("Wait for the current response to finish or abort it before handing off.");
+			this.ctx.showWarning("请等待当前响应结束或先中断，再进行交接。");
 			return;
 		}
 		if (this.ctx.session.isCompacting) {
-			this.ctx.showWarning("Wait for context compaction to finish or cancel it before handing off.");
+			this.ctx.showWarning("请等待上下文压缩结束或先取消，再进行交接。");
 			return;
 		}
 
@@ -2130,7 +2130,7 @@ export class CommandController {
 		const messageCount = entries.filter(e => e.type === "message").length;
 
 		if (messageCount < 2) {
-			this.ctx.showWarning("Nothing to hand off (no messages yet)");
+			this.ctx.showWarning("没有可交接的内容（还没有消息）");
 			return;
 		}
 
@@ -2156,7 +2156,7 @@ export class CommandController {
 			const result = await this.ctx.session.handoff(customInstructions);
 
 			if (!result) {
-				this.ctx.showError("Handoff cancelled");
+				this.ctx.showError("交接已取消");
 				return;
 			}
 
@@ -2184,7 +2184,7 @@ export class CommandController {
 			// provider error (even one named AbortError) is re-thrown verbatim so it surfaces
 			// as a real failure instead of a false "cancelled".
 			if (message === "Handoff cancelled") {
-				this.ctx.showError("Handoff cancelled");
+				this.ctx.showError("交接已取消");
 			} else {
 				// Persist the real failure so it is debuggable after the transient
 				// TUI error clears (#7993).
@@ -2275,7 +2275,7 @@ function resolveProviderAuthMode(authStorage: AuthStorage, provider: string): st
 
 export function renderProviderSection(details: ProviderDetails, uiTheme: Pick<Theme, "fg">): string {
 	const lines: string[] = [];
-	lines.push(`${uiTheme.fg("dim", "Name:")} ${details.provider}`);
+	lines.push(`${uiTheme.fg("dim", "名称：")} ${details.provider}`);
 	for (const field of details.fields) {
 		lines.push(`${uiTheme.fg("dim", `${field.label}:`)} ${field.value}`);
 	}
@@ -2631,11 +2631,11 @@ export function renderUsageReports(
 					: activeAccount?.email || activeAccount?.accountId || activeAccount?.projectId
 				: formatActiveAccountLabel(activeAccount);
 		if (activeAccountLabel) {
-			lines.push(`  ${uiTheme.fg("accent", "in use by this session:")} ${activeAccountLabel}`);
+			lines.push(`  ${uiTheme.fg("accent", "本会话正在使用：")} ${activeAccountLabel}`);
 		}
 		const reportingModels = usageModelSelectors.filter(selector => selector.startsWith(`${provider}/`));
 		if (reportingModels.length > 0) {
-			lines.push(`  ${uiTheme.fg("accent", "Models with usage data")}`);
+			lines.push(`  ${uiTheme.fg("accent", "有用量数据的模型")}`);
 			for (const selector of reportingModels) {
 				lines.push(`    ${replaceTabs(truncateToWidth(sanitizeText(selector), availableWidth - 4))}`);
 			}
@@ -2710,7 +2710,7 @@ export function renderUsageReports(
 		}
 		if (resetAccountLines.length > 0) {
 			lines.push(
-				`  ${uiTheme.fg("accent", "Saved rate-limit resets")} ${uiTheme.fg("dim", "(/usage reset to spend)")}`,
+				`  ${uiTheme.fg("accent", "已保存的限流重置")} ${uiTheme.fg("dim", "（/usage reset 用于消费）")}`,
 			);
 			for (const line of resetAccountLines) lines.push(uiTheme.fg("dim", line));
 		}

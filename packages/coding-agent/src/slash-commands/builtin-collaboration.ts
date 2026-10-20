@@ -1,6 +1,6 @@
 import { clearSubmittedText } from "./helpers/draft";
 import { Spacer } from "@oh-my-pi/pi-tui";
-import { APP_NAME, formatAge } from "@oh-my-pi/pi-utils";
+import { CLI_NAME, formatAge } from "@oh-my-pi/pi-utils";
 import { formatKeyHint } from "@oh-my-pi/pi-tui/app-keybindings";
 import { CollabGuestLink } from "../collab/guest";
 import type { CollabHost } from "../collab/host";
@@ -34,8 +34,8 @@ function collabLinkHint(host: CollabHost, heading: string, view = false): string
 		// Keep the URL on the first row: under transcript pressure the status
 		// block is clipped to rendered[0], which used to drop the join link.
 		`${collabBrowserLink(webLink, "Join in browser")}  ${theme.fg("success", heading)}`,
-		` ${bullet} ${theme.fg("muted", view ? "Watch from another terminal:" : "Join from another terminal:")} ${APP_NAME} join "${link}"`,
-		` ${bullet} ${theme.fg("muted", "or any web browser:")} ${collabBrowserLink(webLink)}`,
+		` ${bullet} ${theme.fg("muted", view ? "Watch from another terminal:" : "Join from another terminal:")} ${CLI_NAME} join "${link}"`,
+		` ${bullet} ${theme.fg("muted", "或任意网页浏览器：")} ${collabBrowserLink(webLink)}`,
 		theme.fg(
 			"dim",
 			view
@@ -63,7 +63,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 		name: "advisor",
 		icon: "advisor",
 		description: "切换顾问（审查每一轮并注入备注的第二个模型）",
-		acpDescription: "Toggle advisor",
+		acpDescription: "切换顾问",
 		acpInputHint: "[on|off|status|dump [raw]|configure]",
 		subcommands: [
 			{ name: "on", description: "启用顾问" },
@@ -86,11 +86,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				const active = runtime.session.toggleAdvisorEnabled();
 				const configured = runtime.session.isAdvisorEnabled();
 				if (active) {
-					await runtime.output("Advisor enabled.");
+					await runtime.output("顾问已启用。");
 				} else if (configured) {
-					await runtime.output("Advisor setting enabled, but no model is assigned to the 'advisor' role.");
+					await runtime.output("顾问设置已启用，但没有为 'advisor' 角色分配模型。");
 				} else {
-					await runtime.output("Advisor disabled.");
+					await runtime.output("顾问已禁用。");
 				}
 				return commandConsumed();
 			}
@@ -103,7 +103,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			}
 			if (verb === "off") {
 				runtime.session.setAdvisorEnabled(false);
-				await runtime.output("Advisor disabled.");
+				await runtime.output("顾问已禁用。");
 				return commandConsumed();
 			}
 			if (verb === "status") {
@@ -122,7 +122,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				);
 				return commandConsumed();
 			}
-			return usage("Usage: /advisor [on|off|status|dump [raw]|configure]", runtime);
+			return usage("用法：/advisor [on|off|status|dump [raw]|configure]", runtime);
 		},
 		handleTui: async (command, runtime) => {
 			const { verb, rest } = parseSubcommand(command.args);
@@ -130,11 +130,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				const active = runtime.ctx.session.toggleAdvisorEnabled();
 				const configured = runtime.ctx.session.isAdvisorEnabled();
 				if (active) {
-					runtime.ctx.showStatus("Advisor enabled.");
+					runtime.ctx.showStatus("顾问已启用。");
 				} else if (configured) {
-					runtime.ctx.showStatus("Advisor setting enabled, but no model is assigned to the 'advisor' role.");
+					runtime.ctx.showStatus("顾问设置已启用，但没有为 'advisor' 角色分配模型。");
 				} else {
-					runtime.ctx.showStatus("Advisor disabled.");
+					runtime.ctx.showStatus("顾问已禁用。");
 				}
 				refreshStatusLine(runtime.ctx);
 				clearSubmittedText(runtime);
@@ -151,7 +151,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			}
 			if (verb === "off") {
 				runtime.ctx.session.setAdvisorEnabled(false);
-				runtime.ctx.showStatus("Advisor disabled.");
+				runtime.ctx.showStatus("顾问已禁用。");
 				refreshStatusLine(runtime.ctx);
 				clearSubmittedText(runtime);
 				return;
@@ -172,7 +172,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus("Usage: /advisor [on|off|status|dump [raw]|configure]");
+			runtime.ctx.showStatus("用法：/advisor [on|off|status|dump [raw]|configure]");
 			clearSubmittedText(runtime);
 		},
 	},
@@ -186,7 +186,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			try {
 				const { outputPath, useUserThemes } = parseExportArgs(command.args);
 				if (outputPath === "--copy" || outputPath === "clipboard" || outputPath === "copy") {
-					return usage("Use /dump to copy the session to clipboard.", runtime);
+					return usage("用 /dump 把会话复制到剪贴板。", runtime);
 				}
 				const filePath = await runtime.session.exportToHtml(outputPath, useUserThemes);
 				await runtime.output(`Session exported to: ${filePath}`);
@@ -207,7 +207,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 		handle: async (_command, runtime) => {
 			const sessionFile = runtime.session.sessionFile;
 			if (!sessionFile) {
-				await runtime.output("No session file yet — send a message first.");
+				await runtime.output("还没有会话文件 — 请先发送一条消息。");
 				return commandConsumed();
 			}
 			try {
@@ -231,7 +231,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 		name: "dump",
 		icon: "clipboard",
 		description: "将会话记录复制到剪贴板（并将 LLM 请求 JSON 写入临时目录）",
-		acpDescription: "Return full transcript as plain text, with LLM request JSON path",
+		acpDescription: "以纯文本返回完整会话记录，并给出 LLM 请求 JSON 路径",
 		acpInputHint: "[all|anon]",
 		subcommands: [
 			{
@@ -252,16 +252,16 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 						? await runtime.session.dumpSessionArchiveToTmpDir()
 						: await runtime.session.dumpAnonymizedArchiveToTmpDir();
 				if (!archive) {
-					await runtime.output("No messages to dump yet.");
+					await runtime.output("还没有可导出的消息。");
 					return commandConsumed();
 				}
 				await runtime.output(formatDumpArchiveReport(archive).join("\n"));
 				return commandConsumed();
 			}
-			if (verb) return usage("Usage: /dump [all|anon]", runtime);
+			if (verb) return usage("用法：/dump [all|anon]", runtime);
 			const text = runtime.session.formatSessionAsText();
 			if (!text) {
-				await runtime.output("No messages to dump yet.");
+				await runtime.output("还没有可导出的消息。");
 				return commandConsumed();
 			}
 			let sidecarPath: string | undefined;
@@ -284,7 +284,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			const { verb } = parseSubcommand(command.args);
 			if (verb === "all") await runtime.ctx.handleDumpAllCommand();
 			else if (verb === "anon") await runtime.ctx.handleDumpAnonCommand();
-			else if (verb) runtime.ctx.showStatus("Usage: /dump [all|anon]");
+			else if (verb) runtime.ctx.showStatus("用法：/dump [all|anon]");
 			else await runtime.ctx.handleDumpCommand();
 			clearSubmittedText(runtime);
 		},
@@ -343,7 +343,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			const { verb, rest } = parseSubcommand(args);
 			if (verb === "stop") {
 				await ctx.collabController.stop("host stopped");
-				ctx.showStatus("Collab stopped");
+				ctx.showStatus("协作已停止");
 				return;
 			}
 			if (verb === "status") {
@@ -361,7 +361,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 							: "In a collab session as a guest (/leave to exit)",
 					);
 				} else {
-					ctx.showStatus("Not in a collab session");
+					ctx.showStatus("不在协作会话中");
 				}
 				return;
 			}
@@ -370,7 +370,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				// link is a deliberate per-host act (`omp collab link <id> [--view]`),
 				// so a listing can be shown or logged without granting anything.
 				if (rest.trim()) {
-					ctx.showError(`Usage: /collab list — for links or JSON use \`${APP_NAME} collab link|list\``);
+					ctx.showError(`Usage: /collab list — for links or JSON use \`${CLI_NAME} collab link|list\``);
 					return;
 				}
 				let hosts: CollabHostSnapshot[];
@@ -386,7 +386,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 					return;
 				}
 				if (hosts.length === 0) {
-					ctx.showStatus("No active Collab hosts");
+					ctx.showStatus("没有活跃的协作主机");
 					return;
 				}
 				const bullet = theme.fg("accent", theme.format.bullet);
@@ -418,14 +418,14 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 						// fixed details can never push it past one transcript line.
 						truncateToWidth(` ${bullet} ${session} ${theme.fg("muted", `— ${room}`)}`, TRUNCATE_LENGTHS.LINE),
 						truncateToWidth(`   ${theme.fg("muted", detail)}`, TRUNCATE_LENGTHS.LINE),
-						`   ${theme.fg("dim", `${APP_NAME} collab link ${host.instanceId}${host.access === "view" ? " --view" : ""}`)}`,
+						`   ${theme.fg("dim", `${CLI_NAME} collab link ${host.instanceId}${host.access === "view" ? " --view" : ""}`)}`,
 					);
 				}
 				ctx.showStatus(lines.join("\n"), { dim: false });
 				return;
 			}
 			if (ctx.collabGuest) {
-				ctx.showError("Already in a collab session as a guest (/leave first)");
+				ctx.showError("已作为访客在协作会话中（请先 /leave）");
 				return;
 			}
 			const knownStartVerb = verb === "start" || verb === "view";
@@ -455,11 +455,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			clearSubmittedText(runtime);
 			const link = command.args.trim();
 			if (!link) {
-				ctx.showError("Usage: /join <link>");
+				ctx.showError("用法：/join <link>");
 				return;
 			}
 			if (ctx.collabGuest) {
-				ctx.showError("Already in a collab session (/leave first)");
+				ctx.showError("已在协作会话中（请先 /leave）");
 				return;
 			}
 			try {
@@ -467,7 +467,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				if (!ctx.collabController.host) await ctx.collabController.stop("joining another session");
 				// Recheck after teardown: a concurrent manual start may have won.
 				if (ctx.collabController.host) {
-					ctx.showError("Stop hosting first (/collab stop)");
+					ctx.showError("请先停止主持（/collab stop）");
 					return;
 				}
 				await new CollabGuestLink(ctx).join(link);
@@ -495,10 +495,10 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			const wasHosting = ctx.collabHost !== undefined;
 			await ctx.collabController.stop("host stopped");
 			if (wasHosting) {
-				ctx.showStatus("Collab stopped");
+				ctx.showStatus("协作已停止");
 				return;
 			}
-			ctx.showStatus("Not in a collab session");
+			ctx.showStatus("不在协作会话中");
 		},
 	},
 	{
@@ -518,13 +518,13 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 		handle: async (command, runtime) => {
 			const arg = command.args.toLowerCase();
 			const enabled = cfgBrowserEnabled.get(runtime.settings);
-			if (!enabled) return usage("Browser capability is disabled (enable in settings).", runtime);
+			if (!enabled) return usage("浏览器功能已禁用（请在设置中启用）。", runtime);
 			const current = cfgBrowserHeadless.get(runtime.settings);
 			let next = current;
 			if (!arg) next = !current;
 			else if (arg === "headless" || arg === "hidden") next = true;
 			else if (arg === "visible" || arg === "show" || arg === "headful") next = false;
-			else return usage("Usage: /browser [headless|visible]", runtime);
+			else return usage("用法：/browser [headless|visible]", runtime);
 			cfgBrowserHeadless.set(runtime.settings, next);
 			try {
 				await restartBrowserForModeChange();
@@ -544,7 +544,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			const current = cfgBrowserHeadless.get(settings);
 			let next = current;
 			if (!cfgBrowserEnabled.get(settings)) {
-				runtime.ctx.showWarning("Browser capability is disabled (enable in settings)");
+				runtime.ctx.showWarning("浏览器功能已禁用（请在设置中启用）");
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -555,7 +555,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			} else if (arg === "visible" || arg === "show" || arg === "headful") {
 				next = false;
 			} else {
-				runtime.ctx.showStatus("Usage: /browser [headless|visible]");
+				runtime.ctx.showStatus("用法：/browser [headless|visible]");
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -586,19 +586,19 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			if (arg === "code") {
 				const block = extractLastCodeBlock(runtime.ctx.session.messages);
 				if (!block) {
-					runtime.ctx.showStatus("No code block to copy.");
+					runtime.ctx.showStatus("没有可复制的代码块。");
 					clearSubmittedText(runtime);
 					return;
 				}
 				await copyToClipboard(block.code);
-				runtime.ctx.showStatus("Copied code block to clipboard");
+				runtime.ctx.showStatus("已将代码块复制到剪贴板");
 				clearSubmittedText(runtime);
 				return;
 			}
 			if (arg === "cmd" || arg === "command") {
 				const lastCommand = extractLastCommand(runtime.ctx.session.messages);
 				if (!lastCommand) {
-					runtime.ctx.showStatus("No command to copy.");
+					runtime.ctx.showStatus("没有可复制的命令。");
 					clearSubmittedText(runtime);
 					return;
 				}
@@ -610,16 +610,16 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			if (arg === "link" || arg === "url") {
 				const link = extractLastLink(runtime.ctx.session.messages);
 				if (!link) {
-					runtime.ctx.showStatus("No link to copy.");
+					runtime.ctx.showStatus("没有可复制的链接。");
 					clearSubmittedText(runtime);
 					return;
 				}
 				await copyToClipboard(link.href);
-				runtime.ctx.showStatus("Copied link to clipboard");
+				runtime.ctx.showStatus("已将链接复制到剪贴板");
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus("Usage: /copy [code|cmd|link]");
+			runtime.ctx.showStatus("用法：/copy [code|cmd|link]");
 			clearSubmittedText(runtime);
 		},
 	},
@@ -639,7 +639,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			}
 			const link = extractLastLink(runtime.ctx.session.messages);
 			if (!link) {
-				runtime.ctx.showStatus("No link to open.");
+				runtime.ctx.showStatus("没有可打开的链接。");
 				clearSubmittedText(runtime);
 				return;
 			}

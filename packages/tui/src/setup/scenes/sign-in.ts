@@ -155,7 +155,7 @@ export class SignInScene implements SetupSceneController {
 		if (this.#loggingInProvider === undefined && (maxLines === undefined || maxLines >= 17 + 2)) {
 			intro = new Container();
 			intro.addChild(
-				new Text(theme.fg("muted", "Pick a provider to sign in — you can connect more than one."), 0, 0),
+				new Text(theme.fg("muted", "选择要登录的服务商 — 可以连接多个。"), 0, 0),
 			);
 			intro.addChild(new Spacer(1));
 		}
@@ -296,7 +296,12 @@ export class SignInScene implements SetupSceneController {
 			}
 			return col(
 				[
-					node("text", { spans: [span("选择要登录的服务商 — 可以连接多个。", "muted")] }, undefined, "intro"),
+					node(
+						"text",
+						{ spans: [span("选择要登录的服务商 — 可以连接多个。", "muted")] },
+						undefined,
+						"intro",
+					),
 					this.#selector,
 					...tail,
 				],
@@ -361,7 +366,8 @@ export class SignInScene implements SetupSceneController {
 					this.#statusLines = [...this.#statusLines, { text: message, color: "dim" }];
 					this.#host.requestRender();
 				},
-				onManualCodeInput: signal => this.#showPrompt({ message: "粘贴授权码（或完整重定向 URL）：" }, signal),
+				onManualCodeInput: signal =>
+					this.#showPrompt({ message: "粘贴授权码（或完整重定向 URL）：" }, signal),
 			});
 			// Provider-scoped online refresh so the just-persisted credential re-runs
 			// discovery instead of reusing a fresh authoritative cache row (#5780).

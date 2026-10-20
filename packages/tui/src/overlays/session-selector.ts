@@ -175,7 +175,7 @@ function sessionPreview(session: SessionSelectorEntry, forkedFrom: string | unde
 			["Status", status && [status]],
 			["Forked from", forkedFrom],
 		]),
-		conversation.length > 0 && node("section", { head: "Conversation" }, conversation),
+		conversation.length > 0 && node("section", { head: "对话" }, conversation),
 	]);
 }
 
@@ -1131,7 +1131,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 
 		if (this.#menu.visibleItems.length === 0) {
 			if (this.#showCwd) {
-				lines.push(truncateToWidth(theme.fg("muted", "No sessions found"), width));
+				lines.push(truncateToWidth(theme.fg("muted", "未找到会话"), width));
 			} else {
 				// "Current folder" scope - hint to try "all"
 				lines.push(
@@ -1534,7 +1534,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 				if (!this.#loadAllSessions) return;
 				this.#toggling = true;
 				this.#messageContainer.clear();
-				this.#messageContainer.addChild(new Text(theme.fg("muted", "Loading all projects…"), 0, 0));
+				this.#messageContainer.addChild(new Text(theme.fg("muted", "正在加载所有项目…"), 0, 0));
 				this.#message = { kind: "loading", text: "Loading all projects…" };
 				this.#onRequestRender?.();
 				try {
@@ -1784,7 +1784,9 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		if (toggle) {
 			actions.push(pickerAction("scope", this.#scope === "all" ? "This folder" : "All projects", "tab"));
 		}
-		actions.push(pickerAction("关闭", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }));
+		actions.push(
+			pickerAction("关闭", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
+		);
 		const folder = this.#scopeLabel === false ? undefined : (this.#scopeLabel ?? path.basename(getProjectDir()));
 		const title = this.#pickerTitle;
 		const placeholder =
@@ -1818,7 +1820,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 				actions,
 				state: loading ? "loading" : errorOpen ? "error" : "ready",
 				...(loading || errorOpen ? { message: message!.text } : {}),
-				empty: this.#scope === "all" || !toggle ? "No sessions yet" : "No sessions in this folder yet",
+				empty: this.#scope === "all" || !toggle ? "还没有会话" : "此目录中还没有会话",
 				confirm: choice
 					? {
 							text: `Delete “${sessionLabel(choice.session)}”? This removes the session file.`,

@@ -40,10 +40,10 @@ function renderFallbackText(contentText: string, expanded: boolean, theme: Theme
 
 	const headerIcon = formatStatusIcon("warning", theme);
 	const expandHint = formatExpandHint(theme, expanded, remaining > 0);
-	let text = `${headerIcon} ${theme.fg("dim", "Response")}${expandHint}`;
+	let text = `${headerIcon} ${theme.fg("dim", "响应")}${expandHint}`;
 
 	if (displayLines.length === 0) {
-		text += `\n ${theme.fg("dim", theme.tree.last)} ${theme.fg("muted", "No response data")}`;
+		text += `\n ${theme.fg("dim", theme.tree.last)} ${theme.fg("muted", "无响应数据")}`;
 		return new Text(text, 0, 0);
 	}
 
@@ -142,7 +142,7 @@ export function renderSearchResult(
 		response.authMode === "oauth" ? "OAuth" : response.authMode === "api_key" ? "API" : response.authMode;
 	let providerInfo = response.model ? `${response.model} @ ${providerLabel}` : providerLabel;
 	if (authShort) providerInfo += ` (${authShort})`;
-	const metaLines: string[] = [`${theme.fg("muted", "Provider:")} ${theme.fg("text", providerInfo)}`];
+	const metaLines: string[] = [`${theme.fg("muted", "服务商：")} ${theme.fg("text", providerInfo)}`];
 	if (response.usage) {
 		const usageParts: string[] = [];
 		if (response.usage.inputTokens !== undefined) usageParts.push(`in ${response.usage.inputTokens}`);
@@ -150,7 +150,7 @@ export function renderSearchResult(
 		if (response.usage.totalTokens !== undefined) usageParts.push(`total ${response.usage.totalTokens}`);
 		if (response.usage.searchRequests !== undefined) usageParts.push(`search ${response.usage.searchRequests}`);
 		if (usageParts.length > 0)
-			metaLines.push(`${theme.fg("muted", "Usage:")} ${theme.fg("text", usageParts.join(theme.sep.dot))}`);
+			metaLines.push(`${theme.fg("muted", "用法：")} ${theme.fg("text", usageParts.join(theme.sep.dot))}`);
 	}
 
 	const answerMarkdown = contentText ? new Markdown(contentText, 0, 0, getMarkdownTheme()) : undefined;
@@ -163,7 +163,7 @@ export function renderSearchResult(
 		const renderedAnswer = answerMarkdown ? answerMarkdown.render(contentWidth) : [];
 		let answerLines: readonly string[];
 		if (renderedAnswer.length === 0) {
-			answerLines = [theme.fg("muted", "No answer text returned")];
+			answerLines = [theme.fg("muted", "未返回答案文本")];
 		} else if (args?.maxAnswerLines !== undefined && !expanded) {
 			// CLI compact mode (`omp q`) caps the answer; the TUI passes no cap and shows it in full.
 			// `renderedAnswer` is the Markdown component's shared cache — slice copies before appending.
@@ -218,7 +218,7 @@ export function renderSearchResult(
 				...(queryPreview
 					? [
 							{
-								content: [`${theme.fg("muted", "Query:")} ${theme.fg("text", queryPreview)}`],
+								content: [`${theme.fg("muted", "查询：")} ${theme.fg("text", queryPreview)}`],
 							},
 						]
 					: []),
@@ -227,10 +227,10 @@ export function renderSearchResult(
 					content: answerLines,
 				},
 				{
-					label: theme.fg("toolTitle", "Sources"),
-					content: sourceTree.length > 0 ? sourceTree : [theme.fg("muted", "No sources returned")],
+					label: theme.fg("toolTitle", "来源"),
+					content: sourceTree.length > 0 ? sourceTree : [theme.fg("muted", "未返回来源")],
 				},
-				{ label: theme.fg("toolTitle", "Metadata"), content: metaLines },
+				{ label: theme.fg("toolTitle", "元数据"), content: metaLines },
 			],
 		};
 	});
@@ -334,10 +334,10 @@ function describeSearchResult(
 		tool: searchHead(query, `${providerLabel} · ${formatCount("source", sources.length)}`, badge),
 		tone: sources.length > 0 ? undefined : "warning",
 		body: compact([
-			answer ? { ...md(plainText(answer), { title: tooltip }), key: "answer" } : noteText("No answer text returned"),
+			answer ? { ...md(plainText(answer), { title: tooltip }), key: "answer" } : noteText("未返回答案文本"),
 			sources.length > 0
 				? node("col", { role: "omp.tool.files" }, sources.map(sourceRow), "sources")
-				: noteText("No sources returned"),
+				: noteText("未返回来源"),
 		]),
 	};
 }

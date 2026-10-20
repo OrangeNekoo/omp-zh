@@ -97,6 +97,7 @@ packages/coding-agent/bench/boot-baseline.json
 
 # i18n 生成物（由 bun i18n/extract.ts / translate.ts 本地生成）
 i18n/extracted.json
-i18n/report.json
 i18n/pending.json
-/.omp
+i18n/report.json
+# 本地 omp 配置（每台机器不同）
+/.omp/config.yml

@@ -153,7 +153,12 @@ export class HookInputComponent extends OverlayPanel {
 		];
 		if (countdown) {
 			titleRow.push(
-				node("row", { role: `${PART}.timer`, title: "时间耗尽时取消；输入会重新计时" }, [countdown], "timer"),
+				node(
+					"row",
+					{ role: `${PART}.timer`, title: "时间耗尽时取消；输入会重新计时" },
+					[countdown],
+					"timer",
+				),
 			);
 		}
 		const head: NativeChild[] = [node("row", { gap: "md", align: "baseline" }, titleRow, "line")];

@@ -63,6 +63,7 @@ export type ModelRole =
 	| "memory"
 	| "task"
 	| "advisor"
+	| "widget"
 	| "image"
 	| "web"
 	| "speech"
@@ -79,6 +80,7 @@ export const MODEL_ROLE_IDS: ModelRole[] = [
 	"memory",
 	"task",
 	"advisor",
+	"widget",
 	"image",
 	"web",
 	"speech",
@@ -96,6 +98,7 @@ export const CHAT_MODEL_ROLE_IDS: ModelRole[] = [
 	"memory",
 	"task",
 	"advisor",
+	"widget",
 ];
 export const KIND_ROLE_IDS: ModelRole[] = ["image", "web", "speech", "dictation", "judge"];
 
@@ -2258,7 +2261,7 @@ export class ModelBrowser implements Component {
 			roleBadges.push(roleBadge(role, heldBy.get(role)));
 		}
 		if (roleBadges.length > 0) {
-			children.push(node("section", { head: "Roles" }, [row(roleBadges, { gap: "xs", wrap: true })]));
+			children.push(node("section", { head: "角色" }, [row(roleBadges, { gap: "xs", wrap: true })]));
 		}
 		const description = model.description ? sanitizeText(model.description).trim() : "";
 		if (description) children.push(md(description));

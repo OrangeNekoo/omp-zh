@@ -47,7 +47,7 @@ export async function pickCleanseTarget(checkers: readonly CleanseCheckerChoice[
 			icon: "wand",
 			noun: "checkers",
 			subtitle: "运行检查器，然后修复它们发现的问题",
-			confirm: "Cleanse",
+			confirm: "清理",
 		},
 	});
 	if (selection === null) return { kind: "cancel" };

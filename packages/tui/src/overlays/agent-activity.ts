@@ -85,7 +85,7 @@ export function activityRowsFromProgress(progress: AgentProgress, lastUpdate = D
 		timestamp: lastUpdate,
 		kind: "lifecycle",
 		title: progress.status ?? "running",
-		summary: progress.task ?? progress.description ?? "Agent activity",
+		summary: progress.task ?? progress.description ?? "代理活动",
 		status:
 			progress.status === "completed"
 				? "success"

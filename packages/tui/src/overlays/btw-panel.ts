@@ -208,18 +208,18 @@ export class BtwPanelComponent extends OverlayPanel {
 				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to 复制 again` : `${copyKey} to 复制`);
 				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to follow up`);
 				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to branch`);
-				actions.push(`${esc} 关闭`);
+				actions.push(`${esc} to 关闭`);
 				if (this.#copied) {
-					return `${theme.fg("success", "✓ Copied to clipboard")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
+					return `${theme.fg("success", "✓ 已复制到剪贴板")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
 				}
 				return theme.fg("muted", actions.join(" · "));
 			}
 			case "branching":
 				return theme.fg("muted", `${theme.status.pending} Branching to chat…`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 关闭`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} to 关闭`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} 关闭`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} to 关闭`);
 		}
 	}
 

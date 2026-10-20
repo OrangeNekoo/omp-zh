@@ -5,11 +5,11 @@
  * - Table view: every registered agent except Main (Main IS the ambient
  *   chat), live from the global AgentHubRegistry — status, unread irc count,
  *   current/last task, last activity. Navigate with keys, wheel, hover, and
- *   click; `r` revives a parked agent, `x` aborts + releases one.
+ *   click; `r` revives a parked or killed agent, `x` aborts + releases one.
  * - Chat view: per-agent transcript (incremental session-file tail, absorbed
  *   from the old session observer overlay) plus an input line. Submitting
- *   revives a parked agent, then prompts/steers it; the message lands in the
- *   agent's persisted history via the normal prompt path.
+ *   revives a parked or killed agent, then prompts/steers it; the message
+ *   lands in the agent's persisted history via the normal prompt path.
  *
  * Replaces the old SessionObserverOverlayComponent (ctrl+s observer).
  */
@@ -149,15 +149,15 @@ const PICKER_TABS = [
 ] as const satisfies ReadonlyArray<{ id: AgentHubSection; label: string }>;
 /** Roster fact columns; lower priorities hide first on narrow sheets. */
 const AGENT_COLUMNS: readonly TspPickerColumn[] = [
-	{ id: "cost", head: "Cost", format: "price", priority: 6 },
+	{ id: "cost", head: "费用", format: "price", priority: 6 },
 	{ id: "time", head: "Time", format: "elapsed", priority: 5 },
 	{ id: "req", head: "Req", format: "num", priority: 2 },
-	{ id: "tools", head: "Tools", format: "num", priority: 1 },
+	{ id: "tools", head: "工具", format: "num", priority: 1 },
 	{ id: "tok", head: "Tok", format: "num", priority: 3 },
 	{ id: "ctx", head: "Ctx", format: "bar", priority: 4 },
 ];
 const ACTIVITY_COLUMNS: readonly TspPickerColumn[] = [
-	{ id: "agent", head: "Agent", format: "text", priority: 2 },
+	{ id: "agent", head: "代理", format: "text", priority: 2 },
 	{ id: "at", head: "Time", format: "dim", priority: 1 },
 ];
 /** What the roster/activity projections contribute to the picker (the shared head is added once). */
@@ -894,7 +894,11 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 				id: "revive",
 				label: "恢复",
 				keys: ["r"],
-				disabled: readOnly ?? (selected?.status === "parked" ? undefined : "Only parked agents can be revived"),
+				disabled:
+					readOnly ??
+					(selected?.status === "parked" || selected?.status === "aborted"
+						? undefined
+						: "Only parked or killed agents can be revived"),
 			},
 			{ id: "kill", label: "终止", keys: ["x"], danger: true, disabled: readOnly ?? (selected ? undefined : true) },
 			{ id: "view", label: "按父级", keys: ["t"], on: this.#viewMode === "tree" },
@@ -912,7 +916,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			selected: selected?.id ?? null,
 			total: this.#registry.list().length - (this.#registry.get(MAIN_AGENT_ID) ? 1 : 0),
 			state: this.#rows.length === 0 && this.#loadingPersistedSubagents ? "loading" : "ready",
-			empty: "No agents in this session. Finished, parked and killed subagents stay with the session that created them.",
+			empty: "本会话没有代理。已完成、已挂起和已终止的子代理会留在创建它们的会话中。",
 			actions,
 			focus: "list",
 		};
@@ -1008,7 +1012,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			if (modelRole && this.#getRoleInfo) {
 				model.push(span(theme.sep.dot, "dim"), roleBadgeSpan(modelRole, this.#getRoleInfo(modelRole)));
 			}
-			facts.splice(facts[0]?.k === "Task" ? 1 : 0, 0, { k: "Model", v: model });
+			facts.splice(facts[0]?.k === "任务" ? 1 : 0, 0, { k: "模型", v: model });
 		}
 		out.push(node("kv", { items: facts, layout: "grid", role: "omp.hub.kv" }, undefined, "facts"));
 		if (metrics?.contextTokens !== undefined && metrics.contextWindow) {
@@ -1055,7 +1059,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			);
 		});
 		if (rows.length === 0) rows.push(text([span("暂无响应或工具活动", "dim")]));
-		out.push(node("section", { head: "Recent activity", role: "omp.hub.activity" }, rows, "recentActivity"));
+		out.push(node("section", { head: "最近活动", role: "omp.hub.activity" }, rows, "recentActivity"));
 		return out;
 	}
 
@@ -1079,7 +1083,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			columns: ACTIVITY_COLUMNS,
 			items: this.#activityRows.map(activity => this.#pickerActivityItem(activity)),
 			selected: selected?.id ?? null,
-			empty: "No agent activity recorded yet",
+			empty: "尚未记录代理活动",
 			actions: [
 				{
 					id: "open",
@@ -1240,7 +1244,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		if (showParent && ref.parentId && ref.parentId !== MAIN_AGENT_ID) {
 			label.push(span(`  ↳ ${sanitizeDisplaySingleLine(ref.parentId)}`, "dim"));
 		}
-		if (ref.kind === "advisor") label.push(span("  read-only", "warning"));
+		if (ref.kind === "advisor") label.push(span("  只读", "warning"));
 		const unread = this.#irc.unreadCount(ref.id);
 		if (unread > 0) label.push(span(`  ⧉ ${unread}`, "warning"));
 		return label;
@@ -1378,7 +1382,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		const dot = theme.sep.dot;
 		const facts: Array<{ k: string; v: TspSpan[] | string }> = [];
 		const task = observed?.description ?? progress?.task ?? ref.activity;
-		if (task) facts.push({ k: "Task", v: taskSummary(task) });
+		if (task) facts.push({ k: "任务", v: taskSummary(task) });
 		const current = progress?.currentTool
 			? `${progress.currentTool}${progress.currentToolArgs ? `${dot}${progress.currentToolArgs}` : ""}`
 			: (progress?.lastIntent ?? ref.activity);
@@ -1389,21 +1393,21 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 					span(`${dot}retry ${progress.retryState.attempt}/${progress.retryState.maxAttempts}`, "warning"),
 				);
 			}
-			facts.push({ k: "Current", v: value });
+			facts.push({ k: "当前", v: value });
 		}
-		facts.push({ k: "Usage", v: metrics ? metricsText(metrics) : [span("用量 —", "dim")] });
+		facts.push({ k: "用量", v: metrics ? metricsText(metrics) : [span("用量 —", "dim")] });
 		facts.push({
-			k: "Lineage",
+			k: "谱系",
 			v: `Spawned by ${sanitizeDisplaySingleLine(ref.parentId ?? MAIN_AGENT_ID)}${children.length > 0 ? `${dot}${children.length} ${children.length === 1 ? "child" : "children"}` : ""}`,
 		});
 		if (children.length > 0) {
 			const named = children.slice(0, NATIVE_CHILD_IDS).map(child => sanitizeDisplaySingleLine(child.id));
 			const more = children.length - named.length;
-			facts.push({ k: "Children", v: [span(`${named.join(", ")}${more > 0 ? `, … +${more}` : ""}`, "dim")] });
+			facts.push({ k: "子级", v: [span(`${named.join(", ")}${more > 0 ? `, … +${more}` : ""}`, "dim")] });
 		}
-		facts.push({ k: "Registered", v: [span(formatLocalDateTimeWithOffset(new Date(ref.createdAt)), "dim")] });
+		facts.push({ k: "注册时间", v: [span(formatLocalDateTimeWithOffset(new Date(ref.createdAt)), "dim")] });
 		facts.push({
-			k: "Changes",
+			k: "变更",
 			v: [
 				span(
 					ref.kind === "advisor" || ref.history?.readOnly
@@ -1416,15 +1420,15 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		const artifacts = ref.history;
 		if (artifacts?.outputPath) {
 			facts.push({
-				k: "Output",
+				k: "输出",
 				v: [span(shortenPath(artifacts.outputPath), "path", { href: `file://${artifacts.outputPath}` })],
 			});
 		}
-		if (artifacts?.patchPath) facts.push({ k: "Patch", v: [span(shortenPath(artifacts.patchPath), "path")] });
+		if (artifacts?.patchPath) facts.push({ k: "补丁", v: [span(shortenPath(artifacts.patchPath), "path")] });
 		for (const nestedPath of artifacts?.nestedPatchPaths ?? []) {
-			facts.push({ k: "Nested patch", v: [span(shortenPath(nestedPath), "path")] });
+			facts.push({ k: "嵌套补丁", v: [span(shortenPath(nestedPath), "path")] });
 		}
-		if (artifacts?.branchName) facts.push({ k: "Worktree branch", v: [span(artifacts.branchName, "code")] });
+		if (artifacts?.branchName) facts.push({ k: "工作树分支", v: [span(artifacts.branchName, "code")] });
 		return facts;
 	}
 
@@ -1850,13 +1854,13 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		if (this.#rows.length === 0) {
 			if (this.#loadingPersistedSubagents) {
 				if (budget > 0) {
-					lines.push(`${statusGlyph("running")} ${theme.fg("accent", "Loading saved agents…")}`);
+					lines.push(`${statusGlyph("running")} ${theme.fg("accent", "正在加载已保存的代理…")}`);
 					hitRows.push(undefined);
 				}
 			} else {
 				const emptyState = [
-					`${theme.fg("muted", theme.status.shadowed)} ${theme.bold("No agents in this session")}`,
-					theme.fg("dim", "Finished, parked, and killed subagents remain with the session that created them."),
+					`${theme.fg("muted", theme.status.shadowed)} ${theme.bold("本会话无代理")}`,
+					theme.fg("dim", "已完成、已停放与已终止的子代理会留在创建它们的会话中。"),
 					theme.fg("dim", "Resume that session with omp-dev --continue, or spawn a task here."),
 				];
 				for (const line of emptyState.slice(0, budget)) {
@@ -1976,7 +1980,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 				? `${active("Flat")}${theme.fg("dim", "/")}${inactive("By parent")}`
 				: `${inactive("Flat")}${theme.fg("dim", "/")}${active("By parent")}`;
 		const counts = this.#statusSummary();
-		const header = `${theme.bold("Roster")}${theme.fg("dim", theme.sep.dot)}${projection}${counts ? theme.fg("dim", theme.sep.dot) + counts : ""}`;
+		const header = `${theme.bold("名册")}${theme.fg("dim", theme.sep.dot)}${projection}${counts ? theme.fg("dim", theme.sep.dot) + counts : ""}`;
 		const lines = wrapTextWithAnsi(header, Math.max(1, width));
 
 		const metrics = this.#aggregate;
@@ -2035,7 +2039,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		rows: number,
 		_observedById: ReadonlyMap<string, ObservableSession>,
 	): string[] {
-		if (!ref) return [theme.fg("dim", "Select an agent to inspect"), ...Array.from({ length: rows - 1 }, () => "")];
+		if (!ref) return [theme.fg("dim", "选择一个代理进行检查"), ...Array.from({ length: rows - 1 }, () => "")];
 		const observed = this.#observableFor(ref.id);
 		const progress = observed?.progress;
 		const metrics = this.#metricsFor(ref, observed);
@@ -2092,7 +2096,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 				add(contextGauge(metrics.contextTokens, metrics.contextWindow));
 			}
 		} else {
-			add(theme.fg("dim", "usage —"));
+			add(theme.fg("dim", "用量 —"));
 		}
 
 		section("Lineage");
@@ -2118,10 +2122,10 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		if (artifacts?.branchName) addWrapped(`Worktree branch ${artifacts.branchName}`);
 
 		if (lines.length < rows) add();
-		if (lines.length < rows) add(theme.bold(theme.fg("accent", "Recent activity")));
+		if (lines.length < rows) add(theme.bold(theme.fg("accent", "最近活动")));
 		const activityBudget = Math.max(0, rows - lines.length);
 		const activity = this.#activity.recent(ref.id, activityBudget);
-		if (activity.length === 0 && activityBudget > 0) add(theme.fg("muted", "No response or tool activity yet"));
+		if (activity.length === 0 && activityBudget > 0) add(theme.fg("muted", "暂无响应或工具活动"));
 		else {
 			for (const event of activity) {
 				const title = sanitizeLine(event.kind === "tool" ? (event.toolName ?? event.title) : event.title, width);
@@ -2498,15 +2502,15 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 	#activateAgent(ref: TRecord): void {
 		this.#notice = undefined;
 		const focusAgent = this.#focusAgent;
-		// Aborted agents and advisor refs are read-only transcripts with no
-		// revivable session; open the in-hub viewer instead of failing ensureLive.
-		if (ref.kind === "advisor" || ref.status === "aborted" || this.#remote || !focusAgent) {
+		// Advisor refs are read-only transcripts with no revivable session; open
+		// the in-hub viewer instead of failing ensureLive.
+		if (ref.kind === "advisor" || this.#remote || !focusAgent) {
 			this.openChat(ref.id);
 			return;
 		}
 		void (async () => {
 			try {
-				await focusAgent(ref.id); // ensureLive inside revives parked agents; no parking, no session files
+				await focusAgent(ref.id); // ensureLive inside revives parked and killed agents
 				this.#onDone();
 			} catch (error) {
 				this.#notice = error instanceof Error ? error.message : String(error);
@@ -2523,8 +2527,8 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			this.#requestRender();
 			return;
 		}
-		if (ref.status !== "parked") {
-			this.#notice = `Agent "${ref.id}" is ${ref.status} — only parked agents can be revived.`;
+		if (ref.status !== "parked" && ref.status !== "aborted") {
+			this.#notice = `Agent "${ref.id}" is ${ref.status} — only parked or killed agents can be revived.`;
 			this.#requestRender();
 			return;
 		}

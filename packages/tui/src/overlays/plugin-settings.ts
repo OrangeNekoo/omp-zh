@@ -55,7 +55,7 @@ function prefsDetailPage(title: string, lead: string, list: SettingsList | undef
 		(item): TspPrefsControl =>
 			item.values?.length === 2 && item.values.includes("true") && item.values.includes("false")
 				? { k: "switch", on: item.currentValue === "true" }
-				: { k: "action", label: item.currentValue.trim() || "Edit…", act: "edit" },
+				: { k: "action", label: item.currentValue.trim() || "编辑…", act: "edit" },
 	);
 	const open = list.openSubmenu;
 	return {
@@ -305,11 +305,11 @@ export class PluginListComponent extends OverlayPanel {
 		this.addChild(new Spacer(1));
 
 		if (entries.length === 0) {
-			this.addChild(new Text(theme.fg("muted", "No plugins installed"), 0, 0));
+			this.addChild(new Text(theme.fg("muted", "未安装插件"), 0, 0));
 			this.addChild(new Spacer(1));
-			this.addChild(new Text(theme.fg("dim", "Install npm plugins:        omp plugin install <package>"), 0, 0));
+			this.addChild(new Text(theme.fg("dim", "安装 npm 插件：       omp plugin install <package>"), 0, 0));
 			this.addChild(
-				new Text(theme.fg("dim", "Install marketplace plugins: omp plugin install <name>@<marketplace>"), 0, 0),
+				new Text(theme.fg("dim", "安装市场插件：omp plugin install <name>@<marketplace>"), 0, 0),
 			);
 			this.addChild(new Spacer(1));
 
@@ -377,8 +377,8 @@ export class PluginListComponent extends OverlayPanel {
 		return {
 			lead:
 				rows.length > 0
-					? "Plugins installed for you and this project. Configure one to turn it or its features on and off."
-					: "No plugins installed. Install one with omp plugin install <package>, or <name>@<marketplace>.",
+					? "已为个人与当前项目安装插件。配置插件即可开启或关闭它及其功能。"
+					: "未安装插件。用 omp plugin install <package> 或 <name>@<marketplace> 安装一个。",
 			sections: rows.length > 0 ? [{ id: "installed", title: "已安装", rows }] : [],
 			focus: this.#selectList.getSelectedItem()?.value ?? null,
 			editing: null,
@@ -403,9 +403,9 @@ export class PluginListComponent extends OverlayPanel {
 						text([span("未安装插件", "muted")]),
 						node("kv", {
 							items: [
-								{ k: "Install npm plugins", v: [span("omp plugin install <package>", "code")] },
+								{ k: "安装 npm 插件", v: [span("omp plugin install <package>", "code")] },
 								{
-									k: "Install marketplace plugins",
+									k: "安装市场插件",
 									v: [span("omp plugin install <name>@<marketplace>", "code")],
 								},
 							],

@@ -1826,7 +1826,9 @@ export class AnnotationOverlay implements Focusable {
 		const pasteTitle = hasNotes ? PASTE_CODE_REVIEW_ACTION : "Add a note to paste it into the prompt";
 		const buttons: NativeNode[] = [actionButton("取消", "close", { keys: "escape" })];
 		if (this.#textSource) {
-			buttons.push(marked(actionButton("粘贴到提示词", "paste", { tone: "accent", title: pasteTitle }), pick(0)));
+			buttons.push(
+				marked(actionButton("粘贴到提示词", "paste", { tone: "accent", title: pasteTitle }), pick(0)),
+			);
 		} else {
 			buttons.push(
 				marked(actionButton("粘贴到提示词", "paste", { title: pasteTitle }), pick(1)),

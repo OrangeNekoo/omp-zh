@@ -546,15 +546,15 @@ export function createVibeToolRenderer(op: VibeOp) {
 				const message = op === "spawn" ? (args?.prompt ?? "") : (args?.message ?? "");
 				const target =
 					op === "spawn"
-						? `${uiTheme.fg("muted", "vibe spawn")} ${formatBadge(details.spawned?.cli ?? args?.cli ?? "?", "accent", uiTheme)} ${uiTheme.fg("accent", frameText(details.spawned?.id ?? args?.name ?? "", 40))}`
-						: `${uiTheme.fg("muted", "vibe send →")} ${uiTheme.fg("accent", frameText(args?.session ?? "?", 40))}`;
+						? `${uiTheme.fg("muted", "vibe 派生")} ${formatBadge(details.spawned?.cli ?? args?.cli ?? "?", "accent", uiTheme)} ${uiTheme.fg("accent", frameText(details.spawned?.id ?? args?.name ?? "", 40))}`
+						: `${uiTheme.fg("muted", "vibe 发送 →")} ${uiTheme.fg("accent", frameText(args?.session ?? "?", 40))}`;
 				const ack =
 					op === "spawn"
 						? uiTheme.fg("success", `turn started${details.spawned ? ` (job ${details.spawned.jobId})` : ""}`)
 						: details.send?.mode === "steered"
-							? uiTheme.fg("success", "steered into the running turn")
+							? uiTheme.fg("success", "已引导进入运行中的回合")
 							: details.send?.mode === "queued"
-								? uiTheme.fg("warning", "mid-turn — queued as the next turn")
+								? uiTheme.fg("warning", "回合中 — 排队为下一轮")
 								: uiTheme.fg(
 										"success",
 										`turn started${details.send?.jobId ? ` (job ${details.send.jobId})` : ""}`,
@@ -608,7 +608,7 @@ export function createVibeToolRenderer(op: VibeOp) {
 				const meta: string[] = [];
 				if (running > 0) meta.push(uiTheme.fg("accent", `${running} on air`));
 				if (settledById.size > 0) meta.push(uiTheme.fg("success", `${settledById.size} settled`));
-				if (details.wait?.timedOut) meta.push(uiTheme.fg("warning", "timed out"));
+				if (details.wait?.timedOut) meta.push(uiTheme.fg("warning", "已超时"));
 				meta.push(...killedMeta);
 				const title =
 					op === "wait"

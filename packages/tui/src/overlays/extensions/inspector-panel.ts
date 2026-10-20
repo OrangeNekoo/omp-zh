@@ -142,7 +142,7 @@ export class InspectorPanel implements Component {
 
 	render(width: number): readonly string[] {
 		if (!this.#extension) {
-			return [theme.fg("muted", "Select an extension"), theme.fg("dim", "to view details")];
+			return [theme.fg("muted", "选择扩展"), theme.fg("dim", "查看详情")];
 		}
 		this.#width = width;
 		this.#toolFrame = snapshotToolRuntimeSource(this.#toolSource);
@@ -703,7 +703,7 @@ export class InspectorPanel implements Component {
 		if (data.agents) this.#pushLabeledList(appliesBody, "agents", data.agents, width);
 		if (data.interruptMode) this.#pushLabeled(appliesBody, "interrupt", data.interruptMode, width, "dim");
 		if (!data.alwaysApply && !data.globs && !data.condition && !data.astCondition && !data.agents) {
-			appliesBody.push(theme.fg("dim", "  (no apply conditions)"));
+			appliesBody.push(theme.fg("dim", "  （无应用条件）"));
 		}
 		appliesBody.push("");
 		surface.push(...this.#section("Applies", appliesBody, width));
@@ -730,7 +730,7 @@ export class InspectorPanel implements Component {
 			runtimeExtra.push(divider(width));
 		}
 		const surface: string[] = [];
-		if (data.alwaysApply) surface.push(`  ${theme.fg("accent", "always apply")}`);
+		if (data.alwaysApply) surface.push(`  ${theme.fg("accent", "始终应用")}`);
 		if (data.globs) this.#pushLabeled(surface, "globs", data.globs.join(", "), width);
 		if (surface.length > 0) surface.push("");
 		return {
@@ -749,7 +749,7 @@ export class InspectorPanel implements Component {
 		const invocationBody: string[] = [];
 		invocationBody.push(`  ${theme.fg("accent", `/${sanitizeDisplayText(ext.name)}`)}`);
 		if (data.argumentHint) this.#pushLabeled(invocationBody, "hint", data.argumentHint, this.#width, "dim");
-		if (data.usesArguments) invocationBody.push(`  ${theme.fg("dim", "accepts $ARGUMENTS")}`);
+		if (data.usesArguments) invocationBody.push(`  ${theme.fg("dim", "接受 $ARGUMENTS")}`);
 		invocationBody.push("");
 		surface.push(...this.#section("Invocation", invocationBody, this.#width));
 		return {
@@ -864,13 +864,15 @@ export class InspectorPanel implements Component {
 			lines.push(...wrapped);
 		} else {
 			lines.push(...wrapped.slice(0, MCP_INLINE_DESC_LINES));
-			lines.push(theme.fg("dim", `  … ${wrapped.length - MCP_INLINE_DESC_LINES} more (${expandKeyHint()} to 展开)`));
+			lines.push(
+				theme.fg("dim", `  … ${wrapped.length - MCP_INLINE_DESC_LINES} more (${expandKeyHint()} to 展开)`),
+			);
 		}
 		lines.push("");
 	}
 
 	#pushOrigin(lines: string[], ext: Extension, width: number): void {
-		lines.push(theme.fg("muted", "Origin:"));
+		lines.push(theme.fg("muted", "来源："));
 		const levelLabel = ext.source.level === "user" ? "User" : ext.source.level === "project" ? "Project" : "Native";
 		this.#pushWrapped(
 			lines,
@@ -917,7 +919,7 @@ export class InspectorPanel implements Component {
 
 	#pushParams(lines: string[], params: ToolParamView[], width: number, indent: string): void {
 		if (params.length === 0) {
-			lines.push(`${indent}${theme.fg("dim", "(no arguments)")}`);
+			lines.push(`${indent}${theme.fg("dim", "（无参数）")}`);
 			return;
 		}
 		for (const param of params) {

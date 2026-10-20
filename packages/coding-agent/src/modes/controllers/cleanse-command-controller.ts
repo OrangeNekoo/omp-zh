@@ -119,7 +119,7 @@ export class CleanseCommandController {
 	async #pickTarget(checkers: readonly CleanseCheckerDescriptor[]): Promise<CleanseTargetChoice> {
 		const allOption = `Run all ${checkers.length} discovered checker${checkers.length === 1 ? "" : "s"}`;
 		const labels = checkers.map(checker => `${checker.label} — ${checker.command}`);
-		const choice = await this.ctx.showHookSelector("Select what to cleanse", [
+		const choice = await this.ctx.showHookSelector("选择要清理的内容", [
 			allOption,
 			...labels,
 			CUSTOM_REQUEST_OPTION,

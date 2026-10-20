@@ -83,11 +83,11 @@ const SOURCE_ORDER: Record<AgentSource, number> = { project: 0, user: 1, bundled
 const SOURCES = ["project", "user", "bundled"] as const satisfies readonly AgentSource[];
 /** Per-agent override columns of the config picker; lower priorities hide first. */
 const AGENT_COLUMNS: readonly TspPickerColumn[] = [
-	{ id: "model", head: "Model", format: "text", priority: 4, min: 8 },
-	{ id: "prewalk", head: "Prewalk", format: "text", priority: 2 },
-	{ id: "advisor", head: "Advisor", format: "text", priority: 3 },
+	{ id: "model", head: "模型", format: "text", priority: 4, min: 8 },
+	{ id: "prewalk", head: "预走", format: "text", priority: 2 },
+	{ id: "advisor", head: "顾问", format: "text", priority: 3 },
 ];
-const SOURCE_COLUMN: TspPickerColumn = { id: "source", head: "Source", format: "dim", priority: 1 };
+const SOURCE_COLUMN: TspPickerColumn = { id: "source", head: "来源", format: "dim", priority: 1 };
 
 interface SidebarEntry extends HubSidebarEntry<"all" | "source" | "new" | "separator"> {
 	source?: AgentSource;
@@ -506,18 +506,18 @@ export class AgentsHubComponent implements Component {
 		if (property === "model") {
 			chips.push({
 				label: "选择模型…",
-				styled: theme.fg("accent", "pick model…"),
+				styled: theme.fg("accent", "选择模型…"),
 				action: { kind: "pick", property },
 			});
 			chips.push({
 				label: "模式…",
-				styled: theme.fg("muted", "pattern…"),
+				styled: theme.fg("muted", "模式…"),
 				action: { kind: "pattern", property },
 			});
 			if (agent.overrideModel) {
 				chips.push({
 					label: "清除覆盖",
-					styled: theme.fg("warning", "clear override"),
+					styled: theme.fg("warning", "清除覆盖"),
 					action: { kind: "set", property, value: undefined },
 				});
 			}
@@ -539,12 +539,12 @@ export class AgentsHubComponent implements Component {
 			});
 			chips.push({
 				label: "选择模型…",
-				styled: theme.fg("accent", "pick model…"),
+				styled: theme.fg("accent", "选择模型…"),
 				action: { kind: "pick", property },
 			});
 			chips.push({
 				label: "模式…",
-				styled: theme.fg("muted", "pattern…"),
+				styled: theme.fg("muted", "模式…"),
 				action: { kind: "pattern", property },
 			});
 		}
@@ -1039,7 +1039,7 @@ export class AgentsHubComponent implements Component {
 			);
 		}
 		if (this.#createActive) {
-			return truncateToWidth(theme.fg("accent", " New agent — describe it and let the architect draft it"), width);
+			return truncateToWidth(theme.fg("accent", " 新代理 — 描述需求，由架构代理起草"), width);
 		}
 		if (this.#notice) return truncateToWidth(theme.fg("success", ` ${this.#notice}`), width);
 		const entry = this.#activeEntry();
@@ -1053,7 +1053,7 @@ export class AgentsHubComponent implements Component {
 		const query = this.#search.getValue();
 		const searchText = query
 			? theme.fg("accent", this.#search.render(visibleWidth(query) + 1)[0] ?? "")
-			: theme.fg("dim", "type to filter");
+			: theme.fg("dim", "输入以筛选");
 		lines.push(truncateToWidth(` ${theme.fg("muted", "search:")} ${searchText}`, width));
 		lines.push("");
 		this.#listRowStart = lines.length;
@@ -1077,7 +1077,7 @@ export class AgentsHubComponent implements Component {
 			const hovered = i === this.#rowHover;
 			const cursor = selected && listFocused ? theme.fg("accent", theme.nav.cursor) : " ";
 			if (rowDef.kind === "new") {
-				let line = ` ${cursor} ${theme.fg(selected ? "accent" : "dim", "+ New agent…")}`;
+				let line = ` ${cursor} ${theme.fg(selected ? "accent" : "dim", "+ 新建代理…")}`;
 				if (hovered) line = theme.bg("selectedBg", line);
 				lines.push(truncateToWidth(line, width));
 				continue;
@@ -1123,7 +1123,7 @@ export class AgentsHubComponent implements Component {
 			lines.push(truncateToWidth(` ${theme.fg("dim", replaceTabs(agent.description))}`, width));
 			const patterns = this.#deps.effectiveModelPatterns(agent);
 			const resolved = this.#deps.resolvePatterns(patterns);
-			const modelLine = `${theme.fg("muted", "model:")} ${patterns.length > 0 ? replaceTabs(patterns.join(",")) : theme.fg("dim", "(session model)")}${resolved ? ` ${theme.fg("dim", "→")} ${theme.fg("success", resolved)}` : ""}`;
+			const modelLine = `${theme.fg("muted", "model:")} ${patterns.length > 0 ? replaceTabs(patterns.join(",")) : theme.fg("dim", "（会话模型）")}${resolved ? ` ${theme.fg("dim", "→")} ${theme.fg("success", resolved)}` : ""}`;
 			lines.push(truncateToWidth(` ${modelLine}`, width));
 			const prewalk = this.#deps.effectivePrewalkPattern(agent);
 			const advisor = this.#deps.effectiveAdvisorPattern(agent);
@@ -1136,7 +1136,7 @@ export class AgentsHubComponent implements Component {
 				.join("   ");
 			lines.push(truncateToWidth(` ${flagLine}`, width));
 		} else {
-			lines.push(theme.fg("dim", " Select an agent to inspect"));
+			lines.push(theme.fg("dim", " 选择要查看的代理"));
 			lines.push("");
 			lines.push("");
 		}
@@ -1148,7 +1148,7 @@ export class AgentsHubComponent implements Component {
 		lines.push("");
 		if (this.#createSpec) {
 			const spec = this.#createSpec;
-			lines.push(truncateToWidth(theme.bold(theme.fg("accent", " Review generated agent")), width));
+			lines.push(truncateToWidth(theme.bold(theme.fg("accent", " 查看生成的代理")), width));
 			lines.push("");
 			lines.push(truncateToWidth(theme.fg("muted", ` Identifier: ${spec.identifier}`), width));
 			lines.push(truncateToWidth(theme.fg("muted", ` Scope: ${this.#createScope}`), width));
@@ -1158,7 +1158,7 @@ export class AgentsHubComponent implements Component {
 				lines.push(truncateToWidth(` ${line}`, width));
 			}
 			lines.push("");
-			lines.push(theme.fg("muted", " systemPrompt preview:"));
+			lines.push(theme.fg("muted", " systemPrompt 预览："));
 			const promptWidth = Math.max(20, width - 4);
 			const wrapped: string[] = [];
 			for (const raw of spec.systemPrompt.split("\n")) {
@@ -1172,11 +1172,11 @@ export class AgentsHubComponent implements Component {
 				lines.push(theme.fg("dim", `   … ${wrapped.length - budget} more lines`));
 			}
 		} else {
-			lines.push(truncateToWidth(theme.bold(theme.fg("accent", " Create new agent")), width));
+			lines.push(truncateToWidth(theme.bold(theme.fg("accent", " 新建代理")), width));
 			lines.push("");
 			lines.push(
 				truncateToWidth(
-					theme.fg("muted", " Describe what the agent should do; scope: ") + theme.fg("accent", this.#createScope),
+					theme.fg("muted", " 描述该代理的职责；范围：") + theme.fg("accent", this.#createScope),
 					width,
 				),
 			);
@@ -1429,12 +1429,12 @@ export class AgentsHubComponent implements Component {
 		if (strip) {
 			actions = [
 				{ id: "apply", label: strip.property ? "Apply" : "Open", keys: ["enter"], primary: true },
-				{ id: "back", label: strip.property ? "Back" : "Cancel", keys: ["esc"], end: true },
+				{ id: "back", label: strip.property ? "返回" : "取消", keys: ["esc"], end: true },
 			];
 		} else {
 			const noAgent = agent ? undefined : "Select an agent";
 			actions = [
-				{ id: "configure", label: agent ? "Configure" : "Create", keys: ["enter"], primary: true },
+				{ id: "configure", label: agent ? "配置" : "创建", keys: ["enter"], primary: true },
 				{
 					id: "toggle",
 					label: "切换",
@@ -1542,16 +1542,16 @@ export class AgentsHubComponent implements Component {
 		const prewalk = this.#deps.effectivePrewalkPattern(agent);
 		const advisor = this.#deps.effectiveAdvisorPattern(agent);
 		const facts: { k: string; v: TspSpan[] | string }[] = [
-			{ k: "Model", v: model },
-			{ k: "Prewalk", v: [prewalk ? span(prewalk, "mono") : span("off", "dim")] },
-			{ k: "Advisor", v: [advisor ? span(advisor, "mono") : span("off", "dim")] },
+			{ k: "模型", v: model },
+			{ k: "预走", v: [prewalk ? span(prewalk, "mono") : span("off", "dim")] },
+			{ k: "顾问", v: [advisor ? span(advisor, "mono") : span("off", "dim")] },
 			{ k: "Status", v: [agent.disabled ? span("已禁用", "warning") : span("已启用", "success")] },
-			{ k: "Source", v: SOURCE_LABEL[agent.source] },
+			{ k: "来源", v: SOURCE_LABEL[agent.source] },
 		];
 		if (agent.filePath) {
 			// Bundled agents live in the binary (`embedded:…`): nothing to open.
 			const href = agent.filePath.startsWith("/") ? { href: `file://${agent.filePath}` } : undefined;
-			facts.push({ k: "File", v: [span(shortenPath(agent.filePath), "path", href)] });
+			facts.push({ k: "文件", v: [span(shortenPath(agent.filePath), "path", href)] });
 		}
 		const out: NativeChild[] = [
 			node("text", { text: agent.name, role: "omp.picker.title" }, undefined, "title"),
@@ -1562,7 +1562,7 @@ export class AgentsHubComponent implements Component {
 			out.push(
 				node(
 					"section",
-					{ head: "System prompt", role: "omp.agents.prompt" },
+					{ head: "系统提示词", role: "omp.agents.prompt" },
 					[code(agent.systemPrompt, { lang: "md", wrap: true })],
 					"prompt",
 				),

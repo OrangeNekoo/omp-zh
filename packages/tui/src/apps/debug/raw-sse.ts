@@ -279,7 +279,9 @@ export class RawSseViewerComponent implements Component {
 						col(
 							[
 								text("尚未捕获原始 SSE 帧", { role: "omp.app.empty-title" }),
-								text([span("HTTP SSE 服务商会在模型响应流式传输时填充此视图。", "muted")]),
+								text([
+									span("HTTP SSE 服务商会在模型响应流式传输时填充此视图。", "muted"),
+								]),
 							],
 							{ gap: "xs", align: "center", role: "omp.app.empty" },
 						),
@@ -409,8 +411,8 @@ export class RawSseViewerComponent implements Component {
 	#formatRawLines(snapshot: RawSseDebugSnapshot, innerWidth: number): string[] {
 		if (snapshot.records.length === 0) {
 			return [
-				theme.fg("muted", "No raw SSE frames captured yet."),
-				theme.fg("muted", "HTTP SSE providers populate this view while a model response is streaming."),
+				theme.fg("muted", "尚未捕获原始 SSE 帧。"),
+				theme.fg("muted", "HTTP SSE 服务商会在模型响应流式传输时填充此视图。"),
 			];
 		}
 		const lines: string[] = [];
@@ -456,10 +458,10 @@ export class RawSseViewerComponent implements Component {
 		const snapshot = this.#currentSnapshot();
 		const last = snapshot.lastUpdatedAt
 			? `${theme.fg("muted", "last")} ${theme.fg("accent", formatRawSseIsoTime(snapshot.lastUpdatedAt))}`
-			: theme.fg("muted", "waiting for first frame");
+			: theme.fg("muted", "等待首帧");
 		const follow = this.#frame.isFollowingTail()
-			? theme.fg("success", "follow on")
-			: theme.fg("warning", "follow off");
+			? theme.fg("success", "跟随开启")
+			: theme.fg("warning", "跟随关闭");
 		return `${theme.fg("muted", "events")} ${theme.fg("accent", String(snapshot.totalEvents))}  ${theme.fg("muted", "records")} ${theme.fg("accent", String(snapshot.records.length))}  ${last}  ${follow}`;
 	}
 

@@ -177,7 +177,7 @@ export function renderResult(
 	if (content?.type !== "text" || !("text" in content) || !content.text) {
 		const icon = formatStatusIcon("warning", theme, options.spinnerFrame);
 		const header = `${icon} LSP`;
-		return new Text([header, theme.fg("dim", "No result")].join("\n"), 0, 0);
+		return new Text([header, theme.fg("dim", "无结果")].join("\n"), 0, 0);
 	}
 
 	const text = content.text;
@@ -280,7 +280,7 @@ export function renderResult(
 			phase: isPartial ? "partial" : state,
 			sections: [
 				...(requestLines.length > 0 ? [{ content: requestLines }] : []),
-				{ label: theme.fg("toolTitle", "Response"), content: contentLines },
+				{ label: theme.fg("toolTitle", "响应"), content: contentLines },
 			],
 			applyBg: false,
 		};
@@ -662,7 +662,7 @@ function renderGeneric(text: string, lines: string[], expanded: boolean, theme: 
 				: theme.styledSymbol("status.info", "accent");
 
 	if (expanded) {
-		let output = `${icon} ${theme.fg("dim", "Output")}`;
+		let output = `${icon} ${theme.fg("dim", "输出")}`;
 		for (let i = 0; i < lines.length; i++) {
 			const isLast = i === lines.length - 1;
 			const branch = isLast ? theme.tree.last : theme.tree.branch;

@@ -44,7 +44,17 @@ import {
 } from "@oh-my-pi/pi-tui";
 import type { TerminalAppearanceRequestToken } from "@oh-my-pi/pi-tui/terminal";
 import type { DescribeContext, NativeChild, NativeNode, NativeUiEvent } from "@oh-my-pi/pi-tui/native/node";
-import { col, kbd, node, row, span, text } from "@oh-my-pi/pi-tui/native/describe";
+import { col, compact, kbd, keyed, node, row, span, text } from "@oh-my-pi/pi-tui/native/describe";
+import {
+	describeJobWidgetMiniSpark,
+	describeJobWidgetsHovercard,
+	type JobWidgetEntry,
+	jobWidgetGlance,
+	jobWidgetGlanceSpans,
+	jobWidgetSummary,
+	latestJobWidget,
+} from "@oh-my-pi/pi-tui/tools/job-widget";
+import type { JobWidgetRegistry } from "../job-widgets/types";
 import { sameItems } from "@oh-my-pi/pi-tui/native/memo";
 import { describeSegmentTrack, renderSegmentTrack, type TrackSegment } from "@oh-my-pi/pi-tui/chrome/segment-track";
 import type { WorkingRowSpec } from "@oh-my-pi/pi-tui/components/loader";
@@ -57,6 +67,7 @@ import {
 	adjustHsv,
 	formatDuration,
 	formatNumber,
+	getActiveProfile,
 	getProjectDir,
 	isEnoent,
 	logger,
@@ -753,6 +764,76 @@ const JOBS_SEGMENT: RunningSegmentSpec = {
 	act: "jobs.open",
 };
 
+/** The jobs segment with the widgets it was described from (`id:updatedAt:state` per widget). */
+interface JobsSegment extends RunningSegment {
+	readonly widgets: string;
+}
+
+/**
+ * `prev` while it still shows `running` jobs and the same widget data, else a
+ * fresh jobs segment; undefined when nothing runs.
+ */
+function jobsSegment(
+	prev: JobsSegment | undefined,
+	running: number,
+	entries: readonly JobWidgetEntry[],
+): JobsSegment | undefined {
+	if (running === 0) return undefined;
+	let widgets = "";
+	for (const entry of entries) widgets += `${entry.id}:${entry.view.updatedAt}:${entry.view.state};`;
+	if (prev?.running === running && prev.widgets === widgets) return prev;
+	const described =
+		entries.length > 0 ? describeJobsSegment(running, entries) : describeRunningSegment(JOBS_SEGMENT, running);
+	return { running, widgets, node: described };
+}
+
+/**
+ * The jobs segment while jobs draw widgets: the count, then the freshest
+ * widget's headline and a mini spark of its primary series. The hover label
+ * lists every widget on its own line; the hover card stacks their compact
+ * widgets.
+ */
+function describeJobsSegment(running: number, entries: readonly JobWidgetEntry[]): NativeNode {
+	const label = `${running} ${JOBS_SEGMENT.noun}${running === 1 ? "" : "s"} running`;
+	const latest = latestJobWidget(entries)?.view;
+	const glance = latest && jobWidgetGlance(latest);
+	const spark = latest && describeJobWidgetMiniSpark(latest);
+	const title = [
+		`${label}  ${JOBS_SEGMENT.shortcut}`,
+		...entries.map(entry => `${entry.id}  ${jobWidgetSummary(entry.view)}`),
+	].join("\n");
+	const hovercard = describeJobWidgetsHovercard(entries);
+	return node(
+		"row",
+		{
+			role: "omp.hud.seg",
+			gap: "xs",
+			align: "center",
+			title,
+			aria: label,
+			actions: { click: JOBS_SEGMENT.act },
+			...(hovercard ? { hovercard } : {}),
+		},
+		compact([
+			node("icon", { name: JOBS_SEGMENT.icon, tone: JOBS_SEGMENT.tone }, undefined, "icon"),
+			node("text", { spans: [span(String(running), "num")], wrap: "none" }, undefined, "count"),
+			glance &&
+				node(
+					"text",
+					{
+						role: "omp.hud.glance",
+						spans: jobWidgetGlanceSpans({ text: glance.text, ...(glance.trend ? { trend: glance.trend } : {}) }),
+						wrap: "none",
+					},
+					undefined,
+					"glance",
+				),
+			spark && keyed(spark, "spark"),
+		]),
+		JOBS_SEGMENT.key,
+	);
+}
+
 /** One counter segment: a tinted icon and the bare count; the words live in the hover label. */
 function describeRunningSegment(spec: RunningSegmentSpec, running: number): NativeNode {
 	const label = `${running} ${spec.noun}${running === 1 ? "" : "s"} running`;
@@ -1065,11 +1146,12 @@ function renderSubagentToolPreview(session: ObservableSession, width: number): s
 }
 
 /**
- * Build the anchored subagent HUD block: a bold accent "Subagents" header plus
- * a bounded set of running-agent rows in the same `Id ⟨role⟩: description` shape
- * the inline task rows use (muted task preview when no description was given).
- * Layout mirrors the Todos HUD exactly: unindented header, then
- * `renderTreeList` rows (dim connectors) shifted right by one space.
+ * Build the anchored subagent HUD block: a bold accent "Subagents · N running"
+ * header (with the agent-hub key right-aligned when `hubKey` is given) plus
+ * a bounded set of running-agent rows in the same `Id ⟨role⟩: description`
+ * shape the inline task rows use (muted assignment preview when no
+ * description was given). Layout mirrors the Todos HUD exactly: unindented
+ * header, then `renderTreeList` rows (dim connectors) shifted right by one space.
  * Every active subagent is listed — detached background spawns and sync task
  * calls alike — so the pinned block doubles as a click jump list.
  * With `livePreview` (`display.subagentLivePreview`), a row that has called a
@@ -1082,6 +1164,7 @@ export function renderSubagentHudLines(
 	columns: number,
 	expanded = false,
 	livePreview = false,
+	hubKey?: string,
 ): string[] {
 	const running = sessions.filter(isHudSubagent);
 	if (running.length === 0) return [];
@@ -1131,12 +1214,19 @@ export function renderSubagentHudLines(
 						line += `${theme.fg("accent", ":")} ${theme.fg("accent", truncateToWidth(formatted, budget))}`;
 					}
 				} else {
-					// No spawn description: fall back to a muted task preview, same as
-					// the inline task rows when a row has no label.
-					const taskPreview = session.progress?.task?.trim();
-					if (taskPreview && !labelEchoesHandle(session.id, taskPreview)) {
-						const formatted = replaceTabs(taskPreview).replace(/\s*[\r\n]+\s*/g, " ↵ ");
-						const budget = Math.min(TRUNCATE_LENGTHS.SHORT, Math.max(0, rowWidth - visibleWidth(line) - 1));
+					// No spawn description: fall back to a muted preview of the raw
+					// assignment — never the rendered prompt, whose fixed template
+					// preamble would fill the row instead of the work. Every spawn
+					// that renders the template (task tool, structured/eval spawns)
+					// also records `assignment`; `task` alone is a raw message
+					// (IRC-woken or direct sends), so it is safe to preview as is.
+					const preview = (session.progress?.assignment ?? session.progress?.task)?.trim();
+					if (preview && !labelEchoesHandle(session.id, preview)) {
+						const formatted = shortenEmbeddedPaths(replaceTabs(sanitizeText(preview))).replace(
+							/\s*[\r\n]+\s*/g,
+							" ↵ ",
+						);
+						const budget = Math.max(0, rowWidth - visibleWidth(line) - 1);
 						if (budget > 0) line += ` ${theme.fg("muted", truncateToWidth(formatted, budget))}`;
 					}
 				}
@@ -1173,12 +1263,13 @@ export function renderSubagentHudLines(
 		);
 		cursor += count;
 	}
-	return [
-		"",
-		truncateToWidth(theme.bold(theme.fg("accent", "Subagents")), contentColumns),
-		...itemLines,
-		...toggleRow,
-	];
+	const title = theme.bold(theme.fg("accent", "子代理"));
+	const runningLabel = theme.fg("dim", `${theme.sep.dot}${running.length} running`);
+	const titleText = truncateToWidth(`${title}${runningLabel}`, contentColumns);
+	const hint = hubKey ? theme.fg("dim", hubKey) : "";
+	const gap = contentColumns - visibleWidth(titleText) - visibleWidth(hint);
+	const header = hint && gap >= 2 ? `${titleText}${" ".repeat(gap)}${hint}` : titleText;
+	return ["", header, ...itemLines, ...toggleRow];
 }
 
 const CTRL_L_APPEARANCE_RESPONSE_DEADLINE_MS = 2000;
@@ -1190,6 +1281,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	#ownsStartedUi: boolean;
 	session: AgentSession;
 	sessionManager: SessionManager;
+	refreshScopedModelsAfterLogin?: () => Promise<void>;
 	settings: Settings;
 	keybindings: KeybindingsManager;
 	agent: Agent;
@@ -1370,7 +1462,21 @@ export class InteractiveMode implements InteractiveModeContext {
 	#todoHudNative: { checklist: NativeNode; fallback: NativeNode } | undefined;
 	#hudPillsNative: { children: readonly NativeChild[]; node: NativeNode } | undefined;
 	#agentsSegment: RunningSegment | undefined;
-	#jobsSegment: RunningSegment | undefined;
+	#jobsSegment: JobsSegment | undefined;
+	/** The job widget registry this mode repaints on, and how to stop listening to it. */
+	#jobWidgetsListener: { registry: JobWidgetRegistry; unsubscribe: () => void } | undefined;
+	/**
+	 * Repaint whenever a shown job widget changes (the HUD jobs segment, the
+	 * status line's glance), following the root job manager's current registry.
+	 */
+	#syncJobWidgetsListener(): void {
+		const registry = this.session.asyncJobManager?.widgets;
+		if (this.#jobWidgetsListener?.registry === registry) return;
+		this.#jobWidgetsListener?.unsubscribe();
+		this.#jobWidgetsListener = registry
+			? { registry, unsubscribe: registry.subscribe(() => this.ui.requestRender()) }
+			: undefined;
+	}
 	/** Gen tok/s for the native composer bar, one decimal (a steadier `rate` target): live while running, else the last reading. */
 	#nativeTokenRate(): number | undefined {
 		if (!cfgComposerTokenRate.get(settings)) return undefined;
@@ -1414,7 +1520,12 @@ export class InteractiveMode implements InteractiveModeContext {
 			shortcut: formatDoubleTap("left"),
 			act: "agents.open",
 		});
-		this.#jobsSegment = runningSegment(this.#jobsSegment, this.statusLine.runningBackgroundJobCount(), JOBS_SEGMENT);
+		this.#syncJobWidgetsListener();
+		// A subagent's task job draws a widget too, though it counts as no
+		// background job: its widget alone keeps the segment and hover card up.
+		const widgets = this.session.getRunningJobWidgets();
+		const runningJobs = Math.max(this.statusLine.runningBackgroundJobCount(), widgets.length);
+		this.#jobsSegment = jobsSegment(this.#jobsSegment, runningJobs, widgets);
 		const segments: NativeChild[] = [];
 		if (this.#agentsSegment) segments.push(this.#agentsSegment.node);
 		if (this.#jobsSegment) segments.push(this.#jobsSegment.node);
@@ -1765,7 +1876,9 @@ export class InteractiveMode implements InteractiveModeContext {
 		eventBus?: EventBus,
 		composer?: Composer,
 		subagentEventBus?: EventBus,
+		refreshScopedModelsAfterLogin?: () => Promise<void>,
 	) {
+		this.refreshScopedModelsAfterLogin = refreshScopedModelsAfterLogin;
 		this.session = session;
 		this.sessionManager = session.sessionManager;
 		this.settings = session.settings;
@@ -1911,7 +2024,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			// The prediction daemon learns from history.db; nudge it once each prompt is durable.
 			this.historyStorage.setAddListener(syncTextPrediction);
 			this.historyStorage.setErrorListener(() => {
-				this.showWarning("Prompt history could not be saved; this prompt may be unavailable after restart.");
+				this.showWarning("提示词历史保存失败；重启后此提示可能不可用。");
 			});
 		} catch (error) {
 			logger.warn("History storage unavailable", { error: String(error) });
@@ -2289,7 +2402,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					return;
 				case "copy":
 					copyToClipboard(action.text).then(
-						() => this.showStatus("Copied to clipboard"),
+						() => this.showStatus("已复制到剪贴板"),
 						(error: unknown) =>
 							this.showWarning(`Copy failed: ${error instanceof Error ? error.message : String(error)}`),
 					);
@@ -2485,6 +2598,13 @@ export class InteractiveMode implements InteractiveModeContext {
 		// Subscribe to agent events
 		this.#subscribeToAgent();
 
+		// Job widgets refresh in the background; repaint the HUD and status line glance when one changes.
+		this.#syncJobWidgetsListener();
+		this.#eventBusUnsubscribers.push(() => {
+			this.#jobWidgetsListener?.unsubscribe();
+			this.#jobWidgetsListener = undefined;
+		});
+
 		this.#eventBusUnsubscribers.push(
 			this.session.subscribe(event => {
 				if (event.type === "model_changed") {
@@ -2652,7 +2772,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			this.session.extensionRunner?.getRegisteredCommands(BUILTIN_SLASH_COMMAND_RESERVED_NAMES) ?? []
 		).map(cmd => ({
 			name: cmd.name,
-			description: cmd.description ?? "(hook command)",
+			description: cmd.description ?? "（hook 命令）",
 			icon: getSlashCommandTypeIcon("extension"),
 			iconName: "extension",
 			getArgumentCompletions: cmd.getArgumentCompletions,
@@ -3806,7 +3926,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			if (ansi) {
 				this.editor.borderColor = (str: string) => `${ansi}${str}\x1b[39m`;
 			} else {
-				const level = this.session.thinkingLevel ?? ThinkingLevel.Off;
+				const level = this.viewSession.thinkingLevel ?? ThinkingLevel.Off;
 				this.editor.borderColor = theme.getThinkingBorderColor(level);
 			}
 		}
@@ -4638,7 +4758,8 @@ export class InteractiveMode implements InteractiveModeContext {
 		const running = sessions.filter(isHudSubagent);
 		const expanded = this.#pinnedHudOverride ?? mode === "full";
 		const livePreview = cfgDisplaySubagentLivePreview.get(settings);
-		const lines = renderSubagentHudLines(sessions, this.ui.terminal.columns, expanded, livePreview);
+		const hubKey = appKey(this.keybindings, "app.agents.hub") || undefined;
+		const lines = renderSubagentHudLines(sessions, this.ui.terminal.columns, expanded, livePreview, hubKey);
 		if (lines.length === 0) return undefined;
 		const layout = layoutPinnedHud(running.length, expanded);
 		const tickMs =
@@ -5033,11 +5154,11 @@ export class InteractiveMode implements InteractiveModeContext {
 			return;
 		}
 		if (this.goalModeEnabled || this.goalModePaused) {
-			this.showWarning("Exit goal mode first.");
+			this.showWarning("请先退出目标模式。");
 			return;
 		}
 		if (this.vibeModeEnabled) {
-			this.showWarning("Exit vibe mode first.");
+			this.showWarning("请先退出 Vibe 模式。");
 			return;
 		}
 
@@ -5065,7 +5186,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			planAugmentations.push("write");
 		} else if (previousTools.includes("write")) {
 			this.showWarning(
-				"Plan mode: the `write` tool is provided by an extension and cannot submit plans. Disable it to use plan mode.",
+				"计划模式：`write` 工具由扩展提供，无法提交计划。请禁用它以使用计划模式。",
 			);
 		}
 		const uniquePlanTools = [...new Set([...previousTools.filter(name => name !== "write"), ...planAugmentations])];
@@ -5279,7 +5400,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			return;
 		}
 		if (this.vibeModeEnabled) {
-			this.showWarning("Exit vibe mode first.");
+			this.showWarning("请先退出 Vibe 模式。");
 			return;
 		}
 		const previousTools = this.session.getEnabledToolNames().filter(name => name !== "goal");
@@ -5334,13 +5455,13 @@ export class InteractiveMode implements InteractiveModeContext {
 		this.#updateGoalModeStatus();
 		if (!options?.silent) {
 			if (options?.reason === "completed") {
-				this.showStatus("Goal mode completed.");
+				this.showStatus("目标模式已完成。");
 			} else if (options?.reason === "dropped") {
-				this.showStatus("Goal dropped.");
+				this.showStatus("目标已放弃。");
 			} else if (options?.paused) {
-				this.showStatus("Goal mode paused.");
+				this.showStatus("目标模式已暂停。");
 			} else {
-				this.showStatus("Goal mode disabled.");
+				this.showStatus("目标模式已禁用。");
 			}
 		}
 	}
@@ -5597,7 +5718,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	async #copyPlanToClipboard(content: string): Promise<void> {
 		try {
 			await copyToClipboard(content);
-			this.showStatus("Copied plan to clipboard");
+			this.showStatus("已将计划复制到剪贴板");
 		} catch (error) {
 			this.showWarning(
 				`Failed to copy plan to clipboard: ${error instanceof Error ? error.message : String(error)}`,
@@ -5689,7 +5810,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	async #openPlanInExternalEditor(planFilePath: string): Promise<void> {
 		const editorCmd = getEditorCommand();
 		if (!editorCmd) {
-			this.showWarning("No editor configured. Set $VISUAL or $EDITOR environment variable.");
+			this.showWarning("未配置编辑器。请设置 $VISUAL 或 $EDITOR 环境变量。");
 			return;
 		}
 
@@ -5715,7 +5836,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			if (result !== null) {
 				await Bun.write(resolvedPath, result);
 				this.#planReviewOverlay?.setPlanContent(result);
-				this.showStatus("Plan updated in external editor.");
+				this.showStatus("计划已在外部编辑器中更新。");
 			}
 		} catch (error) {
 			this.showWarning(`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`);
@@ -5728,7 +5849,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	async #openPlanAnnotationInExternalEditor(draft: string, commit: (text: string | null) => void): Promise<void> {
 		const editorCmd = getEditorCommand();
 		if (!editorCmd) {
-			this.showWarning("No editor configured. Set $VISUAL or $EDITOR environment variable.");
+			this.showWarning("未配置编辑器。请设置 $VISUAL 或 $EDITOR 环境变量。");
 			return;
 		}
 
@@ -5900,7 +6021,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			// `AgentSession.#buildPlanReferenceMessage` injects the plan reference
 			// on the operator's next `prompt()` call.
 			this.showWarning(
-				"Plan approved, but compaction was cancelled — execution not dispatched. Submit a turn to continue.",
+				"计划已批准，但压缩被取消 — 未派发执行。提交一轮以继续。",
 			);
 			return false;
 		}
@@ -5974,18 +6095,18 @@ export class InteractiveMode implements InteractiveModeContext {
 		input?: Pick<SubmittedUserInput, "images" | "imageLinks">,
 	): Promise<boolean> {
 		if (this.goalModeEnabled || this.goalModePaused) {
-			this.showWarning("Exit goal mode first.");
+			this.showWarning("请先退出目标模式。");
 			return false;
 		}
 		if (this.vibeModeEnabled) {
-			this.showWarning("Exit vibe mode first.");
+			this.showWarning("请先退出 Vibe 模式。");
 			return false;
 		}
 		if (this.planModeEnabled) {
 			const planFilePath = this.planModePlanFilePath ?? (await this.#getPlanFilePath());
 			if (await this.#hasPlanModeDraftContent(planFilePath)) {
 				const confirmed = await this.showHookConfirm(
-					"Exit plan mode?",
+					"退出计划模式？",
 					"This exits plan mode without approving a plan.",
 				);
 				if (!confirmed) return false;
@@ -6003,11 +6124,11 @@ export class InteractiveMode implements InteractiveModeContext {
 			this.#planModeHasEntered = false;
 			this.#updatePlanModeStatus();
 			this.sessionManager.appendModeChange("none");
-			this.showStatus("Plan mode disabled.");
+			this.showStatus("计划模式已禁用。");
 			return false;
 		}
 		if (!cfgPlanEnabled.get(this.session.settings)) {
-			this.showWarning("Plan mode is disabled. Enable it in settings (plan.enabled).");
+			this.showWarning("计划模式已禁用。请在设置中启用（plan.enabled）。");
 			return false;
 		}
 		await this.#enterPlanMode();
@@ -6059,7 +6180,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			return false;
 		}
 		if (this.goalModeEnabled || this.goalModePaused) {
-			this.showWarning("Exit goal mode first.");
+			this.showWarning("请先退出目标模式。");
 			return false;
 		}
 		await this.#enterVibeMode();
@@ -6182,7 +6303,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			return;
 		}
 		if (this.goalModeEnabled || this.goalModePaused) {
-			this.showWarning("Exit goal mode first.");
+			this.showWarning("请先退出目标模式。");
 			return;
 		}
 
@@ -6216,7 +6337,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			this.#updateVibeModeStatus();
 			if (options?.persistModeChange !== false) this.sessionManager.appendModeChange("vibe", { previousTools });
 			this.showStatus(
-				"Vibe mode enabled. You direct fast/good worker sessions; toolset is read + optional parent Todo + vibe tools.",
+				"Vibe 模式已启用。你负责指挥 fast/good 工作会话；工具集为 read + 可选的父级 Todo + vibe 工具。",
 			);
 		})();
 		this.#vibeModeEntry = entry;
@@ -6258,11 +6379,11 @@ export class InteractiveMode implements InteractiveModeContext {
 	async #handleGoalBudgetCommand(rawBudget: string): Promise<void> {
 		const state = this.session.getGoalModeState();
 		if (!this.goalModeEnabled || !state?.enabled) {
-			this.showWarning("No active goal.");
+			this.showWarning("没有进行中的目标。");
 			return;
 		}
 		if (state.goal.status === "complete") {
-			this.showStatus("Goal is already complete.");
+			this.showStatus("目标已完成。");
 			return;
 		}
 		const trimmed = rawBudget.trim().toLowerCase();
@@ -6270,7 +6391,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		if (trimmed !== "off") {
 			const parsed = Number.parseInt(trimmed, 10);
 			if (!Number.isInteger(parsed) || parsed <= 0) {
-				this.showError("Goal budget must be a positive integer or `off`.");
+				this.showError("目标预算必须是正整数或 `off`。");
 				return;
 			}
 			nextBudget = parsed;
@@ -6290,18 +6411,18 @@ export class InteractiveMode implements InteractiveModeContext {
 			return false;
 		}
 		if (this.vibeModeEnabled) {
-			this.showWarning("Exit vibe mode first.");
+			this.showWarning("请先退出 Vibe 模式。");
 			return false;
 		}
 		if (!cfgGoalEnabled.get(this.session.settings)) {
-			this.showWarning("Goal mode is disabled. Enable it in settings (goal.enabled).");
+			this.showWarning("目标模式已禁用。请在设置中启用（goal.enabled）。");
 			return false;
 		}
 		const { sub, rest: subRest } = parseGoalSubcommand(rest ?? "");
 		if (sub) return await this.#dispatchGoalSubcommand(sub, subRest, input);
 		if (this.goalModeEnabled) {
 			if (subRest) {
-				this.showStatus("Goal mode is already active. Use /goal to manage it, or /goal drop to start over.");
+				this.showStatus("目标模式已启用。用 /goal 管理，或用 /goal drop 重新开始。");
 				return false;
 			}
 			await this.#openGoalMenu("active");
@@ -6310,7 +6431,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const pausedState = this.#getPausedGoalState();
 		if (pausedState) {
 			if (subRest) {
-				this.showWarning("Resume the current goal first, or drop it before setting a new objective.");
+				this.showWarning("请先继续当前目标，或放弃后再设置新目标。");
 				return false;
 			}
 			await this.#openGoalMenu("paused");
@@ -6318,7 +6439,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		}
 		if (subRest) return await this.#startGoalFromObjective(subRest, input);
 		const objective = (
-			await this.showHookEditor("Goal objective", undefined, undefined, {
+			await this.showHookEditor("目标内容", undefined, undefined, {
 				promptStyle: true,
 			})
 		)?.trim();
@@ -6335,19 +6456,19 @@ export class InteractiveMode implements InteractiveModeContext {
 				return false;
 			}
 			if (this.vibeModeEnabled) {
-				this.showWarning("Exit vibe mode first.");
+				this.showWarning("请先退出 Vibe 模式。");
 				return false;
 			}
 			if (!cfgGoalEnabled.get(this.session.settings)) {
-				this.showWarning("Goal mode is disabled. Enable it in settings (goal.enabled).");
+				this.showWarning("目标模式已禁用。请在设置中启用（goal.enabled）。");
 				return false;
 			}
 			if (this.goalModeEnabled) {
-				this.showStatus("Goal mode is already active. Use /goal to manage it, or /goal drop to start over.");
+				this.showStatus("目标模式已启用。用 /goal 管理，或用 /goal drop 重新开始。");
 				return false;
 			}
 			if (this.#getPausedGoalState()) {
-				this.showWarning("Resume the current goal first, or drop it before setting a new objective.");
+				this.showWarning("请先继续当前目标，或放弃后再设置新目标。");
 				return false;
 			}
 
@@ -6458,7 +6579,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const state = this.session.getGoalModeState();
 		const goal = state?.goal;
 		if (!goal) {
-			this.showStatus("No goal set.");
+			this.showStatus("未设置目标。");
 			return;
 		}
 		const used = goal.tokensUsed.toLocaleString();
@@ -6479,7 +6600,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const goal = this.session.getGoalModeState()?.goal;
 		const prefill = goal?.tokenBudget !== undefined ? String(goal.tokenBudget) : "";
 		const input = (
-			await this.showHookEditor("Goal budget (number, `off`, or empty to cancel)", prefill, undefined, {
+			await this.showHookEditor("目标预算（数字、`off`，或留空取消）", prefill, undefined, {
 				promptStyle: true,
 			})
 		)?.trim();
@@ -6489,7 +6610,7 @@ export class InteractiveMode implements InteractiveModeContext {
 
 	async #pauseGoalAction(): Promise<void> {
 		if (!this.goalModeEnabled) {
-			this.showWarning("No active goal to pause.");
+			this.showWarning("没有可暂停的目标。");
 			return;
 		}
 		await this.session.goalRuntime.pauseGoal();
@@ -6498,21 +6619,21 @@ export class InteractiveMode implements InteractiveModeContext {
 
 	async #resumeGoalAction(): Promise<void> {
 		if (!this.#getPausedGoalState()) {
-			this.showWarning("No paused goal to resume.");
+			this.showWarning("没有可继续的已暂停目标。");
 			return;
 		}
 		await this.#enterGoalMode({ resume: true, silent: true });
-		this.showStatus("Goal mode resumed.");
+		this.showStatus("目标模式已继续。");
 		this.#scheduleGoalContinuation();
 	}
 
 	async #confirmAndDropGoal(): Promise<void> {
 		if (!this.goalModeEnabled && !this.#getPausedGoalState()) {
-			this.showWarning("No goal to drop.");
+			this.showWarning("没有可放弃的目标。");
 			return;
 		}
 		const confirmed = await this.showHookConfirm(
-			"Drop goal?",
+			"放弃目标？",
 			"This removes the goal record. Accumulated usage stays in the session log.",
 		);
 		if (!confirmed) return;
@@ -6591,13 +6712,13 @@ export class InteractiveMode implements InteractiveModeContext {
 		input?: Pick<SubmittedUserInput, "images" | "imageLinks">,
 	): Promise<boolean> {
 		if (!this.goalModeEnabled && this.#getPausedGoalState()) {
-			this.showWarning("Resume the current goal first, or drop it before setting a new objective.");
+			this.showWarning("请先继续当前目标，或放弃后再设置新目标。");
 			return false;
 		}
 		const objective = rest.trim()
 			? rest.trim()
 			: (
-					await this.showHookEditor("Goal objective", undefined, undefined, {
+					await this.showHookEditor("目标内容", undefined, undefined, {
 						promptStyle: true,
 					})
 				)?.trim();
@@ -6682,7 +6803,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		options?: { abortTurn?: boolean; onOpened?: () => void },
 	): Promise<void> {
 		if (!this.planModeEnabled) {
-			this.showWarning("Plan mode is not active.");
+			this.showWarning("计划模式未启用。");
 			return;
 		}
 		const abortTurn = options?.abortTurn !== false;
@@ -6949,7 +7070,7 @@ export class InteractiveMode implements InteractiveModeContext {
 						this.#planReviewAnnotationState.delete(annotationStateKey);
 					}
 				} else {
-					this.showStatus("Refine plan: enter a follow-up prompt.");
+					this.showStatus("改进计划：输入后续提示词。");
 				}
 			} catch (error) {
 				this.showError(`Failed to refine plan: ${error instanceof Error ? error.message : String(error)}`);
@@ -7175,7 +7296,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const sessionId = this.#resumableSessionId();
 		if (sessionId) {
 			// Command on its own line so triple-click selects just the command (#11001).
-			process.stderr.write(`\n${chalk.dim("Resume this session with")}\n${chalk.dim(resumeCommand(sessionId))}\n`);
+			process.stderr.write(`\n${chalk.dim("继续此会话：")}\n${chalk.dim(resumeCommand(sessionId))}\n`);
 		}
 
 		await postmortem.quit(0);
@@ -7242,10 +7363,17 @@ export class InteractiveMode implements InteractiveModeContext {
 		}
 
 		const sessionFile = this.sessionManager.isSessionOnDisk() ? this.sessionManager.getSessionFile() : undefined;
+		// Pass the profile explicitly: native exec does not inherit Bun's process.env updates.
+		const activeProfile = getActiveProfile();
 		const cmd = [
 			...resolveCliEntryCmd(),
-			...restartArgv(process.argv.slice(2), sessionFile ? path.resolve(sessionFile) : undefined),
+			...restartArgv(
+				process.argv.slice(2),
+				sessionFile ? path.resolve(sessionFile) : undefined,
+				activeProfile ? { "--profile": true } : undefined,
+			),
 		];
+		if (activeProfile) cmd.push("--profile", activeProfile);
 		await postmortem.cleanup();
 		await postmortem.drainStdout();
 		if (process.platform !== "win32") {
@@ -7288,7 +7416,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	 */
 	#beginClose(): void {
 		this.#isShuttingDown = true;
-		this.showStatus("Closing session…");
+		this.showStatus("正在关闭会话…");
 	}
 
 	/** Shared `shutdown()`/`restart()` teardown: dispose the session and hand the terminal back. */
@@ -7303,7 +7431,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		// `#beginClose()` already acknowledged the close; escalate only once the
 		// teardown itself lingers, so time spent in exit prompts never counts.
 		const stillClosingTimer = setTimeout(() => {
-			this.showStatus("Still closing… (flushing memory backend / network)");
+			this.showStatus("仍在关闭…（正在刷新记忆后端 / 网络）");
 		}, STILL_CLOSING_DELAY_MS);
 		try {
 			this.#streamPublisher?.dispose();
@@ -7545,7 +7673,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		if (this.#jobsSheetHandle) return;
 		const session = this.viewSession;
 		if (!session.getAsyncJobTree()) {
-			this.showWarning("Async background jobs are unavailable in this session.");
+			this.showWarning("本会话不支持异步后台任务。");
 			return;
 		}
 		const sheet = new JobsSheet({
@@ -8024,7 +8152,7 @@ export class InteractiveMode implements InteractiveModeContext {
 
 	#vibeSessionTransitionBlocked(): boolean {
 		if (!this.vibeModeEnabled) return false;
-		this.showWarning("Exit vibe mode first.");
+		this.showWarning("请先退出 Vibe 模式。");
 		return true;
 	}
 
@@ -8103,7 +8231,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			if (
 				policy === "ask" &&
 				!(await this.showHookConfirm(
-					"Create a worktree for this session?",
+					"为此会话创建工作树？",
 					"Work happens on a new wt/* branch; this checkout stays untouched.",
 				))
 			) {
@@ -8162,11 +8290,11 @@ export class InteractiveMode implements InteractiveModeContext {
 	 *  or a disabled STT rules dictation out. */
 	#readySTTController(): STTController | undefined {
 		if (this.#liveCommandController.active) {
-			this.showWarning("End live mode before using push-to-talk speech input.");
+			this.showWarning("使用按住说话语音输入前请先退出实时模式。");
 			return undefined;
 		}
 		if (!cfgSttEnabled.get(settings)) {
-			this.showWarning("Speech-to-text is disabled. Enable it in settings: stt.enabled");
+			this.showWarning("语音转文字已禁用。请在设置中启用：stt.enabled");
 			return undefined;
 		}
 		this.#sttController ??= new STTController({
@@ -8237,7 +8365,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	/** Start or stop the Codex-backed realtime voice surface. */
 	async handleLiveCommand(): Promise<void> {
 		if (this.#dictationStarting || (this.#sttController && this.#sttController.state !== "idle")) {
-			this.showWarning("Finish the current speech-to-text capture before starting live mode.");
+			this.showWarning("启动实时模式前请先结束当前语音转文字采集。");
 			return;
 		}
 		await this.#liveCommandController.handleCommand();

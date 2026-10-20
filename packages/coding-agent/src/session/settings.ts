@@ -721,7 +721,7 @@ export const cfgRetryWaitForUsageReset = register({
 		group: "重试与备用",
 		label: "等待用量重置",
 		get description() {
-			return `When a provider reports usage-limit exhaustion with a reset time (5-hour or weekly quota windows on any provider), sleep until the reset instead of failing fast past retry.maxDelayMs. Waits are abortable (${formatKeyHint("escape")}) but also hold subagents, so leave off for unattended runs.`;
+			return `当服务商报告用量限额耗尽并给出重置时间（任意服务商的 5 小时或每周配额窗口）时，等到重置后再继续，而不是在超过 retry.maxDelayMs 后快速失败。等待可中断（${formatKeyHint("escape")}），但也会拖住子代理，无人值守运行时建议关闭。`;
 		},
 	},
 });
