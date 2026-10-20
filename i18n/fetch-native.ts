@@ -58,6 +58,48 @@ function nativeVersion(): string {
 	return manifest.version;
 }
 
+/** 把 `1.2.3` / `1.2.3-canary.4` 解析成可比较的数字段；预发布返回 null。 */
+function stableParts(version: string): number[] | null {
+	const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version);
+	return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+}
+
+/**
+ * 解析要安装的平台包版本。
+ *
+ * 上游发版后，npm 上的平台包通常比 workspace 里的 `package.json` 晚几分钟
+ * 到几十分钟。精确版本缺失时回退到已发布的最新稳定版：workspace 加载路径
+ * 会跳过版本校验（`ctx.isWorkspaceLoad`），旧一版的原生模块仍可启动，
+ * 比让整个同步流程卡住更有用。
+ */
+async function resolveNativeVersion(packageName: string, requested: string): Promise<string> {
+	const listed = await $`npm view ${packageName} versions --json`.quiet().nothrow();
+	if (listed.exitCode !== 0) return requested;
+	let versions: string[];
+	try {
+		const parsed: unknown = JSON.parse(listed.stdout.toString());
+		versions = Array.isArray(parsed)
+			? parsed.filter((value): value is string => typeof value === "string")
+			: typeof parsed === "string"
+				? [parsed]
+				: [];
+	} catch {
+		return requested;
+	}
+	if (versions.includes(requested)) return requested;
+	const stable = versions
+		.map(version => ({ version, parts: stableParts(version) }))
+		.filter((entry): entry is { version: string; parts: number[] } => entry.parts !== null)
+		.sort((a, b) => a.parts[0] - b.parts[0] || a.parts[1] - b.parts[1] || a.parts[2] - b.parts[2]);
+	const newest = stable.at(-1);
+	if (!newest) return requested;
+	process.stdout.write(
+		`${packageName}@${requested} 尚未发布，改用最新的已发布版本 ${newest.version}。\n` +
+			`（原生模块版本落后一版时仍可运行；需要严格一致请稍后重跑或本地构建。）\n`,
+	);
+	return newest.version;
+}
+
 function alreadyInstalled(tag: string): boolean {
 	return addonFilenames(tag).some(filename => fs.existsSync(path.join(NATIVE_OUT, filename)));
 }
@@ -110,7 +152,7 @@ async function main(): Promise<void> {
 		process.exit(1);
 	}
 
-	await download(tag, nativeVersion());
+	await download(tag, await resolveNativeVersion(`@oh-my-pi/pi-natives-${tag}`, nativeVersion()));
 }
 
 if (import.meta.main) {
