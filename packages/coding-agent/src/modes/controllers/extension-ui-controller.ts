@@ -58,8 +58,8 @@ function guestAskHelpText(enterAction: string, extra = ""): string {
 	return `${formatKeyHints(["up", "down"])} navigate  ${formatKeyHint("enter")} ${enterAction}  ${extra}${formatKeyHint("escape")} cancel`;
 }
 
-const ASK_OTHER_OPTION = "Other (type your own)";
-const ASK_CHAT_OPTION = "Chat about this";
+const ASK_OTHER_OPTION = "其他（自行输入）";
+const ASK_CHAT_OPTION = "就此提问";
 const ASK_NEXT_OPTION = "Next →";
 
 function withTerminalLauncher(uiContext: ExtensionUIContext, hasUI: boolean): ExtensionUIContext {
@@ -402,7 +402,7 @@ export class ExtensionUiController {
 				container.addChild(new Text(line, 1, 0));
 			}
 			if (content.length > MAX_WIDGET_LINES) {
-				container.addChild(new Text(theme.fg("muted", "...（小组件已截断）"), 1, 0));
+				container.addChild(new Text(theme.fg("muted", "…（小组件已截断）"), 1, 0));
 			}
 			return container;
 		}
@@ -1422,7 +1422,7 @@ export class ExtensionUiController {
 	 */
 	#rejectGuestExtensionTurn(): boolean {
 		if (!this.ctx.collabGuest) return false;
-		this.ctx.showStatus("协作会话中，由扩展发起的轮次仅在主机端可用");
+		this.ctx.showStatus("协作会话中，由扩展发起的回合仅在主机端可用");
 		return true;
 	}
 

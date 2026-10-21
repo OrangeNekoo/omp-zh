@@ -249,7 +249,7 @@ export function renderSearchCall(
 
 type SearchRenderArgs = { query?: string; [key: string]: unknown };
 
-const SEARCH_TITLE = "Web search";
+const SEARCH_TITLE = "网络搜索";
 
 function searchHead(query: string | undefined, meta?: string, badge?: { text: string; title?: string }) {
 	return {
@@ -295,7 +295,7 @@ function describeSearchResult(
 		return {
 			tool: searchHead(argQuery, label),
 			tone: "error",
-			body: [errorText(plainText(details.error).trim() || "Web search failed")],
+			body: [errorText(plainText(details.error).trim() || "网络搜索失败")],
 		};
 	}
 
@@ -305,7 +305,7 @@ function describeSearchResult(
 		return {
 			tool: searchHead(argQuery),
 			tone: "warning",
-			body: [noteText(rawText || "No response data")],
+			body: [noteText(rawText || "无响应数据")],
 		};
 	}
 

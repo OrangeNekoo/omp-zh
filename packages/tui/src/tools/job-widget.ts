@@ -431,7 +431,7 @@ export function describeJobTile(tile: JobTile): NativeNode {
 							size: "sm",
 							value: fraction(percent, 100),
 							label: `${percent}%`,
-							title: `The agent's own completion estimate: ${percent}%`,
+							title: `代理自身的完成度估计：${percent}%`,
 						}),
 						"ring",
 					),

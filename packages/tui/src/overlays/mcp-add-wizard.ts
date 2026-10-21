@@ -874,7 +874,7 @@ export class MCPAddWizard extends OverlayPanel {
 			title: "请求头名称",
 			lead: "携带密钥的 HTTP 请求头。",
 			initial: this.#state.headerName,
-			placeholder: "授权",
+			placeholder: "Authorization",
 			escape: "返回",
 			optional: false,
 		});

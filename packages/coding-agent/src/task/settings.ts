@@ -274,7 +274,7 @@ export const cfgTaskSpeculativeLaunch = register({
 		group: "子代理",
 		label: "推测性任务启动",
 		description:
-			"每个批次子代理在其 tasks[] 条目流式结束后立即启动，而不必等待整个 task 调用完成。若已完成的调用未通过校验、被阻止或其参数发生变化，已启动的代理会被中止。需要自动允许 task 审批，且没有扩展工具生命周期处理器。",
+			"每个批次子代理在其 tasks[] 条目流式结束后立即启动，而不必等待整个 task 调用完成。若已完成的调用未通过校验、被阻止或其参数发生变化，已启动的代理会被中止。需要 task 批准已设为自动允许，且没有扩展工具生命周期处理器。",
 	},
 });
 
@@ -285,7 +285,7 @@ export const cfgTaskEnableEffort = register({
 	ui: {
 		tab: "tasks",
 		group: "子代理",
-		label: "每任务努力",
+		label: "每任务强度",
 		description:
 			"在任务派生时暴露可选的 effort 参数，允许调用方覆盖每个子代理的思考等级",
 	},
@@ -303,13 +303,13 @@ export const cfgTaskMaxConcurrency = register({
 		description: "同时运行的子代理最大数量",
 		options: [
 			{ value: "0", label: "无限制" },
-			{ value: "1", label: "1 任务" },
-			{ value: "2", label: "2 任务" },
-			{ value: "4", label: "4 任务" },
-			{ value: "8", label: "8 任务" },
-			{ value: "16", label: "16 任务" },
-			{ value: "32", label: "32 任务" },
-			{ value: "64", label: "64 任务" },
+			{ value: "1", label: "1 个任务" },
+			{ value: "2", label: "2 个任务" },
+			{ value: "4", label: "4 个任务" },
+			{ value: "8", label: "8 个任务" },
+			{ value: "16", label: "16 个任务" },
+			{ value: "32", label: "32 个任务" },
+			{ value: "64", label: "64 个任务" },
 		],
 	},
 });
@@ -402,7 +402,7 @@ export const cfgTaskSoftRequestBudget = register({
 		group: "子代理",
 		label: "软子代理请求预算",
 		description:
-			"每个子代理的软请求预算（每次运行的助手请求数）。超出时会注入收尾引导通知（见 task.softRequestBudgetNotice）；达到 1.5 倍预算时运行被强制停止，代理必须交回部分发现。0 表示禁用该守卫。内置的 scout/sonic 代理有更低的内置预算上限，低于该上限的值仍会对其生效。task.agentSoftRequestBudget 中针对某代理的条目会替换该代理的预算。",
+			"每个子代理的软请求预算（每次运行的助手请求数）。超出时会注入收尾引导通知（见 task.softRequestBudgetNotice）；达到 1.5 倍预算时运行被强制停止，代理必须交回阶段性结论。0 表示禁用该守卫。内置的 scout/sonic 代理有更低的内置预算上限，低于该上限的值仍会对其生效。task.agentSoftRequestBudget 中针对某代理的条目会替换该代理的预算。",
 		options: [
 			{ value: "0", label: "已禁用" },
 			{ value: "90", label: "90 次请求" },
@@ -461,7 +461,7 @@ export const cfgTaskMaxEffort = register({
 	ui: {
 		tab: "tasks",
 		group: "子代理",
-		label: "每次生成的最大努力",
+		label: "每次生成的最大强度",
 		description:
 			"task 工具按派生传递的 effort 提示所允许的最大推理强度。较低的值可防止调用方把子代理提升到超过此上限；默认值保留模型的完整范围。",
 		options: THINKING_EFFORTS.map(getThinkingLevelMetadata),

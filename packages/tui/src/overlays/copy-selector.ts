@@ -53,7 +53,7 @@ const EARLIER_TURNS_KEY = "earlier";
 /** Leading item of a truncated transcript list; selecting it loads the older turns. */
 const earlierTurnsItem: NativeNode = node(
 	"item",
-	{ label: [span("更早的轮次…", "muted")], hint: ["a"] },
+	{ label: [span("更早的回合…", "muted")], hint: ["a"] },
 	undefined,
 	EARLIER_TURNS_KEY,
 );
@@ -818,7 +818,7 @@ export class CopySelectorComponent implements Component {
 				upDown,
 				blocks.length > 0 ? { keys: ["right"], label: "blocks" } : undefined,
 				{ keys: ["enter"], label: action },
-				this.#truncated ? { keys: ["a"], label: "更早的轮次" } : undefined,
+				this.#truncated ? { keys: ["a"], label: "更早的回合" } : undefined,
 				cancel,
 			];
 		}

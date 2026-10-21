@@ -416,7 +416,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "loop",
 		icon: "loop",
 		get description() {
-			return `切换循环模式。启用后，你发送的下一条提示词会在每次 yield 后重新提交。可用次数/时长限制，或用 \\\`--until '<cmd>'\\\` / \\\`--while '<cmd>'\\\` 设门控 — 命令的退出状态决定是否继续下一轮。${formatKeyHint("escape")} 暂停当前循环；再次输入 /loop 可关闭。`;
+			return `切换循环模式。启用后，你发送的下一条提示词会在每次 yield 后重新提交。可用次数/时长限制，或用 \`--until '<cmd>'\` / \`--while '<cmd>'\` 设门控 — 命令的退出状态决定是否继续下一轮。${formatKeyHint("escape")} 暂停当前循环；再次输入 /loop 可关闭。`;
 		},
 		inlineHint: "[count|duration] [--while|--until '<cmd>'] [prompt]",
 		allowArgs: true,
@@ -599,7 +599,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		handleTui: (command, runtime) => {
 			const message = runSlowCommand(command.args.trim().toLowerCase(), runtime.ctx.session);
 			refreshStatusLine(runtime.ctx);
-			runtime.ctx.showStatus(message ?? "Usage: /slow [on|off|status]");
+			runtime.ctx.showStatus(message ?? "用法：/slow [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},
@@ -682,7 +682,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		handleTui: (command, runtime) => {
 			const output = applyExtendedContextCommand(runtime.ctx.settings, command.args);
 			refreshStatusLine(runtime.ctx);
-			runtime.ctx.showStatus(output ?? "Usage: /extended-context [on|off|status]");
+			runtime.ctx.showStatus(output ?? "用法：/extended-context [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},

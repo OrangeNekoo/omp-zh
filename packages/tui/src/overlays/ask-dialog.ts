@@ -97,11 +97,11 @@ import { actionBar, actionButton } from "../native/overlay";
 import { getKeybindings } from "../keybindings";
 import { plainText } from "../native/spans";
 
-const OTHER_OPTION = "Other (type your own)";
-const SUBMIT_OPTION = "Submit";
+const OTHER_OPTION = "其他（自行输入）";
+const SUBMIT_OPTION = "提交";
 const RECOMMENDED_SUFFIX = " (Recommended)";
 /** Native labels: the free-text row and the answers-review tab. */
-const OTHER_LABEL = "Other…";
+const OTHER_LABEL = "其他…";
 const REVIEW_TAB = "Review";
 
 // Action rows appended by the guest race participant. An option sanitizing

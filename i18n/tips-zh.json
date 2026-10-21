@@ -29,7 +29,7 @@
 	"No native tool_calling? Inference provider botches parsing them? `PI_DIALECT=glm|kimi|anthropic…` rolls it locally for them!": "服务商不支持原生 tool_calling？解析总是出错？`PI_DIALECT=glm|kimi|anthropic…` 可在本地代为处理！",
 	"Turn on `/advisor` to attach a second model that reviews every turn and quietly injects advice": "开启 `/advisor` 挂载第二个模型，审查每一轮并悄悄注入建议",
 	"Try starting your prompt with a ->, and writing a list (1. Do X, 2. Do Y)": "试试以 -> 开头写列表（1. 做 X，2. 做 Y）",
-	"Press {key:shift+tab} to cycle through reasoning effort levels": "按 {key:shift+tab} 循环切换推理强度等级",
+	"Press {key:shift+tab} to cycle through reasoning effort levels": "按 {key:shift+tab} 循环切换思考强度",
 	"omp can reconfigure and extend itself — ask any questions you have!": "omp 能自我重配置与扩展 — 有任何问题尽管问！",
 	"Lint/type errors piling up? `omp cleanse` (or /cleanse right here) hunts project diagnostics and fixes them with parallel subagents — {key:escape} cancels": "Lint/类型错误堆积？`omp cleanse`（或直接 /cleanse）会搜寻项目诊断并用并行子代理修复 — {key:escape} 取消",
 	"[NO-TERN] Psst, omp has a natural habitat 🐦 [tern](https://scl.so/tern)": "[NO-TERN] 悄悄说，omp 有个天然栖息地 🐦 [tern](https://scl.so/tern)"

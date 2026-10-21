@@ -28,7 +28,7 @@
 服务商不支持原生 tool_calling？解析总是出错？`PI_DIALECT=glm|kimi|anthropic…` 可在本地代为处理！
 开启 `/advisor` 挂载第二个模型，审查每一轮并悄悄注入建议
 试试以 -> 开头写列表（1. 做 X，2. 做 Y）
-按 {key:shift+tab} 循环切换推理强度等级
+按 {key:shift+tab} 循环切换思考强度
 omp 能自我重配置与扩展 — 有任何问题尽管问！
 Lint/类型错误堆积？`omp cleanse`（或直接 /cleanse）会搜寻项目诊断并用并行子代理修复 — {key:escape} 取消
 [NO-TERN] 悄悄说，omp 有个天然栖息地 🐦 [tern](https://scl.so/tern)

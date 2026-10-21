@@ -97,7 +97,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			if (verb === "on") {
 				const active = runtime.session.setAdvisorEnabled(true);
 				await runtime.output(
-					active ? "Advisor enabled." : "Advisor setting enabled, but no model is assigned to the 'advisor' role.",
+					active ? "顾问已启用。" : "顾问设置已启用，但没有为 'advisor' 角色分配模型。",
 				);
 				return commandConsumed();
 			}
@@ -113,7 +113,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			if (verb === "dump") {
 				const isRaw = rest.toLowerCase() === "raw";
 				const text = runtime.session.formatAdvisorHistoryAsText({ compact: !isRaw });
-				await runtime.output(text ?? "Advisor is not active for this session.");
+				await runtime.output(text ?? "本会话未启用顾问。");
 				return commandConsumed();
 			}
 			if (verb === "configure") {
@@ -143,7 +143,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			if (verb === "on") {
 				const active = runtime.ctx.session.setAdvisorEnabled(true);
 				runtime.ctx.showStatus(
-					active ? "Advisor enabled." : "Advisor setting enabled, but no model is assigned to the 'advisor' role.",
+					active ? "顾问已启用。" : "顾问设置已启用，但没有为 'advisor' 角色分配模型。",
 				);
 				refreshStatusLine(runtime.ctx);
 				clearSubmittedText(runtime);
@@ -321,7 +321,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 		description: "通过中继实时共享本会话",
 		inlineHint: "[start|view|list|stop|status] [relayUrl]",
 		subcommands: [
-			{ name: "view", description: "共享只读链接（访客可观看，不可提示）" },
+			{ name: "view", description: "共享只读链接（访客可观看，不能发送提示）" },
 			{ name: "list", description: "列出活动的本地协作主机（无链接；使用 `omp collab link`）" },
 			{ name: "status", description: "显示链接和参与者" },
 			{ name: "stop", description: "停止共享" },

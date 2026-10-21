@@ -135,6 +135,19 @@ export const TRANSLATABLE_PROPERTIES: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * 永不汉化的常量名。
+ *
+ * 这些常量的字面值会越过界面进入**协议或跨模块契约**，翻译它们等于改 wire
+ * format：`APPROVE_OPTION`/`REFINE_OPTION` 会被塞进 ACP elicitation 的
+ * `enum: [...]` 发给客户端，客户端回传的值必须与之一致。界面上看到中文
+ * 要改就整条链路一起改，不能只改常量。
+ */
+export const PROTOCOL_CONSTANTS: Readonly<Record<string, true>> = {
+	APPROVE_OPTION: true,
+	REFINE_OPTION: true,
+};
+
+/**
  * 允许汉化的 UI 构建函数：只在第一个字符串实参上匹配词典。
  * 这些函数专门用于构造给人看的文本/按钮/提示。
  */
@@ -169,6 +182,11 @@ export const TRANSLATABLE_CALLS: ReadonlySet<string> = new Set([
 	"usage",
 	"noteText",
 	"errorView",
+	// 工具卡片里的回退文案与空态：`errorText(x || "Web search failed")`。
+	// 这些是渲染给用户看的卡片正文，不进入模型上下文。
+	"errorText",
+	"inlineErrorView",
+	"mutedText",
 	"formatEmptyMessage",
 	"formatErrorMessage",
 	"toolHead",

@@ -361,8 +361,32 @@ export function extractAll(root: string = ROOT): ExtractionResult {
 
 /** 判定一条文案是否仍是未翻译的英文。 */
 function isUntranslated(source: string): boolean {
-	return !/[\u4e00-\u9fa5]/.test(source);
+	// 含中文字符即视为已翻译；含全角标点也算——本 fork 的中文排版会把
+	// `Content-Type:` 写成 `Content-Type：`、`NVIDIA CUDA (Linux x64)` 写成
+	// `NVIDIA CUDA（Linux x64）`，这类译文不含汉字，否则会被误报成待译。
+	if (/[一-龥]/.test(source)) return false;
+	return !/[，。：；！？（）【】「」『』、…—～·￥]/.test(source);
 }
+
+/**
+ * 按项目边界**不翻译**的协议字段与专有标识。
+ *
+ * 这些即使长得像英文句子也不算待译项，否则每次扫描都会把
+ * `Authorization` 之类推给下一个人「翻译」，而翻译它反而会破坏功能
+ * （用户要在输入框里填写 HTTP 头名）。
+ */
+const PROTOCOL_TOKENS: Readonly<Record<string, true>> = {
+	Authorization: true,
+	"Cache-Control": true,
+	"Content-Type": true,
+	"Content-Type：": true,
+	"User-Agent": true,
+	Accept: true,
+	Location: true,
+	Cookie: true,
+	"Set-Cookie": true,
+	"WWW-Authenticate": true,
+};
 
 /**
  * 判断未译项是否值得人工翻译。
@@ -373,6 +397,7 @@ function isUntranslated(source: string): boolean {
 function isTranslatable(source: string): boolean {
 	const text = source.trim();
 	if (text.length < 2) return false;
+	if (PROTOCOL_TOKENS[text] === true) return false;
 	// 数值/尺寸标签：`0 KB`、`~2.5K tokens`
 	if (/^[~\d]/.test(text)) return false;
 	// 配置后缀：`:exacto`、`:floor`

@@ -442,7 +442,7 @@ function describeDetail(
 				text("输出", { role: "omp.jobs.label" }),
 				detail?.output
 					? ansi(detail.output, { follow: !settled, role: "omp.jobs.output", max: { h: "16lines" } })
-					: text(settled ? "No output" : "No output yet", { role: "omp.jobs.nooutput" }),
+					: text(settled ? "无输出" : "暂无输出", { role: "omp.jobs.nooutput" }),
 			],
 			"out",
 		),

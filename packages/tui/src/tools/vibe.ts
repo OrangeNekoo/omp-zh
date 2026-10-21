@@ -447,7 +447,7 @@ function describeVibeResult(
 				: details.send?.mode === "steered"
 					? span("已引导进入运行中的回合", "success")
 					: details.send?.mode === "queued"
-						? span("回合中 — 排队为下一轮", "warning")
+						? span("回合中 — 排队为下一回合", "warning")
 						: span(`turn started${details.send?.jobId ? ` (job ${details.send.jobId})` : ""}`, "success");
 		return {
 			head,
@@ -554,7 +554,7 @@ export function createVibeToolRenderer(op: VibeOp) {
 						: details.send?.mode === "steered"
 							? uiTheme.fg("success", "已引导进入运行中的回合")
 							: details.send?.mode === "queued"
-								? uiTheme.fg("warning", "回合中 — 排队为下一轮")
+								? uiTheme.fg("warning", "回合中 — 排队为下一回合")
 								: uiTheme.fg(
 										"success",
 										`turn started${details.send?.jobId ? ` (job ${details.send.jobId})` : ""}`,

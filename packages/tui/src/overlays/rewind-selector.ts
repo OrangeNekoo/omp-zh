@@ -148,7 +148,7 @@ interface MarkTagged {
 const EARLIER_TURNS = node(
 	"row",
 	{ role: "omp.rewind.earlier", gap: "xs", align: "center" },
-	[kbd("a"), text([span("加载更早的轮次", "muted")])],
+	[kbd("a"), text([span("加载更早的回合", "muted")])],
 	"earlier",
 );
 
@@ -847,7 +847,7 @@ export class RewindSelectorComponent implements Component {
 					upDown,
 					{ keys: ["left", "right"], label: columns.length > 0 ? "branches" : "用户回合" },
 					{ keys: ["f"], label: "filter" },
-					this.#truncated ? { keys: ["a"], label: "更早的轮次" } : undefined,
+					this.#truncated ? { keys: ["a"], label: "更早的回合" } : undefined,
 				]),
 				actionBar([null, actionButton("取消", "cancel", { keys: "escape" }), rewind]),
 			];

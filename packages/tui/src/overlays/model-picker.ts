@@ -89,9 +89,9 @@ const MIN_VISIBLE = 5;
 /** Fraction of the terminal height the floating overlay occupies. */
 const HEIGHT_FRACTION = 0.4;
 
-const STATUS_HINT = "Session-only switch — role models stay unchanged";
-const QUICK_ROLE_STATUS_HINT = "Quick role switch — applies its model and thinking for this session";
-const TASK_STATUS_HINT = "Task subagent switch — spawned task agents use this model (session-only)";
+const STATUS_HINT = "仅本次会话切换 — 角色模型保持不变";
+const QUICK_ROLE_STATUS_HINT = "快速角色切换 — 本次会话应用其模型与思考等级";
+const TASK_STATUS_HINT = "任务子代理切换 — 新建的任务代理使用此模型（仅本次会话）";
 const SELECT_ONLY_STATUS_HINT = "Selection only — does not change the session model";
 
 /** Footer hint for the active mode; keys resolve at render time so theme/keybinding changes apply. */

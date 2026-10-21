@@ -364,7 +364,7 @@ export const cfgCompactionSupersedeReads = register({
 		tab: "context",
 		group: "压缩",
 		label: "取代过期的读取",
-		description: "再次读取同一文件时清理较旧的读取结果（感知缓存，每回合运行）",
+		description: "再次读取同一文件时清理较旧的读取结果（缓存感知，每回合运行）",
 	},
 });
 
@@ -377,7 +377,7 @@ export const cfgCompactionDropUseless = register({
 		group: "压缩",
 		label: "省略无变化的结果",
 		description:
-			"被标记为上下文无用的工具结果（无匹配、等待超时）在消费后清理（感知缓存）",
+			"被标记为上下文无用的工具结果（无匹配、等待超时）在消费后清理（缓存感知）",
 	},
 });
 

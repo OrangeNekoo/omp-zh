@@ -14,6 +14,13 @@ import type { InteractiveModeContext } from "../modes/types";
 
 type ParsedSeanceArgs = { source: string | undefined; model: string | undefined } | { error: string };
 
+/**
+ * `/seance` 选择器的两个选项。标签与比较共用同一常量——`showHookSelector`
+ * 回传的就是 label 本身，各写一遍字面量会在汉化后对不上。
+ */
+const SEANCE_SAVED_MODEL_OPTION = "使用已保存的模型";
+const SEANCE_OTHER_MODEL_OPTION = "选择其他模型";
+
 function parseSeanceArgs(args: string): ParsedSeanceArgs {
 	const tokens = parseCommandArgs(args, { strict: false });
 	let source: string | undefined;
@@ -124,19 +131,21 @@ async function chooseSeanceModel(
 			return;
 		}
 		// No saved model to offer: go straight to the one-off model picker.
+		// 标签与比较共用常量：`showHookSelector` 回传的就是 label 本身，
+		// 各写一遍字面量会在汉化后对不上，两个分支会静默失效。
 		const choice =
 			source.modelSelectors.length === 0
-				? "Choose another model"
+				? SEANCE_OTHER_MODEL_OPTION
 				: await ctx.showHookSelector("用以下方式查看此会话", [
 						{
-							label: "使用已保存的模型",
+							label: SEANCE_SAVED_MODEL_OPTION,
 							description: "使用当前角色模型，或此会话保存的默认模型",
 						},
-						{ label: "选择其他模型", description: "为本次查看选择一次性模型" },
+						{ label: SEANCE_OTHER_MODEL_OPTION, description: "为本次查看选择一次性模型" },
 					]);
-		if (choice === "Use saved model") {
+		if (choice === SEANCE_SAVED_MODEL_OPTION) {
 			void launchSeance(ctx, sourceSession);
-		} else if (choice === "Choose another model") {
+		} else if (choice === SEANCE_OTHER_MODEL_OPTION) {
 			ctx.showModelSelector({
 				selectOnly: {
 					onSelect: picked => launchSeance(ctx, sourceSession, picked),

@@ -488,7 +488,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 	{
 		name: "retry",
 		icon: "redo",
-		description: "重试上次失败的代理轮次",
+		description: "重试上次失败的代理回合",
 		handle: async (_command, runtime) => {
 			if (runtime.session.isStreaming) {
 				return usage("请等待当前响应结束或先中断，再重试。", runtime);

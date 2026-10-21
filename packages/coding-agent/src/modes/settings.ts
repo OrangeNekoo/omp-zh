@@ -258,7 +258,7 @@ export const cfgStatusLineCompactThinkingLevel = register({
 		group: "状态栏",
 		label: "压缩思考等级",
 		description:
-			"将思考等级以模型名上的单个图标显示，而非单独的 ` · <等级>` 后缀；在 Tern 的输入框中，作为模型标签的图标而非独立标签（点击图标可循环切换）。",
+			"将思考等级以模型名上的单个图标显示，而非单独的 ` · <level>` 后缀；在 Tern 的输入框中，作为模型标签的图标而非独立标签（点击图标可循环切换）。",
 	},
 });
 
@@ -1019,7 +1019,7 @@ export const cfgComposerPredictions = register({
 		group: "输入",
 		label: "输入框预测",
 		get description() {
-			return `每轮完成后，让当前模型预测你的下一条消息，并以幽灵文本显示在空输入框中；${formatKeyHint("tab")} 或 ${formatKeyHint("right")} 可插入而不发送。额外消耗：每个完成的轮次都会额外发送一次覆盖整段对话的计费请求（计入 /stats）`;
+			return `每轮完成后，让当前模型预测你的下一条消息，并以幽灵文本显示在空输入框中；${formatKeyHint("tab")} 或 ${formatKeyHint("right")} 可插入而不发送。额外消耗：每个完成的回合都会额外发送一次覆盖整段对话的计费请求（计入 /stats）`;
 		},
 	},
 });
@@ -1245,7 +1245,7 @@ export const cfgAskTimeout = register({
 		group: "通知",
 		label: "询问超时",
 		description:
-			"经过这么多秒后自动选择推荐的 ask 选项（0 表示禁用）。同时也限制 cfg:// 审批提示；未答复的审批会拒绝写入，而不是自动选择",
+			"经过这么多秒后自动选择推荐的 ask 选项（0 表示禁用）。同时也限制 cfg:// 批准提示；未答复的批准会拒绝写入，而不是自动选择",
 		options: [
 			{ value: "0", label: "已禁用" },
 			{ value: "15", label: "15 秒" },

@@ -120,7 +120,7 @@ export const cfgMnemopiAutoRetain = register({
 		tab: "memory",
 		group: "Mnemopi",
 		label: "Mnemopi 自动保留",
-		description: "将已完成的对话轮次保留到本地 Mnemopi 记忆",
+		description: "将已完成的对话回合保留到本地 Mnemopi 记忆",
 		condition: "mnemopiActive",
 	},
 });

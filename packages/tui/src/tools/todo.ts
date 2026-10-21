@@ -513,7 +513,7 @@ function describeTodoResult(
 		return {
 			tool: { title: "待办" },
 			tone: "error",
-			body: [errorText(resultText(result) || "Todo operation failed")],
+			body: [errorText(resultText(result) || "待办操作失败")],
 		};
 	}
 	const phases = (result.details?.phases ?? []).filter(phase => phase.tasks.length > 0);

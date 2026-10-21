@@ -21,7 +21,7 @@ export default class Bench extends Command {
 		"max-tokens": Flags.integer({
 			description: "每次请求的最大输出令牌数（默认：chat 512、prefill 64、generation 2048、cache 64）",
 		}),
-		prompt: Flags.string({ description: "自定义提示词文本（仅 chat 与 generation 负载）" }),
+		prompt: Flags.string({ description: "自定义提示词文本（仅 chat 与 generation 配置档）" }),
 		profile: Flags.string({
 			description:
 				"基准负载（默认 chat）：chat（均衡，测量 TTFT 与 tok/s）、prefill（大体积绕过缓存的输入，测量输入处理）、generation（强制长输出，测量持续解码）、mix（轮换三者）",

@@ -980,7 +980,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		const model = advisor.model?.trim() || this.#defaultModelLabel || "advisor role default";
 		const instructions = advisor.instructions?.trim();
 		const out: NativeNode[] = [
-			text([span(advisor.name || "(unnamed)", "strong")]),
+			text([span(advisor.name || "（未命名）", "strong")]),
 			node("kv", {
 				items: [
 					{ k: "已启用", v: advisor.enabled === false ? "○ 关闭" : "● 开启" },
@@ -1511,7 +1511,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			label: mode === current ? `${mode} (current)` : mode,
 			description:
 				mode === "turn"
-					? "审查每个主要回合（工具调用轮）。"
+					? "审查每个主要回合（即每轮工具调用）。"
 					: "仅在代理结束时审查（每次运行一次）。",
 		}));
 		const list = new SelectList(items, Math.max(1, items.length), getSelectListTheme());

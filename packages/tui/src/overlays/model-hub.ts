@@ -318,7 +318,7 @@ const MODEL_KIND_LABELS: Record<"all" | ModelKind, string> = {
 const PROVIDER_REFRESH_DEBOUNCE_MS = 120;
 const RECENT_LIMIT = 15;
 /** Accepted compaction limit input, shown beside the field: a scaled base, a fixed trigger, or a percentage. */
-const COMPACTION_INPUT_HINT = "400k base · f400k fixed · 80% · empty resets";
+const COMPACTION_INPUT_HINT = "400k 基准 · f400k 固定 · 80% · 空值重置";
 
 type CompactionStrip = Extract<StripState, { purpose: "compaction" }>;
 

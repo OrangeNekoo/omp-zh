@@ -1289,13 +1289,13 @@ export class UsageDashboardComponent implements Component {
 					"quota",
 					"Tightest quota",
 					[span("—", "dim")],
-					[span(this.#cards.length > 0 ? "Every quota untouched" : "No quotas reported", "dim")],
+					[span(this.#cards.length > 0 ? "Every quota untouched" : "未报告配额", "dim")],
 				),
 			);
 		}
 
 		if (!figures || !layout) {
-			const sub = [span(this.#activityError ? "History unavailable" : "Loading…", "dim")];
+			const sub = [span(this.#activityError ? "History unavailable" : "加载中…", "dim")];
 			tiles.push(
 				statTile("year", "Past year", [span("—", "dim")], sub),
 				statTile("month", "Last 30 days", [span("—", "dim")], sub),
@@ -1725,7 +1725,7 @@ export class UsageDashboardComponent implements Component {
 				children.push(node("table", { cols, rows, role: "omp.usage.limits" }, undefined, "limits"));
 				for (const note of new Set(limitNotes)) children.push(mutedText(note, true));
 			} else if (unavailable.every(account => account.provider !== entry.provider)) {
-				children.push(mutedText("No quotas reported"));
+				children.push(mutedText("未报告配额"));
 			}
 			sections.push(node("col", { role: "omp.usage.report", gap: "sm" }, children, entry.provider));
 		}

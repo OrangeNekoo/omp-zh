@@ -46,7 +46,7 @@ export const cfgTitleGenerator = register({
 				value: "fork",
 				label: "复刻",
 				description:
-					"在会话模型上做一次侧轮回复：可读取其提示词缓存，并加上卡片图标（默认）",
+					"在会话模型上旁路跑一轮回复：可读取其提示词缓存，并加上卡片图标（默认）",
 			},
 			{ value: "tiny", label: "微型", description: "仅使用标题模型角色；纯标题，无卡片" },
 		],

@@ -25,7 +25,7 @@ const COUNT_UNITS: Readonly<Record<string, UnitTranslation>> = {
 	item: { singular: "项" },
 	line: { singular: "行" },
 	step: { singular: "步" },
-	task: { singular: "任务" },
+	task: { singular: "个任务" },
 	note: { singular: "条备注" },
 	request: { singular: "次请求" },
 	token: { singular: "个令牌" },

@@ -21,7 +21,7 @@ export const authBrokerHelp = {
 
 export const authGatewayHelp = {
 	description:
-		"运行认证网关：由已配置的代理支持的 HTTP 正向代理，或用你自己的凭据在 stdio 上输出 JSON 行",
+		"运行认证网关：由已配置的凭据代理支撑的 HTTP 正向代理，或用你自己的凭据在 stdio 上输出 JSON 行",
 } satisfies CommandMetadata;
 
 export const benchHelp = {

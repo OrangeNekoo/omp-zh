@@ -264,7 +264,7 @@ export const cfgExternalThinking = register({
 		tab: "model",
 		group: "思考",
 		label: "外部思考",
-		description: "私有草稿本；不向用户显示。会禁用受支持的 GPT、Claude 和 Gemini 推理",
+		description: "私有暂存区；不向用户显示。会禁用受支持的 GPT、Claude 和 Gemini 推理",
 		warning: "风险自负：服务商已将此类请求形态标记为滥用，最高可导致账户级处罚",
 	},
 });
@@ -1059,7 +1059,7 @@ export const cfgFeaturesUnexpectedStopDetection = register({
 		group: "代理",
 		label: "意外停止",
 		description:
-			"当助手没有可见消息就停止时自动恢复。Smart 还会用小型模型对纯文本停止进行分类。",
+			"当助手没有可见消息就停止时自动恢复。Smart 还会用小型模型对只输出文本就停止的情况进行分类。",
 		options: [
 			{ value: "none", label: "无", description: "已禁用" },
 			{
@@ -1070,7 +1070,7 @@ export const cfgFeaturesUnexpectedStopDetection = register({
 			{
 				value: "smart",
 				label: "智能",
-				description: "机械判定 + 小型模型分类纯文本停止",
+				description: "机械判定 + 小型模型分类只输出文本就停止的情况",
 			},
 		],
 	},
@@ -1152,7 +1152,7 @@ export const cfgProvidersCacheRetention = register({
 		group: "协议",
 		label: "提示词缓存保留",
 		description:
-			"转发给支持该能力的服务商（Anthropic、Bedrock、OpenRouter、OpenAI）的提示词缓存保留策略",
+			"提示词缓存保留策略，转发给支持该能力的服务商（Anthropic、Bedrock、OpenRouter、OpenAI）",
 		options: [
 			{
 				value: "auto",
@@ -1329,7 +1329,7 @@ export const cfgCodexResetsMinBlockedMinutes = register({
 		group: "服务",
 		label: "Codex 自动兑换最小块",
 		description:
-			"仅当自然解除 — 已耗尽的 5 小时/每周窗口中最晚的一次重置 — 至少在这么多分钟之后时才自动兑换（不要为省下短暂等待而消耗稀缺额度）。调高它（例如 360）可忽略仅 5 小时的阻塞。",
+			"仅当自然解除 — 已耗尽的 5 小时/每周窗口中最晚的一次重置 — 至少在这么多分钟之后时才自动兑换（不要为省下短暂等待而消耗稀缺额度）。调高它（例如 360）可忽略仅 5 小时的封锁期。",
 	},
 });
 
@@ -1381,7 +1381,7 @@ export const cfgClaudeResetsAutoRedeem = register({
 		group: "服务",
 		label: "Claude 自动兑换重置次数",
 		description:
-			"自动消耗符合条件的 Claude Cedar 或 Juniper 重置。Cedar 仅用于覆盖的限制；Juniper 只能恢复单独的 5 小时阻塞。unset 会在首次消耗前询问（无提示界面时，只消耗 5 分钟内过期的重置），yes 不经询问直接消耗，no 则禁用阻塞恢复与到期回收。",
+			"自动消耗符合条件的 Claude Cedar 或 Juniper 重置。Cedar 仅用于覆盖的限制；Juniper 只能恢复单独的 5 小时封锁期。unset 会在首次消耗前询问（无提示界面时，只消耗 5 分钟内过期的重置），yes 不经询问直接消耗，no 则禁用阻塞恢复与到期回收。",
 		options: [
 			{
 				value: "unset",
@@ -1404,7 +1404,7 @@ export const cfgClaudeResetsMinBlockedMinutes = register({
 		group: "服务",
 		label: "Claude 自动兑换最小块",
 		description:
-			"仅当自然解除 — 已耗尽的覆盖窗口中最晚的一次重置 — 至少在这么多分钟之后时才自动兑换。仅有 5 小时的重置绝不会用于每周或模型范围的阻塞。",
+			"仅当自然解除 — 已耗尽的覆盖窗口中最晚的一次重置 — 至少在这么多分钟之后时才自动兑换。仅有 5 小时的重置绝不会用于每周或模型范围的封锁期。",
 	},
 });
 
@@ -1417,7 +1417,7 @@ export const cfgClaudeResetsKeepCredits = register({
 		group: "服务",
 		label: "Claude 自动兑换保留量",
 		description:
-			"至少保留这么多次 Claude 重置额度不消耗（0 表示允许自动用掉最后一次符合条件的中置）。该保留量适用于提前回收，但不适用于 5 分钟内过期的符合条件重置。",
+			"至少保留这么多次 Claude 重置额度不消耗（0 表示允许自动用掉最后一次符合条件的重置）。该保留量适用于提前回收，但不适用于 5 分钟内过期的符合条件重置。",
 	},
 });
 

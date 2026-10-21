@@ -44,12 +44,15 @@ jobs:
            uses: actions/checkout@v4
            with:
               fetch-depth: 0
+              ref: main
               token: ${{ secrets.GITHUB_TOKEN }}
 
          - name: Setup Bun
            uses: oven-sh/setup-bun@v2
            with:
-              bun-version: latest
+              # 固定版本：bun 的大版本变更可能改变 lockfile 兼容性或脚本行为，
+              # 到时人工改这一行，而不是让定时同步在某天突然失败。
+              bun-version: "1.4.3"
 
          - name: Configure git
            run: |
@@ -76,18 +79,26 @@ jobs:
                  echo "need_sync=true" >> "$GITHUB_OUTPUT"
               fi
 
-         # 本 fork 自有的文件：上游没有，或需要保持本仓库版本。
-         # 切换上游源码前备份，切换后还原。
+         # 本 fork 自有文件：相对上游提交多出来的路径。清单**动态计算**而不是
+         # 硬编码——写死的路径会让日后新增的 fork 文件在同步中被静默删除，
+         # 删除动作还会被一起提交。排除项由重写器负责重放，无须备份。
          - name: Back up fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
               mkdir -p /tmp/fork-owned
-              cp -R i18n /tmp/fork-owned/i18n
-              cp README.md /tmp/fork-owned/README.md
-              mkdir -p /tmp/fork-owned/workflows
-              cp .github/workflows/zh-sync.yml /tmp/fork-owned/workflows/zh-sync.yml
-              # 上游没有的 fork 资产（如 logo）一并保留
-              if [ -d assets ]; then cp -R assets /tmp/fork-owned/assets; fi
+              git diff --name-only --diff-filter=AM "${{ steps.upstream.outputs.sha }}" main -- . \
+                 ':(exclude)packages' \
+                 ':(exclude)scripts/link-omp.sh' \
+                 ':(exclude).gitignore' > /tmp/fork-owned-list.txt
+              # 上面的差异里含「上游有、我们删掉」的路径，这里只备份仍然存在的。
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 [ -f "$file" ] || continue
+                 mkdir -p "/tmp/fork-owned/$(dirname "$file")"
+                 cp "$file" "/tmp/fork-owned/$file"
+              done < /tmp/fork-owned-list.txt
+              echo "备份的 fork 自有文件："
+              cat /tmp/fork-owned-list.txt
 
          - name: Switch tree to upstream source
            if: steps.check.outputs.need_sync == 'true'
@@ -99,17 +110,28 @@ jobs:
          - name: Restore fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
-              rm -rf i18n
-              cp -R /tmp/fork-owned/i18n i18n
-              # report.json 是产物，不入库
-              rm -f i18n/report.json
-              cp /tmp/fork-owned/README.md README.md
-              mkdir -p .github/workflows
-              cp /tmp/fork-owned/workflows/zh-sync.yml .github/workflows/zh-sync.yml
-              if [ -d /tmp/fork-owned/assets ]; then
-                 rm -rf assets
-                 cp -R /tmp/fork-owned/assets assets
-              fi
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 if [ ! -f "/tmp/fork-owned/$file" ]; then
+                    echo "::error::备份缺失，无法还原：$file"
+                    exit 1
+                 fi
+                 mkdir -p "$(dirname "$file")"
+                 cp "/tmp/fork-owned/$file" "$file"
+              done < /tmp/fork-owned-list.txt
+
+         - name: Gate — fork 自有文件必须完整还原
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 还原漏一步都会让同步把文件删掉并提交，这里逐个校验存在性。
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 if [ ! -f "$file" ]; then
+                    echo "::error::fork 自有文件未还原：$file"
+                    exit 1
+                 fi
+              done < /tmp/fork-owned-list.txt
+              echo "fork 自有文件全部还原。"
 
          - name: Install dependencies
            if: steps.check.outputs.need_sync == 'true'
@@ -145,12 +167,16 @@ jobs:
          - name: Gate — 汉化必须命中源码
            if: steps.check.outputs.need_sync == 'true'
            run: |
+              # 默认 shell 是 bash -e，没有 pipefail；extract 崩在统计阶段会被
+              # tee 吞掉退出码，只要计数行已打印就误放行，所以显式开启。
+              set -o pipefail
               # 若规则全部失效（上游重构了 UI 文案结构），提取器会命中 0 条。
               # 这种情况下重放等于什么都没做，必须停下来让人看，而不是静默推送。
+              # 阈值取当前实际命中数（约 1290）的 3/4：规则半失效时也能拦住。
               bun i18n/extract.ts --check | tee /tmp/extract.log
               count=$(grep -oE '[0-9]+ 条唯一界面文案' /tmp/extract.log | grep -oE '^[0-9]+' || echo 0)
               echo "提取命中：$count 条"
-              if [ "$count" -lt 50 ]; then
+              if [ "$count" -lt 1000 ]; then
                  echo "::error::提取器仅命中 $count 条文案，汉化规则可能已失效，停止同步。"
                  exit 1
               fi

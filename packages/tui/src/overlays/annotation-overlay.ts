@@ -1791,7 +1791,7 @@ export class AnnotationOverlay implements Focusable {
 
 	/** Where the open note lands: `Note on line 42 in src/app.ts`, `Edit note on src/app.ts`, `Note on the whole text`. */
 	#noteCaption(): TspSpan[] {
-		const verb = span(this.#editingAnnotationIndex === undefined ? "Note on " : "Edit note on ", "muted");
+		const verb = span(this.#editingAnnotationIndex === undefined ? "备注：" : "Edit note on ", "muted");
 		if (this.#textSource) {
 			return this.#annotationScope === "text"
 				? [verb, span("全文", "strong")]

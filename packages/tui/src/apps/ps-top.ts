@@ -536,7 +536,7 @@ export class PsTopComponent implements Component {
 						text("无代理作用域", { role: "omp.app.empty-title" }),
 						text([
 							span("此处没有运行 omp 进程代理。", "muted"),
-							span(this.#all ? "Nothing runs anywhere." : "Show every scope with ", "muted"),
+							span(this.#all ? "Nothing runs anywhere." : "显示所有作用域：", "muted"),
 							...(this.#all ? [] : [span("a", "key"), span(".", "muted")]),
 						]),
 					],

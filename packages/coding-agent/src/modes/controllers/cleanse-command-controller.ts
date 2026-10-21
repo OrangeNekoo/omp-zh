@@ -27,7 +27,7 @@ interface ParsedCleanseArgs {
 }
 
 const CLEANSE_USAGE = "Usage: /cleanse [request] [--all] [--tests] [-n <agents>] [-m <model>]";
-const CUSTOM_REQUEST_OPTION = "Describe what to fix…";
+const CUSTOM_REQUEST_OPTION = "描述要修复的内容…";
 
 export class CleanseCommandController {
 	#active: CleanseRun | undefined;

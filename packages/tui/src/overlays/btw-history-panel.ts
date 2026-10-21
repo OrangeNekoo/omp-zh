@@ -602,7 +602,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 		if (turn.answer.trim() || !turn.error) {
 			const answer = turn.answer.trim()
 				? md(sanitizeDisplayText(turn.answer), { stream: turn.status === "running" })
-				: text([span(turn.status === "running" ? "Thinking…" : "No answer text.", "dim")], {
+				: text([span(turn.status === "running" ? "思考中…" : "No answer text.", "dim")], {
 						role: "omp.btw.pending",
 					});
 			children.push(node("col", { role: "omp.btw.answer" }, [answer], "answer"));
@@ -668,7 +668,7 @@ export class BtwHistoryPanel implements Component, Focusable {
 		const buttons: (NativeNode | null)[] = [];
 		if (running) buttons.push(actionButton("停止回答", "stop", { keys: hides ? "x" : "escape" }));
 		if (record && getBtwCopyText(record) !== undefined) {
-			buttons.push(actionButton(copied ? "Copy again" : "Copy answer", "copy-answer", { keys: "c" }));
+			buttons.push(actionButton(copied ? "Copy again" : "复制回答", "copy-answer", { keys: "c" }));
 			if (copied) buttons.push(text([span("✓ 已复制", "success")], { role: "omp.btw.copied" }));
 		}
 		buttons.push(null);

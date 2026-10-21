@@ -21,6 +21,7 @@ import * as path from "node:path";
 import { parse } from "@babel/parser";
 import traverseModule from "@babel/traverse";
 import {
+	PROTOCOL_CONSTANTS,
 	TRANSLATABLE_CALLS,
 	TRANSLATABLE_CONSTRUCTORS,
 	TRANSLATABLE_PROPERTIES,
@@ -153,7 +154,8 @@ function findReplacements(
 			const text = translatedParts[index];
 			if (text === value) continue;
 			if (typeof quasi.start !== "number" || typeof quasi.end !== "number") continue;
-			onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, escapeTemplatePart(text));
+			// 转义交给 translateAll 统一做一次，这里再转会变成双重转义。
+			onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, text);
 		}
 	};
 
@@ -170,7 +172,7 @@ function findReplacements(
 					if (translated === undefined || translated === value) continue;
 					onMatch?.(value);
 					if (typeof quasi.start !== "number" || typeof quasi.end !== "number") continue;
-					onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, escapeTemplatePart(translated));
+					onHit({ start: quasi.start, end: quasi.end }, value, `${kind}#part`, translated);
 				}
 				return;
 			}
@@ -207,11 +209,18 @@ function findReplacements(
 		VariableDeclarator(p: any) {
 			const id = p.node.id;
 			if (id.type !== "Identifier") return;
-			if (!/_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?)$/.test(id.name)) {
+			// 会进入协议 enum 的常量不能译（见 PROTOCOL_CONSTANTS）。
+			if (PROTOCOL_CONSTANTS[id.name] === true) return;
+			if (!/_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION)$/.test(id.name)) {
 				return;
 			}
 			const init = p.node.init;
 			if (!init) return;
+			// `const NATIVE_TITLE = "Plan review"`：单值的界面常量。
+			if (init.type === "StringLiteral") {
+				consider(init, `const:${id.name}`, init.value);
+				return;
+			}
 			const collectObject = (object: any): void => {
 				if (object.type !== "ObjectExpression") return;
 				for (const property of object.properties) {
@@ -298,8 +307,22 @@ function findReplacements(
 			if (!name) return;
 			if (TRANSLATABLE_CALLS.has(name)) {
 				const first = p.node.arguments[0];
-				if (first?.type === "StringLiteral") consider(first, `call:${name}`, first.value);
-				else if (first?.type === "TemplateLiteral") considerTemplate(first, `call:${name}`);
+				// `errorText(resultText(r) || "No todos")`、`toolHead(q, ok ? "a" : "b")`：
+				// 回退文案藏在逻辑/条件表达式的分支里，逐个分支认词典。
+				// 只沿分支下钻，不进入函数调用的实参——那里可能是在比较工具输出。
+				const walk = (expression: any, depth: number): void => {
+					if (depth > 4) return;
+					if (expression?.type === "StringLiteral") consider(expression, `call:${name}`, expression.value);
+					else if (expression?.type === "TemplateLiteral") considerTemplate(expression, `call:${name}`);
+					else if (expression?.type === "LogicalExpression") {
+						walk(expression.left, depth + 1);
+						walk(expression.right, depth + 1);
+					} else if (expression?.type === "ConditionalExpression") {
+						walk(expression.consequent, depth + 1);
+						walk(expression.alternate, depth + 1);
+					}
+				};
+				walk(first, 0);
 				return;
 			}
 			// `theme.fg("muted", "…")`、`chalk.dim("…")`、`console.log("…")`：
@@ -320,6 +343,19 @@ function findReplacements(
 			const first = p.node.arguments[0];
 			if (first?.type === "StringLiteral") consider(first, `new:${callee.name}`, first.value);
 			else if (first?.type === "TemplateLiteral") considerTemplate(first, `new:${callee.name}`);
+		},
+		/**
+		 * `this.searchInput.placeholder = "Type to search"`：把界面文案写进
+		 * 成员属性。属性名在 `TRANSLATABLE_PROPERTIES` 内才认，避免把
+		 * 协议字段（`this.headers["Content-Type"] = …`）当成文案。
+		 */
+		AssignmentExpression(p: any) {
+			const left = p.node.left;
+			if (left.type !== "MemberExpression" || left.property.type !== "Identifier") return;
+			if (!TRANSLATABLE_PROPERTIES.has(left.property.name)) return;
+			const right = p.node.right;
+			if (right?.type === "StringLiteral") consider(right, `assign:${left.property.name}`, right.value);
+			else if (right?.type === "TemplateLiteral") considerTemplate(right, `assign:${left.property.name}`);
 		},
 		StringLiteral(p: any) {
 			if (!allowWholeFile) return;

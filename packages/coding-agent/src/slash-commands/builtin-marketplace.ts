@@ -155,8 +155,8 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							const marketplaces = await manager.listMarketplaces();
 							await runtime.output(
 								marketplaces.length === 0
-									? "No marketplaces configured. Try:\n  /marketplace add anthropics/claude-plugins-official"
-									: "No plugins available in configured marketplaces",
+									? "未配置插件市场。试试：\n  /marketplace add anthropics/claude-plugins-official"
+									: "已配置的市场中没有可用插件",
 							);
 							return commandConsumed();
 						}
@@ -479,7 +479,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					}
 				}
 
-				await runtime.output(lines.length === 0 ? "No plugins installed" : lines.join("\n"));
+				await runtime.output(lines.length === 0 ? "未安装插件" : lines.join("\n"));
 				return commandConsumed();
 			} catch (err) {
 				return usage(`Plugin error: ${errorMessage(err)}`, runtime);

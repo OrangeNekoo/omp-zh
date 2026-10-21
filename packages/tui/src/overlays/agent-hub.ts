@@ -93,6 +93,13 @@ import { hintsRow, type NativeHint, overlayCard } from "../native/overlay";
 import { CLOSE_ACTION, picker, pickerQuery } from "../native/picker";
 import { Input } from "../components/input";
 
+function reportKeyEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 报告由本仓库的汉化源码产出（中文键），而上游测试与英文环境给出英文键；
+	// 解析方不站队，两种都认，免得换个输入就丢分组。签名收 undefined 是为了
+	// 完全对齐 x === "Key" 的语义——左侧可能是可选属性（facts[0]?.k）。
+	return actual === english || actual === chinese;
+}
+
 /** A chrome-less search field: the hub draws its own prompt. */
 function filterInput(): Input {
 	const input = new Input();
@@ -1012,7 +1019,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			if (modelRole && this.#getRoleInfo) {
 				model.push(span(theme.sep.dot, "dim"), roleBadgeSpan(modelRole, this.#getRoleInfo(modelRole)));
 			}
-			facts.splice(facts[0]?.k === "任务" ? 1 : 0, 0, { k: "模型", v: model });
+			facts.splice(reportKeyEq(facts[0]?.k, "Task", "任务") ? 1 : 0, 0, { k: "模型", v: model });
 		}
 		out.push(node("kv", { items: facts, layout: "grid", role: "omp.hub.kv" }, undefined, "facts"));
 		if (metrics?.contextTokens !== undefined && metrics.contextWindow) {
@@ -1502,7 +1509,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 					grow: 1,
 					empty: [
 						span(
-							this.#activitySearch.getValue() ? "No matching activity" : "No agent activity recorded yet",
+							this.#activitySearch.getValue() ? "No matching activity" : "尚未记录代理活动",
 							"muted",
 						),
 					],

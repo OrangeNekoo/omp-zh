@@ -96,7 +96,7 @@ export const cfgAdvisorReviewMode = register({
 		description:
 			"没有 WATCHDOG.yml 名单时的默认顾问节奏。turn 审查每个主回合；agent-end 仅在最终让出时审查。",
 		options: [
-			{ value: "turn", label: "每一轮", description: "审查每次主要更新（工具调用轮次）。" },
+			{ value: "turn", label: "每一轮", description: "审查每次主要更新（即一轮工具调用）" },
 			{ value: "agent-end", label: "代理结束", description: "仅在最终让出时审查（每次运行一次）。" },
 		],
 		condition: "advisorEnabled",

@@ -111,7 +111,7 @@ export function buildTabBarTabs(tabs: ProviderTab[]): Tab[] {
 }
 
 /** The sheet/page title, shared by the ANSI frame and the native views. */
-const DASHBOARD_TITLE = "Extension Control Center";
+const DASHBOARD_TITLE = "扩展控制中心";
 
 /** The kind column shown when rows are not grouped under kind headers (a provider scope or a search). */
 const KIND_COLUMNS: readonly TspPickerColumn[] = [{ id: "kind", format: "dim", priority: 1 }];
@@ -738,7 +738,7 @@ export class ExtensionDashboard implements Component {
 		);
 		const expanded = this.#inspector.isExpanded();
 		const buttons: (NativeNode | null)[] = [
-			actionButton(selected?.on === false ? "Enable" : selected ? "Disable" : "Toggle", "toggle", {
+			actionButton(selected?.on === false ? "Enable" : selected ? "Disable" : "切换", "toggle", {
 				keys: "space",
 				tone: "accent",
 				title: selected?.blocked ?? (selected ? undefined : "选择扩展"),

@@ -95,7 +95,7 @@ export const cfgModelRoleStorage = register({
 			{
 				value: "global",
 				label: "全局",
-				description: "把角色模型保存到当前 profile 配置（当前行为）",
+				description: "把角色模型保存到当前配置档（当前行为）",
 			},
 			{
 				value: "project",

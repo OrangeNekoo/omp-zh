@@ -23,10 +23,10 @@ const PRESS_KEY_SUFFIX = /,?\s*then press\s+\S+\s*:?\s*$/i;
 const PROGRESS_PROBLEM = /\b(?:fail(?:ed|ure)?|error|unavailable|in use|could ?n[o']t|unable)\b/i;
 
 /** Shown on the field when the flow asks for the manual code again: the last paste had no usable code. */
-const RETRY_MESSAGE = "Couldn't read a code from that. Paste the authorization code or the full redirect URL.";
+const RETRY_MESSAGE = "无法从中读取验证码。请粘贴授权码或完整重定向 URL。";
 
 /** Shown while the browser half of the flow runs and the provider reports nothing. */
-const BROWSER_WAIT = "Waiting for you to finish in the browser…";
+const BROWSER_WAIT = "等待你在浏览器中完成…";
 
 /** The sign-in link from `showAuth`: the provider's instructions, or the device code split out of them. */
 interface LoginAuth {

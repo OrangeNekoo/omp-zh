@@ -254,7 +254,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    终端同时打印覆盖率：
 
    ```
-   翻译状态：已汉化 1110 条，未译 183 条（其中值得人工翻译的 73 条）
+   翻译状态：已汉化 1112 条，未译 181 条（其中值得人工翻译的 69 条）
    ```
 
    统计会排除专有名词、参数名、数值标签与快捷键，剩下的才是真正的工作量。
@@ -291,16 +291,28 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - `INCLUDE_FILES` / `EXCLUDE_FILES`：允许/禁止汉化的文件
 - `TRANSLATABLE_PROPERTIES`：允许翻译的对象属性名（`label`、`description`、`title`、`head`、`k`……）
 - `TRANSLATABLE_CALLS`：允许翻译的 UI 构建函数（含 `showStatus`、`showError`、`output` 等）
+- `PROTOCOL_CONSTANTS`：**永不汉化**的常量名。这些常量的字面值会越过界面进入协议——
+  例如 `APPROVE_OPTION` 会被塞进 ACP elicitation 的 `enum: [...]` 发给客户端，客户端回传的值必须与之一致。
+  界面上想显示中文要改就整条链路一起改，不能只改常量
 - `PROSE_ONLY_PROPERTIES`：既可能装显示文案、也可能装协议枚举的属性（`action`、`word`、`escape`……）。
   只有「多词短语或以大写字母开头」的值才会翻译，`action: "copy"` 这类枚举保持原样
 - `displayTextArgumentIndex`：`theme.fg("dim", "…")`、`chalk.dim("…")`、`console.log("…")` 里文案所在的实参下标
 - `WHOLE_FILE_LITERALS`：整文件按字面量处理的文件
+- `translate.ts` 的 `VariableDeclarator` 规则：名字以 `_TITLE`/`_MESSAGE`/`_HINT`/`_WAIT`/`_STATUS`/
+  `_PROMPT`/`_PLACEHOLDER`/`_OPTION` 等结尾的单值常量整体翻译
 
 规则采用「文件范围 + 语法位置」双重约束。要扩大覆盖，新增属性名或文件规则即可，不需要改动翻译逻辑。
+
+**「标签被译、比较仍是英文」是一类真实故障**，重写器抓不到，请在改词典或加规则时留意：
+`showHookSelector` / `showPlanReview` 这类选择器回传的就是 label 本身，如果标签写成中文、
+分支还拿英文比较，那个分支会静默失效——面板看起来正常，点了没反应。修法是让标签与比较
+共用同一个常量（见 `SEANCE_SAVED_MODEL_OPTION`、`PLAN_APPROVE_OPTION`）。上游测试会直接喂
+英文 label，所以比较处还要并列一份英文原值；比较语句不在重写器的可译位置上，原值不会被改掉。
 
 ### 翻译约定
 
 - 术语统一：`Provider` → 服务商，`Model` → 模型，`Session` → 会话，`Tool` → 工具，`Subagent` → 子代理。
+- `turn`（对话轮）名词一律用**回合**，量词继续用「轮」（`每轮`、`下一轮`）；不要引入第三种译法「轮次」。
 - 界面空间有限：按钮、标签尽量短（2–4 字），描述性文字可以完整。
 - 保留专有名词：`Bash`、`GitHub`、`LSP`、`MCP`、`OAuth`、`Hindsight`、`Mnemopi` 等不译。
 - 不翻译含占位符的命令用法串（如 `<name> [--scope project|user]`）。
@@ -320,23 +332,28 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 流程：
 
-1. 拉取 `can1357/oh-my-pi` 的目标分支（默认 `main`）
+1. 拉取 `can1357/oh-my-pi` 的目标分支（默认 `main`）；`checkout` 固定 `ref: main`，
+   `bun-version` 固定为已验证的版本，避免 bun 大版本变更打断同步
 2. 若 `main` 已包含该提交则跳过
-3. 备份本 fork 自有的文件：`i18n/`、`README.md`、本工作流、`assets/`
+3. 备份本 fork 自有的文件：清单**动态计算**——取「相对上游提交多出来的路径」
+   （排除 `packages/**`、`scripts/link-omp.sh`、`.gitignore`，这三处由重写器负责重放）。
+   用硬编码路径会让日后新增的 fork 文件在同步中被静默删除
 4. 工作区切换到上游提交，并清除旧翻译结果
-5. 还原上述自有文件，依次执行：
+5. 还原上述自有文件，并**逐个校验存在性**（还原漏一步就会把删除动作提交上去）
+6. 依次执行五个重写器：
    - `bun i18n/translate.ts` — 词典翻译
    - `bun i18n/translate-hints.ts` — `${键位} to 动作` 拼接提示
    - `bun i18n/apply-cli-name.ts` — 重新套用 `omp-zh` 改名
    - `bun i18n/patch-report-keys.ts` — 面板解析比较跟随译文
    - `bun i18n/patch-gitignore.ts` — 补回本 fork 的忽略项
-6. 依次通过闸门：
-   - 提取器命中数 ≥ 50（否则说明汉化规则已失效）
+7. 依次通过闸门：
+   - 提取器命中数 ≥ 1000（当前实际约 1290；规则半失效时也能拦住，且该步开 `pipefail`）
    - 分组名校验 `bun i18n/check-groups.ts`
    - `omp-zh --version` 必须输出 `omp-zh/*`
    - 两个翻译器二次运行必须为 0 替换（幂等）
    - `packages/utils`、`packages/tui`、`packages/coding-agent` 类型检查
-7. 提交并推送回 `main`
+8. 用 `git commit-tree` 造「fork main + 上游」的双父提交，推送回 `main`
+   （这样 main 的历史包含上游提交，下一次的「是否已包含」判断才成立，推送也始终是快进）
 
 任何一步失败都不会推送，避免把损坏的构建推到主分支。
 
@@ -356,9 +373,9 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 - **新文案的翻译本身**。脚本不调用机器翻译：未收录的文案保持英文，等待人工补词典。这是有意为之——机翻容易产出术语不一致、语气生硬的界面。
 - **上游结构性重构**。若上游把 `label: "…"` 改成别的 API，规则需同步更新。此时 CI 会在「提取器仍能命中」这步失败并停止推送，不会静默漏译。
-- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（当前约 96 个，集中在 `packages/tui/test`）。它们是断言问题而非功能问题，因此 CI 不跑全量测试。
+- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（按本同步基线实测：`packages/tui/test` 约 94 个、`packages/coding-agent/test` 约 225 个）。它们是断言问题而非功能问题，因此 CI 不跑全量测试；重放时应做的是「与同步前基线比对，确认没有新增失败」，而不是追平绝对数。
 
-结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 3760 条，覆盖主要界面；剩余未译条目多为专有名词、模型名与长技术描述，按需补充即可。
+结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 3750 条，覆盖主要界面；剩余未译条目多为专有名词、模型名与长技术描述，按需补充即可。
 
 ---
 
@@ -375,8 +392,11 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - 设置面板底部与各对话框的操作提示行已汉化
 - 状态栏、工具卡片标题/状态词、`/session` 信息面板、任务面板与快捷键表已汉化
 - 斜杠命令描述汉化 87/87
-- 词典收录 3759 条；提取器统计的界面文案已汉化 1110 条
+- 词典收录 3753 条；提取器统计的界面文案已汉化 1112 条
 - 翻译器、提示片段翻译器与报告键补丁均幂等：连续执行两次，第二次替换数为 0
+- `/session` 信息面板的报告键解析改为中英文双认（`reportKeyEq`）：上游测试喂英文报告时同样能解析，
+  相比同步前净修复 2 个测试
+- 全量测试与同步前基线**逐条比对**：`packages/tui` 与 `packages/coding-agent` 均无新增失败
 
 ---
 

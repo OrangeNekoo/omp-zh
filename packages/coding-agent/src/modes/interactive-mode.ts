@@ -576,9 +576,22 @@ function formatHudNoteMarker(count: number): string {
 type GoalSubcommand = "set" | "show" | "pause" | "resume" | "drop" | "budget";
 
 const GOAL_SUBCOMMANDS = new Set<GoalSubcommand>(["set", "show", "pause", "resume", "drop", "budget"]);
+
+/**
+ * 计划审查面板的选项标签。`showPlanReview` 回传的就是 label 本身，所以标签与
+ * 比较必须共用同一常量——各写一遍字面量会在汉化后对不上，「批准并执行」
+ * 与「完善计划」两个分支会静默失效（面板看起来正常，点了没反应）。
+ *
+ * 常量名带 `_OPTION` 后缀，`i18n/translate.ts` 会把值一起改掉，标签与比较
+ * 因此始终保持一致。
+ */
+const PLAN_APPROVE_OPTION = "批准并执行";
+const PLAN_COMPACT_OPTION = "批准并压缩上下文";
+const PLAN_REFINE_OPTION = "完善计划";
+
 const PLAN_KEEP_CONTEXT_OPTION_INDEX = 2;
 const PLAN_KEEP_CONTEXT_DISABLE_THRESHOLD_PERCENT = 95;
-const PLAN_SAVE_AND_QUIT_OPTION = "Save and quit";
+const PLAN_SAVE_AND_QUIT_OPTION = "保存并退出";
 const PLAN_SAVE_TITLE_LINE_LIMIT = 6;
 
 const CFG_APPROVE_SESSION = "Always for this session";
@@ -5374,7 +5387,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const paused = options?.paused ?? false;
 		this.sessionManager.appendModeChange(paused ? "plan_paused" : "none");
 		if (!options?.silent) {
-			this.showStatus(paused ? "Plan mode paused." : "Plan mode disabled.");
+			this.showStatus(paused ? "Plan mode paused." : "计划模式已禁用。");
 		}
 	}
 
@@ -5421,7 +5434,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.session.sendGoalModeContext({ deliverAs: "steer" });
 		}
 		if (!options.silent) {
-			this.showStatus(options.resume ? "Goal mode resumed." : "Goal mode enabled.");
+			this.showStatus(options.resume ? "目标模式已继续。" : "Goal mode enabled.");
 		}
 	}
 
@@ -6532,7 +6545,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			case "budget":
 				if (!this.goalModeEnabled) {
 					this.showWarning(
-						this.#getPausedGoalState() ? "Resume the goal before adjusting the budget." : "No active goal.",
+						this.#getPausedGoalState() ? "Resume the goal before adjusting the budget." : "没有进行中的目标。",
 					);
 					return false;
 				}
@@ -6847,10 +6860,10 @@ export class InteractiveMode implements InteractiveModeContext {
 		const keepContextLabel = this.#formatKeepContextLabel(contextUsage);
 		const keepContextDisabled = this.#isKeepContextDisabled(contextUsage);
 		const reviewOptions: PlanReviewOption[] = [
-			{ id: "execute", label: "批准并执行", disabled: false },
-			{ id: "compact", label: "批准并压缩上下文", disabled: false },
+			{ id: "execute", label: PLAN_APPROVE_OPTION, disabled: false },
+			{ id: "compact", label: PLAN_COMPACT_OPTION, disabled: false },
 			{ id: "keep", label: keepContextLabel, disabled: keepContextDisabled },
-			{ id: "refine", label: "完善计划", disabled: false },
+			{ id: "refine", label: PLAN_REFINE_OPTION, disabled: false },
 			{ id: "save", label: PLAN_SAVE_AND_QUIT_OPTION, disabled: false },
 		];
 
@@ -6977,7 +6990,8 @@ export class InteractiveMode implements InteractiveModeContext {
 			this.ui.requestRender();
 		};
 
-		if (choice === PLAN_SAVE_AND_QUIT_OPTION) {
+		// 上游测试直接喂英文 label，汉化后的界面喂常量值，两者都认。
+		if (choice === PLAN_SAVE_AND_QUIT_OPTION || choice === "Save and quit") {
 			closePlanReview();
 			try {
 				const latestPlanContent = editedContent ?? (await this.#readPlanFile(planFilePath));
@@ -6997,7 +7011,14 @@ export class InteractiveMode implements InteractiveModeContext {
 			return;
 		}
 
-		if (choice === "Approve and execute" || choice === "Approve and compact context" || choice === keepContextLabel) {
+		if (
+			choice === PLAN_APPROVE_OPTION ||
+			choice === PLAN_COMPACT_OPTION ||
+			// 上游测试直接喂英文 label；汉化后的界面喂的是常量值。两者都认。
+			choice === "Approve and execute" ||
+			choice === "Approve and compact context" ||
+			choice === keepContextLabel
+		) {
 			try {
 				// Prefer in-overlay edits (already in memory) over a disk re-read. The
 				// overlay mirrors edits as they happen, and approval awaits one final
@@ -7042,8 +7063,10 @@ export class InteractiveMode implements InteractiveModeContext {
 				const executionDispatched = await this.#approvePlan(latestPlanContent, {
 					planFilePath,
 					title: details.title,
-					preserveContext: choice !== "Approve and execute",
-					compactBeforeExecute: choice === "Approve and compact context",
+					preserveContext:
+						choice !== PLAN_APPROVE_OPTION && choice !== "Approve and execute",
+					compactBeforeExecute:
+						choice === PLAN_COMPACT_OPTION || choice === "Approve and compact context",
 					executionModel,
 					reviewOwner: pending,
 				});
@@ -7057,7 +7080,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			return;
 		}
 
-		if (choice === "Refine plan") {
+		if (choice === PLAN_REFINE_OPTION || choice === "Refine plan") {
 			const refinement = remote?.choice === "refine" ? (remote.feedback ?? "") : feedback;
 			try {
 				if (refinement.trim()) {

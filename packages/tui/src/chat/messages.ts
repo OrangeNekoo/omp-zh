@@ -98,7 +98,7 @@ export function isSilentAbort(message: Pick<AssistantMessage, "errorId" | "error
  *  aborted assistant message's `errorMessage` so queued follow-ups/tool-result
  *  placeholders can distinguish a deliberate interrupt from a bare lifecycle
  *  abort, but interactive renderers suppress this redundant transcript line. */
-export const USER_INTERRUPT_LABEL = "Interrupted by user";
+export const USER_INTERRUPT_LABEL = "被用户中断";
 
 export function isUserInterruptAbort(message: Pick<AssistantMessage, "errorId" | "errorMessage">): boolean {
 	return AIError.is(message.errorId, AIError.Flag.UserInterrupt) || message.errorMessage === USER_INTERRUPT_LABEL;

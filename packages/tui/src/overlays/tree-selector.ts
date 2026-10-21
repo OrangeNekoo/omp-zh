@@ -257,7 +257,7 @@ class TreeList implements Component {
 	) {
 		this.#filterMode = initialFilterMode;
 		this.searchInput.prompt = `${theme.fg("muted", "搜索：")} `;
-		this.searchInput.placeholder = "Type to search";
+		this.searchInput.placeholder = "输入以搜索";
 		this.#multipleRoots = tree.length > 1;
 		this.#indexSession(tree);
 		this.#tree = new TreeView<TreeSelectorNode, string>({

@@ -70,7 +70,7 @@ export class ErrorBannerComponent extends Container {
 			: text([span(headline, "error")], { truncate: "end", lines: 1, grow: 1, title: this.#message });
 		const children: NativeNode[] = [message];
 		if (multiline || headline.length > 80) {
-			children.push(actionButton(this.#expanded ? "Less" : "Details", "details"));
+			children.push(actionButton(this.#expanded ? "更少" : "详情", "details"));
 		}
 		if (this.#onDismiss) children.push(actionButton("忽略", "dismiss"));
 		this.#native = node(

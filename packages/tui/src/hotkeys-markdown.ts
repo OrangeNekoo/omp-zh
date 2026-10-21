@@ -139,7 +139,7 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 				{ keys: [act("app.approval.approve")], action: "批准待处理的工具调用" },
 				{ keys: [act("app.thinking.toggle")], action: "切换思考块可见性" },
 				{ keys: [act("app.editor.external")], action: "在外部编辑器中编辑消息" },
-				{ keys: [act("app.retry")], action: "重试上次失败的助手轮次" },
+				{ keys: [act("app.retry")], action: "重试上次失败的助手回合" },
 				{ keys: [act("app.clipboard.pasteImage")], action: "从剪贴板粘贴图像或文本" },
 				{
 					keys:
