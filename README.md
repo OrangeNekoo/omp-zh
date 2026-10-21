@@ -388,7 +388,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 ## 声明
 
-**本项目不是 [oh-my-pi](https://github.com/can1357/oh-my-pi) 的一部分**，也不是其官方中文版。它是第三方维护的简体中文界面分支，所有汉化、打包与发布均由本仓库独立完成，与上游作者、Stencil Labs, Inc. 无关。
+**本项目不是 [oh-my-pi](https://github.com/can1357/oh-my-pi) 的一部分**，也不是其官方中文版。它是第三方维护的简体中文界面分支，所有汉化、打包与发布均由本仓库独立完成，与omp作者无关。
 
 上游团队不负责本仓库的代码、构建产物或安装脚本，也**不会**处理与本项目相关的问题。遇到任何问题——汉化错误、漏译、构建失败、命令行为异常——请**不要向上游作者反馈**，而应提交到本仓库的 [Issues](https://github.com/OrangeNekoo/omp-zh/issues)。
 
