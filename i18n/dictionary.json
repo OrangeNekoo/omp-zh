@@ -1509,7 +1509,6 @@
 	"Litterbox": "Litterbox",
 	"Llama 3.2 3B": "Llama 3.2 3B",
 	"LobFile-compatible endpoint": "LobFile 兼容端点",
-	"Long (1h)": "长（1 小时）",
 	"Loop Guard": "循环守卫",
 	"Loop Guard Scan Prose": "循环守卫扫描正文",
 	"Loop Guard Tool-Call Reminder": "循环守卫工具调用提醒",
@@ -1953,7 +1952,6 @@
 	"Token count above which idle compaction triggers": "超过此令牌数时触发空闲压缩",
 	"Use larger context windows where supported; may incur premium pricing. Off keeps default or standard-pricing windows": "在支持的情况下使用更大的上下文窗口；可能产生溢价计费。关闭则保留默认或标准定价的窗口",
 	"Use Responses streaming compaction for compatible remote compaction models": "对兼容的远程压缩模型使用 Responses 流式压缩",
-	"1h TTL where the provider supports it; pricier writes, only warmed during active runs": "服务商支持时使用 1 小时 TTL；写入更贵，仅在活跃运行期间预热",
 	"Also block all system sleep on AC and declare the user active (macOS `caffeinate -i -d -s -u`)": "同时在接通电源时阻止所有系统休眠并声明用户活跃（macOS `caffeinate -i -d -s -u`）",
 	"Also keep the display from idle-sleeping (macOS `caffeinate -i -d`)": "同时阻止显示器空闲休眠（macOS `caffeinate -i -d`）",
 	"Also refresh 5-minute entries between runs while the expected savings stay above the cost floor": "同时在各次运行之间刷新 5 分钟条目，只要预期节省仍高于成本下限",
@@ -3757,5 +3755,7 @@
 	"use for this session": "用于本次会话",
 	"Use saved model": "使用已保存的模型",
 	"to copy": "复制",
-	"to copy again": "再次复制"
+	"to copy again": "再次复制",
+	"Long (1h+)": "长（1 小时+）",
+	"Longer TTL where supported (Anthropic/Bedrock 1h, OpenAI GPT-5.6+ Responses 12h); pricier writes, only warmed during active runs": "服务商支持时使用更长 TTL（Anthropic/Bedrock 1 小时，OpenAI GPT-5.6+ Responses 12 小时）；写入更贵，仅在活跃运行期间预热"
 }

@@ -4,7 +4,7 @@
 
 命令名改为 **`omp-zh`**，配置目录与上游完全共用（`~/.omp`），因此可以和原版 `omp` 并存、共享同一份登录状态、会话历史与设置。
 
-> 上游版本：`18.12.4` · 本项目跟随上游滚动更新
+> 上游版本：`18.12.5` · 本项目跟随上游滚动更新
 >
 > 本项目**不是** oh-my-pi 的一部分，问题请提交到[本仓库 Issues](https://github.com/OrangeNekoo/omp-zh/issues)，勿向上游作者反馈。详见文末[声明](#声明)。
 
@@ -218,7 +218,7 @@ omp-zh                          # 进入交互式终端界面
 omp-zh "列出 src 下所有 ts 文件"
 omp-zh -p "解释这个仓库的架构"     # 一次性输出，不进 TUI
 omp-zh --help                   # 查看全部参数
-omp-zh --version                # omp-zh/18.12.4
+omp-zh --version                # omp-zh/18.12.5
 ```
 
 ### 与上游共存
@@ -364,7 +364,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 ## 已验证的状态
 
-- `omp-zh --version` → `omp-zh/18.12.4`
+- `omp-zh --version` → `omp-zh/18.12.5`
 - `omp-zh --help` 正常输出，参数说明与 `EXAMPLES` 注释已汉化
 - `packages/utils`、`packages/tui`、`packages/coding-agent` 三个包 `check:types` 通过
 - 设置面板 10 个标签页、59 个分组全部汉化，且 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值 100% 对齐
