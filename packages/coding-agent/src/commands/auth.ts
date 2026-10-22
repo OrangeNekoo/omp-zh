@@ -201,7 +201,7 @@ export default class Auth extends Command {
 		const broker = await resolveAuthBrokerConfig();
 		if (broker) {
 			process.stderr.write(
-				`${chalk.red(`error: omp uses the auth broker at ${broker.url}; credentials live there, not in this machine's agent.db.`)}\n` +
+				`${chalk.red(`错误：omp 使用位于 ${broker.url} 的认证代理；凭据保存在那里，而非本机的 agent.db 中。`)}\n` +
 					"Run this on the broker host, or disable the broker (`omp config reset auth.broker.url`) first.\n",
 			);
 			process.exitCode = 1;
@@ -219,7 +219,7 @@ export default class Auth extends Command {
 			const oauthCount = data.credentials.filter(entry => entry.credential.type === "oauth").length;
 			if (oauthCount > 0) {
 				process.stderr.write(
-					`${chalk.yellow(`warning: this output holds live secrets, including ${oauthCount} OAuth refresh token(s). Providers that rotate refresh tokens on use accept only the newest one: once the importing machine refreshes, this machine may be signed out of those accounts.`)}\n`,
+					`${chalk.yellow(`警告：此输出包含有效凭据，包括 ${oauthCount} 个 OAuth 刷新令牌。在使用时轮换刷新令牌的服务商只接受最新一个：导入方机器一旦刷新，本机可能会被登出这些账户。`)}\n`,
 				);
 			}
 			process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
@@ -232,7 +232,7 @@ export default class Auth extends Command {
 			text = file === "-" ? await Bun.stdin.text() : await Bun.file(file).text();
 		} catch (error) {
 			if (!isEnoent(error)) throw error;
-			process.stderr.write(`${chalk.red(`error: credential file not found: ${file}`)}\n`);
+			process.stderr.write(`${chalk.red(`错误：未找到凭据文件：${file}`)}\n`);
 			process.exitCode = 1;
 			return;
 		}
@@ -241,7 +241,7 @@ export default class Auth extends Command {
 			data = parseAuthExport(text, file === "-" ? "stdin" : file);
 		} catch (error) {
 			if (!(error instanceof AuthTransferError)) throw error;
-			process.stderr.write(`${chalk.red(`error: ${error.message}`)}\n`);
+			process.stderr.write(`${chalk.red(`错误：${error.message}`)}\n`);
 			process.exitCode = 1;
 			return;
 		}

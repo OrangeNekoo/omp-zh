@@ -461,7 +461,7 @@ export const askToolRenderer = {
 		// throw here takes down the whole TUI render loop — normalize first.
 		const questions = normalizeRenderQuestions(args.questions);
 		if (questions && questions.length > 0) {
-			const header = `${label} ${uiTheme.fg("muted", `${questions.length} questions`)}`;
+			const header = `${label} ${uiTheme.fg("muted", `${questions.length} 个问题`)}`;
 			return framedToolCard(uiTheme, ({ width, contentWidth }) => {
 				const sections = questions.map(q => {
 					const meta: string[] = [];

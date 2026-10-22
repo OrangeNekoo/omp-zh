@@ -1073,7 +1073,7 @@ export class AssistantMessageComponent extends Container {
 				"section",
 				{
 					role: "omp.assistant.recovered",
-					head: [span(`↻ Recovered after ${attempt} ${attempt === 1 ? "retry" : "retries"}`, "muted")],
+					head: [span(`↻ 在 ${attempt} ${attempt === 1 ? "retry" : "retries"} 后恢复`, "muted")],
 					collapsible: true,
 					collapsed: true,
 				},

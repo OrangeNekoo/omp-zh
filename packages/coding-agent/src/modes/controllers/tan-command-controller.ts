@@ -321,6 +321,6 @@ export class TanCommandController {
 			{ triggerTurn: false, deliverAs: "nextTurn" },
 		);
 		if (!wasStreaming) this.ctx.rebuildChatFromMessages();
-		this.ctx.showStatus(`Dispatched background tan ${jobId}`);
+		this.ctx.showStatus(`已派发后台任务 ${jobId}`);
 	}
 }

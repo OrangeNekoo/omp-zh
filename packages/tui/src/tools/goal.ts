@@ -71,7 +71,7 @@ interface GoalRenderArgs {
 function describeGoalResult(result: ToolRenderResult<GoalToolDetails>, args?: GoalRenderArgs): NativeToolView {
 	const details = result.details;
 	const description = describeOp(details?.op ?? args?.op);
-	if (result.isError) return errorView("目标", resultText(result) || "Goal tool failed", description);
+	if (result.isError) return errorView("Goal", resultText(result) || "目标工具失败", description);
 	const goal = details?.goal ?? null;
 	if (!goal) return { head: toolHead("目标", description, "no active goal"), tone: "warning" };
 
@@ -191,7 +191,7 @@ export const goalToolRenderer = {
 		const objective = args.objective?.trim();
 		if (args.op === "create" && objective) head.push(span(" "), span(`"${objective}"`, "muted"));
 		if (args.op === "create" && args.token_budget !== undefined) {
-			head.push(span(" "), span(`budget ${formatNumber(args.token_budget)}`, "muted"));
+			head.push(span(" "), span(`预算 ${formatNumber(args.token_budget)}`, "muted"));
 		}
 		return { head };
 	},

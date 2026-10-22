@@ -119,8 +119,8 @@ interface NativeBody {
 
 const SOURCE_SELECTION_GUTTER_WIDTH = 2;
 
-const OVERLAY_TITLE = "Code Review";
-const TEXT_OVERLAY_TITLE = "Annotate Text";
+const OVERLAY_TITLE = "代码审查";
+const TEXT_OVERLAY_TITLE = "批注文本";
 const MIN_BODY_ROWS = 3;
 const SIDEBAR_MIN_TOTAL_WIDTH = 64;
 const SIDEBAR_MIN_BODY_WIDTH = 40;
@@ -157,8 +157,8 @@ interface NativeSheet {
 	readonly size: "full";
 	readonly head: TspSpan[];
 }
-const DIFF_SHEET_TITLE = "Code review";
-const TEXT_SHEET_TITLE = "Annotate text";
+const DIFF_SHEET_TITLE = "代码审查";
+const TEXT_SHEET_TITLE = "批注文本";
 
 const NOTE_PLACEHOLDER = "Write a note…";
 
@@ -1437,7 +1437,7 @@ export class AnnotationOverlay implements Focusable {
 			selected: rowCount > 0 ? `l${this.#sourceIndex}` : null,
 			// Past 200 rows the terminal virtualizes the list itself (fixed one-line rows).
 			max: { lines: this.#bodyHeight },
-			empty: [span(this.#textSource ? "This text is empty" : "Nothing to review", "muted")],
+			empty: [span(this.#textSource ? "文本为空" : "没有需要审查的内容", "muted")],
 			role: this.#textSource ? "omp.review.text" : "omp.review.diff",
 			tone: this.#focus === "diff" && !editing ? "accent" : undefined,
 		});
@@ -1563,9 +1563,9 @@ export class AnnotationOverlay implements Focusable {
 					}
 				}
 				if (file.isBinary) {
-					notice("binary", "Binary file: no lines to annotate, but a file note works", "binary");
+					notice("binary", "二进制文件：没有可批注的行，但可以添加文件备注", "binary");
 				} else if (file.rows.length === 0) {
-					notice("empty", "No hunks: this looks like a rename-only change", "forward");
+					notice("empty", "没有差异块：这看起来只是重命名", "forward");
 				}
 				let lineWidth = 1;
 				for (const diffRow of file.isBinary ? [] : file.rows) {
@@ -1791,11 +1791,11 @@ export class AnnotationOverlay implements Focusable {
 
 	/** Where the open note lands: `Note on line 42 in src/app.ts`, `Edit note on src/app.ts`, `Note on the whole text`. */
 	#noteCaption(): TspSpan[] {
-		const verb = span(this.#editingAnnotationIndex === undefined ? "备注：" : "Edit note on ", "muted");
+		const verb = span(this.#editingAnnotationIndex === undefined ? "备注：" : "编辑备注：", "muted");
 		if (this.#textSource) {
 			return this.#annotationScope === "text"
 				? [verb, span("全文", "strong")]
-				: [verb, span(`line ${this.#sourceIndex + 1}`, "strong")];
+				: [verb, span(`第 ${this.#sourceIndex + 1} 行`, "strong")];
 		}
 		const file = this.#currentFile();
 		const path = file ? sanitizeStatusText(displayFileLabel(file)) : "file";

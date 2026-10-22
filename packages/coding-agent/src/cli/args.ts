@@ -488,7 +488,7 @@ export function reportUnrecognizedFlags(
 	if (args.unrecognizedFlags.length === 0) return false;
 	const flags = args.unrecognizedFlags;
 	const plural = flags.length === 1 ? "" : "s";
-	write(`${chalk.red(`Error: unknown flag${plural}: ${flags.join(", ")}`)}\n`);
+	write(`${chalk.red(`错误：未知标志${plural}：${flags.join(", ")}`)}\n`);
 	write(`Run \`${CLI_NAME} --help\` for available flags.\n`);
 	return true;
 }
@@ -503,7 +503,7 @@ export function reportInvalidFlagValues(
 	args: Pick<Args, "invalidFlagValues">,
 	write: (text: string) => void = text => process.stderr.write(text),
 ): boolean {
-	for (const message of args.invalidFlagValues) write(`${chalk.red(`Error: ${message}`)}\n`);
+	for (const message of args.invalidFlagValues) write(`${chalk.red(`错误：${message}`)}\n`);
 	return args.invalidFlagValues.length > 0;
 }
 
@@ -513,7 +513,7 @@ export function reportCliUsageError(
 	write: (text: string) => void = text => process.stderr.write(text),
 ): boolean {
 	if (!(error instanceof CliUsageError)) return false;
-	write(`${chalk.red(`Error: ${error.message}`)}\n`);
+	write(`${chalk.red(`错误：${error.message}`)}\n`);
 	write(`Run \`${CLI_NAME} --help\` for available flags.\n`);
 	return true;
 }

@@ -1623,7 +1623,7 @@ export class ModelBrowser implements Component {
 
 		const chips: string[] = [];
 		if (selected.selector === this.#currentSelector) {
-			chips.push(theme.fg("success", `${theme.status.enabled} current`));
+			chips.push(theme.fg("success", `${theme.status.enabled} 当前`));
 		}
 		const seen = new Set<string>();
 		const pushRole = (role: string) => {
@@ -1840,7 +1840,7 @@ export class ModelBrowser implements Component {
 				detail: overContext
 					? [
 							span(
-								`${theme.status.disabled} context>${formatNumber(item.model.contextWindow ?? 0).toLowerCase()}`,
+								`${theme.status.disabled} 上下文>${formatNumber(item.model.contextWindow ?? 0).toLowerCase()}`,
 								"warning",
 							),
 						]
@@ -1896,7 +1896,7 @@ export class ModelBrowser implements Component {
 			} else {
 				const chips: TspSpan[] = [];
 				if (selected.selector === this.#currentSelector) {
-					chips.push(span(`${theme.status.enabled} current`, "success"));
+					chips.push(span(`${theme.status.enabled} 当前`, "success"));
 				}
 				const seen = new Set<string>();
 				const pushRole = (role: string) => {
@@ -2005,7 +2005,7 @@ export class ModelBrowser implements Component {
 			badges.push({
 				text: `ctx>${formatNumber(model.contextWindow ?? 0).toLowerCase()}`,
 				tone: "warning",
-				title: `Context ${formatNumber(this.#currentContextTokens).toLowerCase()} exceeds this model's limit; picking it compacts first`,
+				title: `上下文 ${formatNumber(this.#currentContextTokens).toLowerCase()} 超出此模型的上限；选择它将先进行压缩`,
 			});
 		}
 		if (model.isNew) badges.push({ text: "new", tone: "accent" });
@@ -2032,7 +2032,7 @@ export class ModelBrowser implements Component {
 			facts,
 			...(badges.length > 0 ? { badges: badges.slice(0, 3) } : {}),
 			...(chips.length > 0 ? { chips } : {}),
-			...(int !== undefined ? { title: `Intelligence ${Math.round(int)}` } : {}),
+			...(int !== undefined ? { title: `智能度 ${Math.round(int)}` } : {}),
 		};
 		// Discovery re-mints Model objects for unchanged models; an equal row keeps its identity.
 		const kept = cached && Bun.deepEquals(cached.value, value) ? cached.value : value;
@@ -2186,7 +2186,7 @@ export class ModelBrowser implements Component {
 				...(assignment ? { tone: assignment.autoSelected ? "muted" : "accent" } : {}),
 				title: assignment
 					? `${info.name}${assignment.autoSelected ? " (auto-selected)" : ""}${level ? ` · thinking ${level}` : ""}`
-					: `${info.name}: not assigned`,
+					: `${info.name}：未分配`,
 			});
 		};
 

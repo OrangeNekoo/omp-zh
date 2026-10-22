@@ -49,7 +49,7 @@ export const COMPOSER_HINTS: readonly ComposerHint[] = [
 			if (ctx.runningAgents === 0 || ctx.focusedOnAgent) return undefined;
 			return {
 				key: formatDoubleTap("left"),
-				label: `to see ${ctx.runningAgents} running ${ctx.runningAgents === 1 ? "agent" : "agents"}`,
+				label: `以查看 ${ctx.runningAgents} 个运行中的 ${ctx.runningAgents === 1 ? "agent" : "agents"}`,
 			};
 		},
 	},

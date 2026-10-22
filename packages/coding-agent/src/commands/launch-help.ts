@@ -35,14 +35,14 @@ export const launchHelp = {
 		"prewalk-into": Flags.string({ description: 'prewalk 的目标模型（默认 "smol" 角色）' }),
 		"plan-yolo": Flags.boolean({
 			description:
-				"Force read-only plan mode at start, auto-approve the plan on the model's first resolve call, then switch to --plan-yolo-into to implement it",
+				"启动时强制进入只读计划模式，在模型第一次 resolve 调用时自动批准计划，然后切换到 --plan-yolo-into 实施",
 		}),
 		"plan-yolo-into": Flags.string({ description: 'plan-yolo 执行的目标模型（默认 "smol" 角色）' }),
-		provider: Flags.string({ description: "Provider to use (legacy; prefer --model)" }),
+		provider: Flags.string({ description: "要使用的服务商（旧版参数；建议改用 --model）" }),
 		"api-key": Flags.string({ description: "API 密钥（默认取自环境变量）" }),
 		"system-prompt": Flags.string({ description: "系统提示词（默认：编程助手提示词）" }),
 		"system-prompt-template": Flags.string({
-			description: "Handlebars system prompt template (mutually exclusive with --system-prompt)",
+			description: "Handlebars 系统提示词模板（与 --system-prompt 互斥）",
 		}),
 		"append-system-prompt": Flags.string({ description: "向系统提示词追加文本或文件内容" }),
 		"allow-home": Flags.boolean({ description: "允许在 ~ 下启动，而不自动切换到临时目录" }),
@@ -66,19 +66,19 @@ export const launchHelp = {
 		resume: Flags.string({ char: "r", description: "继续会话（按 ID 前缀、路径，省略时打开选择器）" }),
 		restore: Flags.string({
 			description:
-				"Resume a session as --resume does, then go on with what its last process left unfinished (the interrupted turn and the subagents it was running)",
+				"像 --resume 一样恢复会话，然后继续上一个进程未完成的工作（被打断的回合及其运行中的子代理）",
 		}),
 		"from-claude": Flags.boolean({ description: "将 Claude Code 会话导入 OMP" }),
 		"from-codex": Flags.boolean({ description: "将 Codex 会话导入 OMP" }),
 		"session-dir": Flags.string({ description: "会话存储与查找的目录" }),
 		"no-session": Flags.boolean({ description: "不保存会话（临时）" }),
-		models: Flags.string({ description: `Comma-separated model patterns for ${formatKeyHint("ctrl+p")} cycling` }),
+		models: Flags.string({ description: `用于 ${formatKeyHint("ctrl+p")} 循环切换的逗号分隔模型模式` }),
 		"no-tools": Flags.boolean({ description: "禁用所有内置工具" }),
 		"no-lsp": Flags.boolean({ description: "禁用 LSP 工具、格式化与诊断" }),
 		"no-pty": Flags.boolean({ description: "禁用基于 PTY 的交互式 bash 执行" }),
 		tools: Flags.string({ description: "要启用的工具的逗号分隔列表（默认：全部）" }),
 		thinking: Flags.string({
-			description: `Set thinking level: ${CLI_THINKING_LEVELS.join(", ")}`,
+			description: `已设置思考等级：${CLI_THINKING_LEVELS.join(", ")}`,
 			options: [...CLI_THINKING_LEVELS],
 		}),
 		"service-tier": Flags.string({
@@ -110,7 +110,7 @@ export const launchHelp = {
 		export: Flags.string({ description: "将会话文件导出为 HTML 后退出" }),
 		"no-title": Flags.boolean({ description: "禁用标题自动生成" }),
 		"no-ui": Flags.boolean({
-			description: "With --mode rpc or rpc-ui: run extensions headless (rpc-ui tool UI remains enabled)",
+			description: "配合 --mode rpc 或 rpc-ui：无界面运行扩展（rpc-ui 的工具界面仍启用）",
 		}),
 		"print-thoughts": Flags.boolean({ description: "在 print 模式的文本输出中包含思考块" }),
 		"max-time": Flags.string({ description: "在此持续时间后停止会话（如 600、10m、1h）" }),

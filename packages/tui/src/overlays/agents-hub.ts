@@ -477,8 +477,8 @@ export class AgentsHubComponent implements Component {
 		const enabledChip: StripChip = {
 			label: agent.disabled ? "enable" : "disable",
 			styled: agent.disabled
-				? theme.fg("success", `${theme.status.enabled} enable`)
-				: theme.fg("dim", `${theme.status.disabled} disable`),
+				? theme.fg("success", `${theme.status.enabled} 启用`)
+				: theme.fg("dim", `${theme.status.disabled} 停用`),
 			action: { kind: "toggle" },
 		};
 		const propertyChip = (property: PropertyKind): StripChip => {
@@ -1150,8 +1150,8 @@ export class AgentsHubComponent implements Component {
 			const spec = this.#createSpec;
 			lines.push(truncateToWidth(theme.bold(theme.fg("accent", " 查看生成的代理")), width));
 			lines.push("");
-			lines.push(truncateToWidth(theme.fg("muted", ` Identifier: ${spec.identifier}`), width));
-			lines.push(truncateToWidth(theme.fg("muted", ` Scope: ${this.#createScope}`), width));
+			lines.push(truncateToWidth(theme.fg("muted", ` 标识符：${spec.identifier}`), width));
+			lines.push(truncateToWidth(theme.fg("muted", ` 范围：${this.#createScope}`), width));
 			lines.push("");
 			lines.push(theme.fg("muted", " whenToUse:"));
 			for (const line of wrapTextWithAnsi(replaceTabs(spec.whenToUse), Math.max(20, width - 2)).slice(0, 6)) {
@@ -1251,7 +1251,7 @@ export class AgentsHubComponent implements Component {
 
 	#renderStrip(width: number, strip: StripState): string {
 		if (strip.kind === "pattern") {
-			const label = theme.fg("accent", `${strip.agent.name} ${strip.property} pattern:`);
+			const label = theme.fg("accent", `${strip.agent.name} ${strip.property} 模式：`);
 			const labelWidth = visibleWidth(`${strip.agent.name} ${strip.property} pattern:`);
 			const inputWidth = Math.max(8, Math.min(40, width - labelWidth - 4));
 			const inputLine = strip.input.render(inputWidth)[0] ?? "";
@@ -1592,7 +1592,7 @@ export class AgentsHubComponent implements Component {
 		if (this.#assigning) {
 			const { agent, property } = this.#assigning;
 			const what = property === "model" ? "model override" : `${property} model`;
-			return [span(`Picking ${what} for `, "accent"), span(agent.name, "accent strong")];
+			return [span(`选择 ${what}，对象：`, "accent"), span(agent.name, "accent strong")];
 		}
 		if (this.#createActive) return [span("新建代理 — 描述它并让架构师起草", "accent")];
 		if (this.#notice) return [span(this.#notice, "success")];
@@ -1747,8 +1747,8 @@ export class AgentsHubComponent implements Component {
 		switch (action.kind) {
 			case "toggle":
 				return chip.label === "enable"
-					? [span(`${theme.status.enabled} enable`, "success")]
-					: [span(`${theme.status.disabled} disable`, "dim")];
+					? [span(`${theme.status.enabled} 启用`, "success")]
+					: [span(`${theme.status.disabled} 停用`, "dim")];
 			case "property":
 				return [span(action.property, "accent"), span(`: ${this.#propertySummary(agent, action.property)}`, "dim")];
 			case "set": {
@@ -1772,7 +1772,7 @@ export class AgentsHubComponent implements Component {
 			return node(
 				"row",
 				{ gap: "sm", align: "center" },
-				[text([span(`${strip.agent.name} ${strip.property} pattern:`, "accent")]), col([strip.input], { grow: 1 })],
+				[text([span(`${strip.agent.name} ${strip.property} 模式：`, "accent")]), col([strip.input], { grow: 1 })],
 				"pattern",
 			);
 		}
@@ -1808,7 +1808,7 @@ export class AgentsHubComponent implements Component {
 			if (strip.kind === "pattern") {
 				const values = strip.property === "model" ? "a model pattern" : '"on", "off", or a model pattern';
 				return [
-					{ keys: ["enter"], label: `${values} (role aliases like @smol and :level suffixes work; empty clears)` },
+					{ keys: ["enter"], label: `${values}（支持 @smol 这类别名与 :level 后缀；留空则清除）` },
 					cancel("back"),
 				];
 			}

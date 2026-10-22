@@ -1150,7 +1150,7 @@ export const editToolRenderer = {
 					op,
 					rawPath,
 					rename,
-					extraSuffix: fileCount > 1 ? uiTheme.fg("dim", ` (+${fileCount - 1} more)`) : undefined,
+					extraSuffix: fileCount > 1 ? uiTheme.fg("dim", `（另加 ${fileCount - 1} 条）`) : undefined,
 				});
 				let body = getCallPreview(
 					editArgs,
@@ -1436,7 +1436,7 @@ function editFileParts(
 	} else if (editDiffPreview && "error" in editDiffPreview) {
 		body.push(errorText(editDiffPreview.error));
 	} else if (details && op !== "delete" && op !== "create" && !rename) {
-		body.push(noteText(`No changes were made${shownPath ? ` to ${shownPath}` : ""}.`));
+		body.push(noteText(`未做任何更改${shownPath ? ` to ${shownPath}` : ""}。`));
 	}
 	const diagnostics = diagnosticsSection(details?.diagnostics);
 	if (diagnostics) body.push(diagnostics);
@@ -1592,7 +1592,7 @@ function renderSingleFileResult(
 						: rawPath
 							? shortenPath(sanitizeText(rawPath))
 							: "";
-					body = uiTheme.fg("dim", `No changes were made${noChangePath ? ` to ${noChangePath}` : ""}.`);
+					body = uiTheme.fg("dim", `未做任何更改${noChangePath ? ` to ${noChangePath}` : ""}。`);
 				}
 			} else if (editDiffPreview) {
 				if ("error" in editDiffPreview) body = uiTheme.fg("error", replaceTabs(editDiffPreview.error));

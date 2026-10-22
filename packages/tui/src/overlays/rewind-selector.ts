@@ -714,7 +714,7 @@ export class RewindSelectorComponent implements Component {
 					page.push(this.#marked(blocks[i]!, picked ? "pick" : undefined));
 			}
 			if (matches.length === 0) {
-				page.push(text([span(`No turns match "${filter}"`, "muted")], { role: "omp.rewind.empty" }));
+				page.push(text([span(`没有回合匹配 "${filter}"`, "muted")], { role: "omp.rewind.empty" }));
 			}
 			return page;
 		}
@@ -779,14 +779,14 @@ export class RewindSelectorComponent implements Component {
 		const below = targets.length - picked - 1;
 		const spans = [
 			span(`${theme.icon.rewind} `, "accent"),
-			span(target.isUserTurn ? "Rewind to here" : "Continue from here", "accent strong"),
+			span(target.isUserTurn ? "回退到此处" : "从此处继续", "accent strong"),
 		];
-		if (target.isUserTurn) spans.push(span(`${theme.sep.dot}the prompt returns to the editor`, "dim"));
+		if (target.isUserTurn) spans.push(span(`${theme.sep.dot}提示词返回编辑器`, "dim"));
 		spans.push(
 			span(
 				below > 0
-					? `${theme.sep.dot}${below} turn${below === 1 ? "" : "s"} below dropped`
-					: `${theme.sep.dot}nothing below to drop`,
+					? `${theme.sep.dot}${below} 个回合${below === 1 ? "" : "s"} 已丢弃`
+					: `${theme.sep.dot}下方没有可删除的回合`,
 				"dim",
 			),
 		);
@@ -959,7 +959,7 @@ export class RewindSelectorComponent implements Component {
 		}
 		const selected = matches.indexOf(this.#selected);
 		const composed = composeOutlineColumn(rows, 0, rows.length, targets, selected, contentWidth, undefined);
-		const lines = matches.length > 0 ? composed.lines : [theme.fg("muted", `  No items match "${query}"`)];
+		const lines = matches.length > 0 ? composed.lines : [theme.fg("muted", `  没有匹配「${query}」的项`)];
 		const count =
 			matches.length === 0
 				? theme.fg("error", "无匹配")

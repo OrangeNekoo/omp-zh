@@ -79,7 +79,7 @@ function renderThemePreview(width: number): string[] {
 	const previewWidth = Math.max(24, Math.min(width, 88));
 	return [
 		theme.bold("预览"),
-		`${theme.fg("success", `${theme.status.success} success`)}  ${theme.fg("warning", `${theme.status.warning} warning`)}  ${theme.fg("error", `${theme.status.error} error`)}  ${theme.fg("accent", "accent")}`,
+		`${theme.fg("success", `${theme.status.success} 成功`)}  ${theme.fg("warning", `${theme.status.warning} 个警告`)}  ${theme.fg("error", `${theme.status.error} 个错误`)}  ${theme.fg("accent", "accent")}`,
 		"",
 		theme.fg("muted", "状态栏"),
 		renderMockStatusLine(previewWidth),
@@ -98,11 +98,11 @@ function describeThemePreview(): NativeNode {
 		[
 			text([span("预览", "strong")]),
 			text([
-				span(`${theme.status.success} success`, "success"),
+				span(`${theme.status.success} 成功`, "success"),
 				span("  "),
-				span(`${theme.status.warning} warning`, "warning"),
+				span(`${theme.status.warning} 个警告`, "warning"),
 				span("  "),
-				span(`${theme.status.error} error`, "error"),
+				span(`${theme.status.error} 个错误`, "error"),
 				span("  "),
 				span("accent", "accent"),
 			]),
@@ -194,7 +194,7 @@ class ThemeSceneController implements SetupSceneController {
 			new Text(
 				theme.fg(
 					"muted",
-					`Theme changes preview live. Nothing is saved until you press ${editorKey("tui.select.confirm")}.`,
+					`主题更改实时预览。按下 ${editorKey("tui.select.confirm")} 前不会保存任何更改。`,
 				),
 				0,
 				0,
@@ -204,7 +204,7 @@ class ThemeSceneController implements SetupSceneController {
 			new Text(
 				this.#mode === "all"
 					? theme.fg("dim", `Browsing all themes · ${editorKey("tui.select.cancel")} returns to curated choices`)
-					: theme.fg("dim", `${editorKey("tui.select.cancel")} skips this step`),
+					: theme.fg("dim", `${editorKey("tui.select.cancel")} 跳过此步骤`),
 				0,
 				0,
 			),
@@ -257,12 +257,12 @@ class ThemeSceneController implements SetupSceneController {
 			() => {
 				const children: NativeChild[] = [
 					col([
-						text([span(`Theme changes preview live. Nothing is saved until you press ${confirm}.`, "muted")]),
+						text([span(`主题更改实时预览。按下 ${confirm} 前不会保存任何更改。`, "muted")]),
 						text([
 							span(
 								this.#mode === "all"
 									? `Browsing all themes · ${cancel} returns to curated choices`
-									: `${cancel} skips this step`,
+									: `${cancel} 跳过此步骤`,
 								"dim",
 							),
 						]),

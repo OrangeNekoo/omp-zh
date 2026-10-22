@@ -223,7 +223,7 @@ async function buildPluginConfigItems(
 			items.push({
 				id: `config:${key}`,
 				label: `  ${key}`,
-				description: schema.description || `Configure ${key}`,
+				description: schema.description || `配置 ${key}`,
 				currentValue: currentValue ? "true" : "false",
 				values: ["true", "false"],
 			});
@@ -231,7 +231,7 @@ async function buildPluginConfigItems(
 			items.push({
 				id: `config:${key}`,
 				label: `  ${key}`,
-				description: schema.description || `Configure ${key}`,
+				description: schema.description || `配置 ${key}`,
 				currentValue: String(currentValue ?? schema.default ?? ""),
 				submenu: (cv, done) =>
 					createConfigEnumPanel(
@@ -252,7 +252,7 @@ async function buildPluginConfigItems(
 			items.push({
 				id: `config:${key}`,
 				label: `  ${key}`,
-				description: schema.description || `Configure ${key}`,
+				description: schema.description || `配置 ${key}`,
 				currentValue: displayValue,
 				submenu: (cv, done) =>
 					createConfigInputPanel(
@@ -370,7 +370,7 @@ export class PluginListComponent extends OverlayPanel {
 				id,
 				label: s.id,
 				hint: parts.join(" · "),
-				warning: s.shadowedBy ? `Shadowed by the ${s.shadowedBy} install` : undefined,
+				warning: s.shadowedBy ? `被 ${s.shadowedBy} 安装遮蔽` : undefined,
 				control: PLUGIN_CONFIGURE,
 			};
 		});
@@ -410,11 +410,11 @@ export class PluginListComponent extends OverlayPanel {
 								},
 							],
 						}),
-						hintsRow([actionHint("tui.select.cancel", "go back")]),
+						hintsRow([actionHint("tui.select.cancel", "返回")]),
 					]
 				: [
 						this.#selectList,
-						hintsRow([actionHint("tui.select.confirm", "configure"), actionHint("tui.select.cancel", "go back")]),
+						hintsRow([actionHint("tui.select.confirm", "configure"), actionHint("tui.select.cancel", "返回")]),
 					];
 		this.#native = overlayCard(PLUGIN_SETTINGS_ROLE, this.title, body);
 		return this.#native;
@@ -533,7 +533,7 @@ export class PluginDetailComponent extends OverlayPanel {
 				items.push({
 					id: `feature:${featName}`,
 					label: `  ${featName}`,
-					description: feat.description || `Enable ${featName} feature`,
+					description: feat.description || `启用 ${featName} 功能`,
 					currentValue: isEnabled ? "true" : "false",
 					values: ["true", "false"],
 				});
@@ -680,15 +680,15 @@ export class MarketplacePluginDetailComponent extends OverlayPanel {
 			...configItems,
 		];
 		const summary: Component[] = [
-			new Text(theme.fg("dim", `version       ${entry?.version ?? "(unknown)"}`), 0, 0),
-			new Text(theme.fg("dim", `scope         ${plugin.scope}`), 0, 0),
+			new Text(theme.fg("dim", `版本       ${entry?.version ?? "(unknown)"}`), 0, 0),
+			new Text(theme.fg("dim", `作用域         ${plugin.scope}`), 0, 0),
 			new Text(
-				theme.fg("dim", `install path  ${entry?.installPath ? shortenPath(entry.installPath) : "(unknown)"}`),
+				theme.fg("dim", `安装路径  ${entry?.installPath ? shortenPath(entry.installPath) : "(unknown)"}`),
 				0,
 				0,
 			),
-			new Text(theme.fg("dim", `installed at  ${entry?.installedAt ?? "(unknown)"}`), 0, 0),
-			new Text(theme.fg("dim", `last updated  ${entry?.lastUpdated ?? "(unknown)"}`), 0, 0),
+			new Text(theme.fg("dim", `安装位置  ${entry?.installedAt ?? "(unknown)"}`), 0, 0),
+			new Text(theme.fg("dim", `最后更新  ${entry?.lastUpdated ?? "(unknown)"}`), 0, 0),
 		];
 		if (entry?.gitCommitSha) {
 			summary.push(new Text(theme.fg("dim", `git sha       ${entry.gitCommitSha}`), 0, 0));

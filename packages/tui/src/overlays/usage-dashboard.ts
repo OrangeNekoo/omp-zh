@@ -441,7 +441,7 @@ function resetLabel(nowMs: number, resetMs: number): { text: string; title: stri
 			: `resets ${at.getDate()} ${MONTH_NAMES[at.getMonth()]}`;
 	return {
 		text,
-		title: `Resets ${shortDate(at)} ${at.getFullYear()}, ${clockTime(at)} (in ${formatDuration(resetMs)})`,
+		title: `重置 ${shortDate(at)} ${at.getFullYear()}、${clockTime(at)}（${formatDuration(resetMs)} 后）`,
 	};
 }
 
@@ -777,7 +777,7 @@ export class UsageDashboardComponent implements Component {
 				: card.unlimited
 					? "ok"
 					: aggregateStatus(card.windows);
-		const accountsText = card.accounts > 1 ? theme.fg("dim", `${card.accounts} accts`) : "";
+		const accountsText = card.accounts > 1 ? theme.fg("dim", `${card.accounts} 个账户`) : "";
 		const titleBudget = width - 2 - visibleWidth(accountsText) - (accountsText ? 1 : 0);
 		const title = theme.bold(truncateToWidth(card.name, Math.max(4, titleBudget)));
 		const titlePad = Math.max(0, width - 2 - visibleWidth(title) - visibleWidth(accountsText));
@@ -848,7 +848,7 @@ export class UsageDashboardComponent implements Component {
 				lines.push(`  ${line}`);
 			}
 		}
-		if (hidden > 0) lines.push(`  ${theme.fg("dim", `+${hidden} more`)}`);
+		if (hidden > 0) lines.push(`  ${theme.fg("dim", `另加 ${hidden} 条`)}`);
 		return lines;
 	}
 
@@ -932,7 +932,7 @@ export class UsageDashboardComponent implements Component {
 			if (active.length > 0) lines.push("");
 			const names = idle.map(card => card.name).join(" · ");
 			const prefix = `${theme.fg("success", theme.status.success)} `;
-			lines.push(truncateToWidth(`${prefix}${theme.fg("dim", `untouched: ${names}`)}`, innerWidth));
+			lines.push(truncateToWidth(`${prefix}${theme.fg("dim", `未改动：${names}`)}`, innerWidth));
 		}
 		return lines;
 	}
@@ -1120,7 +1120,7 @@ export class UsageDashboardComponent implements Component {
 			checked.push(node("spinner", { style: "dots", label: [span("刷新中…", "dim")] }));
 		} else if (this.#refreshError) {
 			checked.push(
-				text([span(`Refresh failed: ${sanitizeDisplayLine(this.#refreshError)}`, "warning")], {
+				text([span(`刷新失败：${sanitizeDisplayLine(this.#refreshError)}`, "warning")], {
 					truncate: "end",
 					title: sanitizeDisplayLine(this.#refreshError),
 				}),
@@ -1289,13 +1289,13 @@ export class UsageDashboardComponent implements Component {
 					"quota",
 					"Tightest quota",
 					[span("—", "dim")],
-					[span(this.#cards.length > 0 ? "Every quota untouched" : "未报告配额", "dim")],
+					[span(this.#cards.length > 0 ? "所有配额均未动用" : "未报告配额", "dim")],
 				),
 			);
 		}
 
 		if (!figures || !layout) {
-			const sub = [span(this.#activityError ? "History unavailable" : "加载中…", "dim")];
+			const sub = [span(this.#activityError ? "历史记录不可用" : "加载中…", "dim")];
 			tiles.push(
 				statTile("year", "Past year", [span("—", "dim")], sub),
 				statTile("month", "Last 30 days", [span("—", "dim")], sub),
@@ -1380,7 +1380,7 @@ export class UsageDashboardComponent implements Component {
 			),
 		];
 		if (entry.accounts > 1) {
-			who.push(text([span(`${entry.accounts} accounts`, "dim")], { role: "omp.usage.provider.meta" }));
+			who.push(text([span(`${entry.accounts} 个账户`, "dim")], { role: "omp.usage.provider.meta" }));
 		}
 		if (entry.resetCredits) {
 			const resets = entry.resetCredits;
@@ -1415,10 +1415,10 @@ export class UsageDashboardComponent implements Component {
 		for (const account of entry.unavailableAccounts) {
 			const name = sanitizeDisplayLine(account);
 			who.push(
-				text([span(`${name}: no usage data`, "warning")], {
+				text([span(`${name}：无用量数据`, "warning")], {
 					role: "omp.usage.provider.meta",
 					truncate: "middle",
-					title: `${name}: no usage data`,
+					title: `${name}：无用量数据`,
 				}),
 			);
 		}
@@ -1435,7 +1435,7 @@ export class UsageDashboardComponent implements Component {
 				];
 				if (window.fraction === undefined) {
 					cells.push(
-						text([span(window.usedText ?? "No data", "muted")], { role: "omp.usage.amount", truncate: "end" }),
+						text([span(window.usedText ?? "无数据", "muted")], { role: "omp.usage.amount", truncate: "end" }),
 					);
 				} else {
 					cells.push(
@@ -1452,7 +1452,7 @@ export class UsageDashboardComponent implements Component {
 			const hidden = entry.windows.length - CARD_MAX_WINDOWS;
 			if (hidden > 0) {
 				rows.push(
-					text([span(`${hidden} more in Details`, "dim")], {
+					text([span(`详情中还有 ${hidden} 条`, "dim")], {
 						role: "omp.usage.more",
 						title: "详情列出每个账户的每项配额  ⏎",
 					}),
@@ -1493,7 +1493,7 @@ export class UsageDashboardComponent implements Component {
 		if (this.#activityError) {
 			const detail = formatActivityErrorDetail(this.#activityError);
 			children.push(
-				text([span(detail ? `Usage history unavailable (${detail}).` : "Usage history unavailable.", "muted")], {
+				text([span(detail ? `用量历史不可用（${detail}）。` : "使用历史不可用。", "muted")], {
 					role: "omp.usage.none",
 					wrap: "word",
 				}),
@@ -1514,7 +1514,7 @@ export class UsageDashboardComponent implements Component {
 						span(
 							figures.activeDays > 0
 								? `${figures.activeDays} active day${figures.activeDays === 1 ? "" : "s"} · longest streak ${figures.longestStreak} day${figures.longestStreak === 1 ? "" : "s"}`
-								: `No activity in the last ${NATIVE_HEATMAP_WEEKS} weeks`,
+								: `过去 ${NATIVE_HEATMAP_WEEKS} 周内无活动`,
 							"dim",
 						),
 					],
@@ -1626,14 +1626,14 @@ export class UsageDashboardComponent implements Component {
 				text([span(entry.name)], { role: "omp.usage.provider.name", truncate: "end" }),
 			];
 			if (entry.accounts > 1) {
-				head.push(text([span(`${entry.accounts} accounts`, "dim")], { role: "omp.usage.provider.meta" }));
+				head.push(text([span(`${entry.accounts} 个账户`, "dim")], { role: "omp.usage.provider.meta" }));
 			}
 			const children: NativeChild[] = [
 				node("row", { role: "omp.usage.report.head", gap: "sm", align: "baseline" }, head, "head"),
 			];
 			for (const account of unavailable) {
 				if (account.provider !== entry.provider) continue;
-				children.push(mutedText(`${sanitizeDisplayLine(account.label)}: no usage data`, true));
+				children.push(mutedText(`${sanitizeDisplayLine(account.label)}：无用量数据`, true));
 			}
 
 			const facts: { k: TspText; v: TspText }[] = [];
@@ -1644,7 +1644,7 @@ export class UsageDashboardComponent implements Component {
 				if (!resets || resets.bankedCount <= 0) continue;
 				const value: TspSpan[] = [
 					span(
-						`${resets.bankedCount} saved reset${resets.bankedCount === 1 ? "" : "s"}`,
+						`${resets.bankedCount} 已保存重置${resets.bankedCount === 1 ? "" : "s"}`,
 						resets.redeemableCount > 0 ? "success" : "warning",
 					),
 				];
@@ -1690,13 +1690,13 @@ export class UsageDashboardComponent implements Component {
 						account: [span(reportAccountLabel(report, limit, index), "muted")],
 						left:
 							fraction === undefined
-								? [span(formatAbsoluteOnlyAmount([limit]) ?? "No data", "muted")]
+								? [span(formatAbsoluteOnlyAmount([limit]) ?? "无数据", "muted")]
 								: leftSpans(fraction, limit.status),
 						reset:
 							resetsAt !== undefined && resetsAt > nowMs
 								? [
 										span(
-											`${limit.window?.resetLabel ?? "resets"} in ${formatDuration(resetsAt - nowMs)}`,
+											`${limit.window?.resetLabel ?? "resets"} 于 ${formatDuration(resetsAt - nowMs)}`,
 											"dim",
 										),
 									]

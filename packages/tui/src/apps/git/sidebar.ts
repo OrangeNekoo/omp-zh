@@ -1083,7 +1083,7 @@ export class Sidebar {
 			[
 				row(
 					compact([
-						text([span(`${total} change${total === 1 ? "" : "s"}`, "strong")]),
+						text([span(`${total} 处更改${total === 1 ? "" : "s"}`, "strong")]),
 						this.#model.branch !== null && text([span("on", "muted")]),
 						this.#model.branch !== null &&
 							text([span(this.#model.branch, "mono")], { role: "omp.app.git.branch", truncate: "middle" }),
@@ -1146,7 +1146,7 @@ export class Sidebar {
 				row(
 					[
 						node("icon", { name: folded ? "chev-r" : "chev" }),
-						text(area === "unstaged" ? "Unstaged" : "Staged"),
+						text(area === "unstaged" ? "未暂存" : "Staged"),
 						text([span(String(files.length), "num")], { role: "omp.app.git.count" }),
 					],
 					{ gap: "xs", align: "center", actions: { click: `fold-${area}` }, title: folded ? "显示" : "隐藏" },
@@ -1217,7 +1217,7 @@ export class Sidebar {
 		if (file.deletions) stats.push(span(`${stats.length > 0 ? " " : ""}−${file.deletions}`, "del num"));
 		return item(key, {
 			label,
-			detail: file.origPath ? [span(`from ${file.origPath}`, "dim")] : undefined,
+			detail: file.origPath ? [span(`来自 ${file.origPath}`, "dim")] : undefined,
 			value: stats.length > 0 ? stats : undefined,
 			hint: [KIND_LETTER[file.kind]],
 			tone: KIND_COLOR[file.kind],
@@ -1366,7 +1366,7 @@ export class Sidebar {
 				row(
 					[
 						text([
-							span(`${head.files.length} file${head.files.length === 1 ? "" : "s"}`, "strong"),
+							span(`${head.files.length} 个文件${head.files.length === 1 ? "" : "s"}`, "strong"),
 							span("  "),
 							span(`+${additions}`, "ins num"),
 							span(" "),
@@ -1660,7 +1660,7 @@ export class Sidebar {
 		rows.push({ text: ` ${theme.bold(head.authorName)} ${theme.fg("dim", `<${head.authorEmail}>`)}` });
 		const when = head.authorDate ? new Date(head.authorDate) : null;
 		if (when && !Number.isNaN(when.getTime())) {
-			rows.push({ text: theme.fg("dim", ` authored ${when.toLocaleString()}`) });
+			rows.push({ text: theme.fg("dim", ` 作者 ${when.toLocaleString()}`) });
 		}
 		if (head.parents.length > 0) {
 			rows.push({

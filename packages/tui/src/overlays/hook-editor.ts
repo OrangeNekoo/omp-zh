@@ -187,7 +187,7 @@ export class HookEditorComponent extends OverlayPanel implements Focusable {
 		// Native: the field drops its terminal frame for the sheet's, and says what to type while empty.
 		const fieldRole = this.#promptStyle ? `${PART}.line` : `${PART}.field`;
 		this.#editor.describeLayout = input => ({ role: fieldRole, children: [input], caret: "input" });
-		const placeholder = [span(this.#promptStyle ? "Type your answer" : "Type here")];
+		const placeholder = [span(this.#promptStyle ? "输入你的回答" : "在此输入")];
 		this.#editor.describePlaceholder = () => placeholder;
 
 		const head: NativeChild[] = [];

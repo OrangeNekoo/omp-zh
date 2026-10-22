@@ -483,7 +483,7 @@ function describeFallback(result: ToolRenderResult<GhToolDetails>, args: GithubT
 	const output = extractText(result.content).trim();
 	const title = formatOpTitle(args.op);
 	const meta = buildOpMeta(args, KEEP_TEXT);
-	if (result.isError === true) return errorView(title, output || "request failed", ...meta);
+	if (result.isError === true) return errorView(title, output || "请求失败", ...meta);
 	if (!output) return { head: toolHead(title, ...meta), tone: "warning", body: [noteText("无输出")] };
 	return {
 		head: toolHead(title, ...meta),

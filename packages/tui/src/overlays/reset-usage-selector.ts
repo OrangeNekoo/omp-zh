@@ -46,16 +46,16 @@ function accountPickerItem(account: ResetUsageAccount, id: string): TspPickerIte
 	if (reason) detail.push(span(` · ${oneLine(reason)}`, account.error ? "error" : "warning"));
 	let resets: TspSpan;
 	if (account.error) resets = span("unavailable", "error");
-	else if (!redeemable) resets = span(`${account.availableCount} saved`, "dim");
+	else if (!redeemable) resets = span(`${account.availableCount} 已保存`, "dim");
 	else if (account.redeemableCount === account.availableCount)
-		resets = span(`${account.redeemableCount} usable`, "success");
-	else resets = span(`${account.redeemableCount} of ${account.availableCount} usable`, "success");
+		resets = span(`${account.redeemableCount} 可用`, "success");
+	else resets = span(`${account.redeemableCount} / ${account.availableCount} 可用`, "success");
 	const facts: Record<string, TspSpan[]> = { resets: [resets] };
 	const expiryMs = account.expiresAt ? Date.parse(account.expiresAt) : Number.NaN;
 	if (!Number.isNaN(expiryMs)) {
 		facts.expires = [
 			expiryMs > Date.now()
-				? span(`expires in ${formatDuration(expiryMs - Date.now())}`, "dim")
+				? span(`${formatDuration(expiryMs - Date.now())} 后过期`, "dim")
 				: span("expired", "warning"),
 		];
 	}
@@ -364,7 +364,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				.map(account => this.#menu.adapter.getKey(account)),
 			selected: this.#menu.selectedKey ?? null,
 			empty: "没有保存了重置额度的服务商账户",
-			actions: [pickerAction("confirm", "Spend reset", "enter", { primary: true }), CLOSE_ACTION],
+			actions: [pickerAction("confirm", "动用重置额度", "enter", { primary: true }), CLOSE_ACTION],
 			confirm,
 		});
 		return this.#pickerRoot;

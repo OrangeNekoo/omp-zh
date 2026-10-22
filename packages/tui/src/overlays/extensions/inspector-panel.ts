@@ -479,7 +479,7 @@ export class InspectorPanel implements Component {
 				["Command", snap?.command ? [span(shortenPath(snap.command, os.homedir()), "mono")] : undefined],
 				["URL", snap?.url ? [span(snap.url, "mono", { href: snap.url })] : undefined],
 				["Args", snap?.args && snap.args.length > 0 ? [span(snap.args.join(" "), "mono dim")] : undefined],
-				["Env vars", snap && snap.envCount > 0 ? [span(`${snap.envCount} defined`, "dim")] : undefined],
+				["Env vars", snap && snap.envCount > 0 ? [span(`${snap.envCount} 已定义`, "dim")] : undefined],
 			],
 		};
 	}
@@ -577,7 +577,7 @@ export class InspectorPanel implements Component {
 					this.#pushParams(toolsBody, params, width, "    ");
 				} else if (params.length > 0) {
 					collapsedArgs = true;
-					toolsBody.push(`    ${theme.fg("dim", `${params.length} args`)}`);
+					toolsBody.push(`    ${theme.fg("dim", `${params.length} 个参数`)}`);
 				}
 				toolsBody.push("");
 			}
@@ -664,7 +664,7 @@ export class InspectorPanel implements Component {
 					this.#pushParams(factoryBody, params, width, "    ");
 				} else if (params.length > 0) {
 					collapsedArgs = true;
-					factoryBody.push(`    ${theme.fg("dim", `${params.length} args`)}`);
+					factoryBody.push(`    ${theme.fg("dim", `${params.length} 个参数`)}`);
 				}
 				factoryBody.push("");
 			}

@@ -92,7 +92,7 @@ export function renderPauseScreen(width: number, height: number, elapsedMs: numb
 		}
 		content.push(centerLine(theme.bold(theme.fg("accent", `▌▌ ${TITLE}`)), width).trimEnd());
 		content.push("");
-		content.push(centerLine(theme.fg("dim", `paused for ${formatClock(elapsedMs)}`), width).trimEnd());
+		content.push(centerLine(theme.fg("dim", `已暂停 ${formatClock(elapsedMs)}`), width).trimEnd());
 		content.push(centerLine(theme.fg("dim", `${esc} to 恢复`), width).trimEnd());
 	} else {
 		if (sessionName) {
@@ -112,7 +112,7 @@ export function renderPauseScreen(width: number, height: number, elapsedMs: numb
 			content.push(centerLine(theme.fg("muted", line), width).trimEnd());
 		}
 		content.push("");
-		content.push(centerLine(theme.fg("dim", `paused for ${formatClock(elapsedMs)}`), width).trimEnd());
+		content.push(centerLine(theme.fg("dim", `已暂停 ${formatClock(elapsedMs)}`), width).trimEnd());
 		content.push("");
 		const resumeHint = `${esc} · ${formatKeyHint("enter")} · ${formatKeyHint("space")} — resume`;
 		content.push(centerLine(theme.fg("dim", resumeHint), width).trimEnd());
@@ -209,7 +209,7 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 							"clock",
 						),
 						keyed(
-							text([span(this.host.sessionName ?? "Every agent in this session", "muted")], {
+							text([span(this.host.sessionName ?? "本会话中的每个代理", "muted")], {
 								role: "omp.pause.session",
 								wrap: "none",
 								truncate: "end",

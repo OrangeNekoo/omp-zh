@@ -194,7 +194,8 @@ export class TodoCommandController {
 				this.#remove(rest);
 				return;
 			default:
-				this.ctx.showError(`Unknown /todo verb "${verb}".\n${USAGE}`);
+				this.ctx.showError(`未知的 /todo 动作 "${verb}"。
+${USAGE}`);
 		}
 	}
 
@@ -234,9 +235,9 @@ export class TodoCommandController {
 		try {
 			const target = this.#resolveTodoPath(rest);
 			await fs.writeFile(target, phasesToMarkdown(phases), "utf8");
-			this.ctx.showStatus(`Wrote todos to ${target}`);
+			this.ctx.showStatus(`已将待办事项写入 ${target}`);
 		} catch (error) {
-			this.ctx.showError(`Failed to write todos: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`写入待办事项失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -247,17 +248,18 @@ export class TodoCommandController {
 			source = this.#resolveTodoPath(rest);
 			content = await fs.readFile(source, "utf8");
 		} catch (error) {
-			this.ctx.showError(`Failed to read todos: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`读取待办事项失败：${error instanceof Error ? error.message : String(error)}`);
 			return;
 		}
 		const { phases, errors } = markdownToPhases(content);
 		if (errors.length > 0) {
-			this.ctx.showError(`Could not parse ${source}:\n  ${errors.join("\n  ")}`);
+			this.ctx.showError(`无法解析 ${source}：
+  ${errors.join("\n  ")}`);
 			return;
 		}
 		this.#commit(phases, `/todo import ${source}`);
 		const taskCount = phases.reduce((sum, p) => sum + p.tasks.length, 0);
-		this.ctx.showStatus(`Imported ${phases.length} phase(s), ${taskCount} task(s) from ${source}.`);
+		this.ctx.showStatus(`已导入 ${phases.length} 个阶段、${taskCount} 个任务，来自 ${source}。`);
 	}
 
 	// ------------------------------------------------------------- append
@@ -303,7 +305,7 @@ export class TodoCommandController {
 		});
 
 		this.#commit(next, `/todo append → ${targetPhase.name}`);
-		this.ctx.showStatus(`Appended to ${targetPhase.name}: ${finalContent}`);
+		this.ctx.showStatus(`已追加到 ${targetPhase.name}：${finalContent}`);
 	}
 
 	// ------------------------------------------------------------- start / done / drop / rm
@@ -316,7 +318,7 @@ export class TodoCommandController {
 		const current = this.#currentPhases();
 		const hit = findTaskFuzzy(current, rest);
 		if (!hit) {
-			this.ctx.showError(`No task matched "${rest}". Use /todo to list current tasks.`);
+			this.ctx.showError(`没有任务匹配 "${rest}"。使用 /todo 列出当前任务。`);
 			return;
 		}
 		const { phases, errors } = applyOpsToPhases(current, [{ op: "start", task: hit.task.content }]);
@@ -325,7 +327,7 @@ export class TodoCommandController {
 			return;
 		}
 		this.#commit(phases, `/todo start ${hit.task.content}`);
-		this.ctx.showStatus(`Started: ${hit.task.content}`);
+		this.ctx.showStatus(`已启动：${hit.task.content}`);
 	}
 
 	#mutateStatus(rest: string, target: "completed" | "abandoned"): void {
@@ -340,7 +342,7 @@ export class TodoCommandController {
 				return;
 			}
 			this.#commit(phases, `/todo ${op} (all)`);
-			this.ctx.showStatus(`Marked all tasks ${target}.`);
+			this.ctx.showStatus(`已将所有任务标记为 ${target}。`);
 			return;
 		}
 
@@ -352,7 +354,7 @@ export class TodoCommandController {
 				return;
 			}
 			this.#commit(phases, `/todo ${op} ${taskHit.task.content}`);
-			this.ctx.showStatus(`Marked ${target}: ${taskHit.task.content}`);
+			this.ctx.showStatus(`已标记 ${target}：${taskHit.task.content}`);
 			return;
 		}
 
@@ -364,11 +366,11 @@ export class TodoCommandController {
 				return;
 			}
 			this.#commit(phases, `/todo ${op} ${phaseHit.name}`);
-			this.ctx.showStatus(`Marked phase ${phaseHit.name} ${target}.`);
+			this.ctx.showStatus(`已将阶段 ${phaseHit.name} 标记为 ${target}。`);
 			return;
 		}
 
-		this.ctx.showError(`No task or phase matched "${trimmed}".`);
+		this.ctx.showError(`没有任务或阶段匹配 "${trimmed}"。`);
 	}
 
 	#remove(rest: string): void {
@@ -387,7 +389,7 @@ export class TodoCommandController {
 				return;
 			}
 			this.#commit(phases, `/todo rm ${taskHit.task.content}`, { removed: true });
-			this.ctx.showStatus(`Removed: ${taskHit.task.content}`);
+			this.ctx.showStatus(`已移除：${taskHit.task.content}`);
 			return;
 		}
 		const phaseHit = findPhaseFuzzy(current, trimmed);
@@ -398,10 +400,10 @@ export class TodoCommandController {
 				return;
 			}
 			this.#commit(phases, `/todo rm ${phaseHit.name}`, { removed: true });
-			this.ctx.showStatus(`Removed phase: ${phaseHit.name}`);
+			this.ctx.showStatus(`已移除阶段：${phaseHit.name}`);
 			return;
 		}
-		this.ctx.showError(`No task or phase matched "${trimmed}".`);
+		this.ctx.showError(`没有任务或阶段匹配 "${trimmed}"。`);
 	}
 
 	// ------------------------------------------------------------- editor
@@ -426,15 +428,16 @@ export class TodoCommandController {
 			}
 			const { phases: parsed, errors } = markdownToPhases(result);
 			if (errors.length > 0) {
-				this.ctx.showError(`Could not parse Markdown:\n  ${errors.join("\n  ")}`);
+				this.ctx.showError(`无法解析 Markdown：
+  ${errors.join("\n  ")}`);
 				return;
 			}
 			this.#commit(parsed, "/todo edit");
 			const taskCount = parsed.reduce((sum, p) => sum + p.tasks.length, 0);
-			this.ctx.showStatus(`Todos updated from editor: ${parsed.length} phase(s), ${taskCount} task(s).`);
+			this.ctx.showStatus(`已从编辑器更新待办事项：${parsed.length} 个阶段、${taskCount} 个任务。`);
 		} catch (error) {
 			this.ctx.showWarning(
-				`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`,
+				`打开外部编辑器失败：${error instanceof Error ? error.message : String(error)}`,
 			);
 		} finally {
 			this.ctx.ui.start();

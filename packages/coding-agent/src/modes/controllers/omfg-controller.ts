@@ -35,7 +35,7 @@ interface GenerateCandidateOptions {
 type SaveCandidateResult = { kind: "saved" | "aborted" | "rejected" } | { kind: "amend"; feedback: string };
 
 const MAX_ATTEMPTS = 3;
-const PROJECT_OPTION = "This project (.omp/rules)";
+const PROJECT_OPTION = "此项目（.omp/rules）";
 const GLOBAL_OPTION = "Global — all projects (~/.omp/agent/rules)";
 const AMEND_OPTION = "Amend with feedback…";
 /** Keep /omfg prompts in the composer slot: a picker sheet would cover the candidate rule above it. */
@@ -107,7 +107,7 @@ export class OmfgController {
 					request.component.setStatus("confirming", "Couldn't confirm a conversation match.");
 					const shouldSave = await this.ctx.showHookConfirm(
 						"校验",
-						"Couldn't confirm this rule matches the conversation. Save anyway?",
+						"无法确认此规则与当前对话匹配。仍要保存吗？",
 						OMFG_DIALOG,
 					);
 					if (!this.#isActiveRequest(request)) return;
@@ -244,7 +244,7 @@ export class OmfgController {
 			if (await Bun.file(target.filePath).exists()) {
 				const shouldOverwrite = await this.ctx.showHookConfirm(
 					"覆盖 TTSR 规则？",
-					`${shortenPath(target.filePath)} already exists. Overwrite it?`,
+					`${shortenPath(target.filePath)} 已存在。要覆盖吗？`,
 					OMFG_DIALOG,
 				);
 				if (!this.#isActiveRequest(request)) return { kind: "aborted" };

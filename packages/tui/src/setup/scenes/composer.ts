@@ -81,7 +81,7 @@ class ComposerSceneController implements SetupSceneController {
 		const intro = new Text(
 			theme.fg(
 				"muted",
-				`Select a layout; live preview updates below. Press ${editorKey("tui.select.confirm")} to confirm.`,
+				`选择布局；下方实时预览。按 ${editorKey("tui.select.confirm")} 确认。`,
 			),
 			0,
 			0,
@@ -121,7 +121,7 @@ class ComposerSceneController implements SetupSceneController {
 		return this.#native.get([this.#currentShape, cx.cols, confirm], () =>
 			col(
 				[
-					text([span(`Select a layout; live preview updates below. Press ${confirm} to confirm.`, "muted")]),
+					text([span(`选择布局；下方实时预览。按 ${confirm} 确认。`, "muted")]),
 					this.#selectList,
 					col([
 						text([span("预览：", "muted")]),

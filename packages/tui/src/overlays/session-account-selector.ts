@@ -68,7 +68,7 @@ export class SessionAccountSelectorComponent extends OverlayPanel {
 		// Natively the active account carries the picker's current check, so the
 		// row's detail is what tells accounts apart instead of "active for this session".
 		this.#sheet = new SelectListSheet(this.#selectList, {
-			title: `${providerName} account`,
+			title: `${providerName} 个账户`,
 			subtitle: "固定本会话发送请求所用的账户",
 			icon: "key-round",
 			noun: "accounts",

@@ -24,6 +24,9 @@ const ROOT = path.join(import.meta.dir, "..");
 const PARSER_FILES: readonly string[] = [
 	"packages/tui/src/overlays/session-info-overlay.ts",
 	"packages/tui/src/overlays/agent-hub.ts",
+	// 分支摘要选择器的回传值比较：showHookSelector 回传 label 本身，
+	// 标签经词典译为中文后，`summaryChoice === "…"` 的分支会静默失效。
+	"packages/coding-agent/src/modes/controllers/selector-controller.ts",
 ];
 
 /**
@@ -40,6 +43,9 @@ const REPORT_KEYS: readonly string[] = [
 	"Messages",
 	"Tokens",
 	"Task",
+	// 分支摘要选择器的选项标签（回传值即 label）
+	"No summary",
+	"Summarize with custom prompt",
 ];
 
 /** 注入到每个解析文件顶部的比较函数。 */

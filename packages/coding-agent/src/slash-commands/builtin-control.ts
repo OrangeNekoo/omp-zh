@@ -27,7 +27,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			} catch (err) {
 				return usage(errorMessage(err), runtime);
 			}
-			await runtime.output(`Next turn forced to use ${toolName}.`);
+			await runtime.output(`下一回合将强制使用 ${toolName}。`);
 			return prompt ? { prompt } : commandConsumed();
 		},
 		handleTui: (command, runtime) => {
@@ -43,7 +43,7 @@ export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 
 			try {
 				runtime.ctx.session.setForcedToolChoice(toolName);
-				runtime.ctx.showStatus(`Next turn forced to use ${toolName}.`);
+				runtime.ctx.showStatus(`下一回合将强制使用 ${toolName}。`);
 			} catch (error) {
 				runtime.ctx.showError(errorMessage(error));
 				clearSubmittedText(runtime);

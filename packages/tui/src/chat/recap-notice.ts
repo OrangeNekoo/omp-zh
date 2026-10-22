@@ -18,7 +18,7 @@ export class RecapNotice extends Container {
 		super();
 		this.#recap = recap;
 		this.addChild(new Spacer(1));
-		this.addChild(new Text(`※ recap: ${recap}`, 1, 0).setStyleFn(line => theme.fg("dim", theme.italic(line))));
+		this.addChild(new Text(`※ 回顾：${recap}`, 1, 0).setStyleFn(line => theme.fg("dim", theme.italic(line))));
 	}
 
 	override describe(): NativeNode {

@@ -136,11 +136,11 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						ctx.showStatus(USAGE);
 						return;
 					default:
-						ctx.showError(`Unknown /skills subcommand: ${verb}\n\n${USAGE}`);
+						ctx.showError(`未知的 /skills 子命令：${verb}\n\n${USAGE}`);
 						return;
 				}
 			} catch (error) {
-				ctx.showError(`Skills: ${errorMessage(error)}`);
+				ctx.showError(`技能：${errorMessage(error)}`);
 			}
 		},
 	},

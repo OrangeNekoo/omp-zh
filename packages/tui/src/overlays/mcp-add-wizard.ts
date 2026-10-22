@@ -806,7 +806,7 @@ export class MCPAddWizard extends OverlayPanel {
 	#renderTransportStep(): void {
 		this.#choiceStep({
 			title: "omp 如何访问它？",
-			lead: `Pick how ${this.#state.name} talks to omp.`,
+			lead: `选择 ${this.#state.name} 与 omp 通信的方式。`,
 			choices: TRANSPORTS.map(transport => ({ ...TRANSPORT_CHOICES[transport], tag: transport })),
 			escape: "返回",
 		});
@@ -826,7 +826,7 @@ export class MCPAddWizard extends OverlayPanel {
 	#renderArgsStep(): void {
 		this.#inputStep({
 			title: "参数",
-			lead: `Passed to ${this.#state.command}, separated by spaces. omp tries the connection next.`,
+			lead: `以空格分隔传入 ${this.#state.command}。接下来 omp 会尝试该连接。`,
 			initial: this.#state.args,
 			placeholder: "-y @modelcontextprotocol/server-github",
 			optional: true,
@@ -836,7 +836,7 @@ export class MCPAddWizard extends OverlayPanel {
 	#renderUrlStep(): void {
 		this.#inputStep({
 			title: "服务器地址",
-			lead: `Where ${this.#state.name} listens. omp tries the connection next.`,
+			lead: `${this.#state.name} 的监听地址。omp 接下来会尝试连接。`,
 			initial: this.#state.url,
 			placeholder: "https://mcp.example.com/mcp",
 			note: "以 http:// 或 https:// 开头",
@@ -933,7 +933,7 @@ export class MCPAddWizard extends OverlayPanel {
 			const [where, name] = state.authLocation === "env" ? ["env", state.envVarName] : ["header", state.headerName];
 			entries.push({
 				k: "Auth",
-				v: [span(where === "env" ? "API key in " : "API key in header "), span(name, "mono")],
+				v: [span(where === "env" ? "API 密钥位于 " : "API 密钥位于请求头 "), span(name, "mono")],
 				ansi: `API key via ${where} (${name})`,
 			});
 		} else {
@@ -1322,7 +1322,7 @@ export class MCPAddWizard extends OverlayPanel {
 	#renderAuthMethodStep(): void {
 		this.#choiceStep({
 			title: "它如何认证？",
-			lead: `${this.#state.name} needs credentials before omp can use it.`,
+			lead: `omp 使用 ${this.#state.name} 前需要凭据。`,
 			choices: [
 				{ icon: "log-in", label: "使用 OAuth 登录", description: "打开你的浏览器" },
 				{ icon: "key", label: "API 密钥或令牌", description: "粘贴它，或运行打印它的命令" },
@@ -1393,7 +1393,7 @@ export class MCPAddWizard extends OverlayPanel {
 			intro.addChild(new Text(failure.ansiMessage, 0, 0));
 			intro.addChild(new Spacer(1));
 			if (failure.tip) {
-				intro.addChild(new Text(theme.fg("muted", `Tip: ${failure.tip}`), 0, 0));
+				intro.addChild(new Text(theme.fg("muted", `提示：${failure.tip}`), 0, 0));
 				intro.addChild(new Spacer(1));
 			}
 		}
@@ -1715,7 +1715,7 @@ export class MCPAddWizard extends OverlayPanel {
 			healthBody.addChild(new Text(theme.fg("muted", "正在运行连接健康检查…"), 0, 0));
 			const spinnerFrames = theme.spinnerFrames;
 			const initialFrame = spinnerFrames[0] ?? "|";
-			const healthText = new Text(theme.fg("muted", `${initialFrame} Checking server connection...`), 0, 0);
+			const healthText = new Text(theme.fg("muted", `${initialFrame} 正在检查服务器连接…`), 0, 0);
 			healthBody.addChild(healthText);
 			const signedIn = statusRow("ok", "Signed in", "signed-in");
 			const checks = (health: NativeNode) =>
@@ -1737,7 +1737,7 @@ export class MCPAddWizard extends OverlayPanel {
 						healthText.setText(
 							theme.fg(
 								"muted",
-								`${spinnerFrames[spinnerIndex % spinnerFrames.length]} Checking server connection...`,
+								`${spinnerFrames[spinnerIndex % spinnerFrames.length]} 正在检查服务器连接…`,
 							),
 						);
 						spinnerIndex++;

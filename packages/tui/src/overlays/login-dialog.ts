@@ -161,7 +161,7 @@ export class LoginDialogComponent extends OverlayPanel {
 
 		if (launchUrl && launchUrl !== url) {
 			this.#contentContainer.addChild(
-				new Text(theme.fg("dim", `Local shortcut (this machine only): ${launchUrl}`), 0, 0),
+				new Text(theme.fg("dim", `本地快捷方式（仅本机）：${launchUrl}`), 0, 0),
 			);
 		}
 
@@ -399,7 +399,7 @@ export class LoginDialogComponent extends OverlayPanel {
 			"overlay",
 			{
 				role: this.nativeRole,
-				head: `Sign in to ${this.#providerName}`,
+				head: `登录 ${this.#providerName}`,
 				anchor: "center",
 				size: "md",
 				modal: true,
@@ -469,7 +469,7 @@ export class LoginDialogComponent extends OverlayPanel {
 				align: "center",
 				actions: { click: "open" },
 				href: url,
-				title: `Open ${urlPlace(url)} in your browser`,
+				title: `在浏览器中打开 ${urlPlace(url)}`,
 				...(primary ? { tone: "accent" as const } : {}),
 			},
 			[text("打开登录页面"), node("icon", { name: "open" }, undefined, "icon")],

@@ -250,16 +250,16 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		if (state === "checking") {
 			const frameCount = theme.spinnerFrames.length;
 			const spinner = frameCount > 0 ? theme.spinnerFrames[this.#spinnerFrame % frameCount] : theme.status.pending;
-			return theme.fg("warning", ` ${spinner} checking`) + source;
+			return theme.fg("warning", ` ${spinner} 检查中`) + source;
 		}
 		if (state === "invalid") {
-			return theme.fg("error", ` ${theme.status.error} invalid`) + source;
+			return theme.fg("error", ` ${theme.status.error} 无效`) + source;
 		}
 		if (state === "valid") {
-			return theme.fg("success", ` ${theme.status.enabled} logged in`) + source;
+			return theme.fg("success", ` ${theme.status.enabled} 已登录`) + source;
 		}
 		return this.#hasSelectableAuth(providerId)
-			? theme.fg("success", ` ${theme.status.enabled} logged in`) + source
+			? theme.fg("success", ` ${theme.status.enabled} 已登录`) + source
 			: "";
 	}
 
@@ -445,7 +445,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		const detail = origin
 			? [
 					span(
-						origin.kind === "env" && origin.envVar ? `env: ${origin.envVar}` : ORIGIN_LABELS[origin.kind],
+						origin.kind === "env" && origin.envVar ? `环境变量：${origin.envVar}` : ORIGIN_LABELS[origin.kind],
 						"muted",
 					),
 				]
@@ -523,7 +523,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 			actions: [
 				pickerAction(
 					"confirm",
-					login ? "Sign in" : "Sign out",
+					login ? "登录" : "登出",
 					"enter",
 					login ? { primary: true } : { primary: true, danger: true },
 				),

@@ -401,7 +401,7 @@ export class PsTopComponent implements Component {
 				text("进程", { role: "omp.app.title" }),
 				text(
 					[
-						span(`${running} running`, running > 0 ? "success" : "muted"),
+						span(`${running} 个运行中`, running > 0 ? "success" : "muted"),
 						...(stopped > 0 ? [span(` · ${stopped} stopped`, "muted")] : []),
 						span(` · ${this.#reports.length} scope${this.#reports.length === 1 ? "" : "s"}`, "muted"),
 					],
@@ -497,7 +497,7 @@ export class PsTopComponent implements Component {
 					[
 						text(
 							[
-								span(`Kill ${entry.row.snapshot.name}${pid === undefined ? "" : ` (pid ${pid})`}?`, "strong"),
+								span(`终止 ${entry.row.snapshot.name}${pid === undefined ? "" : ` (pid ${pid})`}？`, "strong"),
 								span("  它会立即停止，不做清理。", "muted"),
 							],
 							{ truncate: "end", grow: 1 },
@@ -536,7 +536,7 @@ export class PsTopComponent implements Component {
 						text("无代理作用域", { role: "omp.app.empty-title" }),
 						text([
 							span("此处没有运行 omp 进程代理。", "muted"),
-							span(this.#all ? "Nothing runs anywhere." : "显示所有作用域：", "muted"),
+							span(this.#all ? "没有任何进程在运行。" : "显示所有作用域：", "muted"),
 							...(this.#all ? [] : [span("a", "key"), span(".", "muted")]),
 						]),
 					],
@@ -586,7 +586,7 @@ export class PsTopComponent implements Component {
 		if (daemon.pid !== undefined && !TERMINAL_STATES[daemon.state])
 			items.push({ k: "PID", v: [span(String(daemon.pid), "num")] });
 		if (daemon.exitReason) items.push({ k: "退出", v: [span(daemon.exitReason, "error")] });
-		items.push({ k: "重启次数", v: `${daemon.restartCount} (policy ${spec.restart})` });
+		items.push({ k: "重启次数", v: `${daemon.restartCount}（策略 ${spec.restart}）` });
 		items.push({ k: "所有者", v: daemon.owner ?? "—" });
 		const flags = [spec.pty && "pty", spec.persist && "persist", spec.detached && "detached"].filter(Boolean);
 		items.push({ k: "标志", v: flags.length > 0 ? flags.join(" · ") : "—" });
@@ -784,7 +784,7 @@ function scopeSpans(scope: PsScope): TspSpan[] {
 	spans.push(span(" — ", "dim"));
 	spans.push(
 		scope.brokerPid !== undefined
-			? span(`broker pid ${scope.brokerPid}`, "success")
+			? span(`代理进程 pid ${scope.brokerPid}`, "success")
 			: span("代理未运行", "dim"),
 	);
 	return spans;

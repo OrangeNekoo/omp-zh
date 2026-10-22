@@ -64,7 +64,7 @@ class AdvisorHeader implements Component {
 		width = Math.max(1, width);
 		if (this.#cache?.width === width) return this.#cache.lines;
 		const uiTheme = this.#uiTheme;
-		const tag = uiTheme.fg("customMessageLabel", uiTheme.bold(`${uiTheme.status.info} Advisor`));
+		const tag = uiTheme.fg("customMessageLabel", uiTheme.bold(`${uiTheme.status.info} 位顾问`));
 		const lines = [
 			truncateToWidth(`${tag} ${uiTheme.fg("dim", this.#meta.join(uiTheme.sep.dot))}`, width, Ellipsis.Unicode),
 		];
@@ -217,7 +217,7 @@ export function createAdvisorMessageCard(
 	const notes = details?.notes ?? [];
 	const blockers = notes.filter(note => note.severity === "blocker").length;
 	const meta: string[] = [`${notes.length} ${notes.length === 1 ? "note" : "notes"}`];
-	if (blockers > 0) meta.push(uiTheme.fg("error", `${blockers} blocker${blockers === 1 ? "" : "s"}`));
+	if (blockers > 0) meta.push(uiTheme.fg("error", `${blockers} 个阻塞项${blockers === 1 ? "" : "s"}`));
 	let override: boolean | undefined;
 	let lastGlobal = getExpanded();
 	const expanded = (): boolean => {

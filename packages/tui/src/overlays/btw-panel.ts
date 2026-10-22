@@ -180,9 +180,9 @@ export class BtwPanelComponent extends OverlayPanel {
 			case "branching":
 				return text([span(`${theme.status.pending} Branching to chat…`, "muted")]);
 			case "aborted":
-				return statusHintsRow([span(`${theme.status.warning} Cancelled`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 已取消`, "warning")], [esc]);
 			case "error":
-				return statusHintsRow([span(`${theme.status.error} Error`, "error")], [esc]);
+				return statusHintsRow([span(`${theme.status.error} 错误`, "error")], [esc]);
 		}
 	}
 

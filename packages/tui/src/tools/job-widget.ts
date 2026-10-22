@@ -514,7 +514,7 @@ function tileVisual(block: JobWidgetBlock | undefined): NativeNode | undefined {
 			const rest = block.items.length - rows.length;
 			if (rest > 0)
 				rows.push(
-					text([span(`+${rest} more`, "dim")], {
+					text([span(`另加 ${rest} 条`, "dim")], {
 						role: "omp.job.tile.more",
 						wrap: "none",
 					}),

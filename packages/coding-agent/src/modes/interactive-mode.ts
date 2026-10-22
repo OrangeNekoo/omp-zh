@@ -1264,7 +1264,7 @@ export function renderSubagentHudLines(
 		cursor += count;
 	}
 	const title = theme.bold(theme.fg("accent", "子代理"));
-	const runningLabel = theme.fg("dim", `${theme.sep.dot}${running.length} running`);
+	const runningLabel = theme.fg("dim", `${theme.sep.dot}${running.length} 运行中`);
 	const titleText = truncateToWidth(`${title}${runningLabel}`, contentColumns);
 	const hint = hubKey ? theme.fg("dim", hubKey) : "";
 	const gap = contentColumns - visibleWidth(titleText) - visibleWidth(hint);
@@ -2404,7 +2404,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					copyToClipboard(action.text).then(
 						() => this.showStatus("已复制到剪贴板"),
 						(error: unknown) =>
-							this.showWarning(`Copy failed: ${error instanceof Error ? error.message : String(error)}`),
+							this.showWarning(`复制失败：${error instanceof Error ? error.message : String(error)}`),
 					);
 			}
 		});
@@ -2476,7 +2476,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					TRUNCATE_LENGTHS.LINE,
 				);
 				this.showWarning(
-					`Session persistence failed: ${detail}. Unsaved entries remain in memory; persistence will retry on the next entry.`,
+					`会话持久化失败：${detail}。未保存的条目仍保留在内存中；将在下一条目时重试持久化。`,
 				);
 			}),
 			this.sessionManager.onPersistenceNotice(notice => this.showWarning(formatPersistenceNotice(notice))),
@@ -2929,7 +2929,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			setProjectDir(newCwd);
 		} catch (error) {
 			this.showError(
-				`Cannot change working directory to ${newCwd}: ${error instanceof Error ? error.message : String(error)}`,
+				`无法将工作目录切换到 ${newCwd}：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return false;
 		}
@@ -2980,14 +2980,14 @@ export class InteractiveMode implements InteractiveModeContext {
 					await this.session.refreshSkillsAndCommands();
 				} catch {}
 				this.showError(
-					`Failed to switch to ${newCwd} (${error instanceof Error ? error.message : String(error)}), and restoring the previous workspace failed: ${restoreError instanceof Error ? restoreError.message : String(restoreError)}`,
+					`切换到 ${newCwd}（${error instanceof Error ? error.message : String(error)}）失败，且恢复先前工作区也失败：${restoreError instanceof Error ? restoreError.message : String(restoreError)}`,
 				);
 				throw new Error(
 					`Failed to restore workspace after failed switch to ${newCwd}: ${restoreError instanceof Error ? restoreError.message : String(restoreError)} (workspace may be inconsistent at ${actual})`,
 				);
 			}
 			this.showError(
-				`Cannot change working directory to ${newCwd}: ${error instanceof Error ? error.message : String(error)}`,
+				`无法将工作目录切换到 ${newCwd}：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return false;
 		}
@@ -3322,7 +3322,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const conditionSuffix = parsed.condition ? ` Continuing ${describeLoopCondition(parsed.condition)}.` : "";
 		const tail = parsed.prompt ? "Repeating it after each turn." : "Your next prompt will repeat after each turn.";
 		this.showStatus(
-			`Loop mode enabled.${limitSuffix}${remainingSuffix}${conditionSuffix} ${tail} ${appKey(this.keybindings, "app.interrupt")} suspends the ongoing loop; /loop again to disable.`,
+			`循环模式已启用。${limitSuffix}${remainingSuffix}${conditionSuffix} ${tail} ${appKey(this.keybindings, "app.interrupt")} 可暂停当前循环；再次使用 /loop 可禁用。`,
 		);
 		// Hand any inline prompt back to the dispatcher so the normal submit flow
 		// runs the first iteration — it records the text as the loop prompt and
@@ -4198,7 +4198,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			case "abandoned":
 				return theme.fg("error", `${prefix}${checkbox.unchecked} ${chalk.strikethrough(todo.content)}`) + marker;
 			case "blocked":
-				return theme.fg("warning", `${prefix}${checkbox.unchecked} ${todo.content} (blocked)`) + marker;
+				return theme.fg("warning", `${prefix}${checkbox.unchecked} ${todo.content}（已阻止）`) + marker;
 			default:
 				if (matched) return theme.fg("accent", `${prefix}${checkbox.unchecked} ${todo.content}`) + marker;
 				return theme.fg("dim", `${prefix}${checkbox.unchecked} ${todo.content}`) + marker;
@@ -4540,7 +4540,7 @@ export class InteractiveMode implements InteractiveModeContext {
 							: todo.status === "in_progress" || isMatched(todo)
 								? "accent"
 								: "dim";
-			const label: TspSpan[] = [span(todo.status === "blocked" ? `${todo.content} (blocked)` : todo.content, token)];
+			const label: TspSpan[] = [span(todo.status === "blocked" ? `${todo.content}（已阻止）` : todo.content, token)];
 			const notes = todo.notes?.length ?? 0;
 			if (notes > 0) label.push(span(` +${notes}`, "dim em"));
 			return { id, label, icon: done ? "check" : "circle" };
@@ -4639,7 +4639,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const header = `${theme.bold(theme.fg("accent", "TODO"))} ${theme.fg("dim", `${closedTasks}/${totalTasks}`)}`;
 		const taskStr = activeTask
 			? this.#formatTodoLine(activeTask, "", isMatched(activeTask))
-			: theme.fg("success", `${theme.checkbox.checked} done`);
+			: theme.fg("success", `${theme.checkbox.checked} 完成`);
 		const rightLine = `${header} ${theme.fg("dim", "·")} ${taskStr}`;
 
 		const rightPad = " ";
@@ -4951,7 +4951,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					await this.session.setModelTemporary(transition.model, transition.thinkingLevel);
 				} catch (error) {
 					this.showWarning(
-						`Failed to switch to plan model for plan mode: ${error instanceof Error ? error.message : String(error)}`,
+						`为计划模式切换计划模型失败：${error instanceof Error ? error.message : String(error)}`,
 					);
 				}
 				return;
@@ -4968,7 +4968,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.session.setModelTemporary(pending.model, pending.thinkingLevel);
 		} catch (error) {
 			this.showWarning(
-				`Failed to switch model after streaming: ${error instanceof Error ? error.message : String(error)}`,
+				`流式输出后切换模型失败：${error instanceof Error ? error.message : String(error)}`,
 			);
 		}
 	}
@@ -5231,7 +5231,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		}
 		this.#updatePlanModeStatus();
 		this.sessionManager.appendModeChange("plan", { planFilePath });
-		this.showStatus(`Plan mode enabled. Plan file: ${planFilePath}`);
+		this.showStatus(`已启用计划模式。计划文件：${planFilePath}`);
 	}
 
 	async #restorePlanPreviousModel(prev: { model: Model; thinkingLevel?: ConfiguredThinkingLevel }): Promise<void> {
@@ -5374,7 +5374,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const paused = options?.paused ?? false;
 		this.sessionManager.appendModeChange(paused ? "plan_paused" : "none");
 		if (!options?.silent) {
-			this.showStatus(paused ? "Plan mode paused." : "计划模式已禁用。");
+			this.showStatus(paused ? "计划模式已暂停。" : "计划模式已禁用。");
 		}
 	}
 
@@ -5387,7 +5387,7 @@ export class InteractiveMode implements InteractiveModeContext {
 	 */
 	#warnPlanModeBlocks(): void {
 		this.showWarning(
-			this.planModePaused ? "Plan mode is paused — run /plan again to fully exit." : "Exit plan mode first.",
+			this.planModePaused ? "Plan mode is paused — run /plan again to fully exit." : "请先退出计划模式。",
 		);
 	}
 
@@ -5421,7 +5421,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.session.sendGoalModeContext({ deliverAs: "steer" });
 		}
 		if (!options.silent) {
-			this.showStatus(options.resume ? "目标模式已继续。" : "Goal mode enabled.");
+			this.showStatus(options.resume ? "目标模式已继续。" : "目标模式已启用。");
 		}
 	}
 
@@ -5721,7 +5721,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			this.showStatus("已将计划复制到剪贴板");
 		} catch (error) {
 			this.showWarning(
-				`Failed to copy plan to clipboard: ${error instanceof Error ? error.message : String(error)}`,
+				`复制计划到剪贴板失败：${error instanceof Error ? error.message : String(error)}`,
 			);
 		}
 	}
@@ -5772,14 +5772,14 @@ export class InteractiveMode implements InteractiveModeContext {
 		try {
 			destination = resolveToCwd(selectedPath, this.sessionManager.getCwd());
 		} catch (error) {
-			this.showError(`Invalid plan save path: ${error instanceof Error ? error.message : String(error)}`);
+			this.showError(`无效的计划保存路径：${error instanceof Error ? error.message : String(error)}`);
 			return;
 		}
 		try {
 			await Bun.write(destination, planContent);
 		} catch (error) {
 			this.showError(
-				`Failed to save plan to ${shortenPath(destination)}: ${error instanceof Error ? error.message : String(error)}`,
+				`保存计划到 ${shortenPath(destination)} 失败：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return;
 		}
@@ -5787,7 +5787,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.#exitPlanMode({ silent: true });
 		} catch (error) {
 			this.showError(
-				`Saved plan to ${shortenPath(destination)}, but could not exit plan mode: ${
+				`已将计划保存到 ${shortenPath(destination)}，但无法退出计划模式：${
 					error instanceof Error ? error.message : String(error)
 				}`,
 			);
@@ -5797,10 +5797,10 @@ export class InteractiveMode implements InteractiveModeContext {
 		this.#planReviewAnnotationState.delete(annotationStateKey);
 		try {
 			await this.handleClearCommand();
-			this.showStatus(`Saved plan to ${shortenPath(destination)}.`);
+			this.showStatus(`已将计划保存到 ${shortenPath(destination)}。`);
 		} catch (error) {
 			this.showError(
-				`Saved plan to ${shortenPath(destination)}, but could not start a new session: ${
+				`已将计划保存到 ${shortenPath(destination)}，但无法启动新会话：${
 					error instanceof Error ? error.message : String(error)
 				}`,
 			);
@@ -5820,10 +5820,10 @@ export class InteractiveMode implements InteractiveModeContext {
 			currentText = await Bun.file(resolvedPath).text();
 		} catch (error) {
 			if (isEnoent(error)) {
-				this.showError(`Plan file not found at ${planFilePath}`);
+				this.showError(`未找到位于 ${planFilePath} 的计划文件`);
 				return;
 			}
-			this.showWarning(`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`);
+			this.showWarning(`打开外部编辑器失败：${error instanceof Error ? error.message : String(error)}`);
 			return;
 		}
 
@@ -5839,7 +5839,7 @@ export class InteractiveMode implements InteractiveModeContext {
 				this.showStatus("计划已在外部编辑器中更新。");
 			}
 		} catch (error) {
-			this.showWarning(`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`);
+			this.showWarning(`打开外部编辑器失败：${error instanceof Error ? error.message : String(error)}`);
 		} finally {
 			this.ui.start();
 			this.ui.requestRender(true);
@@ -5860,7 +5860,7 @@ export class InteractiveMode implements InteractiveModeContext {
 				commit(result);
 			}
 		} catch (error) {
-			this.showWarning(`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`);
+			this.showWarning(`打开外部编辑器失败：${error instanceof Error ? error.message : String(error)}`);
 		} finally {
 			this.ui.start();
 			this.ui.requestRender(true);
@@ -5873,10 +5873,10 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.session.applyRoleModel(entry);
 			this.statusLine.invalidate();
 			this.updateEditorBorderColor();
-			this.showStatus(`Continuing with ${entry.role}: ${entry.model.name || entry.model.id}`);
+			this.showStatus(`继续使用 ${entry.role}：${entry.model.name || entry.model.id}`);
 		} catch (error) {
 			this.showWarning(
-				`Could not switch to the ${entry.role} model: ${error instanceof Error ? error.message : String(error)}`,
+				`无法切换到 ${entry.role} 模型：${error instanceof Error ? error.message : String(error)}`,
 			);
 		}
 	}
@@ -5985,7 +5985,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			});
 			if (autosaved) {
 				const displayPath = truncateToWidth(replaceTabs(shortenPath(autosaved)), TRUNCATE_LENGTHS.CONTENT);
-				this.showStatus(`Saved plan to ${displayPath}.`);
+				this.showStatus(`已将计划保存到 ${displayPath}。`);
 			}
 		} catch (error) {
 			const detail = truncateToWidth(
@@ -5996,7 +5996,7 @@ export class InteractiveMode implements InteractiveModeContext {
 				),
 				TRUNCATE_LENGTHS.CONTENT,
 			);
-			this.showWarning(`Failed to autosave plan: ${detail}`);
+			this.showWarning(`自动保存计划失败：${detail}`);
 		}
 
 		// Resolve the deferred plan-approval model transition. On the compact path
@@ -6107,7 +6107,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			if (await this.#hasPlanModeDraftContent(planFilePath)) {
 				const confirmed = await this.showHookConfirm(
 					"退出计划模式？",
-					"This exits plan mode without approving a plan.",
+					"这将不批准计划就退出计划模式。",
 				);
 				if (!confirmed) return false;
 			}
@@ -6371,8 +6371,8 @@ export class InteractiveMode implements InteractiveModeContext {
 		this.#updateVibeModeStatus();
 		this.showStatus(
 			killed > 0
-				? `Vibe mode disabled. Killed ${killed} worker session${killed === 1 ? "" : "s"}.`
-				: "Vibe mode disabled.",
+				? `Vibe 模式已禁用。已终止 ${killed} 个工作会话${killed === 1 ? "" : "s"}。`
+				: "Vibe 模式已禁用。",
 		);
 	}
 
@@ -6399,7 +6399,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		await this.session.goalRuntime.onBudgetMutated(nextBudget);
 		this.#resetGoalContinuationSuppression();
 		this.#scheduleGoalContinuation();
-		this.showStatus(nextBudget === undefined ? "Goal budget cleared." : `Goal budget set to ${nextBudget}.`);
+		this.showStatus(nextBudget === undefined ? "目标预算已清除。" : `目标预算已设为 ${nextBudget}。`);
 	}
 
 	async handleGoalModeCommand(
@@ -6532,7 +6532,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			case "budget":
 				if (!this.goalModeEnabled) {
 					this.showWarning(
-						this.#getPausedGoalState() ? "Resume the goal before adjusting the budget." : "没有进行中的目标。",
+						this.#getPausedGoalState() ? "请先继续目标，再调整预算。" : "没有进行中的目标。",
 					);
 					return false;
 				}
@@ -6634,7 +6634,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		}
 		const confirmed = await this.showHookConfirm(
 			"放弃目标？",
-			"This removes the goal record. Accumulated usage stays in the session log.",
+			"这将移除目标记录。累计用量仍保留在会话日志中。",
 		);
 		if (!confirmed) return;
 		await this.session.goalRuntime.dropGoal();
@@ -6782,7 +6782,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			error => {
 				opened.resolve(false);
 				const message = error instanceof Error ? error.message : String(error);
-				this.showError(isOpen ? `Plan review failed: ${message}` : `Failed to open plan review: ${message}`);
+				this.showError(isOpen ? `计划审查失败：${message}` : `打开计划审查失败：${message}`);
 			},
 		);
 		return opened.promise;
@@ -6820,7 +6820,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		this.planModePlanFilePath = planFilePath;
 		const planContent = await this.#readPlanFile(planFilePath);
 		if (!planContent) {
-			this.showError(`Plan file not found at ${planFilePath}`);
+			this.showError(`未找到位于 ${planFilePath} 的计划文件`);
 			return;
 		}
 		// The operator may have left plan mode or switched sessions while the turn was
@@ -6982,7 +6982,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			try {
 				const latestPlanContent = editedContent ?? (await this.#readPlanFile(planFilePath));
 				if (latestPlanContent === null) {
-					this.showError(`Plan file not found at ${planFilePath}`);
+					this.showError(`未找到位于 ${planFilePath} 的计划文件`);
 					return;
 				}
 				await this.#savePlanAndQuit(
@@ -6992,7 +6992,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					remote?.choice === "save" ? planSaveFileName(details.title) : undefined,
 				);
 			} catch (error) {
-				this.showError(`Failed to save plan: ${error instanceof Error ? error.message : String(error)}`);
+				this.showError(`保存计划失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -7007,7 +7007,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					await Bun.write(this.#resolvePlanFilePath(planFilePath), editedContent);
 				}
 				if (!latestPlanContent) {
-					this.showError(`Plan file not found at ${planFilePath}`);
+					this.showError(`未找到位于 ${planFilePath} 的计划文件`);
 					closePlanReview();
 					return;
 				}
@@ -7050,7 +7050,7 @@ export class InteractiveMode implements InteractiveModeContext {
 				if (executionDispatched) this.#planReviewAnnotationState.delete(annotationStateKey);
 			} catch (error) {
 				this.showError(
-					`Failed to finalize approved plan: ${error instanceof Error ? error.message : String(error)}`,
+					`定稿已批准的计划失败：${error instanceof Error ? error.message : String(error)}`,
 				);
 			}
 			closePlanReview();
@@ -7073,7 +7073,7 @@ export class InteractiveMode implements InteractiveModeContext {
 					this.showStatus("改进计划：输入后续提示词。");
 				}
 			} catch (error) {
-				this.showError(`Failed to refine plan: ${error instanceof Error ? error.message : String(error)}`);
+				this.showError(`完善计划失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			closePlanReview();
 			return;
@@ -7312,8 +7312,9 @@ export class InteractiveMode implements InteractiveModeContext {
 		this.#teardownFailed = this.session.isDisposed;
 		this.showError(
 			this.#teardownFailed
-				? `Could not ${action} session: ${detail}\nPress ${appKey(this.keybindings, "app.clear")} again to exit without saving the session log.`
-				: `Could not ${action} session: ${detail}`,
+				? `无法 ${action} 会话：${detail}
+再次按 ${appKey(this.keybindings, "app.clear")} 可退出且不保存会话记录。`
+				: `无法 ${action} 会话：${detail}`,
 		);
 	}
 
@@ -7380,7 +7381,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			try {
 				execReplace(cmd); // never returns on success
 			} catch (err) {
-				process.stderr.write(`${chalk.red(`Restart exec failed: ${err instanceof Error ? err.message : err}`)}\n`);
+				process.stderr.write(`${chalk.red(`重启执行失败：${err instanceof Error ? err.message : err}`)}\n`);
 			}
 		}
 		try {
@@ -7391,7 +7392,7 @@ export class InteractiveMode implements InteractiveModeContext {
 			});
 			await postmortem.quit(await child.exited);
 		} catch (err) {
-			process.stderr.write(`${chalk.red(`Restart spawn failed: ${err instanceof Error ? err.message : err}`)}\n`);
+			process.stderr.write(`${chalk.red(`重启派生失败：${err instanceof Error ? err.message : err}`)}\n`);
 			await postmortem.quit(1);
 		}
 	}
@@ -7488,7 +7489,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		// Background extensions do not submit terminal input. Start the same
 		// settled-boundary check without waiting for another user keystroke.
 		void this.checkShutdownRequested().catch(error => {
-			this.showError(`Shutdown failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.showError(`关闭失败：${error instanceof Error ? error.message : String(error)}`);
 		});
 	}
 
@@ -7796,7 +7797,7 @@ export class InteractiveMode implements InteractiveModeContext {
 
 	#handleLspStartupEvent(event: LspStartupEvent): void {
 		if (event.type === "failed") {
-			this.showWarning(`LSP startup failed: ${event.error}. It will retry lazily on write.`);
+			this.showWarning(`LSP 启动失败：${event.error}。将在写入时延迟重试。`);
 			return;
 		}
 
@@ -7805,13 +7806,13 @@ export class InteractiveMode implements InteractiveModeContext {
 		if (failedServers.length === 1) {
 			const failedServer = failedServers[0];
 			const detail = failedServer.error ? `: ${failedServer.error}` : "";
-			this.showWarning(`LSP startup failed for ${failedServer.name}${detail}. It will retry lazily on write.`);
+			this.showWarning(`LSP 启动失败：${failedServer.name}${detail}。将在写入时延迟重试。`);
 			return;
 		}
 
 		if (failedServers.length > 1) {
 			const failedNames = failedServers.map(server => server.name).join(", ");
-			this.showWarning(`LSP startup failed for ${failedNames}. It will retry lazily on write.`);
+			this.showWarning(`LSP 启动失败：${failedNames}。将在写入时延迟重试。`);
 		}
 	}
 
@@ -7824,7 +7825,7 @@ export class InteractiveMode implements InteractiveModeContext {
 		const components: Component[] = [];
 		for (const warning of this.session.configWarnings) {
 			components.push(
-				new Text(`Warning: ${warning}`, 1, 0).setStyleFn(t => theme.fg("warning", t)),
+				new Text(`警告：${warning}`, 1, 0).setStyleFn(t => theme.fg("warning", t)),
 				new Spacer(1),
 			);
 		}
@@ -8232,14 +8233,14 @@ export class InteractiveMode implements InteractiveModeContext {
 				policy === "ask" &&
 				!(await this.showHookConfirm(
 					"为此会话创建工作树？",
-					"Work happens on a new wt/* branch; this checkout stays untouched.",
+					"工作在新的 wt/* 分支上进行；当前检出保持不变。",
 				))
 			) {
 				return;
 			}
 			await this.handleWorktreeCommand(undefined, { keepChanges: false });
 		} catch (err) {
-			this.showWarning(`Worktree not created: ${err instanceof Error ? err.message : String(err)}`);
+			this.showWarning(`工作树未创建：${err instanceof Error ? err.message : String(err)}`);
 		}
 	}
 
@@ -8353,7 +8354,7 @@ export class InteractiveMode implements InteractiveModeContext {
 				path: newRecordingPath(this.sessionManager.getSessionId()),
 			});
 		} catch (error) {
-			this.showError(`Could not start recording: ${error instanceof Error ? error.message : String(error)}`);
+			this.showError(`无法开始录制：${error instanceof Error ? error.message : String(error)}`);
 			return;
 		} finally {
 			this.#recorderStarting = false;
@@ -8640,10 +8641,10 @@ export class InteractiveMode implements InteractiveModeContext {
 			await this.renderInitialMessages({ clearTerminalHistory: true });
 			this.updateEditorBorderColor();
 			this.showStatus(
-				result.sessionFile ? `Branched /btw to ${path.basename(result.sessionFile)}` : "Branched /btw",
+				result.sessionFile ? `已将 /btw 分支出到 ${path.basename(result.sessionFile)}` : "/btw 已分支",
 			);
 		} catch (error) {
-			this.showError(`Cannot branch /btw: ${error instanceof Error ? error.message : String(error)}`);
+			this.showError(`无法为 /btw 建立分支：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 

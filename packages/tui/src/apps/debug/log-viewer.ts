@@ -24,7 +24,7 @@ export interface LogViewerDeps {
 /** Separator marking logs captured before the current process started. */
 export const SESSION_BOUNDARY_WARNING = "### WARNING - Logs above are older than current session!";
 /** Action row for loading earlier log entries. */
-export const LOAD_OLDER_LABEL = "### MOVE UP TO LOAD MORE...";
+export const LOAD_OLDER_LABEL = "### 上移以加载更多…";
 
 const INITIAL_LOG_CHUNK = 50;
 const LOAD_OLDER_CHUNK = 50;
@@ -941,10 +941,10 @@ export class DebugLogViewerComponent implements Component {
 						empty: query ? "无匹配日志条目" : "无日志条目",
 						message: this.#statusMessage,
 						actions: [
-							pickerAction("copy", "Copy", "ctrl+c", { primary: true }),
-							pickerAction("all", "Select all", "ctrl+a"),
-							pickerAction("pid", "This process", "ctrl+p", { on: model.isProcessFilterEnabled() }),
-							pickerAction("older", "Load older", "ctrl+o", {
+							pickerAction("copy", "复制", "ctrl+c", { primary: true }),
+							pickerAction("all", "全选", "ctrl+a"),
+							pickerAction("pid", "此进程", "ctrl+p", { on: model.isProcessFilterEnabled() }),
+							pickerAction("older", "加载更早内容", "ctrl+o", {
 								disabled: model.canLoadOlder()
 									? undefined
 									: model.historyLimitReached
@@ -1063,7 +1063,7 @@ export class DebugLogViewerComponent implements Component {
 	#statusText(): string {
 		return this.#statusMessage
 			? theme.fg("success", this.#statusMessage)
-			: theme.fg("dim", `${formatKeyHint("enter")} loads older when highlighted; printable keys update filter`);
+			: theme.fg("dim", `高亮 ${formatKeyHint("enter")} 时加载更早内容；可打印按键更新筛选`);
 	}
 
 	async #handleLoadOlder(additionalCount: number = LOAD_OLDER_CHUNK): Promise<void> {

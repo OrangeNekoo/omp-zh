@@ -155,6 +155,13 @@ import {
 } from "../settings";
 import { cfgTaskAgentModelOverrides } from "../../task/settings";
 
+function reportKeyEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 报告由本仓库的汉化源码产出（中文键），而上游测试与英文环境给出英文键；
+	// 解析方不站队，两种都认，免得换个输入就丢分组。签名收 undefined 是为了
+	// 完全对齐 x === "Key" 的语义——左侧可能是可选属性（facts[0]?.k）。
+	return actual === english || actual === chinese;
+}
+
 interface ProviderAuthUiModules {
 	PASTE_CODE_LOGIN_PROVIDERS: typeof PasteCodeLoginProviders;
 	getOAuthProviders: typeof GetOAuthProviders;
@@ -493,7 +500,7 @@ export class SelectorController {
 			const dirs = { projectDir, agentDir };
 			const initialDoc = await loadWatchdogConfigFile(await resolveAdvisorConfigEditPath(initialScope, dirs));
 			if (initialDoc.warnings?.length) {
-				this.ctx.showWarning(`WATCHDOG.yml: ${sanitizeDisplayWarnings(initialDoc.warnings).join("; ")}`);
+				this.ctx.showWarning(`WATCHDOG.yml：${sanitizeDisplayWarnings(initialDoc.warnings).join("; ")}`);
 			}
 			// Fullscreen editor on the alternate screen (the /settings idiom): the
 			// overlay holds the alt buffer + mouse tracking; the transcript stays put.
@@ -540,12 +547,12 @@ export class SelectorController {
 					);
 					this.ctx.statusLine.invalidate();
 					if (discovered.warnings.length > 0) {
-						this.ctx.showWarning(`WATCHDOG.yml: ${sanitizeDisplayWarnings(discovered.warnings).join("; ")}`);
+						this.ctx.showWarning(`WATCHDOG.yml：${sanitizeDisplayWarnings(discovered.warnings).join("; ")}`);
 					}
 					this.ctx.showStatus(
 						count > 0
 							? `Saved ${scope} WATCHDOG.yml — ${count} advisor${count === 1 ? "" : "s"} active.`
-							: `Saved ${scope} WATCHDOG.yml. Run /advisor on to activate the configured advisors.`,
+							: `已保存 ${scope} WATCHDOG.yml。运行 /advisor on 以激活已配置的顾问。`,
 					);
 					this.ctx.ui.requestRender();
 				},
@@ -775,11 +782,11 @@ export class SelectorController {
 			this.ctx.statusLine.invalidate();
 			this.ctx.updateEditorBorderColor();
 			if (focusedAgentId) {
-				this.ctx.showStatus(`Agent ${focusedAgentId} model: ${selector}`);
+				this.ctx.showStatus(`子代理 ${focusedAgentId} 模型：${selector}`);
 				return;
 			}
 			const roleSelectorHint = appKey(this.ctx.keybindings, "app.model.select") || formatKeyHint("alt+m");
-			this.ctx.showStatus(`Session-only model: ${selector}. Use ${roleSelectorHint} or /model for roles.`);
+			this.ctx.showStatus(`仅本次会话的模型：${selector}。角色请使用 ${roleSelectorHint} 或 /model。`);
 		};
 		if (!compactFirst || focusedAgentId) {
 			await apply();
@@ -889,7 +896,7 @@ export class SelectorController {
 						...cfgTaskAgentModelOverrides.get(this.ctx.settings),
 						task: selector,
 					});
-					this.ctx.showStatus(`Task subagent model (session-only): ${selector}. Use /agents to persist.`);
+					this.ctx.showStatus(`任务子代理模型（仅本次会话）：${selector}。使用 /agents 持久化。`);
 					done();
 				},
 				onCancel: done,
@@ -1007,7 +1014,7 @@ export class SelectorController {
 								this.ctx.statusLine.invalidate();
 								this.ctx.updateEditorBorderColor();
 							}
-							this.ctx.showStatus(`${defaultStatusLabel} model: ${selector ?? model.id}`);
+							this.ctx.showStatus(`${defaultStatusLabel} 模型：${selector ?? model.id}`);
 						} else {
 							// Other roles (smol, slow, custom): update settings, not the current model.
 							const modelRoleValue = formatModelSelectorValue(selectorValue, thinkingLevel);
@@ -1018,7 +1025,7 @@ export class SelectorController {
 							}
 							const roleInfo = getRoleInfo(role, settings);
 							this.ctx.showStatus(
-								`${scopeLabel}${roleInfo?.tag ?? roleInfo?.name ?? role} model: ${selector ?? model.id}`,
+								`${scopeLabel}${roleInfo?.tag ?? roleInfo?.name ?? role} 模型：${selector ?? model.id}`,
 							);
 						}
 						return true;
@@ -1103,7 +1110,7 @@ export class SelectorController {
 									}
 									this.ctx.statusLine.invalidate();
 									this.ctx.updateEditorBorderColor();
-									this.ctx.showStatus(`Default model: ${fallbackModel.provider}/${fallbackModel.id}`);
+									this.ctx.showStatus(`默认模型：${fallbackModel.provider}/${fallbackModel.id}`);
 								}
 							}
 						}
@@ -1120,8 +1127,8 @@ export class SelectorController {
 						const roleInfo = getRoleInfo(role, settings);
 						this.ctx.showStatus(
 							chain.length > 0
-								? `${roleInfo?.tag ?? roleInfo?.name ?? role} fallbacks: ${chain.join(" → ")}`
-								: `${roleInfo?.tag ?? roleInfo?.name ?? role} fallbacks cleared`,
+								? `${roleInfo?.tag ?? roleInfo?.name ?? role} 条回退：${chain.join(" → ")}`
+								: `${roleInfo?.tag ?? roleInfo?.name ?? role} 条回退已清除`,
 						);
 					} catch (error) {
 						this.ctx.showError(error instanceof Error ? error.message : String(error));
@@ -1136,7 +1143,7 @@ export class SelectorController {
 					try {
 						cfgCycleOrder.set(this.ctx.settings, order);
 						this.ctx.showStatus(
-							order.length > 0 ? `Quick-switch cycle: ${order.join(" → ")}` : "Quick-switch cycle cleared",
+							order.length > 0 ? `快速切换循环：${order.join(" → ")}` : "快速切换循环已清除",
 						);
 					} catch (error) {
 						this.ctx.showError(error instanceof Error ? error.message : String(error));
@@ -1151,7 +1158,7 @@ export class SelectorController {
 						if (update.kind === "confirm") return update;
 						const { described, summary } = update;
 						this.ctx.showStatus(
-							`Compaction limit for ${model.provider}/${model.id}: ${described}${summary ? ` · ${summary}` : ""}`,
+							`${model.provider}/${model.id} 的压缩上限：${described}${summary ? ` · ${summary}` : ""}`,
 						);
 						this.ctx.statusLine.invalidate();
 						// The entry can move the model between window tiers; the open hub's
@@ -1253,13 +1260,13 @@ export class SelectorController {
 					onSelect: async (name, marketplace, scope) => {
 						done();
 						const pluginId = `${name}@${marketplace}`;
-						this.ctx.showStatus(`Uninstalling ${pluginId}...`);
+						this.ctx.showStatus(`正在卸载 ${pluginId}…`);
 						this.ctx.ui.requestRender();
 						try {
 							await mgr.uninstallPlugin(pluginId, scope);
-							this.ctx.showStatus(`Uninstalled ${pluginId}`);
+							this.ctx.showStatus(`已卸载 ${pluginId}`);
 						} catch (err) {
-							this.ctx.showStatus(`Uninstall failed: ${err}`);
+							this.ctx.showStatus(`卸载失败：${err}`);
 						}
 						this.ctx.ui.requestRender();
 					},
@@ -1289,14 +1296,14 @@ export class SelectorController {
 			const selector = new PluginSelectorComponent(marketplaces.length, allPlugins, installedIds, {
 				onSelect: async (name, marketplace) => {
 					done();
-					this.ctx.showStatus(`Installing ${name} from ${marketplace}...`);
+					this.ctx.showStatus(`正在安装 ${name}（来自 ${marketplace}）…`);
 					this.ctx.ui.requestRender();
 					try {
 						const force = installedIds.has(`${name}@${marketplace}`);
 						await mgr.installPlugin(name, marketplace, { force });
-						this.ctx.showStatus(`Installed ${name} from ${marketplace}`);
+						this.ctx.showStatus(`已从 ${name} 安装 ${marketplace}`);
 					} catch (err) {
-						this.ctx.showStatus(`Install failed: ${err}`);
+						this.ctx.showStatus(`安装失败：${err}`);
 					}
 					this.ctx.ui.requestRender();
 				},
@@ -1472,12 +1479,12 @@ export class SelectorController {
 					return;
 				}
 				void copyToClipboard(content);
-				this.ctx.showStatus(`Copied ${label} to clipboard`);
+				this.ctx.showStatus(`已将 ${label} 复制到剪贴板`);
 			},
 			onOpen: (href, label) => {
 				done();
 				openPath(href);
-				this.ctx.showStatus(`Opening ${label}: ${href}`);
+				this.ctx.showStatus(`正在打开 ${label}：${href}`);
 			},
 			onCancel: done,
 		});
@@ -1548,9 +1555,9 @@ export class SelectorController {
 
 					while (!wantsSummary && branchSummariesEnabled) {
 						const summaryChoice = await this.ctx.showHookSelector("汇总分支？", [
-							"No summary",
-							"Summarize",
-							"Summarize with custom prompt",
+							"不汇总",
+							"汇总",
+							"用自定义提示词汇总",
 						]);
 
 						if (summaryChoice === undefined) {
@@ -1559,9 +1566,9 @@ export class SelectorController {
 							return;
 						}
 
-						wantsSummary = summaryChoice !== "No summary";
+						wantsSummary = !reportKeyEq(summaryChoice, "No summary", "不汇总");
 
-						if (summaryChoice === "Summarize with custom prompt") {
+						if (reportKeyEq(summaryChoice, "Summarize with custom prompt", "用自定义提示词汇总")) {
 							customInstructions = await this.ctx.showHookEditor("自定义摘要指令");
 							if (customInstructions === undefined) {
 								// User cancelled - loop back to summary selector
@@ -1778,12 +1785,12 @@ export class SelectorController {
 				foreignSessions = await store.list();
 			} catch (error) {
 				this.ctx.showError(
-					`Failed to list ${sourceName} sessions: ${error instanceof Error ? error.message : String(error)}`,
+					`列出 ${sourceName} 会话失败：${error instanceof Error ? error.message : String(error)}`,
 				);
 				return;
 			}
 			if (foreignSessions.length === 0) {
-				this.ctx.showWarning(`No ${sourceName} sessions found`);
+				this.ctx.showWarning(`未找到 ${sourceName} 会话`);
 				return;
 			}
 			const foreignByPath = new Map(foreignSessions.map(session => [session.path, session]));
@@ -1793,7 +1800,7 @@ export class SelectorController {
 					await this.ctx.settings.flush();
 				} catch (error) {
 					this.ctx.showError(
-						`Failed to save pending settings: ${error instanceof Error ? error.message : String(error)}`,
+						`保存待定设置失败：${error instanceof Error ? error.message : String(error)}`,
 					);
 					return false;
 				}
@@ -1809,7 +1816,7 @@ export class SelectorController {
 				return await this.handleResumeSession(sessionFile, { settingsFlushed: true });
 			};
 			selectorOptions = {
-				title: `Import ${sourceName} Session`,
+				title: `导入 ${sourceName} 会话`,
 				scopeLabel: false,
 				showCwd: true,
 			};
@@ -1962,7 +1969,7 @@ export class SelectorController {
 			try {
 				await this.ctx.settings.flush();
 			} catch (err) {
-				this.ctx.showError(`Failed to save pending settings: ${err instanceof Error ? err.message : String(err)}`);
+				this.ctx.showError(`保存待定设置失败：${err instanceof Error ? err.message : String(err)}`);
 				return false;
 			}
 		}
@@ -1997,10 +2004,10 @@ export class SelectorController {
 		await this.ctx.reloadTodos();
 		this.ctx.showStatus(
 			target.movedFrom
-				? `Resumed session, moved here from removed worktree ${shortenPath(target.movedFrom)}`
+				? `已恢复会话，从已移除的工作树 ${shortenPath(target.movedFrom)} 迁移到此处`
 				: movedProject
-					? `Resumed session in ${shortenPath(newCwd)}`
-					: "Resumed session",
+					? `已在 ${shortenPath(newCwd)} 恢复会话`
+					: "已恢复会话",
 		);
 		if (modelFallbackWarning) this.ctx.showWarning(modelFallbackWarning);
 		return true;
@@ -2028,7 +2035,7 @@ export class SelectorController {
 			return { sessionPath: movedPath, movedFrom: info.cwd };
 		} catch (error) {
 			this.ctx.showError(
-				`Could not move the session out of removed worktree ${shortenPath(info.cwd)}: ${error instanceof Error ? error.message : String(error)}`,
+				`无法将会话移出已删除的工作树 ${shortenPath(info.cwd)}：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return undefined;
 		}
@@ -2051,7 +2058,7 @@ export class SelectorController {
 
 		const confirmed = await this.ctx.showHookConfirm(
 			"删除会话",
-			"This will permanently delete the current session.\nYou will be returned to the session selector.",
+			"这将永久删除当前会话。\n随后会返回会话选择器。",
 		);
 
 		if (!confirmed) {
@@ -2156,13 +2163,13 @@ export class SelectorController {
 				new Text(
 					theme.fg(
 						"success",
-						`${theme.status.success} Successfully logged in to ${providerId}${who ? ` as ${who}` : ""}`,
+						`${theme.status.success} 已成功登录到 ${providerId}${who ? ` as ${who}` : ""}`,
 					),
 					1,
 					0,
 				),
 			);
-			block.addChild(new Text(theme.fg("dim", `Credentials saved to ${getAgentDbPath()}`), 1, 0));
+			block.addChild(new Text(theme.fg("dim", `凭据已保存到 ${getAgentDbPath()}`), 1, 0));
 			this.ctx.present(block);
 			return true;
 		} catch (error: unknown) {
@@ -2171,7 +2178,7 @@ export class SelectorController {
 				// surfaced "Login cancelled".
 				return false;
 			}
-			this.ctx.showError(`Login failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`登录失败：${error instanceof Error ? error.message : String(error)}`);
 			return false;
 		} finally {
 			restoreEditor();
@@ -2187,7 +2194,7 @@ export class SelectorController {
 				this.ctx.session.sessionId,
 			);
 			if (!removed) {
-				this.ctx.showError(`Logout skipped: ${account.label} is no longer stored for ${providerId}.`);
+				this.ctx.showError(`已跳过登出：${account.label} 不再为 ${providerId} 存储。`);
 				return;
 			}
 
@@ -2196,21 +2203,21 @@ export class SelectorController {
 				new Text(
 					theme.fg(
 						"success",
-						`${theme.status.success} Successfully logged out ${account.label} from ${providerId}`,
+						`${theme.status.success} 已成功将 ${account.label} 从 ${providerId} 注销`,
 					),
 					1,
 					0,
 				),
 			);
-			block.addChild(new Text(theme.fg("dim", `Credential removed from ${getAgentDbPath()}`), 1, 0));
+			block.addChild(new Text(theme.fg("dim", `已从 ${getAgentDbPath()} 中移除凭据`), 1, 0));
 			if (remainingSource) {
 				block.addChild(
-					new Text(theme.fg("warning", `${providerId} is still authenticated via ${remainingSource}`), 1, 0),
+					new Text(theme.fg("warning", `${providerId} 仍通过 ${remainingSource} 认证`), 1, 0),
 				);
 			}
 			this.ctx.present(block);
 		} catch (error: unknown) {
-			this.ctx.showError(`Logout failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`登出失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -2221,7 +2228,7 @@ export class SelectorController {
 			accounts = await listLogoutAccounts(authStorage, providerId, this.ctx.session.sessionId);
 		} catch (error: unknown) {
 			this.ctx.showError(
-				`Could not load stored credentials: ${error instanceof Error ? error.message : String(error)}`,
+				`无法加载已存储的凭据：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return;
 		}
@@ -2233,7 +2240,7 @@ export class SelectorController {
 				this.ctx.session.sessionId,
 			);
 			const suffix = source ? ` Current auth comes from ${source}; remove that source to log out.` : "";
-			this.ctx.showError(`Logout skipped: no stored credentials for ${providerId}.${suffix}`);
+			this.ctx.showError(`已跳过登出：没有为 ${providerId} 存储的凭据。${suffix}`);
 			return;
 		}
 
@@ -2325,7 +2332,7 @@ export class SelectorController {
 			accountList = await session.listCurrentProviderOAuthAccounts();
 		} catch (error) {
 			this.ctx.showError(
-				`Could not load provider accounts: ${error instanceof Error ? error.message : String(error)}`,
+				`无法加载服务商账户：${error instanceof Error ? error.message : String(error)}`,
 			);
 			return;
 		}
@@ -2341,8 +2348,8 @@ export class SelectorController {
 			const source = session.modelRegistry.authStorage.keys.describe(accountList.provider, session.sessionId);
 			this.ctx.showStatus(
 				source
-					? `No stored OAuth accounts for ${providerName}. Current auth comes from ${source}.`
-					: `No stored OAuth accounts for ${providerName}. Use /login to add one.`,
+					? `${providerName} 没有已存的 OAuth 账户。当前认证来自 ${source}。`
+					: `${providerName} 没有已存的 OAuth 账户。用 /login 添加一个。`,
 			);
 			return;
 		}
@@ -2354,10 +2361,10 @@ export class SelectorController {
 				account => {
 					done();
 					if (!session.pinCurrentProviderOAuthAccount(account.credentialId)) {
-						this.ctx.showWarning(`${account.label} is no longer available to pin.`);
+						this.ctx.showWarning(`${account.label} 已不可固定。`);
 						return;
 					}
-					this.ctx.showStatus(`Pinned ${account.label} to this session for ${providerName}.`);
+					this.ctx.showStatus(`已将 ${account.label} 固定到本次会话，持续 ${providerName}。`);
 					this.ctx.statusLine.invalidate();
 					this.ctx.ui.requestRender();
 				},
@@ -2396,7 +2403,7 @@ export class SelectorController {
 			this.ctx.showStatus(
 				accounts.some(account => account.error)
 					? "No saved resets available — some accounts couldn't be reached (try /login)."
-					: "No saved rate-limit resets available to spend right now.",
+					: "当前没有可动用的已保存速率限制重置次数。",
 			);
 			return;
 		}

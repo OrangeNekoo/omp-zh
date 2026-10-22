@@ -358,7 +358,7 @@ export const astEditToolRenderer = {
 			return {
 				tool: { title: "AST 编辑", ...patternHead },
 				tone: "error",
-				body: [errorText(resultText(result) || "Unknown error")],
+				body: [errorText(resultText(result) || "未知错误")],
 			};
 		}
 		const parseErrors = details?.parseErrors ?? [];

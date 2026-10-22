@@ -198,14 +198,14 @@ export function renderResult(
 		requestLines.push(theme.fg("toolOutput", request.file));
 	}
 	if (request?.line !== undefined) {
-		requestLines.push(theme.fg("dim", `line ${request.line}`));
+		requestLines.push(theme.fg("dim", `第 ${request.line} 行`));
 	}
 	if (request?.symbol) {
-		requestLines.push(theme.fg("dim", `symbol: ${sanitizeInlineText(request.symbol)}`));
+		requestLines.push(theme.fg("dim", `符号：${sanitizeInlineText(request.symbol)}`));
 	}
-	if (request?.query) requestLines.push(theme.fg("dim", `query: ${request.query}`));
-	if (request?.new_name) requestLines.push(theme.fg("dim", `new name: ${request.new_name}`));
-	if (request?.apply !== undefined) requestLines.push(theme.fg("dim", `apply: ${request.apply ? "true" : "false"}`));
+	if (request?.query) requestLines.push(theme.fg("dim", `查询：${request.query}`));
+	if (request?.new_name) requestLines.push(theme.fg("dim", `新名称：${request.new_name}`));
+	if (request?.apply !== undefined) requestLines.push(theme.fg("dim", `应用：${request.apply ? "true" : "false"}`));
 
 	// The body depends only on the (immutable) text, theme and `expanded`; parse
 	// and render it once per expanded state instead of on every spinner frame.
@@ -494,7 +494,7 @@ function renderReferences(refMatch: RegExpMatchArray, lines: string[], expanded:
 	const renderGrouped = (maxFiles: number, maxLocsPerFile: number): string => {
 		const hidden = files.length > maxFiles || files.some(file => byFile.get(file)!.length > maxLocsPerFile);
 		const expandHint = formatExpandHint(theme, expanded, hidden);
-		let output = `${icon} ${theme.fg("dim", `${refCount} found`)}${expandHint}`;
+		let output = `${icon} ${theme.fg("dim", `${refCount} 项匹配`)}${expandHint}`;
 
 		const filesToShow = files.slice(0, maxFiles);
 		for (let fi = 0; fi < filesToShow.length; fi++) {
@@ -516,12 +516,12 @@ function renderReferences(refMatch: RegExpMatchArray, lines: string[], expanded:
 					const locCont = isLastLoc ? "   " : `${theme.tree.vertical}  `;
 					output += `\n ${theme.fg("dim", fileCont)}${theme.fg("dim", locBranch)} ${theme.fg(
 						"muted",
-						`line ${line}, col ${col}`,
+						`第 ${line} 行，第 ${col} 列`,
 					)}`;
 					if (expanded) {
 						output += `\n ${theme.fg("dim", fileCont)}${theme.fg("dim", locCont)}${theme.fg(
 							"muted",
-							`at ${file}:${line}:${col}`,
+							`于 ${file}:${line}:${col}`,
 						)}`;
 					}
 				}
@@ -617,7 +617,7 @@ function renderSymbols(symbolsMatch: RegExpMatchArray, lines: string[], expanded
 			const branch = symIsLast ? theme.tree.last : theme.tree.branch;
 			const detailPrefix = symIsLast ? "   " : `${theme.tree.vertical}  `;
 			output += `\n${prefix}${theme.fg("dim", branch)} ${theme.fg("accent", sym.icon)} ${theme.fg("accent", sym.name)}`;
-			output += `\n${prefix}${theme.fg("dim", detailPrefix)}${theme.fg("muted", `line ${sym.line}`)}`;
+			output += `\n${prefix}${theme.fg("dim", detailPrefix)}${theme.fg("muted", `第 ${sym.line} 行`)}`;
 		}
 		return output.split("\n");
 	}
@@ -633,7 +633,7 @@ function renderSymbols(symbolsMatch: RegExpMatchArray, lines: string[], expanded
 		const branch = isLast ? theme.tree.last : theme.tree.branch;
 		output += `\n ${theme.fg("dim", branch)} ${theme.fg("accent", sym.icon)} ${theme.fg("accent", sym.name)} ${theme.fg(
 			"muted",
-			`line ${sym.line}`,
+			`第 ${sym.line} 行`,
 		)}`;
 	}
 	if (topLevelCount > 3) {
@@ -966,7 +966,7 @@ function describeLspSymbols(lines: string[]): NativeNode | undefined {
 				span(plainText(symMatch[1]), "accent"),
 				span(" "),
 				span(plainText(symMatch[2]), "accent"),
-				span(` line ${symMatch[3]}`, "muted"),
+				span(` 第 ${symMatch[3]} 行`, "muted"),
 			],
 			open: true,
 			children,

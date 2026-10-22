@@ -32,7 +32,7 @@ export default class AuthBroker extends Command {
 		bind: Flags.string({ description: "`serve` 的绑定地址（host:port）", char: "b" }),
 		regenerate: Flags.boolean({ description: "重新生成 bearer 令牌" }),
 		via: Flags.string({
-			description: "SSH user@host for remote login (login --via=user@host)",
+			description: "远程登录的 SSH user@host（login --via=user@host）",
 		}),
 		provider: Flags.string({
 			description: "为 `import` 覆盖服务商 id（如 JSON `type` 无法识别时）",
@@ -49,7 +49,7 @@ export default class AuthBroker extends Command {
 		"include-oauth": Flags.boolean({
 			description: "迁移时同时上传本地 SQLite 中的 OAuth（默认跳过）",
 		}),
-		"dry-run": Flags.boolean({ description: "Print actions without executing (import / login --via / migrate)" }),
+		"dry-run": Flags.boolean({ description: "只打印要执行的操作而不实际执行（import / login --via / migrate）" }),
 		"trust-proxy-headers": Flags.boolean({
 			description: "信任反向代理转发来的对端 IP 头（serve）；默认关闭。",
 		}),

@@ -929,7 +929,7 @@ export const cfgProvidersWebSearchTimeoutSeconds = register({
 		tab: "providers",
 		group: "服务",
 		label: "网络搜索超时",
-		description: `Hard timeout for each provider's search transport before web_search advances to the next fallback, in seconds (maximum ${MAX_WEB_SEARCH_TIMEOUT_SECONDS})`,
+		description: `在 web_search 切换到下一个回退之前，每个服务商搜索传输的硬性超时，以秒为单位（最大 ${MAX_WEB_SEARCH_TIMEOUT_SECONDS}）`,
 		options: [
 			{ value: "30", label: "30 秒" },
 			{ value: "60", label: "1 分钟" },

@@ -883,9 +883,9 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 		}
 		if (split.sel) spans.push(span(`:${split.sel}`, "accent"));
 		const correctedFrom = this.#correctedFromForTargets(row.targets);
-		if (correctedFrom) spans.push(span(` (corrected from ${shortenPath(correctedFrom)})`, "dim"));
+		if (correctedFrom) spans.push(span(`（已从 ${shortenPath(correctedFrom)} 修正）`, "dim"));
 		const conflicts = this.#conflictCountForTargets(row.targets);
-		if (conflicts) spans.push(span(` (⚠ ${conflicts} conflict${conflicts === 1 ? "" : "s"})`, "warning"));
+		if (conflicts) spans.push(span(`（⚠ ${conflicts} 处冲突${conflicts === 1 ? "" : "s"}）`, "warning"));
 		return spans;
 	}
 
@@ -1153,7 +1153,7 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 			pathDisplay += theme.fg("accent", selectorSuffix);
 		}
 		if (options.correctedFrom) {
-			pathDisplay += theme.fg("dim", ` (corrected from ${shortenPath(options.correctedFrom)})`);
+			pathDisplay += theme.fg("dim", `（已从 ${shortenPath(options.correctedFrom)} 修正）`);
 		}
 		pathDisplay += this.#formatConflictBadge(options.conflictCount);
 		return pathDisplay;
@@ -1162,7 +1162,7 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 	#formatConflictBadge(conflictCount: number | undefined): string {
 		if (!conflictCount || conflictCount <= 0) return "";
 		const n = conflictCount;
-		return ` ${theme.fg("warning", `(⚠ ${n} conflict${n === 1 ? "" : "s"})`)}`;
+		return ` ${theme.fg("warning", `（⚠ ${n} 处冲突${n === 1 ? "" : "s"}）`)}`;
 	}
 
 	/**

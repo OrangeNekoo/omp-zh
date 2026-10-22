@@ -155,7 +155,7 @@ export const resolveRenderer = {
 			head.push(
 				span(" "),
 				span(
-					args.action === "apply" ? "proposed → resolved" : "proposed → rejected",
+					args.action === "apply" ? "提议 → 已采纳" : "提议 → 已拒绝",
 					args.action === "apply" ? "success" : "warning",
 				),
 			);

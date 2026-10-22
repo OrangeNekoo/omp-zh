@@ -222,7 +222,7 @@ function compactionNativeLabel(message: CompactionSummaryMessage): TspSpan[] {
 		spans.push(
 			span(` · ${formatNumber(message.tokensBefore)}`, "muted mono"),
 			span(" → ", "dim"),
-			span(`${formatNumber(message.tokensAfter)} tokens`, "muted mono"),
+			span(`${formatNumber(message.tokensAfter)} 令牌`, "muted mono"),
 		);
 	}
 	if (message.warning) spans.push(span(` ${theme.icon.warning}`, "warning"));

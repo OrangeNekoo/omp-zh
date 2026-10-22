@@ -22,6 +22,7 @@ import { parse } from "@babel/parser";
 import traverseModule from "@babel/traverse";
 import {
 	PROTOCOL_CONSTANTS,
+	TRANSLATABLE_CALL_LABEL_INDEX,
 	TRANSLATABLE_CALLS,
 	TRANSLATABLE_CONSTRUCTORS,
 	TRANSLATABLE_PROPERTIES,
@@ -211,7 +212,8 @@ function findReplacements(
 			if (id.type !== "Identifier") return;
 			// 会进入协议 enum 的常量不能译（见 PROTOCOL_CONSTANTS）。
 			if (PROTOCOL_CONSTANTS[id.name] === true) return;
-			if (!/_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION)$/.test(id.name)) {
+			// 后缀白名单 + `helpText`（controller 里的帮助文本数组，camelCase 无后缀）。
+			if (!/^(?:helpText|.*_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION))$/.test(id.name)) {
 				return;
 			}
 			const init = p.node.init;
@@ -219,6 +221,16 @@ function findReplacements(
 			// `const NATIVE_TITLE = "Plan review"`：单值的界面常量。
 			if (init.type === "StringLiteral") {
 				consider(init, `const:${id.name}`, init.value);
+				return;
+			}
+			// `const helpText = ["Manage …", …].join("\n")`：帮助文本是字符串数组
+			// 再 join，元素本身是完整文案。是否替换仍由词典把关。
+			if (init.type === "ArrayExpression" || (init.type === "CallExpression" && init.callee?.property?.name === "join" && init.callee?.object?.type === "ArrayExpression")) {
+				const elements = init.type === "ArrayExpression" ? init.elements : init.callee.object.elements;
+				for (const element of elements) {
+					if (element?.type === "StringLiteral") consider(element, `array:${id.name}`, element.value);
+					else if (element?.type === "TemplateLiteral") considerTemplate(element, `array:${id.name}`);
+				}
 				return;
 			}
 			const collectObject = (object: any): void => {
@@ -303,15 +315,18 @@ function findReplacements(
 					? callee.name
 					: callee.type === "MemberExpression" && callee.property.type === "Identifier"
 						? callee.property.name
-						: null;
+						: callee.type === "MemberExpression" && callee.property.type === "PrivateName"
+							? // `this.#showReport("…", …)`：私有方法同样只按函数名查白名单。
+								callee.property.id.name
+							: null;
 			if (!name) return;
 			if (TRANSLATABLE_CALLS.has(name)) {
-				const first = p.node.arguments[0];
 				// `errorText(resultText(r) || "No todos")`、`toolHead(q, ok ? "a" : "b")`：
 				// 回退文案藏在逻辑/条件表达式的分支里，逐个分支认词典。
-				// 只沿分支下钻，不进入函数调用的实参——那里可能是在比较工具输出。
+				// 只沿分支/数组下钻，不进入普通函数调用的实参——那里可能是在
+				// 比较工具输出。数组与 `[…].join()` 是 UI 报告的正文构造。
 				const walk = (expression: any, depth: number): void => {
-					if (depth > 4) return;
+					if (depth > 5) return;
 					if (expression?.type === "StringLiteral") consider(expression, `call:${name}`, expression.value);
 					else if (expression?.type === "TemplateLiteral") considerTemplate(expression, `call:${name}`);
 					else if (expression?.type === "LogicalExpression") {
@@ -320,9 +335,24 @@ function findReplacements(
 					} else if (expression?.type === "ConditionalExpression") {
 						walk(expression.consequent, depth + 1);
 						walk(expression.alternate, depth + 1);
+					} else if (expression?.type === "ArrayExpression") {
+						for (const element of expression.elements) walk(element, depth + 1);
+					} else if (
+						expression?.type === "CallExpression" &&
+						expression.callee?.property?.name === "join" &&
+						expression.callee?.object?.type === "ArrayExpression"
+					) {
+						walk(expression.callee.object, depth + 1);
 					}
 				};
-				walk(first, 0);
+				walk(p.node.arguments[TRANSLATABLE_CALL_LABEL_INDEX[name] ?? 0], 0);
+				// 报告/确认/选择器的第二个实参也是正文（`#showReport(标题, 正文)`、
+				// `showHookConfirm(标题, 消息)`、`showHookSelector(标题, 选项[])`）。
+				// 其余调用（span(text, kind)、toolHead(q, ok)…）的第二实参是
+				// 渲染属性/条件，不能走。
+				if (name === "showReport" || name === "showHookConfirm" || name === "showHookSelector") {
+					walk(p.node.arguments[1], 0);
+				}
 				return;
 			}
 			// `theme.fg("muted", "…")`、`chalk.dim("…")`、`console.log("…")`：
@@ -375,6 +405,16 @@ function findReplacements(
 			const isArrayElement = parent.type === "ArrayExpression";
 			if (!isArrayElement && p.node.value.trim().split(/\s+/).length < 2) return;
 			consider(p.node, isArrayElement ? "array-literal" : "literal", p.node.value);
+		},
+		/**
+		 * 整文件模式下的模板字符串：无插值整串替换，有插值按 `\u0000`
+		 * 占位符整句查词典（如 oauth-reauth.ts 的
+		 * `Server \"${name}\" is disabled. …`）。
+		 */
+		TemplateLiteral(p: any) {
+			if (!allowWholeFile) return;
+			if (p.parent.type === "ObjectProperty" && p.parent.key === p.node) return;
+			considerTemplate(p.node, p.node.expressions.length === 0 ? "literal" : "interpolated");
 		},
 	});
 }

@@ -12,7 +12,7 @@ export default class DryBalance extends Command {
 	};
 
 	static flags = {
-		model: Flags.string({ description: "Model selector (same syntax as --model on omp)" }),
+		model: Flags.string({ description: "模型选择器（语法与 omp 的 --model 相同）" }),
 		count: Flags.integer({ description: "尝试的随机会话 id 数量", default: 100 }),
 		concurrency: Flags.integer({ description: "并发解析凭据的上限", default: 32 }),
 		json: Flags.boolean({ description: "输出 JSON" }),

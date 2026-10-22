@@ -51,7 +51,7 @@ import { fgOrPlain, theme } from "../theme/theme";
 const SHELL_SIGIL_RE = /^\s*(?:!!?|\$\$?)[ \t]?/;
 
 /** The untitled session's TSP placeholder; the rotating ANSI hints (thinking effort, …) move into control tooltips. */
-const NATIVE_COMPOSER_PLACEHOLDER = "What are we cooking?";
+const NATIVE_COMPOSER_PLACEHOLDER = "我们准备做点什么？";
 
 /** Live composer state the TSP layout shows; the interactive host wires {@link CustomEditor.composerState}. */
 export interface ComposerNativeState {
@@ -1204,7 +1204,7 @@ export class CustomEditor extends Editor {
 					role: "omp.composer.crumb",
 					text: id,
 					wrap: "none",
-					title: `View ${id}`,
+					title: `查看 ${id}`,
 					actions: { click: `${FOCUS_ACTION}${id}` },
 				},
 				undefined,
@@ -1224,7 +1224,7 @@ export class CustomEditor extends Editor {
 							role: "omp.composer.exit",
 							gap: "xs",
 							align: "center",
-							title: `Back to the main session  ${back}`,
+							title: `返回主会话  ${back}`,
 							actions: { click: `${FOCUS_ACTION}${MAIN_AGENT_ID}` },
 						},
 						[
@@ -1238,7 +1238,7 @@ export class CustomEditor extends Editor {
 					role: "omp.composer.focus",
 					gap: "xs",
 					align: "center",
-					title: `Viewing subagent ${agent}: what you send goes to it`,
+					title: `正在查看子代理 ${agent}：你发送的内容会发给它`,
 				},
 			),
 			"focus",
@@ -1266,7 +1266,7 @@ export class CustomEditor extends Editor {
 						{
 							level: thinking,
 							role: "omp.composer.model.effort",
-							title: `Thinking effort: ${thinking}${thinkingHint}`,
+							title: `思考强度：${thinking}${thinkingHint}`,
 							actions: { click: "thinking.cycle" },
 						},
 						undefined,
@@ -1282,7 +1282,7 @@ export class CustomEditor extends Editor {
 					gap: "xs",
 					align: "center",
 					tone: facts.model.tone,
-					title: modelKey ? `Switch model  ${formatTooltipKey(modelKey)}` : "切换模型",
+					title: modelKey ? `切换模型  ${formatTooltipKey(modelKey)}` : "切换模型",
 					actions: { click: "status.model" },
 				},
 				[
@@ -1301,7 +1301,7 @@ export class CustomEditor extends Editor {
 							role: "omp.composer.effort",
 							gap: "xs",
 							align: "center",
-							title: `Thinking effort${thinkingHint}`,
+							title: `思考强度${thinkingHint}`,
 							actions: { click: "thinking.cycle" },
 						},
 						[
@@ -1357,7 +1357,7 @@ export class CustomEditor extends Editor {
 						role: "omp.composer.stop",
 						text: "Stop",
 						tone: "error",
-						title: `Stop  ${formatTooltipKey(interruptKey)}`,
+						title: `停止  ${formatTooltipKey(interruptKey)}`,
 						actions: { click: "interrupt" },
 					},
 					undefined,
@@ -1368,7 +1368,7 @@ export class CustomEditor extends Editor {
 					{
 						role: "omp.composer.send",
 						keys: ["enter"],
-						title: dictating ? "发送前请先结束听写" : `Send  ${formatTooltipKey("enter")}`,
+						title: dictating ? "发送前请先结束听写" : `发送  ${formatTooltipKey("enter")}`,
 						tone: dictating ? "muted" : undefined,
 						actions: dictating ? undefined : { click: "submit" },
 					},

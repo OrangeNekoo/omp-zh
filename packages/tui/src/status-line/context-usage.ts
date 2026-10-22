@@ -793,7 +793,7 @@ function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefine
 		if (sp.applied) {
 			lines.push({
 				label,
-				detail: `${formatNumber(sp.textTokens)} text → ${sp.frames} frame${sp.frames === 1 ? "" : "s"} ≈ ${formatNumber(sp.imageTokens)}`,
+				detail: `${formatNumber(sp.textTokens)} 文本 → ${sp.frames} 帧${sp.frames === 1 ? "" : "s"} ≈ ${formatNumber(sp.imageTokens)}`,
 				value: span(`−${formatNumber(sp.savedTokens)}`, "success"),
 			});
 		} else {
@@ -803,7 +803,7 @@ function describeSnapcompact(breakdown: ContextBreakdown): NativeNode | undefine
 					: sp.reason === "empty"
 						? "nothing to image"
 						: "frames would not save tokens";
-			lines.push({ label, detail: `Stays text: ${reason}` });
+			lines.push({ label, detail: `保持文本：${reason}` });
 		}
 	}
 	const tr = snap.toolResults;

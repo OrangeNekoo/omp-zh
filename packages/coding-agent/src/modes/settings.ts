@@ -278,14 +278,14 @@ export const cfgStatusLineLeftSegments = register({
 	id: "statusLine.leftSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.left,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏段" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
 });
 
 export const cfgStatusLineRightSegments = register({
 	id: "statusLine.rightSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.right,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏段" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
 });
 
 export const cfgStatusLineSegmentOptions = register({
@@ -1192,7 +1192,7 @@ export const cfgMagicKeywordsEnabled = register({
 		tab: "interaction",
 		group: "魔法关键词",
 		label: "魔法关键词",
-		description: `Enable hidden notices for standalone ${MAGIC_KEYWORDS.map(keyword => keyword.word).join(", ")} keywords`,
+		description: `为独立的 ${MAGIC_KEYWORDS.map(keyword => keyword.word).join(", ")} 关键字启用隐藏通知`,
 	},
 });
 

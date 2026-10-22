@@ -638,7 +638,7 @@ export const readToolRenderer = {
 				suffixResolution: suffix,
 				fallbackLabel: "image",
 			});
-			const correction = suffix ? ` ${uiTheme.fg("dim", `(corrected from ${shortenPath(suffix.from)})`)}` : "";
+			const correction = suffix ? ` ${uiTheme.fg("dim", `（已根据 ${shortenPath(suffix.from)} 更正）`)}` : "";
 			const header = renderStatusLine(
 				{ icon: suffix ? "warning" : "success", title: "读取", description: `${displayPath}${correction}` },
 				uiTheme,
@@ -670,7 +670,7 @@ export const readToolRenderer = {
 			suffixResolution: suffix,
 			offset: args?.offset,
 		});
-		const correction = suffix ? ` ${uiTheme.fg("dim", `(corrected from ${shortenPath(suffix.from)})`)}` : "";
+		const correction = suffix ? ` ${uiTheme.fg("dim", `（已根据 ${shortenPath(suffix.from)} 更正）`)}` : "";
 		let title = displayPath ? `Read ${displayPath}${correction}` : "Read";
 		if (args?.offset !== undefined || args?.limit !== undefined) {
 			const startLine = args.offset ?? 1;
@@ -682,7 +682,7 @@ export const readToolRenderer = {
 		}
 		if (details?.conflictCount && details.conflictCount > 0) {
 			const n = details.conflictCount;
-			title += ` ${uiTheme.fg("warning", `(⚠ ${n} conflict${n === 1 ? "" : "s"})`)}`;
+			title += ` ${uiTheme.fg("warning", `（⚠ ${n} 处冲突${n === 1 ? "" : "s"}）`)}`;
 		}
 		const isMarkdown = readResultIsMarkdown(details, args);
 		let cachedWidth: number | undefined;

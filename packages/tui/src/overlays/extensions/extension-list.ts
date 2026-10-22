@@ -449,7 +449,7 @@ export class ExtensionList implements Component {
 		if (entry.type === "master") {
 			return {
 				id,
-				label: `Enable ${sanitizeDisplayLine(entry.providerName)}`,
+				label: `启用 ${sanitizeDisplayLine(entry.providerName)}`,
 				icon: "power",
 				dot: entry.enabled ? "success" : "muted",
 				badges: [{ text: "Master Switch", tone: "warning" }],
@@ -460,7 +460,7 @@ export class ExtensionList implements Component {
 			const off = !entry.enabled || masterDisabled;
 			return {
 				id,
-				label: `Load ~/ ${sanitizeDisplayLine(entry.providerName)} config`,
+				label: `加载 ~/ ${sanitizeDisplayLine(entry.providerName)} 配置`,
 				icon: "folder",
 				detail: "需手动启用；项目配置始终加载",
 				dot: entry.enabled ? "success" : "muted",
@@ -493,7 +493,7 @@ export class ExtensionList implements Component {
 						{
 							text: "shadowed",
 							tone: "warning",
-							title: ext.shadowedBy ? `Shadowed by ${sanitizeDisplayLine(ext.shadowedBy)}` : undefined,
+							title: ext.shadowedBy ? `被 ${sanitizeDisplayLine(ext.shadowedBy)} 遮蔽` : undefined,
 						},
 					]
 				: undefined,

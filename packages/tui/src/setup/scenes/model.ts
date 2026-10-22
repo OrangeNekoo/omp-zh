@@ -71,7 +71,7 @@ class ModelSceneController implements SetupSceneController {
 				? theme.fg(status.color, status.text)
 				: theme.fg(
 						"muted",
-						`Type to search. ${formatKeyHint("enter")} saves the highlighted model as your default.`,
+						`输入以搜索。${formatKeyHint("enter")} 将高亮的模型保存为默认。`,
 					),
 			0,
 			0,
@@ -105,7 +105,7 @@ class ModelSceneController implements SetupSceneController {
 			} else if (status) {
 				intro = text([span(status.text, status.color)]);
 			} else {
-				intro = text([span(`Type to search. ${enter} saves the highlighted model as your default.`, "muted")]);
+				intro = text([span(`输入以搜索。${enter} 将高亮的模型保存为默认。`, "muted")]);
 			}
 			return col([{ ...intro, key: "intro" }, this.#browser], { gap: "sm", role: "omp.setup.model" });
 		});

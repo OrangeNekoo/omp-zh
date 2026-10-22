@@ -14,7 +14,7 @@ export default class BrowserRelay extends Command {
 
 	static args = {
 		action: Args.string({
-			description: `Action: ${BROWSER_RELAY_ACTIONS.join(" | ")} (default serve)`,
+			description: `操作：${BROWSER_RELAY_ACTIONS.join(" | ")}（默认 serve）`,
 			options: [...BROWSER_RELAY_ACTIONS],
 			required: false,
 		}),

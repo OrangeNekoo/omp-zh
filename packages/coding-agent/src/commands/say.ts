@@ -28,7 +28,7 @@ import { cfgTtsLocalSpeed, cfgTtsLocalVoice } from "../tts/settings";
 export default class Say extends Command {
 	static description = commandHelp.description;
 	static args = {
-		text: Args.string({ description: "Text to speak (or use --file)" }),
+		text: Args.string({ description: "要朗读的文本（或使用 --file）" }),
 	};
 
 	static flags = {
@@ -48,7 +48,7 @@ export default class Say extends Command {
 	async run(): Promise<void> {
 		const { args, flags } = await this.parse(Say);
 		if (args.text && flags.file) {
-			process.stderr.write(chalk.red("error: pass either text or --file, not both\n"));
+			process.stderr.write(chalk.red("错误：文本与 --file 只能二选一，不能同时提供\n"));
 			process.exit(1);
 		}
 
@@ -65,7 +65,7 @@ export default class Say extends Command {
 		const unsubscribe = ttsClient.onProgress(event => {
 			if (event.status === "progress" && typeof event.progress === "number") {
 				process.stderr.write(
-					`\r${chalk.dim(`downloading ${event.file ?? model}: ${Math.round(event.progress)}%`)}`,
+					`\r${chalk.dim(`正在下载 ${event.file ?? model}：${Math.round(event.progress)}%`)}`,
 				);
 			} else if (event.status === "done" || event.status === "ready") {
 				// Clear the progress line once the download finishes.
@@ -112,7 +112,7 @@ export default class Say extends Command {
 				const durationSec = total / sampleRate;
 				process.stdout.write(
 					`${chalk.green("saved")} ${flags.out} ` +
-						`${chalk.dim(`(${voice}, ${model}, ${durationSec.toFixed(1)}s, ${wav.byteLength} bytes)`)}\n`,
+						`${chalk.dim(`（${voice}、${model}、${durationSec.toFixed(1)} 秒、${wav.byteLength} 字节）`)}\n`,
 				);
 				return;
 			}
@@ -134,10 +134,10 @@ export default class Say extends Command {
 			}
 			await player.end();
 			process.stdout.write(
-				`${chalk.green("spoke")} ${chalk.dim(`(${voice}, ${model}, ${seconds.toFixed(1)}s, ${spoken} segments)`)}\n`,
+				`${chalk.green("spoke")} ${chalk.dim(`（${voice}、${model}、${seconds.toFixed(1)} 秒、${spoken} 段）`)}\n`,
 			);
 		} catch (err) {
-			process.stderr.write(chalk.red(`error: ${err instanceof Error ? err.message : String(err)}\n`));
+			process.stderr.write(chalk.red(`错误：${err instanceof Error ? err.message : String(err)}\n`));
 			exitCode = 1;
 		} finally {
 			unsubscribe();
@@ -160,7 +160,8 @@ export default class Say extends Command {
 	#synthesisFailed(model: string): void {
 		process.stderr.write(
 			chalk.red(
-				`error: could not synthesize with local TTS model "${model}". Run \`omp setup speech\` to install it.\n`,
+				`错误：无法使用本地 TTS 模型 "${model}" 进行合成。请运行 \`omp setup speech\` 安装。
+`,
 			),
 		);
 	}

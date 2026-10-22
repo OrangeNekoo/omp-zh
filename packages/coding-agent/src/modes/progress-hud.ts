@@ -270,7 +270,7 @@ export class DownloadActivityHud implements Component {
 			return renderHudProgressRow(width, {
 				label: activity.label,
 				tail: theme.fg("success", "ready"),
-				fallback: theme.fg("success", `${activity.label} ready`),
+				fallback: theme.fg("success", `${activity.label} 就绪`),
 			});
 		}
 		const { loaded, total } = activity;

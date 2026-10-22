@@ -300,10 +300,10 @@ function screenHints(screen: Screen): (NativeHint | undefined)[] {
 			return [
 				actionHint(["tui.select.up", "tui.select.down"], "move"),
 				actionHint("tui.select.confirm", "select"),
-				actionHint("tui.select.cancel", "close"),
+				actionHint("tui.select.cancel", "关闭"),
 			];
 		case "detail":
-			return [actionHint("tui.select.confirm", "edit field"), actionHint("tui.select.cancel", "back")];
+			return [actionHint("tui.select.confirm", "编辑字段"), actionHint("tui.select.cancel", "back")];
 		case "name":
 			return [actionHint("tui.input.submit", "save"), actionHint("tui.select.cancel", "cancel")];
 		case "model":
@@ -532,7 +532,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "model",
 					label: "模型",
-					hint: model ? undefined : `Uses the advisor role default (${this.#defaultModelLabel ?? "unset"}).`,
+					hint: model ? undefined : `使用顾问角色默认值（${this.#defaultModelLabel ?? "unset"}）。`,
 					changed: model ? true : undefined,
 					defaultLabel: model ? (this.#defaultModelLabel ?? "advisor role default") : undefined,
 					control: { k: "action", label: model || this.#defaultModelLabel || "顾问角色默认值", act: "edit" },
@@ -559,7 +559,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "syncBacklog",
 					label: "同步积压",
-					hint: `Catch-up policy; inherit follows advisor.syncBacklog (currently ${this.#deps.syncBacklog ?? "off"}).`,
+					hint: `追补策略；inherit 遵循 advisor.syncBacklog（当前为 ${this.#deps.syncBacklog ?? "off"}）。`,
 					changed: advisor.syncBacklog !== undefined ? true : undefined,
 					control: {
 						k: "choice",
@@ -628,8 +628,8 @@ export class AdvisorConfigOverlayComponent implements Component {
 				{
 					id: "scope",
 					label: "范围",
-					hint: `Editing the ${this.#scope} file. Switch to the ${this.#otherScope()} file.`,
-					control: { k: "action", label: `Open ${this.#otherScope()}`, act: "scope" },
+					hint: `正在编辑 ${this.#scope} 文件。请切换到 ${this.#otherScope()} 文件。`,
+					control: { k: "action", label: `打开 ${this.#otherScope()}`, act: "scope" },
 				},
 			],
 		});
@@ -710,7 +710,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 							...props,
 							items: props.items?.filter(item => item.id !== TOOLS_DONE),
 							actions: [
-								pickerAction("confirm", "Toggle", "enter"),
+								pickerAction("confirm", "切换", "enter"),
 								pickerAction("apply", "Apply", "escape", { primary: true, end: true }),
 							],
 						}
@@ -738,7 +738,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			"picker",
 			{
 				title: "顾问模型",
-				subtitle: `${name} reviews with this model. Unset, it uses ${fallback}.`,
+				subtitle: `${name} 次评审使用此模型。未设置时使用 ${fallback}。`,
 				icon: "model",
 				noun: "models",
 				size: "md",
@@ -756,7 +756,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 				total: browser.baseCount,
 				empty: "无可用模型",
 				actions: [
-					pickerAction("use", "Use for advisor", "enter", { primary: true }),
+					pickerAction("use", "用于顾问", "enter", { primary: true }),
 					browser.query.length > 0 ? { ...CLOSE_ACTION, label: "清除搜索" } : CLOSE_ACTION,
 				],
 			},
@@ -1072,7 +1072,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		if (lines.length > rows) {
 			const marker =
 				start + rows < lines.length
-					? theme.fg("dim", `  ↓ ${lines.length - rows - start} more`)
+					? theme.fg("dim", `  ↓ ${lines.length - rows - start} 条更早`)
 					: theme.fg("dim", "  (end)");
 			window[rows - 1] = marker;
 		}
@@ -1144,14 +1144,14 @@ export class AdvisorConfigOverlayComponent implements Component {
 				`${liveStat.tokens.output.toLocaleString()} out`,
 			];
 			if (liveStat.tokens.cacheRead > 0) spendParts.push(`${liveStat.tokens.cacheRead.toLocaleString()} cache`);
-			lines.push(theme.fg("dim", `  Tokens: ${spendParts.join(", ")}`));
-			if (liveStat.cost > 0) lines.push(theme.fg("dim", `  Cost: $${liveStat.cost.toFixed(4)}`));
+			lines.push(theme.fg("dim", `  令牌：${spendParts.join(", ")}`));
+			if (liveStat.cost > 0) lines.push(theme.fg("dim", `  成本：$${liveStat.cost.toFixed(4)}`));
 			if (liveStat.contextWindow > 0) {
 				const pct = Math.round((liveStat.contextTokens / liveStat.contextWindow) * 100);
 				lines.push(
 					theme.fg(
 						"dim",
-						`  Context: ${liveStat.contextTokens.toLocaleString()}/${liveStat.contextWindow.toLocaleString()} (${pct}%)`,
+						`  上下文：${liveStat.contextTokens.toLocaleString()}/${liveStat.contextWindow.toLocaleString()}（${pct}%）`,
 					),
 				);
 			}
@@ -1231,7 +1231,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			label: "共享指令",
 			description: previewLineOrNone(this.#doc.instructions),
 		});
-		items.push({ value: "scope", label: `Scope: ${this.#scope}`, description: `→ ${this.#otherScope()}` });
+		items.push({ value: "scope", label: `作用域：${this.#scope}`, description: `→ ${this.#otherScope()}` });
 		items.push({ value: "save", label: "保存并应用" });
 		items.push({ value: "close", label: "关闭" });
 
@@ -1482,7 +1482,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			`Thinking effort for ${selector} · ${editorKey("tui.select.confirm")} / click pick · ${editorKey("tui.select.cancel")} back`,
 			{
 				title: "思考等级",
-				subtitle: `How hard ${this.#doc.advisors[index]?.name || "the advisor"} reasons on ${selector}.`,
+				subtitle: `${this.#doc.advisors[index]?.name || "the advisor"} 在 ${selector} 上的推理强度。`,
 				icon: "thinking",
 				noun: "levels",
 				current: current === undefined ? [] : [current],
@@ -1508,7 +1508,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		const current = advisor.reviewMode ?? ADVISOR_REVIEW_MODES[0];
 		const items: SelectItem[] = ADVISOR_REVIEW_MODES.map(mode => ({
 			value: mode,
-			label: mode === current ? `${mode} (current)` : mode,
+			label: mode === current ? `${mode}（当前）` : mode,
 			description:
 				mode === "turn"
 					? "审查每个主要回合（即每轮工具调用）。"
@@ -1528,7 +1528,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			`${editorKey("tui.select.confirm")} / click choose review mode · ${editorKey("tui.select.cancel")} back`,
 			{
 				title: "审查模式",
-				subtitle: `When ${advisor.name || "the advisor"} reviews the session.`,
+				subtitle: `${advisor.name || "the advisor"} 何时审查会话。`,
 				icon: "review",
 				noun: "modes",
 				current: [current],
@@ -1575,11 +1575,11 @@ export class AdvisorConfigOverlayComponent implements Component {
 			{
 				value: SYNC_BACKLOG_INHERIT,
 				label: current === undefined ? "沿用（当前）" : "inherit",
-				description: `Follow the global advisor.syncBacklog setting (currently "${global}").`,
+				description: `遵循全局 advisor.syncBacklog 设置（当前为 "${global}"）。`,
 			},
 			...ADVISOR_SYNC_BACKLOG_MODES.map(mode => ({
 				value: mode,
-				label: mode === current ? `${mode} (current)` : mode,
+				label: mode === current ? `${mode}（当前）` : mode,
 				description: describeSyncBacklogMode(mode),
 			})),
 		];
@@ -1598,7 +1598,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			`${editorKey("tui.select.confirm")} / click choose catch-up policy · ${editorKey("tui.select.cancel")} back`,
 			{
 				title: "同步积压",
-				subtitle: `How long the session waits for ${advisor.name || "the advisor"}'s pending reviews.`,
+				subtitle: `会话等待 ${advisor.name || "the advisor"} 待处理审查的时长。`,
 				icon: "time",
 				noun: "policies",
 				current: [current ?? SYNC_BACKLOG_INHERIT],
@@ -1642,7 +1642,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 			`${editorKey("tui.select.confirm")} / click toggle · select Done or ${editorKey("tui.select.cancel")} to 应用 (empty = no tools; read/grep/glob = default)`,
 			{
 				title: "工具",
-				subtitle: `What ${this.#doc.advisors[index]?.name || "the advisor"} may call. None grants no tools; read, grep and glob are the default.`,
+				subtitle: `${this.#doc.advisors[index]?.name || "the advisor"} 可以调用的工具。None 表示不授予任何工具；默认为 read、grep 和 glob。`,
 				icon: "tools",
 				noun: "tools",
 				current: [...selected],

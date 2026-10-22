@@ -3721,7 +3721,7 @@ export class StatusLineComponent<TSession extends StatusLineSession = StatusLine
 				const start: TspMeterMark = {
 					at: speculationAt,
 					icon: "context.speculation",
-					title: `Compaction summary starts at ${Math.round(speculationAt * 100)}%`,
+					title: `压缩摘要从 ${Math.round(speculationAt * 100)}% 开始`,
 				};
 				// Lit while a background summary runs or waits armed.
 				if (speculation !== "idle") start.tone = "accent";
@@ -3730,7 +3730,7 @@ export class StatusLineComponent<TSession extends StatusLineSession = StatusLine
 			marks.push({
 				at: Math.min(1, boundaries.thresholdPercent / 100),
 				icon: "context.compaction",
-				title: `Auto-compact at ${Math.round(boundaries.thresholdPercent)}%`,
+				title: `在 ${Math.round(boundaries.thresholdPercent)}% 时自动压缩`,
 			});
 		}
 		const context = node(
@@ -3764,7 +3764,7 @@ export class StatusLineComponent<TSession extends StatusLineSession = StatusLine
 				role: "omp.composer.usage",
 				text: cost,
 				wrap: "none",
-				...(cost ? { title: `Session cost ${cost}` } : {}),
+				...(cost ? { title: `会话费用 ${cost}` } : {}),
 				actions: { click: "status.cost" },
 			},
 			undefined,

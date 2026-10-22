@@ -95,7 +95,7 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 			rows: [
 				{
 					keys: [hints(["up", "down", "left", "right"])],
-					action: `Move cursor / browse history (${formatKeyHint("up")} when empty)`,
+					action: `移动光标 / 浏览历史（为空时按 ${formatKeyHint("up")}）`,
 				},
 				{ keys: [hints(["alt+left", "alt+right"])], action: "按词移动" },
 				{

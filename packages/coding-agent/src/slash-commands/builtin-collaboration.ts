@@ -49,7 +49,7 @@ function showCollabQrCode(ctx: InteractiveModeContext, webLink: string): void {
 	try {
 		ctx.present([new Spacer(1), new CollabQrCodeComponent(webLink)]);
 	} catch (err) {
-		ctx.showError(`Failed to render collab QR code: ${errorMessage(err)}`);
+		ctx.showError(`渲染协作 QR 码失败：${errorMessage(err)}`);
 	}
 }
 
@@ -189,10 +189,10 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 					return usage("用 /dump 把会话复制到剪贴板。", runtime);
 				}
 				const filePath = await runtime.session.exportToHtml(outputPath, useUserThemes);
-				await runtime.output(`Session exported to: ${filePath}`);
+				await runtime.output(`会话已导出到：${filePath}`);
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Failed to export session: ${errorMessage(err)}`, runtime);
+				return usage(`导出会话失败：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (command, runtime) => {
@@ -219,7 +219,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				await runtime.output(url);
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Failed to open trace: ${errorMessage(err)}`, runtime);
+				return usage(`打开跟踪失败：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (_command, runtime) => {
@@ -307,7 +307,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				await runtime.output(lines.join("\n"));
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Failed to share session: ${errorMessage(err)}`, runtime);
+				return usage(`共享会话失败：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (_command, runtime) => {
@@ -357,8 +357,8 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				} else if (ctx.collabGuest) {
 					ctx.showStatus(
 						ctx.collabGuest.readOnly
-							? "In a collab session as a read-only guest (/leave to exit)"
-							: "In a collab session as a guest (/leave to exit)",
+							? "作为只读访客处于协作会话中（/leave 退出）"
+							: "作为访客处于协作会话中（/leave 退出）",
 					);
 				} else {
 					ctx.showStatus("不在协作会话中");
@@ -391,7 +391,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				}
 				const bullet = theme.fg("accent", theme.format.bullet);
 				const plural = hosts.length === 1 ? "" : "s";
-				const lines = [theme.fg("success", `${hosts.length} active local Collab host${plural}`)];
+				const lines = [theme.fg("success", `${hosts.length} 个活动的本地协作主机${plural}`)];
 				for (const host of hosts) {
 					// Registry strings come from other processes: strip controls,
 					// collapse newlines, and bound the width before they hit the TUI.
@@ -418,7 +418,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 						// fixed details can never push it past one transcript line.
 						truncateToWidth(` ${bullet} ${session} ${theme.fg("muted", `— ${room}`)}`, TRUNCATE_LENGTHS.LINE),
 						truncateToWidth(`   ${theme.fg("muted", detail)}`, TRUNCATE_LENGTHS.LINE),
-						`   ${theme.fg("dim", `${CLI_NAME} collab link ${host.instanceId}${host.access === "view" ? " --view" : ""}`)}`,
+						`   ${theme.fg("dim", `${CLI_NAME} 个协作链接 ${host.instanceId}${host.access === "view" ? " --view" : ""}`)}`,
 					);
 				}
 				ctx.showStatus(lines.join("\n"), { dim: false });
@@ -436,7 +436,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			try {
 				host = await ctx.collabController.start({ access, relay: knownStartVerb ? rest : args });
 			} catch (err) {
-				ctx.showError(`Failed to start collab session: ${errorMessage(err)}`);
+				ctx.showError(`启动协作会话失败：${errorMessage(err)}`);
 				return;
 			}
 			let heading = existing ? "Collab session restarted with control access" : "Collab session started!";
@@ -472,7 +472,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				}
 				await new CollabGuestLink(ctx).join(link);
 			} catch (err) {
-				ctx.showError(`Failed to join collab session: ${errorMessage(err)}`);
+				ctx.showError(`加入协作会话失败：${errorMessage(err)}`);
 			}
 		},
 	},
@@ -532,11 +532,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				// Setting was already mutated; surface the restart failure so the
 				// user knows the browser is in an inconsistent state.
 				await runtime.output(
-					`Browser mode set to ${next ? "headless" : "visible"}, but restart failed: ${errorMessage(err)}`,
+					`浏览器模式已设为 ${next ? "headless" : "visible"}，但重启失败：${errorMessage(err)}`,
 				);
 				return commandConsumed();
 			}
-			await runtime.output(`Browser mode: ${next ? "headless" : "visible"}`);
+			await runtime.output(`浏览器模式：${next ? "headless" : "visible"}`);
 			return commandConsumed();
 		},
 		handleTui: async (command, runtime) => {
@@ -563,11 +563,11 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			try {
 				await restartBrowserForModeChange();
 			} catch (error) {
-				runtime.ctx.showWarning(`Failed to restart browser: ${errorMessage(error)}`);
+				runtime.ctx.showWarning(`重启浏览器失败：${errorMessage(error)}`);
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus(`Browser mode: ${next ? "headless" : "visible"}`);
+			runtime.ctx.showStatus(`浏览器模式：${next ? "headless" : "visible"}`);
 			clearSubmittedText(runtime);
 		},
 	},
@@ -603,7 +603,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 					return;
 				}
 				await copyToClipboard(lastCommand.code);
-				runtime.ctx.showStatus(`Copied ${lastCommand.kind === "bash" ? "bash command" : "eval code"} to clipboard`);
+				runtime.ctx.showStatus(`已将 ${lastCommand.kind === "bash" ? "bash command" : "eval code"} 复制到剪贴板`);
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -632,7 +632,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 			const arg = command.args.trim().toLowerCase();
 			if (arg && arg !== "link" && arg !== "url") {
 				runtime.ctx.showStatus(
-					`Usage: /open [link]  (pick a specific link: /copy, ${formatKeyHint("right")} blocks, ${formatKeyHint("o")})`,
+					`用法：/open [link]  （选择特定链接：/copy、${formatKeyHint("right")} 块、${formatKeyHint("o")}）`,
 				);
 				clearSubmittedText(runtime);
 				return;
@@ -644,7 +644,7 @@ export const BUILTIN_COLLABORATION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpe
 				return;
 			}
 			openPath(link.href);
-			runtime.ctx.showStatus(`Opening ${link.href}`);
+			runtime.ctx.showStatus(`正在打开 ${link.href}`);
 			clearSubmittedText(runtime);
 		},
 	},

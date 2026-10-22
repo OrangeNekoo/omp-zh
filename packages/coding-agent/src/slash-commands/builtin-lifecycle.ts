@@ -80,7 +80,7 @@ async function reportFailedRollback(runtime: SlashCommandRuntime, rollbackError:
 		);
 	}
 	return usage(
-		`Move failed and rollback failed: ${errorMessage(rollbackError)} (workspace remains at ${actual})`,
+		`移动失败且回滚失败：${errorMessage(rollbackError)}（工作区仍位于 ${actual}）`,
 		runtime,
 	);
 }
@@ -98,13 +98,13 @@ async function relocateHeadlessSession(
 	try {
 		await runtime.settings.flush();
 	} catch (err) {
-		return usage(`Failed to save pending settings: ${errorMessage(err)}`, runtime);
+		return usage(`保存待定设置失败：${errorMessage(err)}`, runtime);
 	}
 	const previousState = runtime.sessionManager.captureState();
 	try {
 		await runtime.session.moveSession(resolvedPath);
 	} catch (err) {
-		return usage(`Move failed: ${errorMessage(err)}`, runtime);
+		return usage(`移动失败：${errorMessage(err)}`, runtime);
 	}
 	try {
 		setProjectDir(resolvedPath);
@@ -114,7 +114,7 @@ async function relocateHeadlessSession(
 		} catch (rollbackError) {
 			return reportFailedRollback(runtime, rollbackError);
 		}
-		return usage(`Move failed: ${errorMessage(err)}`, runtime);
+		return usage(`移动失败：${errorMessage(err)}`, runtime);
 	}
 	try {
 		await rescopeHeadlessToCwd(runtime, resolvedPath);
@@ -125,7 +125,7 @@ async function relocateHeadlessSession(
 		} catch (rollbackError) {
 			return reportFailedRollback(runtime, rollbackError);
 		}
-		return usage(`Move failed: ${errorMessage(err)}`, runtime);
+		return usage(`移动失败：${errorMessage(err)}`, runtime);
 	}
 	await runtime.notifyConfigChanged?.();
 	await runtime.notifyTitleChanged?.();
@@ -246,14 +246,14 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 					// small) and provider errors propagate as plain Errors; surface them
 					// via runtime.output so they don't fail the ACP prompt turn.
 					compactFailed = true;
-					await runtime.output(`Compaction failed: ${errorMessage(err)}`);
+					await runtime.output(`压缩失败：${errorMessage(err)}`);
 					return;
 				}
 				const after = runtime.session.getContextUsage?.();
 				const afterTokens = after?.tokens;
 				if (beforeTokens != null && afterTokens != null) {
 					const saved = beforeTokens - afterTokens;
-					await runtime.output(`Compaction complete. Tokens: ${beforeTokens} -> ${afterTokens} (saved ${saved}).`);
+					await runtime.output(`压缩完成。令牌：${beforeTokens} -> ${afterTokens}（节省 ${saved}）。`);
 				} else {
 					await runtime.output("压缩完成。");
 				}
@@ -354,7 +354,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 					// message scrolls away (same rationale as the TUI path, #7993).
 					logger.error("Handoff failed", { error: message });
 					handoffFailed = true;
-					await runtime.output(`Handoff failed: ${message}`);
+					await runtime.output(`交接失败：${message}`);
 					return;
 				}
 				if (!result) {
@@ -405,7 +405,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 				{ allowGlobalFallback: true },
 			);
 			if (!match) {
-				runtime.ctx.showError(`Session "${sessionArg}" not found`);
+				runtime.ctx.showError(`未找到会话 "${sessionArg}"`);
 				return;
 			}
 			try {
@@ -433,7 +433,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 					{ allowGlobalFallback: true },
 				);
 				if (!match) {
-					return usage(`Session "${sessionArg}" not found.`, runtime);
+					return usage(`未找到会话 "${sessionArg}"。`, runtime);
 				}
 				sessionId = match.session.id;
 			} else {
@@ -443,7 +443,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 				}
 			}
 			const pinned = await toggleSessionPin(sessionId);
-			await runtime.output(pinned ? "Session pinned to the top of the resume list." : "Session unpinned.");
+			await runtime.output(pinned ? "会话已固定到恢复列表顶部。" : "会话已取消固定。");
 			return commandConsumed();
 		},
 	},
@@ -578,7 +578,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 						runtime.settings,
 						runtime.session,
 					);
-					await runtime.output(payload || "Memory payload is empty.");
+					await runtime.output(payload || "记忆负载为空。");
 					return commandConsumed();
 				}
 				case "clear":
@@ -600,7 +600,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 						cwd: runtime.cwd,
 						session: runtime.session,
 					});
-					await runtime.output(payload ?? `Memory queue is not available for the ${backend.id} backend.`);
+					await runtime.output(payload ?? `${backend.id} 后端不支持记忆队列。`);
 					return commandConsumed();
 				}
 				case "sync": {
@@ -669,11 +669,11 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 					}
 					await runtime.notifyTitleChanged?.();
 					if (!isCurrent()) return;
-					await runtime.output(`Session renamed to ${title}.`);
+					await runtime.output(`会话已重命名为 ${title}。`);
 				} catch (err) {
 					if (!isCurrent()) return;
 					if (command.args || !runtime.runCommandInBackground) throw err;
-					await runtime.output(`Rename failed: ${errorMessage(err)}`);
+					await runtime.output(`重命名失败：${errorMessage(err)}`);
 				}
 			};
 			if (!command.args && runtime.runCommandInBackground) {
@@ -721,14 +721,14 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 			try {
 				const stat = await fs.stat(resolvedPath);
 				if (!stat.isDirectory()) {
-					return usage(`Not a directory: ${resolvedPath}`, runtime);
+					return usage(`不是目录：${resolvedPath}`, runtime);
 				}
 			} catch {
-				return usage(`Directory does not exist: ${resolvedPath}`, runtime);
+				return usage(`目录不存在：${resolvedPath}`, runtime);
 			}
 			const failure = await relocateHeadlessSession(runtime, resolvedPath);
 			if (failure) return failure;
-			await runtime.output(`Moved to ${runtime.sessionManager.getCwd()}.`);
+			await runtime.output(`已移动到 ${runtime.sessionManager.getCwd()}。`);
 			return commandConsumed();
 		},
 		handleTui: async (command, runtime) => {
@@ -753,14 +753,14 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 			try {
 				worktree = await createSessionWorktree(sourceCwd, runtime.settings, branch);
 			} catch (err) {
-				return usage(`Worktree creation failed: ${errorMessage(err)}`, runtime);
+				return usage(`创建工作树失败：${errorMessage(err)}`, runtime);
 			}
 			const failure = await relocateHeadlessSession(runtime, worktree.path);
 			if (failure) return failure;
 			const cleanup = await cleanSourceCheckoutIfConfigured(sourceCwd, runtime.settings);
 			if (cleanup.errorMessage !== undefined) {
 				await runtime.output(
-					`Warning: Worktree created, but cleaning source checkout failed: ${cleanup.errorMessage}`,
+					`警告：工作树已创建，但清理源检出失败：${cleanup.errorMessage}`,
 				);
 			}
 			await runtime.output(formatSessionWorktreeSummary(worktree, cleanup.cleaned));
@@ -785,9 +785,9 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 			const resolved = resolveToCwd(command.args, runtime.cwd);
 			try {
 				const stat = await fs.stat(resolved);
-				if (!stat.isDirectory()) return usage(`Not a directory: ${resolved}`, runtime);
+				if (!stat.isDirectory()) return usage(`不是目录：${resolved}`, runtime);
 			} catch {
-				return usage(`Directory does not exist: ${resolved}`, runtime);
+				return usage(`目录不存在：${resolved}`, runtime);
 			}
 			let added: string | null;
 			try {
@@ -796,7 +796,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 				return usage(errorMessage(err), runtime);
 			}
 			if (added === null) {
-				await runtime.output(`Already in the workspace: ${resolved}`);
+				await runtime.output(`已存在于工作区：${resolved}`);
 				return commandConsumed();
 			}
 			await runtime.session.refreshBaseSystemPrompt();
@@ -825,7 +825,7 @@ export const BUILTIN_LIFECYCLE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> =
 				return usage(errorMessage(err), runtime);
 			}
 			if (removed === null) {
-				await runtime.output(`Not a workspace directory: ${resolved}`);
+				await runtime.output(`不是工作区目录：${resolved}`);
 				return commandConsumed();
 			}
 			await runtime.session.refreshBaseSystemPrompt();

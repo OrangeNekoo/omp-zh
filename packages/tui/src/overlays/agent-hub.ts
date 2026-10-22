@@ -1190,12 +1190,12 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			span(
 				[
 					"",
-					activeTime ? `${activeTime} agent time` : "agent time —",
-					`${formatNumber(metrics.requests)} req`,
-					`${formatNumber(metrics.tools)} tools`,
-					`${formatNumber(metrics.tokens)} tok`,
-					`${metrics.activeDurationAgents}/${metrics.reportedAgents} timed`,
-					`${metrics.reportedAgents}/${this.#rows.length} measured`,
+					activeTime ? `${activeTime} 代理时间` : "agent time —",
+					`${formatNumber(metrics.requests)} 次请求`,
+					`${formatNumber(metrics.tools)} 个工具`,
+					`${formatNumber(metrics.tokens)} 令牌`,
+					`${metrics.activeDurationAgents}/${metrics.reportedAgents} 已超时`,
+					`${metrics.reportedAgents}/${this.#rows.length} 已测量`,
 				].join(dot),
 				"dim",
 			),
@@ -1222,7 +1222,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 						[span("已完成、已停放与已终止的子代理会留在创建它们的会话中。", "dim")],
 						{ wrap: "word" },
 					),
-					text([span("Resume that session with omp-dev --continue, or spawn a task here.", "dim")], {
+					text([span("用 omp-dev --continue 恢复该会话，或在此派生任务。", "dim")], {
 						wrap: "word",
 					}),
 				],
@@ -1274,7 +1274,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		const metrics = this.#metricsFor(ref, observed);
 		const age = formatAge(Math.max(1, Math.round((Date.now() - ref.lastActivity) / 1000)));
 		const detail = [
-			span(metrics ? `${metricsText(metrics)}${theme.sep.dot}${age}` : `usage${theme.sep.dot}${age}`, "dim"),
+			span(metrics ? `${metricsText(metrics)}${theme.sep.dot}${age}` : `用量${theme.sep.dot}${age}`, "dim"),
 		];
 		const task = observed?.description ?? observed?.progress?.task ?? ref.activity;
 		if (task) detail.push(span(theme.sep.dot, "dim"), span(sanitizeDisplaySingleLine(task), "muted"));
@@ -1397,7 +1397,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			const value = [span(sanitizeDisplaySingleLine(current))];
 			if (progress?.retryState) {
 				value.push(
-					span(`${dot}retry ${progress.retryState.attempt}/${progress.retryState.maxAttempts}`, "warning"),
+					span(`${dot}重试 ${progress.retryState.attempt}/${progress.retryState.maxAttempts}`, "warning"),
 				);
 			}
 			facts.push({ k: "当前", v: value });
@@ -1405,7 +1405,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		facts.push({ k: "用量", v: metrics ? metricsText(metrics) : [span("用量 —", "dim")] });
 		facts.push({
 			k: "谱系",
-			v: `Spawned by ${sanitizeDisplaySingleLine(ref.parentId ?? MAIN_AGENT_ID)}${children.length > 0 ? `${dot}${children.length} ${children.length === 1 ? "child" : "children"}` : ""}`,
+			v: `由 ${sanitizeDisplaySingleLine(ref.parentId ?? MAIN_AGENT_ID)} 派生${children.length > 0 ? `${dot}${children.length} ${children.length === 1 ? "child" : "children"}` : ""}`,
 		});
 		if (children.length > 0) {
 			const named = children.slice(0, NATIVE_CHILD_IDS).map(child => sanitizeDisplaySingleLine(child.id));
@@ -1492,7 +1492,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 					)
 				: text([
 						span(
-							this.#activitySearch.getValue() ? `search: ${this.#activitySearch.getValue()}` : "search: —",
+							this.#activitySearch.getValue() ? `搜索：${this.#activitySearch.getValue()}` : "search: —",
 							"dim",
 						),
 					]),
@@ -1509,7 +1509,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 					grow: 1,
 					empty: [
 						span(
-							this.#activitySearch.getValue() ? "No matching activity" : "尚未记录代理活动",
+							this.#activitySearch.getValue() ? "没有匹配的活动" : "尚未记录代理活动",
 							"muted",
 						),
 					],
@@ -1720,7 +1720,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 					? (selectedAgent ?? "selected agent")
 					: `${selectedAgent ?? "selected"} subtree`;
 		const search = this.#activitySearchEditing
-			? theme.fg("accent", `search: ${filterText(this.#activitySearch)}`)
+			? theme.fg("accent", `搜索：${filterText(this.#activitySearch)}`)
 			: this.#activitySearch.getValue()
 				? `search: ${this.#activitySearch.getValue()}`
 				: "search: —";
@@ -1833,18 +1833,18 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		if (showingNarrowDetails) {
 			return theme.fg(
 				"dim",
-				`${filter}1:agents  2:activity  ${formatKeyHint("tab")}:roster  ${formatKeyHints(["pageUp", "pageDown"])}:scroll  ${formatKeyHint("enter")}:open  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("escape")}:roster`,
+				`${filter}1:代理  2:活动  ${formatKeyHint("tab")}:名单  ${formatKeyHints(["pageUp", "pageDown"])}:滚动  ${formatKeyHint("enter")}:打开  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("escape")}:名单`,
 			);
 		}
 		if (availableWidth < 96) {
 			return theme.fg(
 				"dim",
-				`${filter}${formatKeyHints(["j", "k"])}:select  ${formatKeyHint("enter")}:open  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("tab")}:details  ${formatKeyHints(["r", "x"])}:manage  ${formatKeyHint("escape")}:close`,
+				`${filter}${formatKeyHints(["j", "k"])}:选择  ${formatKeyHint("enter")}:打开  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("tab")}:详情  ${formatKeyHints(["r", "x"])}:管理  ${formatKeyHint("escape")}:关闭`,
 			);
 		}
 		return theme.fg(
 			"dim",
-			`${filter}1:agents  2:activity  ${formatKeyHints(["j", "k"])}/wheel:select  ${formatKeyHints(["pageUp", "pageDown"])}:details  ${formatKeyHint("enter")}/click:open  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("r")}:revive  ${formatKeyHint("x")}:kill  ${formatKeyHint("escape")}:close`,
+			`${filter}1:代理  2:活动  ${formatKeyHints(["j", "k"])}/滚轮:选择  ${formatKeyHints(["pageUp", "pageDown"])}:详情  ${formatKeyHint("enter")}/点击:打开  ${formatKeyHint("t")}:${nextView}  ${formatKeyHint("r")}:唤醒  ${formatKeyHint("x")}:终止  ${formatKeyHint("escape")}:关闭`,
 		);
 	}
 
@@ -1868,7 +1868,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 				const emptyState = [
 					`${theme.fg("muted", theme.status.shadowed)} ${theme.bold("本会话无代理")}`,
 					theme.fg("dim", "已完成、已停放与已终止的子代理会留在创建它们的会话中。"),
-					theme.fg("dim", "Resume that session with omp-dev --continue, or spawn a task here."),
+					theme.fg("dim", "用 omp-dev --continue 恢复该会话，或在此派生任务。"),
 				];
 				for (const line of emptyState.slice(0, budget)) {
 					lines.push(line);
@@ -2004,11 +2004,11 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 		const usage = [
 			theme.fg("statusLineCost", formatCost(metrics.cost)),
 			theme.fg("dim", activeTime ? `${activeTime} agent time` : "agent time —"),
-			theme.fg("dim", `${formatNumber(metrics.requests)} req`),
-			theme.fg("dim", `${formatNumber(metrics.tools)} tools`),
-			theme.fg("dim", `${formatNumber(metrics.tokens)} tok`),
-			theme.fg("dim", `${metrics.activeDurationAgents}/${metrics.reportedAgents} timed`),
-			theme.fg("dim", `${metrics.reportedAgents}/${this.#rows.length} measured`),
+			theme.fg("dim", `${formatNumber(metrics.requests)} 次请求`),
+			theme.fg("dim", `${formatNumber(metrics.tools)} 个工具`),
+			theme.fg("dim", `${formatNumber(metrics.tokens)} 令牌`),
+			theme.fg("dim", `${metrics.activeDurationAgents}/${metrics.reportedAgents} 已超时`),
+			theme.fg("dim", `${metrics.reportedAgents}/${this.#rows.length} 已测量`),
 		].join(theme.fg("dim", theme.sep.dot));
 		lines.push(...wrapTextWithAnsi(usage, Math.max(1, width)));
 		return lines;
@@ -2092,7 +2092,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			section("Current");
 			addWrapped(current);
 			if (progress?.retryState) {
-				add(theme.fg("warning", `retry ${progress.retryState.attempt}/${progress.retryState.maxAttempts}`));
+				add(theme.fg("warning", `重试 ${progress.retryState.attempt}/${progress.retryState.maxAttempts}`));
 			}
 		}
 
@@ -2111,7 +2111,7 @@ export class AgentHubOverlayComponent<TRecord extends AgentRecordLike = AgentRec
 			`Spawned by ${sanitizeDisplaySingleLine(ref.parentId ?? MAIN_AGENT_ID)}${children.length > 0 ? ` · ${children.length} children` : ""}`,
 		);
 		if (children.length > 0) add(theme.fg("dim", formatChildIds(children, width)));
-		add(theme.fg("dim", `Registered ${formatLocalDateTimeWithOffset(new Date(ref.createdAt))}`));
+		add(theme.fg("dim", `已注册 ${formatLocalDateTimeWithOffset(new Date(ref.createdAt))}`));
 
 		section("Changes");
 		add(

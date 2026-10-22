@@ -814,7 +814,7 @@ export class AgentTranscriptViewer implements Component {
 	}
 
 	#headerLines(status: AgentStatus | undefined, kind: string | undefined, parentId: string | undefined): string[] {
-		const lines = [theme.fg("accent", `Agent Hub ${theme.sep.dot} ${this.#deps.agentId}`)];
+		const lines = [theme.fg("accent", `代理中心 ${theme.sep.dot} ${this.#deps.agentId}`)];
 		if (status && kind) {
 			const kindTag = theme.fg("dim", ` ${parentId ? `${kind} ${theme.sep.dot} of ${parentId}` : kind}`);
 			const modelLabel = this.#model ? theme.fg("muted", `${theme.sep.dot}${this.#model}`) : "";

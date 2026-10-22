@@ -171,7 +171,7 @@ export const cfgTaskIsolationMerge = register({
 		description: "隔离任务更改的集成方式（应用补丁或合并分支）",
 		options: [
 			{ value: "patch", label: "补丁", description: "合并差异并使用 git apply" },
-			{ value: "branch", label: "分支", description: "Commit per task, merge with --no-ff" },
+			{ value: "branch", label: "分支", description: "每个任务一个提交，合并时使用 --no-ff" },
 		],
 	},
 });

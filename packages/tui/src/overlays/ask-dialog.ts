@@ -107,7 +107,7 @@ const REVIEW_TAB = "Review";
 // Action rows appended by the guest race participant. An option sanitizing
 // to one of these must disambiguate identically on both sides, or the same
 // question renders different rows depending on who answers.
-const GUEST_ACTION_LABELS = ["Chat about this", "Next →"];
+const GUEST_ACTION_LABELS = ["就此提问", "下一个 →"];
 
 /** Fraction of the terminal the dialog may occupy. The box height is fixed
  *  at spawn from the tallest tab's content (re-measured only on viewport
@@ -860,7 +860,7 @@ export class AskDialogComponent implements Component {
 		const show = actionButton("显示", "show", {
 			tone: "accent",
 			...(hideKey ? { keys: hideKey } : {}),
-			title: `Show the question${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
+			title: `显示问题${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
 		});
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
 		const skip = actionButton("跳过", "cancel", cancelKey ? { keys: cancelKey } : {});
@@ -947,7 +947,7 @@ export class AskDialogComponent implements Component {
 		const notice =
 			unanswered > 0
 				? [
-						span(`${unanswered} unanswered`, "warning"),
+						span(`${unanswered} 个未回答`, "warning"),
 						span(` · Submit still sends ${unanswered === this.#questions.length ? "the questions" : "the rest"}`),
 					]
 				: [span("全部已回答 · 提交即发送")];
@@ -973,12 +973,12 @@ export class AskDialogComponent implements Component {
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
 		const skip = actionButton("跳过", "cancel", {
 			...(cancelKey ? { keys: cancelKey } : {}),
-			title: `Skip without answering${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
+			title: `跳过而不作答${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
 		});
 		const hideKey = getKeybindings().getKeys("app.ask.hide")[0];
 		const hide = actionButton("隐藏", "hide", {
 			...(hideKey ? { keys: hideKey } : {}),
-			title: `Hide until you are ready to answer${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
+			title: `隐藏直到你准备好回答${hideKey ? `  ${formatTooltipKey(hideKey)}` : ""}`,
 		});
 		const lead: NativeNode[] = this.#countdown ? [this.#describeTimer(this.#countdown, ring), hide] : [hide];
 		const inputGuard = this.options.inputGuard;
@@ -1004,7 +1004,7 @@ export class AskDialogComponent implements Component {
 		const submit = actionButton(enterLabel, "submit", {
 			keys: "enter",
 			tone: "accent",
-			title: question?.multi ? `${enterLabel}  enter · Toggle  space` : `${enterLabel}  enter`,
+			title: question?.multi ? `${enterLabel}  enter · Toggle  space` : `${enterLabel}  回车`,
 		});
 		const note = actionButton("备注", "note", { keys: "n", title: "为高亮回答添加备注  n" });
 		return actionBar([...lead, null, note, skip, submit]);
@@ -1182,9 +1182,9 @@ export class AskDialogComponent implements Component {
 		if (show) hints.push(`${show} show`);
 		hints.push(`${editorKey("tui.select.cancel")} cancel`);
 		const hint = theme.fg("dim", ` · ${hints.join(" · ")}`);
-		const label = theme.fg("accent", `${this.#titleText()} hidden:`);
+		const label = theme.fg("accent", `${this.#titleText()} 已隐藏：`);
 		const question = this.#questions[this.#currentQuestionIndex()];
-		const more = this.#questions.length > 1 ? theme.fg("dim", ` (+${this.#questions.length - 1} more)`) : "";
+		const more = this.#questions.length > 1 ? theme.fg("dim", `（另加 ${this.#questions.length - 1} 条）`) : "";
 		const summary = normalizedInlineInput(sanitizeCarriageReturns(question?.question ?? ""));
 		const summaryWidth = Math.max(1, width - visibleWidth(label) - visibleWidth(more) - visibleWidth(hint) - 1);
 		const clipped = truncateToWidth(summary, summaryWidth, Ellipsis.Unicode);
@@ -1478,7 +1478,7 @@ export class AskDialogComponent implements Component {
 			const prefill =
 				isReedit && state.note !== undefined ? { text: state.note, images: state.noteImages } : undefined;
 			const result = await this.#openPrompt(
-				{ title: `Note for ${rowItem.label}`, question: question.question },
+				{ title: `给 ${rowItem.label} 的备注`, question: question.question },
 				prefill,
 			);
 			if (result === undefined || this.#closed) return;
@@ -1578,7 +1578,7 @@ export class AskDialogComponent implements Component {
 			allLines.push(
 				theme.fg(
 					"warning",
-					`${unanswered} unanswered question${unanswered === 1 ? "" : "s"}; ${formatKeyHint("enter")} still submits.`,
+					`${unanswered} 个未回答的问题${unanswered === 1 ? "" : "s"}；${formatKeyHint("enter")} 仍会提交。`,
 				),
 			);
 			allLines.push("");
@@ -1594,7 +1594,7 @@ export class AskDialogComponent implements Component {
 			if (submittedNote?.trim()) {
 				const note = normalizedInlineInput(submittedNote);
 				allLines.push(
-					theme.fg("muted", `   Note: ${truncateToWidth(note, Math.max(1, width - 9), Ellipsis.Unicode)}`),
+					theme.fg("muted", `   注意：${truncateToWidth(note, Math.max(1, width - 9), Ellipsis.Unicode)}`),
 				);
 			}
 		}

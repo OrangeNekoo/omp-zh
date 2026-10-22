@@ -258,7 +258,7 @@ export class SetupWizardComponent implements Component, OverlayFocusOwner {
 						[
 							logoNode(PI_LOGO, false),
 							text([span(APP_NAME, "accent strong")], { wrap: "none" }),
-							text([span(`Setup step ${this.#sceneIndex + 1} of ${this.scenes.length}`, "muted")], {
+							text([span(`设置步骤 ${this.#sceneIndex + 1}，共 ${this.scenes.length}`, "muted")], {
 								wrap: "none",
 							}),
 						],
@@ -284,7 +284,7 @@ export class SetupWizardComponent implements Component, OverlayFocusOwner {
 			"",
 			...logo.map(line => centerLine(line, width)),
 			centerLine(theme.bold(theme.fg("accent", APP_NAME)), width),
-			centerLine(theme.fg("muted", `Setup step ${this.#sceneIndex + 1} of ${this.scenes.length}`), width),
+			centerLine(theme.fg("muted", `设置步骤 ${this.#sceneIndex + 1}，共 ${this.scenes.length}`), width),
 			"",
 			indentLine(theme.bold(title), width, SCENE_MARGIN_X),
 		];

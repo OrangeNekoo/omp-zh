@@ -1185,7 +1185,7 @@ export class UiHelpers {
 			}
 			if (compactionCount > 0) {
 				const times = compactionCount === 1 ? "1 time" : `${compactionCount} times`;
-				this.ctx.showStatus(`Session compacted ${times}`);
+				this.ctx.showStatus(`会话已压缩 ${times}`);
 			}
 			if (options.clearTerminalHistory) {
 				this.ctx.ui.requestRender(true, { clearScrollback: true });
@@ -1216,12 +1216,12 @@ export class UiHelpers {
 	}
 
 	showError(errorMessage: string): void {
-		const text = new Text(`Error: ${errorMessage}`, 1, 0).setStyleFn(t => theme.fg("error", t));
+		const text = new Text(`错误：${errorMessage}`, 1, 0).setStyleFn(t => theme.fg("error", t));
 		this.ctx.present([new Spacer(1), text]);
 	}
 
 	showWarning(warningMessage: string, options?: { hideWithToolActivity?: boolean }): void {
-		const text = new Text(`Warning: ${warningMessage}`, 1, 0).setStyleFn(t => theme.fg("warning", t));
+		const text = new Text(`警告：${warningMessage}`, 1, 0).setStyleFn(t => theme.fg("warning", t));
 		const content = [new Spacer(1), text];
 		this.ctx.present(options?.hideWithToolActivity ? new ToolActivityContainer(content) : content);
 	}
@@ -1280,7 +1280,7 @@ export class UiHelpers {
 		else this.ctx.editor.clearDraft(text);
 		this.ctx.updatePendingMessagesDisplay();
 		this.ctx.showStatus(
-			queuedImages ? "Queued message with image for after compaction" : "Queued message for after compaction",
+			queuedImages ? "已排队的含图消息，将在压缩后发送" : "已排队消息，将在压缩后发送",
 		);
 	}
 
@@ -1370,7 +1370,7 @@ export class UiHelpers {
 			this.ctx.compactionQueuedMessages = queuedMessages;
 			this.ctx.updatePendingMessagesDisplay();
 			this.ctx.showError(
-				`Failed to send queued message${queuedMessages.length > 1 ? "s" : ""}: ${
+				`发送排队消息${queuedMessages.length > 1 ? "s" : ""} 失败：${
 					error instanceof Error ? error.message : String(error)
 				}`,
 			);

@@ -693,7 +693,7 @@ function renderRouteLine(route: string | undefined, continuePrefix: string, maxW
 	if (!route) return [];
 	return [
 		truncateTaskRow(
-			`${continuePrefix}${theme.fg("dim", `routed: ${replaceTabs(sanitizeText(route))}`)}`,
+			`${continuePrefix}${theme.fg("dim", `已路由：${replaceTabs(sanitizeText(route))}`)}`,
 			maxWidth,
 			"",
 		),
@@ -958,7 +958,7 @@ function renderReviewResult(
 	lines.push(
 		`${continuePrefix} Patch is ${theme.fg(verdictColor, summary.overall_correctness)} ${verdictIcon} ${theme.fg(
 			"dim",
-			`(${(summary.confidence * 100).toFixed(0)}% confidence)`,
+			`（${(summary.confidence * 100).toFixed(0)}% 置信度）`,
 		)}`,
 	);
 
@@ -1202,7 +1202,7 @@ function renderAgentResult(
 				const target = lines;
 				if (!isTaskTool) {
 					hasCustomRendering = true;
-					target.push(`${continuePrefix}${theme.fg("dim", `Tool: ${toolName}`)}`);
+					target.push(`${continuePrefix}${theme.fg("dim", `工具：${toolName}`)}`);
 				}
 				if (component instanceof Text) {
 					// Prefix each line with continuePrefix
@@ -1313,11 +1313,11 @@ function formatHiddenProgressLine(hidden: readonly AgentProgress[], theme: Theme
 	};
 	for (const p of hidden) counts[p.status]++;
 	const parts: string[] = [];
-	if (counts.completed > 0) parts.push(theme.fg("dim", `${counts.completed} done`));
-	if (counts.running > 0) parts.push(theme.fg("dim", `${counts.running} running`));
-	if (counts.pending > 0) parts.push(theme.fg("dim", `${counts.pending} pending`));
-	if (counts.failed > 0) parts.push(theme.fg("error", `${counts.failed} failed`));
-	if (counts.aborted > 0) parts.push(theme.fg("error", `${counts.aborted} aborted`));
+	if (counts.completed > 0) parts.push(theme.fg("dim", `${counts.completed} 完成`));
+	if (counts.running > 0) parts.push(theme.fg("dim", `${counts.running} 个运行中`));
+	if (counts.pending > 0) parts.push(theme.fg("dim", `${counts.pending} 个待处理`));
+	if (counts.failed > 0) parts.push(theme.fg("error", `${counts.failed} 失败`));
+	if (counts.aborted > 0) parts.push(theme.fg("error", `${counts.aborted} 已中止`));
 	const breakdown =
 		parts.length > 0
 			? `${theme.fg("dim", " (")}${parts.join(theme.fg("dim", theme.sep.dot))}${theme.fg("dim", ")")}`
@@ -1538,12 +1538,12 @@ export function renderResult(
 			}
 
 			const summaryParts: string[] = [];
-			if (abortedCount > 0) summaryParts.push(theme.fg("error", `${abortedCount} aborted`));
-			if (successCount > 0) summaryParts.push(theme.fg("success", `${successCount} succeeded`));
-			if (mergeFailedCount > 0) summaryParts.push(theme.fg("warning", `${mergeFailedCount} merge failed`));
-			if (failCount > 0) summaryParts.push(theme.fg("error", `${failCount} failed`));
+			if (abortedCount > 0) summaryParts.push(theme.fg("error", `${abortedCount} 已中止`));
+			if (successCount > 0) summaryParts.push(theme.fg("success", `${successCount} 成功`));
+			if (mergeFailedCount > 0) summaryParts.push(theme.fg("warning", `${mergeFailedCount} 合并失败`));
+			if (failCount > 0) summaryParts.push(theme.fg("error", `${failCount} 失败`));
 			const totalRequests = requestTotal;
-			if (totalRequests > 0) summaryParts.push(theme.fg("dim", `${formatNumber(totalRequests)} req`));
+			if (totalRequests > 0) summaryParts.push(theme.fg("dim", `${formatNumber(totalRequests)} 次请求`));
 			summaryParts.push(theme.fg("dim", formatDuration(details.totalDurationMs)));
 			// Wrap the run summary in the theme's bracket glyphs (dim chrome, colored
 			// counts) to match the bash tool's `[Wall: … | Exit: …]` footer.
@@ -1926,7 +1926,7 @@ function describeProgressAgent(progress: AgentProgress, state: AgentDescribeStat
 				? text(
 						[
 							span(
-								`auto-retry gave up after ${progress.retryFailure.attempt} ${pluralize("attempt", progress.retryFailure.attempt)}: ${plainText(progress.retryFailure.errorMessage)}`,
+								`自动重试在 ${progress.retryFailure.attempt} ${pluralize("attempt", progress.retryFailure.attempt)} 后放弃：${plainText(progress.retryFailure.errorMessage)}`,
 								"error",
 							),
 						],
@@ -2080,7 +2080,7 @@ function describeTaskResult(
 			return {
 				tool: { title: "任务", target: agentLabel, targetKind: "text" },
 				tone: "error",
-				body: compact([context, errorText(fallback || "Task failed")]),
+				body: compact([context, errorText(fallback || "任务失败")]),
 			};
 		}
 		return {
@@ -2148,7 +2148,7 @@ function describeTaskResult(
 		body: compact([
 			context,
 			...agents,
-			count === 0 ? noteText(fallback.trim() || "No results", "dim") : undefined,
+			count === 0 ? noteText(fallback.trim() || "无结果", "dim") : undefined,
 			trailer ? text([span(plainText(trailer), "muted")], { wrap: "word", role: "omp.tool.stats" }) : undefined,
 		]),
 	};

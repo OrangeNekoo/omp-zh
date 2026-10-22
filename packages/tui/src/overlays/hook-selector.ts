@@ -588,9 +588,9 @@ export class HookSelectorComponent extends OverlayPanel {
 			this.#menu.query.trim() && total !== this.#options.length
 				? `${selectedCount}/${total} of ${this.#options.length}`
 				: `${selectedCount}/${total}`;
-		if (!this.#menu.query.trim()) return theme.fg("dim", `  (${count})  Type to search`);
+		if (!this.#menu.query.trim()) return theme.fg("dim", `  （${count}）输入以搜索`);
 		const field = this.#search.render(visibleWidth(this.#search.getValue()) + 1)[0] ?? "";
-		return `${theme.fg("dim", `  (${count})  Search: `)}${field}`;
+		return `${theme.fg("dim", `  （${count}）搜索：`)}${field}`;
 	}
 
 	/** Applies the search field's value to the filter. */
@@ -725,7 +725,7 @@ export class HookSelectorComponent extends OverlayPanel {
 			...(checkbox ? { current: [...this.#checkedIndices].map(String) } : {}),
 			total: this.#options.length,
 			empty: "无匹配选项",
-			actions: [pickerAction("confirm", "Select", "enter", { primary: true }), CLOSE_ACTION],
+			actions: [pickerAction("confirm", "选择", "enter", { primary: true }), CLOSE_ACTION],
 		});
 		this.#pickerMemo = { items, selected, query, cursor, node: result };
 		return result;

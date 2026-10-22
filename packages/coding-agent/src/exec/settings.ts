@@ -129,7 +129,7 @@ export const cfgBashGitGuard = register({
 		group: "Bash",
 		label: "Git 守卫",
 		description:
-			"Refuse git commands that discard or move shared work in the bash tool: stash, reset --hard or to another commit, and checkout/switch/restore outside a merge or rebase conflict",
+			"在 bash 工具中拒绝会丢弃或移动共享工作的 git 命令：stash、reset --hard 或重置到其他提交，以及在合并/rebase 冲突之外的 checkout/switch/restore",
 	},
 });
 

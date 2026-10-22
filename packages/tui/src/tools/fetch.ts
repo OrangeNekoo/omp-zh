@@ -165,7 +165,7 @@ export function describeReadUrlResult(result: {
 		return {
 			tool: readUrlHead(urlText),
 			tone: "error",
-			body: [errorText(message.trim() || "Read failed")],
+			body: [errorText(message.trim() || "读取失败")],
 		};
 	}
 
@@ -204,7 +204,7 @@ export function describeReadUrlResult(result: {
 							span(
 								truncation?.artifactId
 									? `Output truncated · ${formatFullOutputReference(truncation.artifactId)}`
-									: "Output truncated",
+									: "输出已截断",
 								"warning",
 							),
 						],
@@ -273,7 +273,7 @@ export function renderReadUrlResult(
 	metadataLines.push(`${uiTheme.fg("muted", "行数：")} ${lineLabel}`);
 	metadataLines.push(`${uiTheme.fg("muted", "字符数：")} ${charCount}`);
 	if (truncated) {
-		metadataLines.push(uiTheme.fg("warning", `${uiTheme.status.warning} Output truncated`));
+		metadataLines.push(uiTheme.fg("warning", `${uiTheme.status.warning} 输出已截断`));
 		if (truncation?.artifactId) metadataLines.push(formatStyledArtifactReference(truncation.artifactId, uiTheme));
 	}
 	if (hasNotes) {

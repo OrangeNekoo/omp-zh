@@ -265,11 +265,11 @@ function jobsRenderResult(
 	// The title already carries the running count, so meta lists only the
 	// settled categories — "waiting on 19 of 19 · 19 running" read awkward.
 	const meta: string[] = [];
-	if (counts.completed > 0) meta.push(uiTheme.fg("success", `${counts.completed} done`));
-	if (counts.failed > 0) meta.push(uiTheme.fg("error", `${counts.failed} failed`));
-	if (counts.cancelled > 0) meta.push(uiTheme.fg("warning", `${counts.cancelled} cancelled`));
+	if (counts.completed > 0) meta.push(uiTheme.fg("success", `${counts.completed} 完成`));
+	if (counts.failed > 0) meta.push(uiTheme.fg("error", `${counts.failed} 失败`));
+	if (counts.cancelled > 0) meta.push(uiTheme.fg("warning", `${counts.cancelled} 已取消`));
 	if (agents.length > 0 && jobs.length > 0) {
-		meta.push(uiTheme.fg("accent", `${agents.length} agent${agents.length === 1 ? "" : "s"}`));
+		meta.push(uiTheme.fg("accent", `${agents.length} 个代理${agents.length === 1 ? "" : "s"}`));
 	}
 
 	const headerIcon: ToolUIStatus =
@@ -428,7 +428,7 @@ function jobsRenderResult(
 		// into one count; the header already carries it while nothing settled.
 		const quietRunning = counts.running - shownWidgetJobs.length;
 		if (quietRunning > 0 && (settledJobs.length > 0 || shownWidgetJobs.length < widgetJobs.length)) {
-			lines.push(`${indent}${uiTheme.fg("dim", `${quietRunning} still running`)}`);
+			lines.push(`${indent}${uiTheme.fg("dim", `${quietRunning} 仍在运行`)}`);
 		}
 		return lines;
 	};
@@ -772,9 +772,9 @@ function describeJobsResult(
 					: `waiting on ${counts.running} of ${jobs.length} ${noun}`
 				: `${jobs.length} ${noun} settled`;
 	const head: TspSpan[] = [span(title, "toolTitle strong")];
-	if (counts.completed > 0) head.push(span(` ${counts.completed} done`, "success"));
-	if (counts.failed > 0) head.push(span(` ${counts.failed} failed`, "error"));
-	if (counts.cancelled > 0) head.push(span(` ${counts.cancelled} cancelled`, "warning"));
+	if (counts.completed > 0) head.push(span(` ${counts.completed} 完成`, "success"));
+	if (counts.failed > 0) head.push(span(` ${counts.failed} 失败`, "error"));
+	if (counts.cancelled > 0) head.push(span(` ${counts.cancelled} 已取消`, "warning"));
 	const order: Record<JobSnapshot["status"], number> = {
 		running: 0,
 		failed: 1,
@@ -863,7 +863,7 @@ export const waitToolRenderer = {
 		options: RenderResultOptions,
 	): NativeToolView | undefined {
 		return waitResultMemo.get(result, [options.isPartial, widgetStamp(result.details?.jobs)], () => {
-			if (result.isError) return errorView("等待", resultText(result));
+			if (result.isError) return errorView("Wait", resultText(result));
 			const details = result.details;
 			if (details?.interrupted) {
 				return {

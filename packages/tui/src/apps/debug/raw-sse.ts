@@ -317,17 +317,17 @@ export class RawSseViewerComponent implements Component {
 
 	#describeHead(snapshot: RawSseDebugSnapshot): NativeNode {
 		const stats = [
-			span(`${snapshot.totalEvents} events`, "num"),
+			span(`${snapshot.totalEvents} 个事件`, "num"),
 			span(" · ", "dim"),
-			span(`${snapshot.records.length} records`, "num"),
+			span(`${snapshot.records.length} 条记录`, "num"),
 		];
 		if (snapshot.droppedRecords > 0) {
-			stats.push(span(" · ", "dim"), span(`${snapshot.droppedRecords} dropped`, "warning"));
+			stats.push(span(" · ", "dim"), span(`${snapshot.droppedRecords} 已丢弃`, "warning"));
 		}
 		stats.push(
 			span(" · ", "dim"),
 			snapshot.lastUpdatedAt
-				? span(`last ${formatRawSseIsoTime(snapshot.lastUpdatedAt)}`, "muted")
+				? span(`最近 ${formatRawSseIsoTime(snapshot.lastUpdatedAt)}`, "muted")
 				: span("等待首帧", "muted"),
 		);
 		return keyed(

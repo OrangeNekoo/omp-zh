@@ -4,7 +4,7 @@
 
 命令名改为 **`omp-zh`**，配置目录与上游完全共用（`~/.omp`），因此可以和原版 `omp` 并存、共享同一份登录状态、会话历史与设置。
 
-> 上游版本：`18.12.5` · 本项目跟随上游滚动更新
+> 上游版本：`18.12.6` · 本项目跟随上游滚动更新
 >
 > 本项目**不是** oh-my-pi 的一部分，问题请提交到[本仓库 Issues](https://github.com/OrangeNekoo/omp-zh/issues)，勿向上游作者反馈。详见文末[声明](#声明)。
 
@@ -218,7 +218,7 @@ omp-zh                          # 进入交互式终端界面
 omp-zh "列出 src 下所有 ts 文件"
 omp-zh -p "解释这个仓库的架构"     # 一次性输出，不进 TUI
 omp-zh --help                   # 查看全部参数
-omp-zh --version                # omp-zh/18.12.5
+omp-zh --version                # omp-zh/18.12.6
 ```
 
 ### 与上游共存
@@ -254,7 +254,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    终端同时打印覆盖率：
 
    ```
-   翻译状态：已汉化 1112 条，未译 181 条（其中值得人工翻译的 69 条）
+   翻译状态：已汉化 1392 条，未译 245 条（其中值得人工翻译的 85 条）
    ```
 
    统计会排除专有名词、参数名、数值标签与快捷键，剩下的才是真正的工作量。
@@ -297,17 +297,24 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 - `PROSE_ONLY_PROPERTIES`：既可能装显示文案、也可能装协议枚举的属性（`action`、`word`、`escape`……）。
   只有「多词短语或以大写字母开头」的值才会翻译，`action: "copy"` 这类枚举保持原样
 - `displayTextArgumentIndex`：`theme.fg("dim", "…")`、`chalk.dim("…")`、`console.log("…")` 里文案所在的实参下标
-- `WHOLE_FILE_LITERALS`：整文件按字面量处理的文件
+- `TRANSLATABLE_CALL_LABEL_INDEX`：标签不在第一实参的调用（`pickerAction(id, label)`、
+  `actionHint(keys, label)` 等）。第一实参是协议 id / 键位，不能走默认下标
+- `WHOLE_FILE_LITERALS`：整文件按字面量处理的文件（如 `mcp/oauth-reauth.ts`——错误消息散落在
+  `new Error(…)` 里，没有统一的可译调用位，只能整文件按词典精确匹配）
 - `translate.ts` 的 `VariableDeclarator` 规则：名字以 `_TITLE`/`_MESSAGE`/`_HINT`/`_WAIT`/`_STATUS`/
   `_PROMPT`/`_PLACEHOLDER`/`_OPTION` 等结尾的单值常量整体翻译
+- `translate.ts` 的 `CallExpression` walk：`TRANSLATABLE_CALLS` 的标签实参沿逻辑/条件/数组分支
+  下钻（`showStatus(cond ? "A" : "B")`、`#showReport(标题, […].join("\n"))` 都能命中）。
+  `extract.ts` 的同一 walk 必须同步改——两侧不对齐会让文案在待译清单里隐形
 
 规则采用「文件范围 + 语法位置」双重约束。要扩大覆盖，新增属性名或文件规则即可，不需要改动翻译逻辑。
 
 **「标签被译、比较仍是英文」是一类真实故障**，重写器抓不到，请在改词典或加规则时留意：
 `showHookSelector` / `showPlanReview` 这类选择器回传的就是 label 本身，如果标签写成中文、
-分支还拿英文比较，那个分支会静默失效——面板看起来正常，点了没反应。修法是让标签与比较
-共用同一个常量（见 `SEANCE_SAVED_MODEL_OPTION`、`PLAN_APPROVE_OPTION`）。上游测试会直接喂
-英文 label，所以比较处还要并列一份英文原值；比较语句不在重写器的可译位置上，原值不会被改掉。
+分支还拿英文比较，那个分支会静默失效——面板看起来正常，点了没反应。修法有二：
+1. 让标签与比较共用同一个常量（上游 `APPROVE_OPTION` 就是这种模式）；
+2. 把比较改写成 `reportKeyEq(expr, "英文", "中文")`（`patch-report-keys.ts` 的机制，可重放）。
+上游测试会直接喂英文 label，所以比较处要能同时认两种语言。
 
 ### 翻译约定
 
@@ -347,7 +354,7 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    - `bun i18n/patch-report-keys.ts` — 面板解析比较跟随译文
    - `bun i18n/patch-gitignore.ts` — 补回本 fork 的忽略项
 7. 依次通过闸门：
-   - 提取器命中数 ≥ 1000（当前实际约 1290；规则半失效时也能拦住，且该步开 `pipefail`）
+   - 提取器命中数 ≥ 1000（当前实际约 1637；规则半失效时也能拦住，且该步开 `pipefail`）
    - 分组名校验 `bun i18n/check-groups.ts`
    - `omp-zh --version` 必须输出 `omp-zh/*`
    - 两个翻译器二次运行必须为 0 替换（幂等）
@@ -373,33 +380,48 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 - **新文案的翻译本身**。脚本不调用机器翻译：未收录的文案保持英文，等待人工补词典。这是有意为之——机翻容易产出术语不一致、语气生硬的界面。
 - **上游结构性重构**。若上游把 `label: "…"` 改成别的 API，规则需同步更新。此时 CI 会在「提取器仍能命中」这步失败并停止推送，不会静默漏译。
-- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（本次同步实测基线：`packages/tui/test` 98 个、`packages/coding-agent/test` 225 个）。它们是断言问题而非功能问题，因此 CI 不跑全量测试；重放时应做的是「与同步前基线比对，确认没有新增失败」，而不是追平绝对数。
+- **上游测试断言**。上游测试大量断言英文文案，汉化后这些断言会失败（18.12.6 同步实测基线：`packages/tui/test` 98 个、`packages/coding-agent/test` 225 个；新译文案会再增加少量同类断言失败，均属此列）。它们是断言问题而非功能问题，因此 CI 不跑全量测试；重放时应做的是「与同步前基线比对，确认没有新增的**功能性**失败」，而不是追平绝对数。
 
-结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 3750 条，覆盖主要界面；剩余未译条目多为专有名词、模型名与长技术描述，按需补充即可。
+结论：**同步与重放可以完全自动化，翻译新词条仍需人工**。当前词典收录约 4600 条，覆盖主要界面；剩余未译条目多为专有名词、模型名与长技术描述，按需补充即可。
 
 ---
 
 ## 已验证的状态
 
-- `omp-zh --version` → `omp-zh/18.12.5`
-- `omp-zh --help` 正常输出，参数说明与 `EXAMPLES` 注释已汉化
+- `omp-zh --version` → `omp-zh/18.12.6`
+- `omp-zh --help` 正常输出，参数说明与 `EXAMPLES` 注释已汉化（含本轮上游新增的 `--plan-yolo`、`--restore`、`--system-prompt-template` 等）
 - `packages/utils`、`packages/tui`、`packages/coding-agent` 三个包 `check:types` 通过
-- 设置面板 10 个标签页、59 个分组全部汉化，且 `TAB_GROUPS` 与各 `settings.ts` 的 `group` 值 100% 对齐
+- 设置面板分组名校验通过：56 个引用全部命中 59 个定义（3 个定义当前无设置使用）
 - 设置项的名称、说明与选项（含 `options` 子菜单的 label/description）已汉化
 - 设置项下方的长段说明文字已汉化（`session`、`tools`、`modes`、`task`、`context` 等主要模块）
 - 首次使用引导的场景（登录、模型、字形、输入框、主题）已汉化
 - 欢迎界面 34 条提示语已汉化
 - 设置面板底部与各对话框的操作提示行已汉化
 - 状态栏、工具卡片标题/状态词、`/session` 信息面板、任务面板与快捷键表已汉化
-- 斜杠命令描述汉化 87/87
-- 词典收录 3753 条；提取器统计的界面文案已汉化 1112 条
+- 斜杠命令的名称与描述已汉化（提取器可见条目 0 未译）
+- 词典收录 4634 条；提取器统计的界面文案已汉化 1392 条（未译 245 条中 85 条值得人工，基本为专有名词与模型名）
 - 翻译器、提示片段翻译器与报告键补丁均幂等：连续执行两次，第二次替换数为 0
-- `/session` 信息面板的报告键解析改为中英文双认（`reportKeyEq`）：上游测试喂英文报告时同样能解析，
-  相比同步前净修复 2 个测试
-- 修复「标签已译、比较仍英文」导致的分支静默失效：计划审查面板的批准/完善/保存四个分支、
-  `/seance` 的两个分支此前全部点了没反应，现已改为标签与比较共用同一常量
-- 全量测试与同步前基线**逐条比对**：`packages/coding-agent` 零新增失败、净修复 7 个；
-  `packages/tui` 净修复 2 个，新增的 4 个均为上游测试断言英文界面文案（属上文已记录的类别）
+- `/session` 信息面板与分支摘要选择器（`showHookSelector`）的回传值比较改为中英文双认（`reportKeyEq`），
+  上游测试喂英文值时同样能命中
+- 全量测试与同步前基线**逐条比对**：`packages/utils` 0 失败；`packages/coding-agent` 9 失败
+  （基线 225，净修复 200+，剩余全部为断言英文文案）；`packages/tui` 新增失败均为上游测试
+  断言本轮新译的文案（属上文已记录的类别），另修复 2 个基线失败
+
+### 本轮修复的漏翻与故障（18.12.6）
+
+- **extract.ts 与 translate.ts 规则对齐**：此前 `showStatus(cond ? "A" : "B")` 的三元分支、
+  带插值的整句模板（`\u0000` 占位符键）、`helpText` 数组、`pickerAction(id, label)` /
+  `actionHint(keys, label)` 的第二实参标签、`showReport`/`showHookConfirm`/`showHookSelector`
+  的正文实参，提取器都看不见——这些位置的文案从未进入待译清单，形成系统性隐形漏翻
+  （约 700 条）。现已全部对齐，两侧规则同源。
+- **上游重构导致的漏翻**：`/mcp` OAuth 流程从控制器挪进 `mcp/oauth-reauth.ts` 后整体脱离
+  覆盖范围，其用户可见错误消息已通过整文件词典模式重新覆盖；abort 原因与错误分类输入
+  （`invalid_grant` 等）刻意保持英文（跨模块契约）。
+- **拼接残缺修复**：`${key} to 添加 a server`、`to 取消, 5 minute timeout` 这类「hints 先译
+  动作词、整句没跟上」的半翻译，已用英文形态整句键拦截。
+- **误译修复**：移除歧义词典键 `in \u0000 → \u0000 后`（曾把 `in ${sha}` 错位成 `${sha} 后`）；
+  撤销 `status line segment` 词条（该 label 会流入 `logger.warn`，按「日志不汉化」约定保持英文）；
+  修正「Ask 条隐藏：」等占位符错位译文。
 
 ---
 

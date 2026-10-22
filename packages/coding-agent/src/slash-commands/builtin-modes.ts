@@ -319,7 +319,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (opensProviders) {
 				await runtime.ctx.showProviderSetup();
 			} else {
-				runtime.ctx.showWarning(`Usage: /${command.name} [providers]`);
+				runtime.ctx.showWarning(`用法：/${command.name} [providers]`);
 			}
 			clearSubmittedText(runtime);
 		},
@@ -469,25 +469,25 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const match = resolved.model;
 				if (!match) {
 					return usage(
-						`Unknown model: ${selector}. Use ACP \`session/setModel\` for picker-driven selection or list available models with /model.`,
+						`未知模型：${selector}。使用 ACP \`session/setModel\` 进行选择器式选择，或使用 /model 列出可用模型。`,
 						runtime,
 					);
 				}
 				try {
 					await runtime.session.setModel(match);
 					if (resolved.thinkingLevel !== undefined) runtime.session.setThinkingLevel(resolved.thinkingLevel);
-					await runtime.output(`Model set to ${match.provider}/${match.id}.`);
+					await runtime.output(`模型已设为 ${match.provider}/${match.id}。`);
 					await runtime.notifyTitleChanged?.();
 					await runtime.notifyConfigChanged?.();
 					return commandConsumed();
 				} catch (err) {
-					return usage(`Failed to set model: ${errorMessage(err)}`, runtime);
+					return usage(`设置模型失败：${errorMessage(err)}`, runtime);
 				}
 			}
 
 			const model = runtime.session.model;
 			await runtime.output(
-				model ? `Current model: ${model.provider}/${model.id}` : "No model is currently selected.",
+				model ? `当前模型：${model.provider}/${model.id}` : "当前未选择任何模型。",
 			);
 			return commandConsumed();
 		},
@@ -515,20 +515,20 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!selector) {
 				const model = runtime.session.model;
 				await runtime.output(
-					model ? `Current model: ${model.provider}/${model.id}` : "No model is currently selected.",
+					model ? `当前模型：${model.provider}/${model.id}` : "当前未选择任何模型。",
 				);
 				return commandConsumed();
 			}
 			const resolved = resolveSessionModelSelector(selector, runtime.session, runtime.settings);
-			if (!resolved.model) return usage(`Unknown model: ${selector}`, runtime);
+			if (!resolved.model) return usage(`未知模型：${selector}`, runtime);
 			try {
 				await runtime.session.setModelTemporary(resolved.model, resolved.thinkingLevel);
-				await runtime.output(`Session-only model: ${formatModelString(resolved.model)}.`);
+				await runtime.output(`仅本次会话的模型：${formatModelString(resolved.model)}。`);
 				await runtime.notifyTitleChanged?.();
 				await runtime.notifyConfigChanged?.();
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Failed to switch model: ${errorMessage(err)}`, runtime);
+				return usage(`切换模型失败：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (command, runtime) => {
@@ -540,7 +540,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			}
 			const resolved = resolveSessionModelSelector(selector, runtime.ctx.session, runtime.ctx.settings);
 			if (!resolved.model) {
-				runtime.ctx.showError(`Unknown model: ${selector}`);
+				runtime.ctx.showError(`未知模型：${selector}`);
 				return;
 			}
 			if (resolved.warning) runtime.ctx.showStatus(resolved.warning);
@@ -621,7 +621,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const arg = command.args.trim().toLowerCase();
 			if (arg === "status") {
 				await runtime.output(
-					`Skill listing: ${cfgSkillful.get(runtime.session.settings) ? "on" : "off"} (session override; default from the skillful setting).`,
+					`技能列表：${cfgSkillful.get(runtime.session.settings) ? "on" : "off"}（会话覆盖；默认取自 skillful 设置）。`,
 				);
 				return commandConsumed();
 			}
@@ -632,7 +632,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						: arg === "off"
 							? await runtime.session.setSkillful(false)
 							: await runtime.session.toggleSkillful();
-				await runtime.output(`Skill listing ${enabled ? "enabled" : "disabled"} for this session.`);
+				await runtime.output(`本会话的技能列表：${enabled ? "enabled" : "disabled"}。`);
 				return commandConsumed();
 			}
 			return usage("用法：/skillful [on|off|status]", runtime);
@@ -640,7 +640,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		handleTui: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();
 			if (arg === "status") {
-				runtime.ctx.showStatus(`Skill listing: ${cfgSkillful.get(runtime.ctx.session.settings) ? "on" : "off"}.`);
+				runtime.ctx.showStatus(`技能列表：${cfgSkillful.get(runtime.ctx.session.settings) ? "on" : "off"}。`);
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -651,7 +651,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						: arg === "off"
 							? await runtime.ctx.session.setSkillful(false)
 							: await runtime.ctx.session.toggleSkillful();
-				runtime.ctx.showStatus(`Skill listing ${enabled ? "enabled" : "disabled"} for this session.`);
+				runtime.ctx.showStatus(`本会话的技能列表：${enabled ? "enabled" : "disabled"}。`);
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -784,25 +784,25 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				runtime.session.disarmPrewalk();
 				await runtime.output(
 					armed
-						? "Prewalk off: canceled this session's pending handoff; keeping the active model."
-						: "Prewalk already off for this session; keeping the active model.",
+						? "预走已关闭：已取消本会话待处理的交接；保留当前模型。"
+						: "预走在本会话中已处于关闭状态；保留当前模型。",
 				);
 				return commandConsumed();
 			}
 			const target = resolveSessionModelSelector("@smol", runtime.session, runtime.settings);
 			if (target.error || !target.model) {
-				return usage(target.error ?? 'Model "@smol" not found', runtime);
+				return usage(target.error ?? '未找到模型 "@smol"', runtime);
 			}
 			if (!runtime.session.modelRegistry.hasConfiguredAuth(target.model)) {
-				return usage(`No API key for ${target.model.provider}/${target.model.id}`, runtime);
+				return usage(`没有 ${target.model.provider}/${target.model.id} 的 API 密钥`, runtime);
 			}
 			if (arg === "restart") {
 				const source = resolveSessionModelSelector("@default", runtime.session, runtime.settings);
 				if (source.error || !source.model) {
-					return usage(source.error ?? 'Model "@default" not found', runtime);
+					return usage(source.error ?? '未找到模型 "@default"', runtime);
 				}
 				if (!runtime.session.modelRegistry.hasConfiguredAuth(source.model)) {
-					return usage(`No API key for ${source.model.provider}/${source.model.id}`, runtime);
+					return usage(`没有 ${source.model.provider}/${source.model.id} 的 API 密钥`, runtime);
 				}
 				const result = await runtime.session.restartPrewalk(
 					source.model,
@@ -814,15 +814,15 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const restartSource = `${source.model.provider}/${source.model.id}`;
 				await runtime.output(
 					result === "armed"
-						? `Prewalk restarted: using @default (${restartSource}) for planning, then switching to @smol (${target.model.provider}/${target.model.id}) at the next edit/write (todo-gated).`
-						: `Prewalk reset: using @default (${restartSource}); @smol resolves to the same model and thinking level, so no handoff was armed.`,
+						? `预走已重启：使用 @default（${restartSource}）进行规划，随后在下一次编辑/写入时切换到 @smol（${target.model.provider}/${target.model.id}）（待办事项门控）。`
+						: `预走已重置：使用 @default（${restartSource}）；@smol 解析到相同的模型与思考等级，因此未启用交接。`,
 				);
 				return commandConsumed();
 			}
 			const armed = runtime.session.armPrewalk(target.model, target.thinkingLevel);
 			if (armed) {
 				await runtime.output(
-					`Prewalk on: switching to ${target.model.provider}/${target.model.id} at the next edit/write (todo-gated).`,
+					`预走已开启：将在下次编辑/写入时切换到 ${target.model.provider}/${target.model.id}（受待办事项门控）。`,
 				);
 			}
 			return commandConsumed();
@@ -899,7 +899,8 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!command.args.trim()) {
 				await runtime.output(
 					session.model?.reasoning
-						? `Thinking: ${session.configuredThinkingLevel() ?? "model default"}\nAvailable: ${session.getAvailableEffortSelectors().join(", ")}`
+						? `思考：${session.configuredThinkingLevel() ?? "model default"}
+可用：${session.getAvailableEffortSelectors().join(", ")}`
 						: noThinkingMessage(session),
 				);
 				return commandConsumed();
@@ -907,7 +908,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const resolved = resolveThinkingArgument(session, command.args);
 			if ("error" in resolved) return usage(resolved.error, runtime);
 			session.setThinkingLevel(resolved.level);
-			await runtime.output(`Thinking set to ${resolved.level}.`);
+			await runtime.output(`思考已设置为 ${resolved.level}。`);
 			// `setThinkingLevel` emits `thinking_level_changed`, which hosts with a
 			// session-lifetime subscription (ACP) already turn into a config push.
 			await runtime.notifyConfigChanged?.({ handledBySessionEvent: true });
@@ -929,13 +930,13 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			}
 			// thinking_level_changed refreshes the status line and editor border.
 			session.setThinkingLevel(resolved.level);
-			ctx.showStatus(`Thinking set to ${resolved.level}.`);
+			ctx.showStatus(`思考已设置为 ${resolved.level}。`);
 		},
 	},
 ];
 
 const PRESETS_USAGE = "Usage: /modelpreset [list | save <name> | switch <name> | delete <name>]";
-const NO_PRESETS_MESSAGE = "No model presets saved. Use /modelpreset save <name> to create one.";
+const NO_PRESETS_MESSAGE = "尚未保存模型预设。使用 /modelpreset save <name> 创建一个。";
 
 interface PresetsCommandOutcome {
 	message: string;
@@ -956,13 +957,13 @@ async function runPresetsCommand(
 	switch (sub) {
 		case "list": {
 			const names = getModelPresetNames(settings);
-			return { message: names.length > 0 ? `Model presets: ${names.join(", ")}` : NO_PRESETS_MESSAGE };
+			return { message: names.length > 0 ? `模型预设：${names.join(", ")}` : NO_PRESETS_MESSAGE };
 		}
 		case "save": {
 			if (!name) return { message: "用法：/modelpreset save <name>", usage: true };
 			if (!isValidModelPresetName(name)) {
 				return {
-					message: `Invalid preset name "${name}": use a letter, then letters, digits, - or _`,
+					message: `无效的预设名 "${name}"：首字符须为字母，其后只能是字母、数字、- 或 _`,
 					usage: true,
 				};
 			}
@@ -984,14 +985,14 @@ async function runPresetsCommand(
 		case "delete": {
 			if (!name) return { message: "用法：/modelpreset delete <name>", usage: true };
 			const result = deleteModelPreset(settings, name);
-			if (result === "deleted") return { message: `Deleted model preset "${name}"`, changedConfig: true };
+			if (result === "deleted") return { message: `已删除模型预设 "${name}"`, changedConfig: true };
 			if (result === "project") {
 				return {
-					message: `Preset "${name}" is defined by a project or --config file; remove it there`,
+					message: `预设 "${name}" 由项目或 --config 文件定义；请在那里移除`,
 					failed: true,
 				};
 			}
-			return { message: `Preset not found: ${name}`, failed: true };
+			return { message: `未找到预设：${name}`, failed: true };
 		}
 		default:
 			return { message: PRESETS_USAGE, usage: true };

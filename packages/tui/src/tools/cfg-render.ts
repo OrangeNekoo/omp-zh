@@ -92,7 +92,7 @@ export function describeCfgRead(
 		meta.push(details.count === 1 ? "1 setting" : `${details.count} settings`);
 		if (details.modified) meta.push(`${details.modified} modified`);
 	}
-	if (result?.isError) return errorView("配置", firstText(result) || "Settings read failed.", description, ...meta);
+	if (result?.isError) return errorView("Config", firstText(result) || "读取设置失败。", description, ...meta);
 	const head = toolHead("配置", description, ...meta);
 	if (!result) return { head };
 	const listing = plainText(safe(firstText(result).trimEnd()));
@@ -113,7 +113,7 @@ export function describeCfgWrite(
 	const target = parseCfgUrl(url);
 	const path = details?.path ?? target?.segments.join(".");
 	const save = details?.save ?? target?.save ?? false;
-	if (result?.isError) return errorView("配置", firstText(result) || "Settings write failed.", path);
+	if (result?.isError) return errorView("Config", firstText(result) || "写入设置失败。", path);
 	const head = toolHead("配置", path);
 	head.push(span(" "), span(save ? "persist" : "session", save ? "accent strong" : "muted"));
 	if (details?.outcome === "declined") head.push(span(" "), span("declined", "warning strong"));
@@ -131,7 +131,7 @@ export function describeCfgWrite(
 				? text(
 						[
 							span(
-								`still ${plainText(details.effective)}: a higher-precedence layer overrides the saved value`,
+								`仍为 ${plainText(details.effective)}：更高优先层覆盖了已保存的值`,
 								"warning",
 							),
 						],
@@ -175,7 +175,7 @@ export function renderCfgWrite(
 		];
 		if (details?.effective !== undefined)
 			lines.push(
-				theme.fg("warning", `  still ${details.effective}: a higher-precedence layer overrides the saved value`),
+				theme.fg("warning", `  仍为 ${details.effective}：更高优先级的层覆盖了保存的值`),
 			);
 		return lines;
 	}, options);

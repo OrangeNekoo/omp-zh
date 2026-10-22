@@ -7,17 +7,10 @@ import * as path from "node:path";
 import { formatDuration, formatNumber } from "@oh-my-pi/pi-utils";
 import { renderProgressBar } from "../components/progress-bar";
 import { Text } from "../components/text";
-import {
-	Ellipsis,
-	fileHyperlink,
-	getTreeBranch,
-	renderStatusLine,
-	renderTreeList,
-	truncateToWidth,
-	uriHyperlink,
-} from "../render";
+import { fileHyperlink, getTreeBranch, renderStatusLine, renderTreeList, uriHyperlink } from "../render";
 import {
 	createCachedComponent,
+	fitHeaderedRows,
 	formatCount,
 	formatEmptyMessage,
 	formatErrorMessage,
@@ -202,7 +195,7 @@ function describeHit(hit: FindHit, rangeLimit: number, cwd: string | undefined, 
 	const score = hit.contentScore.toFixed(2);
 	const isUrlHit = splitUrlScheme(hit.rel) !== undefined;
 	const head = fileRow(hit.rel, {
-		lead: node("progress", { value: hit.contentScore, tone, title: `score ${score}`, max: { w: 40 } }),
+		lead: node("progress", { value: hit.contentScore, tone, title: `得分 ${score}`, max: { w: 40 } }),
 		detail: [
 			span(score, tone),
 			span(
@@ -269,7 +262,7 @@ export const findToolRenderer = {
 		const text = result.content?.find(c => c.type === "text")?.text ?? "";
 
 		if (result.isError) {
-			return new Text(formatErrorMessage(text || "Unknown error", uiTheme), 0, 0);
+			return new Text(formatErrorMessage(text || "未知错误", uiTheme), 0, 0);
 		}
 
 		// Streaming progress: the tool reports the phase it is in.
@@ -354,10 +347,10 @@ export const findToolRenderer = {
 				);
 				const extra: string[] = [];
 				if (expanded) {
-					extra.push(uiTheme.fg("dim", `keywords: ${details.keywords.join(", ")}`));
+					extra.push(uiTheme.fg("dim", `关键词：${details.keywords.join(", ")}`));
 					for (const failure of stats.failures) extra.push(uiTheme.fg("warning", failure));
 				}
-				return [header, ...hitLines, ...extra].map(line => truncateToWidth(line, width, Ellipsis.Omit));
+				return fitHeaderedRows(header, [...hitLines, ...extra], width);
 			},
 		);
 	},
@@ -396,7 +389,7 @@ export const findToolRenderer = {
 		const linkTargets = findLinkTargets(details, options.renderContext?.rawDetails);
 		const scope = details.scopePath === undefined ? undefined : `in ${details.scopePath}`;
 		const failed =
-			stats.failed > 0 ? [span(`${stats.failed}/${stats.requests} requests failed`, "warning")] : undefined;
+			stats.failed > 0 ? [span(`${stats.failed}/${stats.requests} 个请求失败`, "warning")] : undefined;
 		const accounting = [
 			`${stats.filesRead} files read`,
 			`τ ${threshold.toFixed(2)}`,

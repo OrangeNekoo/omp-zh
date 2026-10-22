@@ -24,7 +24,7 @@ function loginUrlLink(url: string): string {
 }
 
 function loginCopyHint(): string {
-	return theme.fg("dim", `(clipboard copy attempted; ${formatKeyHint("alt+c")} retries)`);
+	return theme.fg("dim", `（已尝试复制到剪贴板；${formatKeyHint("alt+c")} 次重试）`);
 }
 
 class CopyablePromptInput implements Component, Focusable {
@@ -163,14 +163,14 @@ export class SignInScene implements SetupSceneController {
 		const urlLines = this.#authUrl ? wrapTextWithAnsi(theme.fg("dim", this.#authUrl), width) : [];
 		if (this.#authUrl) {
 			tail.addChild(
-				new Text(theme.fg("accent", `Browser login: ${loginUrlLink(this.#authUrl)} ${loginCopyHint()}`), 0, 0),
+				new Text(theme.fg("accent", `浏览器登录：${loginUrlLink(this.#authUrl)} ${loginCopyHint()}`), 0, 0),
 			);
 			// Keep one URL row above the prompt; repeat the complete wrapped URL
 			// below so the input remains visible in the wizard's short viewport.
 			if (urlLines[0]) tail.addChild(new Text(urlLines[0], 0, 0));
 			if (this.#authLaunchUrl) {
 				tail.addChild(
-					new Text(theme.fg("dim", `Local shortcut (this machine only): ${this.#authLaunchUrl}`), 0, 0),
+					new Text(theme.fg("dim", `本地快捷方式（仅本机）：${this.#authLaunchUrl}`), 0, 0),
 				);
 			}
 		}
@@ -203,7 +203,7 @@ export class SignInScene implements SetupSceneController {
 		}
 		if (this.#loggingInProvider) {
 			this.#step.setKind("async");
-			this.#step.setHeading(new Text(theme.bold(`Signing in to ${this.#loggingInProvider}`), 0, 0));
+			this.#step.setHeading(new Text(theme.bold(`正在登录 ${this.#loggingInProvider}`), 0, 0));
 			this.#step.setIntro(undefined);
 			this.#step.setContent(tail);
 			this.#step.setStatus(undefined);
@@ -240,7 +240,7 @@ export class SignInScene implements SetupSceneController {
 							spans: [
 								span("浏览器登录：", "accent"),
 								span("打开登录链接", "accent link", { href: authUrl }),
-								span(` (clipboard copy attempted; ${copyKey} retries)`, "dim"),
+								span(`（已尝试复制到剪贴板；${copyKey} 次重试）`, "dim"),
 							],
 						},
 						undefined,
@@ -286,7 +286,7 @@ export class SignInScene implements SetupSceneController {
 						node(
 							"row",
 							{ gap: "sm", align: "center" },
-							[node("spinner", {}), text([span(`Signing in to ${provider}`, "strong")])],
+							[node("spinner", {}), text([span(`正在登录 ${provider}`, "strong")])],
 							"heading",
 						),
 						...tail,

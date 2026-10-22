@@ -45,7 +45,7 @@ export default class Gallery extends Command {
 		}),
 		out: Flags.string({
 			char: "o",
-			description: "Screenshot output path (with --screenshot); suffixed per image when split across multiple",
+			description: "截图输出路径（配合 --screenshot）；分多张时每张带序号后缀",
 		}),
 		font: Flags.string({ description: "截图字体（默认：JetBrainsMono Nerd Font）" }),
 		"font-size": Flags.integer({ description: "截图字号（磅，默认：18）" }),

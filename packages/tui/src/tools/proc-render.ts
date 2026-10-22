@@ -78,8 +78,8 @@ export function renderAgentWrite(
 		if (recipient === "all") meta.push("broadcast");
 		if (receipts.length === 1) meta.push(theme.fg(receiptColor(receipts[0]!.outcome), receipts[0]!.outcome));
 		else if (receipts.length > 1) {
-			if (delivered) meta.push(theme.fg("success", `${delivered} delivered`));
-			if (failed) meta.push(theme.fg("error", `${failed} failed`));
+			if (delivered) meta.push(theme.fg("success", `${delivered} 已送达`));
+			if (failed) meta.push(theme.fg("error", `${failed} 失败`));
 		}
 		const header = renderStatusLine(
 			result === undefined
@@ -339,17 +339,17 @@ export function describeAgentWrite(
 	if (recipient === "all") meta.push(span("broadcast", "muted"));
 	if (receipts.length === 1) meta.push(span(receipts[0]!.outcome, RECEIPT_TONE[receipts[0]!.outcome]));
 	else if (receipts.length > 1) {
-		if (delivered) meta.push(span(`${delivered} delivered`, "success"));
-		if (failed) meta.push(span(`${failed} failed`, "error"));
+		if (delivered) meta.push(span(`${delivered} 已送达`, "success"));
+		if (failed) meta.push(span(`${failed} 失败`, "error"));
 	}
 	const head = toolHead("IRC", span(recipient, "accent"), ...meta);
 	const error = result?.isError === true || (failed > 0 && delivered === 0);
 	if (result?.isError && receipts.length === 0) {
-		return { head, tone: "error", body: [errorText(firstText(result) || "Message delivery failed.")] };
+		return { head, tone: "error", body: [errorText(firstText(result) || "消息发送失败。")] };
 	}
 	const children = compact<NativeChild>([
 		quotedPreview(body),
-		result !== undefined && receipts.length === 0 && noteText(firstText(result) || "No live peers to broadcast to."),
+		result !== undefined && receipts.length === 0 && noteText(firstText(result) || "没有可广播的在线对等端。"),
 		(receipts.length > 1 || failed > 0) &&
 			node(
 				"list",
@@ -387,7 +387,7 @@ export function describeProcWrite(
 		daemon ? daemonMetaText(daemon) : action === "mode" && content ? safe(content) : undefined,
 	);
 	if (result?.isError) {
-		return { head, tone: "error", body: [errorText(firstText(result) || "Process operation failed.")] };
+		return { head, tone: "error", body: [errorText(firstText(result) || "进程操作失败。")] };
 	}
 	const body = compact<NativeChild>([content && action === "stdin" ? quotedPreview(content) : undefined]);
 	if (details && "op" in details && details.op === "cancel") {
@@ -427,7 +427,7 @@ export function describeProcRead(
 	const title = id ? "Proc" : "Proc jobs & services";
 	const head = toolHead(title, id ? span(safe(id), "accent") : undefined, daemon ? daemonMetaText(daemon) : undefined);
 	if (result?.isError) {
-		return { head, tone: "error", body: [errorText(firstText(result) || "Process read failed.")] };
+		return { head, tone: "error", body: [errorText(firstText(result) || "进程读取失败。")] };
 	}
 	if (!result) return { head };
 	if (details?.job) {

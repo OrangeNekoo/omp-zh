@@ -1795,7 +1795,7 @@ export class PlanReviewOverlay implements Component {
 				actionHint("tui.select.cancel", "cancel"),
 			];
 			if (this.#editingAnnotation) hints.push({ keys: [], label: "留空即删除" });
-			if (this.#externalEditorLabel) hints.push({ keys: [], label: `${this.#externalEditorLabel} editor` });
+			if (this.#externalEditorLabel) hints.push({ keys: [], label: `${this.#externalEditorLabel} 编辑器` });
 			// The feedback field, inline under the plan: its caption names the anchor, omp's editor holds the text.
 			return [
 				node(

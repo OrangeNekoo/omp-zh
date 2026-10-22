@@ -17,17 +17,16 @@ import type { OutputMeta } from "./output-meta";
 import type { TruncationResult } from "./streaming-output";
 import { toPathList } from "../render/render-utils";
 import {
-	Ellipsis,
 	fileHyperlink,
 	getTreeBranch,
 	getTreeContinuePrefix,
 	renderStatusLine,
 	renderTreeList,
-	truncateToWidth,
 	uriHyperlink,
 } from "../render";
 import {
 	createCachedComponent,
+	fitHeaderedRows,
 	formatCount,
 	formatEmptyMessage,
 	formatErrorMessage,
@@ -413,7 +412,7 @@ export const grepToolRenderer = {
 						},
 						uiTheme,
 					);
-					return [header, ...listLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
+					return fitHeaderedRows(header, listLines, width);
 				},
 			);
 		}
@@ -428,7 +427,7 @@ export const grepToolRenderer = {
 		const missingPathsList = details?.missingPaths ?? [];
 		const missingNote =
 			missingPathsList.length > 0
-				? uiTheme.fg("warning", `skipped missing: ${missingPathsList.join(", ")}`)
+				? uiTheme.fg("warning", `已跳过缺失项：${missingPathsList.join(", ")}`)
 				: undefined;
 
 		if (matchCount === 0) {
@@ -497,7 +496,7 @@ export const grepToolRenderer = {
 					uiTheme,
 					!options.expanded,
 				);
-				return [header, ...matchLines, ...extraLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
+				return fitHeaderedRows(header, [...matchLines, ...extraLines], width);
 			},
 		);
 	},

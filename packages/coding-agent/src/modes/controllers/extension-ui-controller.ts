@@ -60,7 +60,7 @@ function guestAskHelpText(enterAction: string, extra = ""): string {
 
 const ASK_OTHER_OPTION = "其他（自行输入）";
 const ASK_CHAT_OPTION = "就此提问";
-const ASK_NEXT_OPTION = "Next →";
+const ASK_NEXT_OPTION = "下一个 →";
 
 function withTerminalLauncher(uiContext: ExtensionUIContext, hasUI: boolean): ExtensionUIContext {
 	if (!hasUI || uiContext.openTerminal) return uiContext;
@@ -205,7 +205,7 @@ export class ExtensionUiController {
 					: `${confirmation.remainingPercent.toFixed(1)}% remaining`;
 			return this.showHookConfirm(
 				"已达编码套餐保留额度",
-				`${confirmation.from} has ${reserve}. Switch to ${confirmation.to}? Choose No to keep using the current plan.`,
+				`${confirmation.from} 使用 ${reserve}。要切换到 ${confirmation.to} 吗？选「否」则继续使用当前计划。`,
 				{ signal },
 			);
 		});
@@ -291,7 +291,7 @@ export class ExtensionUiController {
 
 				this.ctx.present([
 					new Spacer(1),
-					new Text(`${theme.fg("accent", `${theme.status.success} New session started`)}`, 1, 1),
+					new Text(`${theme.fg("accent", `${theme.status.success} 新会话已开始`)}`, 1, 1),
 				]);
 				await this.ctx.reloadTodos();
 				this.ctx.ui.requestRender(true, { clearScrollback: true });
@@ -519,7 +519,7 @@ export class ExtensionUiController {
 
 				this.ctx.present([
 					new Spacer(1),
-					new Text(`${theme.fg("accent", `${theme.status.success} New session started`)}`, 1, 1),
+					new Text(`${theme.fg("accent", `${theme.status.success} 新会话已开始`)}`, 1, 1),
 				]);
 				await this.ctx.reloadTodos();
 				this.ctx.ui.requestRender(true, { clearScrollback: true });
@@ -615,7 +615,7 @@ export class ExtensionUiController {
 	 * Show a tool error in the chat.
 	 */
 	showToolError(toolName: string, error: string): void {
-		const errorText = new Text(`Tool "${toolName}" error: ${error}`, 1, 0).setStyleFn(t => theme.fg("error", t));
+		const errorText = new Text(`工具 "${toolName}" 错误：${error}`, 1, 0).setStyleFn(t => theme.fg("error", t));
 		this.ctx.present(errorText);
 	}
 
@@ -939,6 +939,7 @@ export class ExtensionUiController {
 		const remote = host.requestGuestUi(
 			request,
 			signal ? AbortSignal.any([signal, remoteAbort.signal]) : remoteAbort.signal,
+			{ retainOnReconnect: true },
 		);
 		if (!remote) return local(signal);
 		const localWinner = local(signal ? AbortSignal.any([signal, localAbort.signal]) : localAbort.signal).then(
@@ -1100,7 +1101,7 @@ export class ExtensionUiController {
 		request: CollabUiRequestDraft,
 		signal: AbortSignal,
 	): Promise<GuestUiResult> {
-		const remote = host.requestGuestUi(request, signal);
+		const remote = host.requestGuestUi(request, signal, { retainOnReconnect: true });
 		if (!remote) return { kind: "unavailable" };
 		const result = await remote;
 		if (result.kind === "unavailable") return { kind: "unavailable" };
@@ -1181,7 +1182,7 @@ export class ExtensionUiController {
 		message: string,
 		dialogOptions?: InteractiveSelectorDialogOptions,
 	): Promise<boolean> {
-		const result = await this.showHookSelector(`${title}\n${message}`, ["Yes", "No"], dialogOptions);
+		const result = await this.showHookSelector(`${title}\n${message}`, ["是", "否"], dialogOptions);
 		return result === "Yes";
 	}
 
@@ -1393,7 +1394,7 @@ export class ExtensionUiController {
 	}
 
 	showExtensionError(extensionPath: string, error: string): void {
-		const errorText = new Text(`Extension "${extensionPath}" error: ${error}`, 1, 0).setStyleFn(t =>
+		const errorText = new Text(`扩展 "${extensionPath}" 错误：${error}`, 1, 0).setStyleFn(t =>
 			theme.fg("error", t),
 		);
 		this.ctx.present(errorText);
@@ -1434,12 +1435,19 @@ export class ExtensionUiController {
 			options?.deliverAs === "aside";
 		if (startsTurn && this.#rejectGuestExtensionTurn()) return;
 		const wasStreaming = this.ctx.session.isStreaming;
+		const messageCountBefore = this.ctx.session.messages.length;
 		const normalized = normalizeCustomMessagePayload(message);
 		this.ctx.session
 			.sendCustomMessage(normalized, options)
-			.then(() => this.#applyCustomMessageDisplay(wasStreaming, normalized.display))
+			.then(() => {
+				// `deliverAs: "nextTurn"` without a trigger is the one idle arm that appends
+				// to the session silently (no message_start/message_end), so nothing else
+				// paints it and nothing else in the transcript changed.
+				const silentAppend = options?.deliverAs === "nextTurn" && options.triggerTurn !== true;
+				this.#applyCustomMessageDisplay(wasStreaming, normalized, silentAppend ? messageCountBefore : undefined);
+			})
 			.catch((err: unknown) => {
-				this.ctx.showError(`Extension sendMessage failed: ${err instanceof Error ? err.message : String(err)}`);
+				this.ctx.showError(`扩展 sendMessage 失败：${err instanceof Error ? err.message : String(err)}`);
 			});
 	};
 
@@ -1447,20 +1455,44 @@ export class ExtensionUiController {
 	#sendExtensionUserMessage: SendUserMessageHandler = (content, options) => {
 		if (this.#rejectGuestExtensionTurn()) return;
 		this.ctx.session.sendUserMessage(content, options).catch((err: unknown) => {
-			this.ctx.showError(`Extension sendUserMessage failed: ${err instanceof Error ? err.message : String(err)}`);
+			this.ctx.showError(`扩展 sendUserMessage 失败：${err instanceof Error ? err.message : String(err)}`);
 		});
 	};
 
-	#applyCustomMessageDisplay(wasStreaming: boolean, shouldDisplay: boolean | undefined): void {
+	/**
+	 * @param silentAppendBaseline message count before a silent idle `nextTurn` append,
+	 *   or `undefined` when the send was not such an append.
+	 */
+	#applyCustomMessageDisplay(
+		wasStreaming: boolean,
+		message: { customType: string; display?: boolean },
+		silentAppendBaseline: number | undefined,
+	): void {
 		// For non-streaming cases with display=true, update UI
 		// (streaming cases update via message_end event).
 		// Gate on initialChatRendered (#1955): an extension's session_start
 		// sendMessage({display:true}) runs before renderInitialMessages, which would
 		// re-render from session entries AND re-append via preserveExistingChat,
-		// duplicating the message. After the initial render the rebuild must run.
-		if (!wasStreaming && shouldDisplay && this.ctx.initialChatRendered) {
-			this.ctx.rebuildChatFromMessages();
+		// duplicating the message. After the initial render the chat must be updated.
+		if (wasStreaming || !message.display || !this.ctx.initialChatRendered) return;
+		if (silentAppendBaseline !== undefined && !this.ctx.session.isStreaming) {
+			// Append only the new message instead of replaying the whole transcript (#12183).
+			// The count and type checks fail when the send did not land as a plain append
+			// (e.g. it was queued behind a turn that began meanwhile), which falls through
+			// to the rebuild below.
+			const messages = this.ctx.session.messages;
+			const appended = messages.at(-1);
+			if (
+				messages.length === silentAppendBaseline + 1 &&
+				appended?.role === "custom" &&
+				appended.customType === message.customType
+			) {
+				this.ctx.addMessageToChat(appended);
+				this.ctx.ui.requestRender();
+				return;
+			}
 		}
+		this.ctx.rebuildChatFromMessages();
 	}
 
 	/**

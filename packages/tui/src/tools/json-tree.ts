@@ -489,7 +489,7 @@ export function describeJsonTree(value: unknown, options: JsonTreeDescribeOption
 			}
 			return {
 				id,
-				label: [...prefix, span(`"${first}…"`, "syntaxString"), span(` (${lines.length} lines)`, "dim")],
+				label: [...prefix, span(`"${first}…"`, "syntaxString"), span(`（${lines.length} 行）`, "dim")],
 				open: false,
 				children,
 			};

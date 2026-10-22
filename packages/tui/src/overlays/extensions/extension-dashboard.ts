@@ -684,12 +684,12 @@ export class ExtensionDashboard implements Component {
 	#pickerActions(selected: ExtensionListSwitch | undefined): TspPickerAction[] {
 		const expanded = this.#inspector.isExpanded();
 		return [
-			pickerAction("toggle", "Toggle", "space", {
+			pickerAction("toggle", "切换", "space", {
 				primary: true,
 				on: selected?.on,
 				disabled: selected ? selected.blocked : "Select an extension",
 			}),
-			pickerAction("expand", expanded ? "Collapse" : "Expand", this.#expandKey(), { on: expanded }),
+			pickerAction("expand", expanded ? "折叠" : "Expand", this.#expandKey(), { on: expanded }),
 			CLOSE_ACTION,
 		];
 	}
@@ -709,12 +709,12 @@ export class ExtensionDashboard implements Component {
 			[
 				node("row", { gap: "sm", align: "center", role: "omp.app.where" }, [
 					text(DASHBOARD_TITLE, { role: "omp.app.title" }),
-					text([span(query ? `${shown} of ${total}` : `${total} extensions`, "muted")], { truncate: "end" }),
+					text([span(query ? `${shown} / ${total}` : `${total} 个扩展`, "muted")], { truncate: "end" }),
 				]),
 				node("icon", {
 					name: "x",
 					role: "omp.app.ibtn",
-					title: `Close  ${formatTooltipKey(boundKeys("app.interrupt", ["escape"])[0] ?? "escape")}`,
+					title: `关闭  ${formatTooltipKey(boundKeys("app.interrupt", ["escape"])[0] ?? "escape")}`,
 					aria: "Close",
 					actions: { click: "close" },
 				}),
@@ -738,12 +738,12 @@ export class ExtensionDashboard implements Component {
 		);
 		const expanded = this.#inspector.isExpanded();
 		const buttons: (NativeNode | null)[] = [
-			actionButton(selected?.on === false ? "Enable" : selected ? "Disable" : "切换", "toggle", {
+			actionButton(selected?.on === false ? "Enable" : selected ? "禁用" : "切换", "toggle", {
 				keys: "space",
 				tone: "accent",
 				title: selected?.blocked ?? (selected ? undefined : "选择扩展"),
 			}),
-			actionButton(expanded ? "Collapse" : "Expand", "expand", { keys: this.#expandKey() }),
+			actionButton(expanded ? "折叠" : "Expand", "expand", { keys: this.#expandKey() }),
 		];
 		if (query) buttons.push(actionButton("清除搜索", "clear", { keys: "escape" }));
 		buttons.push(null, actionButton("关闭", "close", { keys: "escape" }));

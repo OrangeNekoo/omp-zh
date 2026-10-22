@@ -478,7 +478,7 @@ export function createShellRenderer<TArgs>(config: ShellRendererConfig<TArgs>) {
 					footerMeta:
 						elapsedMs === undefined || elapsedMs < 1000
 							? undefined
-							: uiTheme.fg("dim", `elapsed ${formatDuration(Math.floor(elapsedMs / 1000) * 1000)}`),
+							: uiTheme.fg("dim", `已用时 ${formatDuration(Math.floor(elapsedMs / 1000) * 1000)}`),
 					sections: [{ content: capPreviewLines(cmdLines, uiTheme, { expanded: options.expanded }) }],
 				};
 			});

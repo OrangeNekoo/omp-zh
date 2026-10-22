@@ -1082,7 +1082,7 @@ class GitTuiComponent implements Component {
 		}
 		if (file?.area === "unstaged" || file?.area === "staged") {
 			right.push(
-				actionButton(file.area === "unstaged" ? "Stage file" : "Unstage file", "stage-file", {
+				actionButton(file.area === "unstaged" ? "暂存文件" : "取消暂存文件", "stage-file", {
 					keys: "s",
 					title: `${file.area === "unstaged" ? "Stage" : "Unstage"} ${file.path}`,
 				}),
@@ -1168,7 +1168,7 @@ class GitTuiComponent implements Component {
 					text([span(this.#pane.emptyMessage, "strong")]),
 					text([
 						span(
-							this.#model.clean ? "The working tree is clean." : "Pick a file on the right to see its changes.",
+							this.#model.clean ? "工作树是干净的。" : "在右侧选择文件以查看其更改。",
 							"muted",
 						),
 					]),
@@ -1247,7 +1247,7 @@ function mediaColumn(side: "before" | "after", asset: FileAssetSide, ref: MediaR
 		: keyed(
 				text(
 					asset.kind === "empty"
-						? [span(side === "before" ? "Did not exist" : "Deleted", "muted")]
+						? [span(side === "before" ? "原本不存在" : "已删除", "muted")]
 						: assetText(asset).map(fact => span(fact.t, "muted")),
 					{ role: "omp.app.git.media-none" },
 				),
@@ -1264,15 +1264,15 @@ function assetText(asset: AssetFileContents["old"]): TspSpan[] {
 		case "empty":
 			return [span("none", "dim")];
 		case "text":
-			return [span(`text${size(asset.byteLength)}`)];
+			return [span(`文本${size(asset.byteLength)}`)];
 		case "image":
-			return [span(`image ${asset.image.widthPx}×${asset.image.heightPx}${size(asset.image.byteLength)}`)];
+			return [span(`图片 ${asset.image.widthPx}×${asset.image.heightPx}${size(asset.image.byteLength)}`)];
 		case "binary":
-			return [span(`binary${size(asset.byteLength)}`)];
+			return [span(`二进制${size(asset.byteLength)}`)];
 		case "tooLarge":
-			return [span(`too large to diff${size(asset.byteLength)}`)];
+			return [span(`过大，无法生成差异${size(asset.byteLength)}`)];
 		case "lfsMissing":
-			return [span(`LFS object ${asset.oid.slice(0, 12)} not fetched${size(asset.byteLength)}`)];
+			return [span(`LFS 对象 ${asset.oid.slice(0, 12)} 未拉取${size(asset.byteLength)}`)];
 	}
 }
 

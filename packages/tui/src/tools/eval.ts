@@ -758,7 +758,7 @@ function evalToolHead(
 ): NativeToolHead {
 	const badges: { text: string; title?: string }[] = [...new Set(languages)].map(language => ({ text: language }));
 	if (details?.async?.state === "running") {
-		badges.push({ text: "background", title: `Backgrounded as job ${details.async.jobId}` });
+		badges.push({ text: "background", title: `已转为后台任务 ${details.async.jobId}` });
 	}
 	return {
 		title: (cellCount > 1 ? "" : plainText(title ?? "").trim()) || "求值",
@@ -862,7 +862,7 @@ function evalStatusSection(log: StatusEventLog, expanded: boolean): NativeNode |
 	return node(
 		"col",
 		{ role: "omp.run.status", gap: "none" },
-		compact<NativeNode>([hidden > 0 && keyed(text([span(`${hidden} earlier`, "muted")]), "earlier"), ...lines]),
+		compact<NativeNode>([hidden > 0 && keyed(text([span(`${hidden} 条更早`, "muted")]), "earlier"), ...lines]),
 		"status",
 	);
 }

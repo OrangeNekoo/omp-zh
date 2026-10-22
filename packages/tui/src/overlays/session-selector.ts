@@ -66,15 +66,15 @@ import { boundKeys, interruptKey } from "../chrome/keybinding-hints";
 function formatSessionStatus(status: SessionSelectorStatus | undefined): string | undefined {
 	switch (status) {
 		case "complete":
-			return theme.fg("success", `${theme.status.success} done`);
+			return theme.fg("success", `${theme.status.success} 完成`);
 		case "interrupted":
-			return theme.fg("warning", `${theme.status.warning} interrupted`);
+			return theme.fg("warning", `${theme.status.warning} 已中断`);
 		case "aborted":
-			return theme.fg("muted", `${theme.status.aborted} aborted`);
+			return theme.fg("muted", `${theme.status.aborted} 已中止`);
 		case "error":
-			return theme.fg("error", `${theme.status.error} error`);
+			return theme.fg("error", `${theme.status.error} 个错误`);
 		case "pending":
-			return theme.fg("accent", `${theme.status.pending} pending`);
+			return theme.fg("accent", `${theme.status.pending} 个待处理`);
 		default:
 			return undefined;
 	}
@@ -979,7 +979,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 		const title = session.title ? plainText(session.title).trim() : "";
 		const badges: { text: string; tone?: TspTone; title?: string }[] = [];
 		if (session.parentSessionPath) {
-			badges.push({ text: "fork", title: `Forked from “${this.parentLabel(session.parentSessionPath)}”` });
+			badges.push({ text: "fork", title: `复刻自 “${this.parentLabel(session.parentSessionPath)}”` });
 		}
 		if (session.path === currentPath) badges.push({ text: "current", tone: "accent" });
 		const when = pickerDate(session.modified);
@@ -1592,7 +1592,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		this.#messageContainer.clear();
 		this.#message = { kind: "error", text: `Error: ${plainText(message)}` };
 		this.#pickerErrorOpen = true;
-		this.#messageContainer.addChild(new Text(theme.fg("error", `Error: ${replaceTabs(message)}`), 0, 0));
+		this.#messageContainer.addChild(new Text(theme.fg("error", `错误：${replaceTabs(message)}`), 0, 0));
 		this.#messageContainer.addChild(new Spacer(1));
 	}
 
@@ -1780,12 +1780,12 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		const loading = message?.kind === "loading";
 		const toggle = list.onToggleScope !== undefined;
 		const actions = [pickerAction("resume", this.#actionLabel, "enter", { primary: true })];
-		if (this.#onDelete) actions.push(pickerAction("delete", "Delete", "backspace"));
+		if (this.#onDelete) actions.push(pickerAction("delete", "删除", "backspace"));
 		if (toggle) {
-			actions.push(pickerAction("scope", this.#scope === "all" ? "This folder" : "All projects", "tab"));
+			actions.push(pickerAction("scope", this.#scope === "all" ? "此文件夹" : "所有项目", "tab"));
 		}
 		actions.push(
-			pickerAction("关闭", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
+			pickerAction("close", "关闭", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
 		);
 		const folder = this.#scopeLabel === false ? undefined : (this.#scopeLabel ?? path.basename(getProjectDir()));
 		const title = this.#pickerTitle;

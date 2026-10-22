@@ -93,7 +93,7 @@ export default class Session extends Command {
 					const result = await packSession(await this.#resolveSession(source), args.output);
 					if (result.missingBlobs.length > 0) {
 						process.stderr.write(
-							`${chalk.yellow(`warning: ${result.missingBlobs.length} referenced blob(s) are missing from the local blob store and were not packed; those images will not load after unpacking.`)}\n`,
+							`${chalk.yellow(`警告：有 ${result.missingBlobs.length} 个引用的二进制对象在本地二进制对象存储中缺失，未被打包；解包后这些图像将无法加载。`)}\n`,
 						);
 					}
 					process.stdout.write(`${result.archivePath}\n`);
@@ -114,7 +114,7 @@ export default class Session extends Command {
 			}
 		} catch (error) {
 			if (error instanceof SessionTransferError || error instanceof SessionMoveRefusedError) {
-				process.stderr.write(`${chalk.red(`error: ${error.message}`)}\n`);
+				process.stderr.write(`${chalk.red(`错误：${error.message}`)}\n`);
 				process.exitCode = 1;
 				return;
 			}

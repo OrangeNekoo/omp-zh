@@ -107,15 +107,15 @@ function settingsTabsNode(tabs: readonly Tab[], active: string | undefined): Nat
 /** Footer hints for `mode`, mirroring the ANSI footer line. */
 function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 	const confirmKeys: readonly KeyName[] = actionHint("tui.select.confirm", "")?.keys ?? [];
-	const close = actionHint("tui.select.cancel", "close");
+	const close = actionHint("tui.select.cancel", "关闭");
 	const switchTabs: NativeHint = { keys: ["left", "right"], label: "切换标签页" };
 	let hints: (NativeHint | undefined)[];
 	switch (mode) {
 		case "search":
 			hints = [
-				actionHint("tui.select.confirm", "change"),
+				actionHint("tui.select.confirm", "更改"),
 				{ keys: ["tab"], label: "跳转标签页" },
-				actionHint("tui.select.cancel", "exit search"),
+				actionHint("tui.select.cancel", "退出搜索"),
 			];
 			break;
 		case "plugins":
@@ -123,7 +123,7 @@ function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 			break;
 		case "sections":
 			hints = [
-				actionHint(["tui.select.up", "tui.select.down"], "jump sections"),
+				actionHint(["tui.select.up", "tui.select.down"], "跳转分节"),
 				{ keys: ["tab", ...confirmKeys], label: "到设置" },
 				switchTabs,
 				close,
@@ -442,7 +442,7 @@ class ProviderLimitsSubmenu extends Container {
 			return {
 				value: provider,
 				label: provider,
-				description: limit === undefined ? "无限制" : `Limit: ${limit}`,
+				description: limit === undefined ? "无限制" : `上限：${limit}`,
 			};
 		});
 		const clearItem: SelectItem[] =
@@ -482,7 +482,7 @@ class ProviderLimitsSubmenu extends Container {
 		this.addChild(
 			new TextFormField({
 				theme: formTheme,
-				label: `Max In-Flight Requests: ${provider}`,
+				label: `最大并发请求数：${provider}`,
 				description:
 					"输入一个正数。小数向下取整。清空该字段可让此服务商不受限制。",
 				initialValue: limits[provider]?.toString() ?? undefined,
@@ -550,7 +550,7 @@ function getSettingsTabs(): Tab[] {
 			const icon = theme.symbol(meta.icon);
 			return { id, label: `${icon} ${meta.label}`, short: icon };
 		}),
-		{ id: "plugins", label: `${theme.icon.package} Plugins`, short: theme.icon.package },
+		{ id: "plugins", label: `${theme.icon.package} 个插件`, short: theme.icon.package },
 	];
 }
 
@@ -1427,7 +1427,7 @@ export class SettingsSelectorComponent implements Component {
 		// Plugins hosts its own UI; it is not part of the schema-backed search.
 		empty.push({
 			id: "plugins",
-			label: `${theme.icon.package} Plugins`,
+			label: `${theme.icon.package} 个插件`,
 			short: theme.icon.package,
 			muted: true,
 		});

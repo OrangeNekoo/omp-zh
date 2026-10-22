@@ -144,7 +144,7 @@ function describeDebugResult(
 ): NativeToolView {
 	const [action, target] = debugCallParts(args, result.details?.action ?? "debug");
 	const output = resultText(result);
-	if (result.isError) return errorView("调试", output || "Debug failed", action, target);
+	if (result.isError) return errorView("Debug", output || "调试失败", action, target);
 	const snapshot = result.details?.snapshot;
 	const body: NativeChild[] = [];
 	let sessionRows = 0;

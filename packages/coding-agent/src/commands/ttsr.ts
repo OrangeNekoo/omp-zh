@@ -40,7 +40,7 @@ export default class Ttsr extends Command {
 			description: "要单独测试的规则 markdown 文件（跳过项目规则加载）",
 		}),
 		source: Flags.string({
-			description: "Match source: text, thinking, or tool (inferred from --file when omitted)",
+			description: "匹配来源：text、thinking 或 tool（省略时由 --file 推断）",
 			options: TTSR_SOURCES,
 		}),
 		tool: Flags.string({

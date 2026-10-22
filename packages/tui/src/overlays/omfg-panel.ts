@@ -166,18 +166,18 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "saved":
 				return statusHintsRow(
 					[
-						span(`${theme.status.success} Registered live`, "success"),
+						span(`${theme.status.success} 已注册为在线`, "success"),
 						span(" · ", "muted"),
 						span(replaceTabs(this.#savedPath ?? "saved"), "path"),
 					],
 					[esc],
 				);
 			case "rejected":
-				return statusHintsRow([span(`${theme.status.warning} Not saved`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 未保存`, "warning")], [esc]);
 			case "aborted":
-				return statusHintsRow([span(`${theme.status.warning} Cancelled`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 已取消`, "warning")], [esc]);
 			case "error":
-				return statusHintsRow([span(`${theme.status.error} Error`, "error")], [esc]);
+				return statusHintsRow([span(`${theme.status.error} 错误`, "error")], [esc]);
 		}
 	}
 
@@ -195,7 +195,7 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "validating":
 			case "confirming":
 			case "saving":
-				return theme.fg("muted", `${esc} cancel /omfg`);
+				return theme.fg("muted", `${esc} 取消 /omfg`);
 			case "saved":
 				return theme.fg(
 					"success",

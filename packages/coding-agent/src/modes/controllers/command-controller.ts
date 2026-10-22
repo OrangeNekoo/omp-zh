@@ -293,7 +293,7 @@ export class CommandController {
 	): Promise<void> {
 		if (initialError !== undefined) {
 			this.ctx.showError(
-				`Failed to switch workspace: ${initialError instanceof Error ? initialError.message : String(initialError)}`,
+				`切换工作区失败：${initialError instanceof Error ? initialError.message : String(initialError)}`,
 			);
 		}
 
@@ -307,13 +307,13 @@ export class CommandController {
 			} catch {}
 			if (!realigned) {
 				this.ctx.showError(
-					`Failed to roll back move: ${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)} (failed to re-align workspace to ${actual})`,
+					`回滚移动失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}（未能将工作区重新对齐到 ${actual}）`,
 				);
 				await this.ctx.shutdown();
 				return;
 			}
 			this.ctx.showError(
-				`Failed to roll back move: ${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)} (workspace remains at ${actual})`,
+				`回滚移动失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}（工作区仍位于 ${actual}）`,
 			);
 			return;
 		}
@@ -330,11 +330,11 @@ export class CommandController {
 			realigned = await this.ctx.applyCwdChange(actual);
 		} catch {}
 		if (!realigned) {
-			this.ctx.showError(`Failed to restore source workspace after rollback: workspace remains at ${actual}`);
+			this.ctx.showError(`回滚后恢复源工作区失败：工作区仍位于 ${actual}`);
 			await this.ctx.shutdown();
 			return;
 		}
-		this.ctx.showError(`Failed to restore source workspace after rollback: workspace remains at ${actual}`);
+		this.ctx.showError(`回滚后恢复源工作区失败：工作区仍位于 ${actual}`);
 	}
 
 	openInBrowser(urlOrPath: string): void {
@@ -352,10 +352,10 @@ export class CommandController {
 			// The viewed session: the focused subagent's transcript (plus its own
 			// subagents) from a focused view, otherwise the main session.
 			const filePath = await this.ctx.viewSession.exportToHtml(outputPath, useUserThemes);
-			this.ctx.showStatus(`Session exported to: ${filePath}`);
+			this.ctx.showStatus(`会话已导出到：${filePath}`);
 			this.openInBrowser(filePath);
 		} catch (error: unknown) {
-			this.ctx.showError(`Failed to export session: ${error instanceof Error ? error.message : "Unknown error"}`);
+			this.ctx.showError(`导出会话失败：${error instanceof Error ? error.message : "Unknown error"}`);
 		}
 	}
 	async handleTraceCommand(): Promise<void> {
@@ -371,9 +371,9 @@ export class CommandController {
 			const { hostname, port } = await startServer();
 			const url = `${formatStatsDashboardUrl(hostname, port)}/#/traces?s=${encodeURIComponent(sessionFile)}`;
 			this.openInBrowser(url);
-			this.ctx.showStatus(`Trace: ${url}`);
+			this.ctx.showStatus(`追踪：${url}`);
 		} catch (error: unknown) {
-			this.ctx.showError(`Failed to open trace: ${error instanceof Error ? error.message : "Unknown error"}`);
+			this.ctx.showError(`打开跟踪失败：${error instanceof Error ? error.message : "Unknown error"}`);
 		}
 	}
 
@@ -402,7 +402,7 @@ export class CommandController {
 			if (sidecarError) statusParts.push(`LLM request JSON unavailable: ${sidecarError}`);
 			this.ctx.showStatus(statusParts.join("\n"));
 		} catch (error: unknown) {
-			this.ctx.showError(`Failed to copy session: ${error instanceof Error ? error.message : "Unknown error"}`);
+			this.ctx.showError(`复制会话失败：${error instanceof Error ? error.message : "Unknown error"}`);
 		}
 	}
 
@@ -422,10 +422,10 @@ export class CommandController {
 				return;
 			}
 			await copyToClipboard(archive.path);
-			this.ctx.showStatus([...formatDumpArchiveReport(archive), "Archive path copied to clipboard"].join("\n"));
+			this.ctx.showStatus([...formatDumpArchiveReport(archive), "归档路径已复制到剪贴板"].join("\n"));
 		} catch (error: unknown) {
 			this.ctx.showError(
-				`Failed to write session dump: ${error instanceof Error ? error.message : "Unknown error"}`,
+				`写入会话转储失败：${error instanceof Error ? error.message : "Unknown error"}`,
 			);
 		}
 	}
@@ -445,7 +445,7 @@ export class CommandController {
 			this.ctx.showStatus("顾问历史已复制到剪贴板");
 		} catch (error: unknown) {
 			this.ctx.showError(
-				`Failed to copy advisor history: ${error instanceof Error ? error.message : "Unknown error"}`,
+				`复制顾问历史失败：${error instanceof Error ? error.message : "Unknown error"}`,
 			);
 		}
 	}
@@ -461,10 +461,11 @@ export class CommandController {
 			}
 			const tmpPath = path.join(os.tmpdir(), `${Snowflake.next()}-tmp.txt`);
 			await Bun.write(tmpPath, `${rendered}\n`);
-			this.ctx.showStatus(`Debug transcript written to:\n${tmpPath}`);
+			this.ctx.showStatus(`调试会话记录已写入：
+${tmpPath}`);
 		} catch (error: unknown) {
 			this.ctx.showError(
-				`Failed to write debug transcript: ${error instanceof Error ? error.message : "Unknown error"}`,
+				`写入调试会话记录失败：${error instanceof Error ? error.message : "Unknown error"}`,
 			);
 		}
 	}
@@ -506,7 +507,7 @@ export class CommandController {
 				restoreEditor();
 
 				if (typeof result === "string") {
-					this.ctx.showStatus(`Share URL: ${result}`);
+					this.ctx.showStatus(`分享链接：${result}`);
 					this.openInBrowser(result);
 				} else if (result) {
 					const parts: string[] = [];
@@ -520,7 +521,7 @@ export class CommandController {
 			} catch (err) {
 				if (!loader.signal.aborted) {
 					restoreEditor();
-					this.ctx.showError(`Custom share failed: ${err instanceof Error ? err.message : String(err)}`);
+					this.ctx.showError(`自定义分享失败：${err instanceof Error ? err.message : String(err)}`);
 				}
 			} finally {
 				await fs.rm(tmpFile, { force: true }).catch(() => {});
@@ -548,7 +549,7 @@ export class CommandController {
 		} catch (error: unknown) {
 			if (!loader.signal.aborted) {
 				restoreEditor();
-				this.ctx.showError(`Failed to share session: ${error instanceof Error ? error.message : "Unknown error"}`);
+				this.ctx.showError(`共享会话失败：${error instanceof Error ? error.message : "Unknown error"}`);
 			}
 		}
 	}
@@ -572,7 +573,7 @@ export class CommandController {
 		const hidden = builds.length > MAX_LISTED_BUILDS ? builds.length - MAX_LISTED_BUILDS + 1 : 0;
 		for (const [index, build] of builds.entries()) {
 			if (hidden > 0 && index > 0 && index <= hidden) {
-				if (index === 1) info += `${theme.fg("dim", `Builds 2–${hidden + 1}:`)} ${hidden} more\n`;
+				if (index === 1) info += `${theme.fg("dim", `构建 2–${hidden + 1}：`)} ${hidden} more\n`;
 				continue;
 			}
 			const key = builds.length === 1 ? "Build:" : `Build ${index + 1}:`;
@@ -677,7 +678,7 @@ export class CommandController {
 				for (const name of mcpServers) {
 					const conn = this.ctx.mcpManager.getConnection(name);
 					const toolCount = conn?.tools?.length ?? 0;
-					info += `${theme.fg("dim", `${name}:`)} ${theme.fg("success", "connected")} ${theme.fg("dim", `(${toolCount} tools)`)}\n`;
+					info += `${theme.fg("dim", `${name}:`)} ${theme.fg("success", "connected")} ${theme.fg("dim", `（${toolCount} 个工具）`)}\n`;
 				}
 			}
 		}
@@ -768,7 +769,7 @@ export class CommandController {
 				if (stats.cost > 0) info += `${theme.fg("dim", "费用：")} $${stats.cost.toFixed(4)}\n`;
 			}
 			this.showCommandReport({
-				title: `Advisor Status (${stats.advisors.length} advisors)`,
+				title: `顾问状态（${stats.advisors.length} 位顾问）`,
 				body: new Text(info.trim(), 0, 0),
 			});
 			return;
@@ -892,7 +893,7 @@ export class CommandController {
 			try {
 				usageReports = await provider.fetchUsageReports();
 			} catch (error) {
-				this.ctx.showError(`Failed to fetch usage data: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`获取用量数据失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 		}
 
@@ -942,7 +943,7 @@ export class CommandController {
 			this.ctx.ui.requestRender();
 			return;
 		}
-		this.#showMarkdownPanel("Keyboard Shortcuts", buildHotkeysMarkdown(bindings));
+		this.#showMarkdownPanel("键盘快捷键", buildHotkeysMarkdown(bindings));
 	}
 
 	handleToolsCommand(): void {
@@ -950,7 +951,7 @@ export class CommandController {
 			tools: this.ctx.session.agent.state.tools,
 			xdevTools: this.ctx.session.getXdevToolEntries(),
 		});
-		this.#showMarkdownPanel("Available Tools", tools);
+		this.#showMarkdownPanel("可用工具", tools);
 	}
 
 	handleContextCommand(): void {
@@ -984,7 +985,7 @@ export class CommandController {
 				this.ctx.showWarning("记忆内容为空（记忆后端未启用、已禁用，或没有可用记忆）。");
 				return;
 			}
-			this.#showMarkdownPanel("Memory Injection Payload", payload);
+			this.#showMarkdownPanel("记忆注入载荷", payload);
 			return;
 		}
 
@@ -994,7 +995,7 @@ export class CommandController {
 				await this.ctx.session.refreshBaseSystemPrompt();
 				this.ctx.showStatus("记忆数据已清除，系统提示词已刷新。");
 			} catch (error) {
-				this.ctx.showError(`Memory clear failed: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`清除记忆失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -1004,7 +1005,7 @@ export class CommandController {
 				await backend.enqueue(agentDir, this.ctx.sessionManager.getCwd(), this.ctx.session);
 				this.ctx.showStatus("记忆整合已排队。");
 			} catch (error) {
-				this.ctx.showError(`Memory enqueue failed: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`记忆入队失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -1016,12 +1017,12 @@ export class CommandController {
 					session: this.ctx.session,
 				});
 				if (!payload) {
-					this.ctx.showWarning(`Memory queue is not available for the ${backend.id} backend.`);
+					this.ctx.showWarning(`${backend.id} 后端不支持记忆队列。`);
 					return;
 				}
-				this.#showMarkdownPanel("Memory Queue", payload);
+				this.#showMarkdownPanel("记忆队列", payload);
 			} catch (error) {
-				this.ctx.showError(`Memory queue failed: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`记忆排队失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -1031,7 +1032,7 @@ export class CommandController {
 				await backend.enqueue(agentDir, this.ctx.sessionManager.getCwd(), this.ctx.session);
 				this.ctx.showStatus("记忆整合已执行。");
 			} catch (error) {
-				this.ctx.showError(`Memory sync failed: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`同步记忆失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -1044,9 +1045,9 @@ export class CommandController {
 					this.ctx.showWarning(memoryStatsUnavailableMessage(backend.id, action));
 					return;
 				}
-				this.#showMarkdownPanel(`Memory ${action === "stats" ? "Stats" : "Diagnostics"}`, payload);
+				this.#showMarkdownPanel(`记忆 ${action === "stats" ? "Stats" : "Diagnostics"}`, payload);
 			} catch (error) {
-				this.ctx.showError(`Memory ${action} failed: ${error instanceof Error ? error.message : String(error)}`);
+				this.ctx.showError(`记忆 ${action} 失败：${error instanceof Error ? error.message : String(error)}`);
 			}
 			return;
 		}
@@ -1113,7 +1114,7 @@ export class CommandController {
 			const response = await client.listMentalModels(state.bankId, { detail: "metadata" });
 			const items = response.items ?? [];
 			if (items.length === 0) {
-				this.ctx.showStatus(`No mental models on bank ${state.bankId}.`);
+				this.ctx.showStatus(`记忆库 ${state.bankId} 中没有心智模型。`);
 				return;
 			}
 			const lines = items
@@ -1122,7 +1123,7 @@ export class CommandController {
 				.map(summarizeMentalModel);
 			this.#showMarkdownPanel(`Mental Models — ${state.bankId}`, lines.join("\n"));
 		} catch (error) {
-			this.ctx.showError(`mm list failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm list 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1130,7 +1131,7 @@ export class CommandController {
 		try {
 			const model = await state.client.getMentalModel(state.bankId, id, { detail: "content" });
 			if (!model) {
-				this.ctx.showError(`Mental model not found: ${id}`);
+				this.ctx.showError(`未找到心智模型：${id}`);
 				return;
 			}
 			const tags = model.tags && model.tags.length > 0 ? `\n_tags: ${model.tags.join(", ")}_` : "";
@@ -1139,7 +1140,7 @@ export class CommandController {
 			const content = (model.content ?? "_(empty — background reflect may still be running)_").trim();
 			this.#showMarkdownPanel(model.name, `**id:** \`${model.id}\`${tags}${refreshed}${sourceQuery}\n\n${content}`);
 		} catch (error) {
-			this.ctx.showError(`mm show failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm show 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1150,7 +1151,7 @@ export class CommandController {
 				// auto-refresh filter so curated/manual models can still be
 				// refreshed on demand.
 				await state.client.refreshMentalModel(state.bankId, id);
-				this.ctx.showStatus(`Refresh queued for mental model ${id}.`);
+				this.ctx.showStatus(`已为心智模型 ${id} 排队刷新。`);
 			} else {
 				// Bulk refresh: only touch models that opted into automatic
 				// refresh via `trigger.refresh_after_consolidation`. Curated
@@ -1161,14 +1162,14 @@ export class CommandController {
 				const list = await state.client.listMentalModels(state.bankId, { detail: "content" });
 				const items = list.items ?? [];
 				if (items.length === 0) {
-					this.ctx.showStatus(`No mental models on bank ${state.bankId}.`);
+					this.ctx.showStatus(`记忆库 ${state.bankId} 中没有心智模型。`);
 					return;
 				}
 				const targets = items.filter(m => m.trigger?.refresh_after_consolidation === true);
 				const skipped = items.length - targets.length;
 				if (targets.length === 0) {
 					this.ctx.showStatus(
-						`No mental models opted into auto-refresh; ${skipped} curated model(s) left untouched. Pass an explicit id to refresh one of them.`,
+						`没有心智模型启用自动刷新；${skipped} 个精选模型保持不变。传入显式 id 可刷新其中之一。`,
 					);
 					return;
 				}
@@ -1179,13 +1180,13 @@ export class CommandController {
 						queued++;
 					} catch (error) {
 						this.ctx.showWarning(
-							`Refresh failed for ${item.id}: ${error instanceof Error ? error.message : String(error)}`,
+							`刷新 ${item.id} 失败：${error instanceof Error ? error.message : String(error)}`,
 						);
 					}
 				}
 				const skippedSuffix = skipped > 0 ? `; skipped ${skipped} curated model(s)` : "";
 				this.ctx.showStatus(
-					`Refresh queued for ${queued}/${targets.length} auto-refresh model(s)${skippedSuffix}.`,
+					`已为 ${queued}/${targets.length} 个自动刷新模型排队刷新${skippedSuffix}。`,
 				);
 			}
 			// Reload the cache after a brief grace so the new content (if the refresh
@@ -1193,7 +1194,7 @@ export class CommandController {
 			await Bun.sleep(500);
 			await reloadMentalModelsForSession(state.session);
 		} catch (error) {
-			this.ctx.showError(`mm refresh failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm refresh 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1204,11 +1205,11 @@ export class CommandController {
 				state.client.getMentalModelHistory(state.bankId, id),
 			]);
 			if (!model) {
-				this.ctx.showError(`Mental model not found: ${id}`);
+				this.ctx.showError(`未找到心智模型：${id}`);
 				return;
 			}
 			if (history.length === 0) {
-				this.ctx.showStatus(`No history recorded for ${id}.`);
+				this.ctx.showStatus(`没有 ${id} 的历史记录。`);
 				return;
 			}
 			// History is most-recent first. Each entry stores the content BEFORE that
@@ -1226,7 +1227,7 @@ export class CommandController {
 			}
 			this.#showMarkdownPanel(`History — ${model.name}`, sections.join("\n\n"));
 		} catch (error) {
-			this.ctx.showError(`mm history failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm history 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1243,7 +1244,7 @@ export class CommandController {
 				config.scoping,
 			);
 			if (seeds.length === 0) {
-				this.ctx.showStatus(`No built-in seeds apply to scoping=${config.scoping}.`);
+				this.ctx.showStatus(`没有适用于 scoping=${config.scoping} 的内置种子。`);
 				return;
 			}
 			const list = await state.client.listMentalModels(state.bankId, { detail: "metadata" });
@@ -1265,13 +1266,13 @@ export class CommandController {
 					created++;
 				} catch (error) {
 					this.ctx.showWarning(
-						`Seed failed for ${seed.id}: ${error instanceof Error ? error.message : String(error)}`,
+						`播种 ${seed.id} 失败：${error instanceof Error ? error.message : String(error)}`,
 					);
 				}
 			}
-			this.ctx.showStatus(`Seeded ${created} new mental model(s); ${skipped} already present.`);
+			this.ctx.showStatus(`已播种 ${created} 个新心智模型；${skipped} 个已存在。`);
 		} catch (error) {
-			this.ctx.showError(`mm seed failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm seed 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1288,15 +1289,15 @@ export class CommandController {
 		try {
 			const removed = await state.client.deleteMentalModel(state.bankId, id);
 			if (!removed) {
-				this.ctx.showError(`Mental model not found: ${id}`);
+				this.ctx.showError(`未找到心智模型：${id}`);
 				return;
 			}
 			// Drop the cached snippet so the closing tag does not silently keep
 			// stale content in the system prompt until the next agent_end TTL.
 			await reloadMentalModelsForSession(state.session);
-			this.ctx.showStatus(`Deleted mental model ${id} from bank ${state.bankId}.`);
+			this.ctx.showStatus(`已删除心智模型 ${id}（来自库 ${state.bankId}）。`);
 		} catch (error) {
-			this.ctx.showError(`mm delete failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`mm delete 失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -1343,7 +1344,7 @@ export class CommandController {
 		const stateLabel = result.closedProviderSessions === 1 ? "provider state" : "provider states";
 		this.ctx.statusLine.invalidate();
 		this.ctx.ui.requestRender();
-		this.ctx.showStatus(`Fresh provider session started (${result.closedProviderSessions} ${stateLabel} pruned).`);
+		this.ctx.showStatus(`已开启全新的服务商会话（已清理 ${result.closedProviderSessions} ${stateLabel}）。`);
 	}
 
 	async handleResetContextCommand(): Promise<void> {
@@ -1449,7 +1450,7 @@ export class CommandController {
 		if (this.ctx.session.isStreaming) {
 			const confirmed = await this.ctx.showHookConfirm(
 				"响应仍在进行时仍要分叉？",
-				"The child may not include the partial response. Continue opening a fork? The current session will keep running here.",
+				"子会话可能不包含尚未完成的响应。仍要打开复刻吗？当前会话会继续在这里运行。",
 			);
 			if (!confirmed) return;
 		}
@@ -1471,7 +1472,7 @@ export class CommandController {
 		if (shellGrammar === "posix") {
 			const confirmed = await this.ctx.showHookConfirm(
 				"确认目标 shell 兼容性",
-				"This fork command uses POSIX shell syntax. Continue only if the destination's configured interactive shell accepts POSIX syntax; this cannot be inferred from the current terminal.",
+				"此复刻命令使用 POSIX shell 语法。只有目标配置的交互 shell 接受 POSIX 语法时才继续；无法从当前终端推断这一点。",
 			);
 			if (!confirmed) {
 				this.ctx.showWarning("分叉已取消：未确认目标端的 POSIX shell 兼容性。");
@@ -1548,19 +1549,19 @@ export class CommandController {
 			const result = await dependencies.launchTerminal(launchPlan.request);
 			if (result.warning) {
 				this.ctx.showWarning(
-					`Opened a fork in ${placementInfo.displayName}, but ${result.warning} This session continues here.`,
+					`已在 ${placementInfo.displayName} 中创建复刻，但 ${result.warning} 此会话仍在此继续。`,
 				);
 				return;
 			}
 			this.ctx.showStatus(
-				`Opened a fork in ${placementInfo.displayName} (${placementInfo.placementLabel}); this session continues here.`,
+				`已在 ${placementInfo.displayName} 中创建复刻（${placementInfo.placementLabel}）；当前会话在此继续。`,
 			);
 		} catch (error) {
 			logger.error("Failed to open a terminal fork", { multiplexer, error });
 			this.ctx.showError(
 				error instanceof TerminalLaunchError
-					? `Could not open a fork in ${placementInfo.displayName}: ${error.message}`
-					: `Could not open a fork in ${placementInfo.displayName}. See logs for details.`,
+					? `无法在 ${placementInfo.displayName} 中打开复刻：${error.message}`
+					: `无法在 ${placementInfo.displayName} 中打开复刻。详见日志。`,
 			);
 		}
 	}
@@ -1597,7 +1598,7 @@ export class CommandController {
 					return false;
 				}
 				this.ctx.showError(
-					`Tern did not confirm the fork: ${error instanceof Error ? error.message : String(error)}`,
+					`Tern 未确认复刻：${error instanceof Error ? error.message : String(error)}`,
 				);
 				return true;
 			}
@@ -1607,7 +1608,7 @@ export class CommandController {
 		const note = this.ctx.session.isStreaming ? " · the running response continues here, not in the fork" : "";
 		this.ctx.present([
 			new Spacer(1),
-			new Text(theme.fg("accent", `${theme.status.success} Session forked into a new pane${note}`), 1, 1),
+			new Text(theme.fg("accent", `${theme.status.success} 会话已复刻到新窗格${note}`), 1, 1),
 		]);
 		return true;
 	}
@@ -1666,7 +1667,7 @@ export class CommandController {
 				parentExists = false;
 			}
 			if (!parentExists) {
-				this.ctx.showError(`Cannot create "${path.basename(resolvedPath)}": parent directory does not exist`);
+				this.ctx.showError(`无法创建 "${path.basename(resolvedPath)}"：父目录不存在`);
 				return;
 			}
 		}
@@ -1674,13 +1675,13 @@ export class CommandController {
 			if (!isDirectory) {
 				const confirmed = await this.ctx.showHookConfirm(
 					"创建目录？",
-					`"${path.basename(resolvedPath)}" does not exist. Create it?`,
+					`"${path.basename(resolvedPath)}" 不存在。要创建吗？`,
 				);
 				if (!confirmed) return false;
 				try {
 					await fs.mkdir(resolvedPath, { recursive: true });
 				} catch (err) {
-					this.ctx.showError(`Failed to create directory: ${err instanceof Error ? err.message : String(err)}`);
+					this.ctx.showError(`创建目录失败：${err instanceof Error ? err.message : String(err)}`);
 					return false;
 				}
 			}
@@ -1689,7 +1690,7 @@ export class CommandController {
 		if (moved) {
 			this.ctx.present([
 				new Spacer(1),
-				new Text(`${theme.fg("accent", `${theme.status.success} Moved to ${resolvedPath}`)}`, 1, 1),
+				new Text(`${theme.fg("accent", `${theme.status.success} 已移到 ${resolvedPath}`)}`, 1, 1),
 			]);
 		}
 	}
@@ -1726,7 +1727,7 @@ export class CommandController {
 			try {
 				worktree = await createSessionWorktree(cwd, this.ctx.settings, branchName, options);
 			} catch (err) {
-				this.ctx.showError(`Worktree creation failed: ${err instanceof Error ? err.message : String(err)}`);
+				this.ctx.showError(`创建工作树失败：${err instanceof Error ? err.message : String(err)}`);
 				return false;
 			} finally {
 				loader.stop();
@@ -1744,7 +1745,7 @@ export class CommandController {
 				? await cleanSourceCheckoutIfConfigured(cwd, this.ctx.settings)
 				: { cleaned: false, errorMessage: undefined };
 			if (cleanup.errorMessage !== undefined) {
-				this.ctx.showWarning(`Worktree created, but cleaning source checkout failed: ${cleanup.errorMessage}`);
+				this.ctx.showWarning(`工作树已创建，但清理源检出失败：${cleanup.errorMessage}`);
 			}
 			this.ctx.present([
 				new Spacer(1),
@@ -1764,7 +1765,7 @@ export class CommandController {
 		try {
 			await this.ctx.settings.flush();
 		} catch (err) {
-			this.ctx.showError(`Failed to save pending settings: ${err instanceof Error ? err.message : String(err)}`);
+			this.ctx.showError(`保存待定设置失败：${err instanceof Error ? err.message : String(err)}`);
 			return false;
 		}
 
@@ -1779,7 +1780,7 @@ export class CommandController {
 		try {
 			await this.ctx.session.moveSession(resolvedPath);
 		} catch (err) {
-			this.ctx.showError(`Move failed: ${err instanceof Error ? err.message : String(err)}`);
+			this.ctx.showError(`移动失败：${err instanceof Error ? err.message : String(err)}`);
 			return false;
 		}
 		let applied = false;
@@ -1822,10 +1823,10 @@ export class CommandController {
 				return;
 			}
 			const name = sessionManager.getSessionName()!;
-			this.ctx.showStatus(`Session renamed to "${name}".`);
+			this.ctx.showStatus(`会话已重命名为 "${name}"。`);
 		} catch (err) {
 			if (!isCurrent()) return;
-			this.ctx.showError(`Rename failed: ${err instanceof Error ? err.message : String(err)}`);
+			this.ctx.showError(`重命名失败：${err instanceof Error ? err.message : String(err)}`);
 		}
 	}
 
@@ -1894,7 +1895,7 @@ export class CommandController {
 				if (shouldPersistCwd) return await this.#applyBashResultCwd(result);
 			} catch (error) {
 				this.ctx.showError(
-					`Bash command completed, but OMP failed to update its working directory: ${
+					`Bash 命令已完成，但 OMP 更新其工作目录失败：${
 						error instanceof Error ? error.message : "Unknown error"
 					}`,
 				);
@@ -1903,7 +1904,7 @@ export class CommandController {
 			if (this.ctx.bashComponent) {
 				this.ctx.bashComponent.setComplete(undefined, false);
 			}
-			this.ctx.showError(`Bash command failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+			this.ctx.showError(`Bash 命令失败：${error instanceof Error ? error.message : "Unknown error"}`);
 		} finally {
 			this.ctx.bashComponent = undefined;
 			this.ctx.ui.requestRender();
@@ -1964,7 +1965,7 @@ export class CommandController {
 			if (this.ctx.pythonComponent) {
 				this.ctx.pythonComponent.setComplete(undefined, false);
 			}
-			this.ctx.showError(`Python execution failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+			this.ctx.showError(`Python 执行失败：${error instanceof Error ? error.message : "Unknown error"}`);
 		}
 
 		this.ctx.pythonComponent = undefined;
@@ -2014,7 +2015,7 @@ export class CommandController {
 		try {
 			result = await this.ctx.session.shake(mode);
 		} catch (error) {
-			this.ctx.showError(`Shake failed: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`抖动失败：${error instanceof Error ? error.message : String(error)}`);
 			return;
 		}
 
@@ -2101,7 +2102,7 @@ export class CommandController {
 			} else {
 				outcome = "failed";
 				const message = error instanceof Error ? error.message : String(error);
-				this.ctx.showError(`Compaction failed: ${message}`);
+				this.ctx.showError(`压缩失败：${message}`);
 			}
 		} finally {
 			compactingLoader.stop();
@@ -2170,13 +2171,13 @@ export class CommandController {
 			this.ctx.present([
 				new Spacer(1),
 				new Text(
-					`${theme.fg("accent", `${theme.status.success} Context handed off and compacted in place`)}`,
+					`${theme.fg("accent", `${theme.status.success} 上下文已交接并就地压缩`)}`,
 					1,
 					1,
 				),
 			]);
 			if (result.savedPath) {
-				this.ctx.showStatus(`Handoff document saved to: ${result.savedPath}`);
+				this.ctx.showStatus(`交接文档已保存到：${result.savedPath}`);
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
@@ -2189,7 +2190,7 @@ export class CommandController {
 				// Persist the real failure so it is debuggable after the transient
 				// TUI error clears (#7993).
 				logger.error("Handoff failed", { error: message });
-				this.ctx.showError(`Handoff failed: ${message}`);
+				this.ctx.showError(`交接失败：${message}`);
 			}
 		} finally {
 			this.#finishHandoffUi(handoffLoader);
@@ -2555,7 +2556,7 @@ export function renderUsageReports(
 	const lines: string[] = [];
 	const latestFetchedAt = Math.max(0, ...reports.map(report => report.fetchedAt ?? 0));
 	const headerSuffix = latestFetchedAt ? ` (${formatDuration(nowMs - latestFetchedAt)} ago)` : "";
-	lines.push(uiTheme.bold(uiTheme.fg("accent", `Usage${headerSuffix}`)));
+	lines.push(uiTheme.bold(uiTheme.fg("accent", `用量${headerSuffix}`)));
 	const grouped = new Map<string, UsageReport[]>();
 	for (const report of displayReports) {
 		const list = grouped.get(report.provider) ?? [];

@@ -32,7 +32,7 @@ export default class Usage extends Command {
 			description: "显示已记录的用量限额历史（每小时快照），而非实时快照",
 			default: false,
 		}),
-		days: Flags.integer({ char: "d", description: "History window in days (with --history or clients)", default: 7 }),
+		days: Flags.integer({ char: "d", description: "历史窗口天数（配合 --history 或 clients）", default: 7 }),
 		extension: Flags.string({
 			char: "e",
 			description: "获取用量前加载扩展文件（可重复）",

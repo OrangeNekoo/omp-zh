@@ -16,7 +16,7 @@ export default class Bench extends Command {
 	static flags = {
 		runs: Flags.integer({
 			description:
-				"Requests per model (default: 10 chat, 5 prefill/generation, 9 mix); with --detailed, per phase (default: 4)",
+				"每个模型的请求数（默认：聊天 10、预填充/生成 5、混合 9）；使用 --detailed 时按阶段计（默认：4）",
 		}),
 		"max-tokens": Flags.integer({
 			description: "每次请求的最大输出令牌数（默认：chat 512、prefill 64、generation 2048、cache 64）",
@@ -45,11 +45,11 @@ export default class Bench extends Command {
 		cache: Flags.boolean({
 			description: "运行独立的冷/热提示词缓存配对（openai-codex-responses 不支持）",
 		}),
-		"cache-prefix-file": Flags.string({ description: "Stable prompt prefix file for --cache" }),
-		"cache-prefix-bytes": Flags.integer({ description: "Stable prefix byte budget for --cache (default: 8192)" }),
-		"cache-pairs": Flags.integer({ description: "Cold/warm pairs per model for --cache (default: 1)" }),
+		"cache-prefix-file": Flags.string({ description: "--cache 的稳定提示词前缀文件" }),
+		"cache-prefix-bytes": Flags.integer({ description: "--cache 的稳定前缀字节预算（默认：8192）" }),
+		"cache-pairs": Flags.integer({ description: "每个模型的 --cache 冷/热对数（默认：1）" }),
 		"cache-concurrency": Flags.integer({
-			description: "Concurrent cache pairs for --cache; each pair remains sequential (default: 1)",
+			description: "--cache 的并发缓存对数；每对内部仍串行（默认：1）",
 		}),
 	};
 

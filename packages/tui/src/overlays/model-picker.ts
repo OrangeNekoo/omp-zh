@@ -435,22 +435,22 @@ export class ModelPickerComponent implements Component {
 				selected,
 				...(current ? { current: [current] } : {}),
 				total: this.#browser.baseCount,
-				empty: mode === "role" ? `No quick roles in the ${cycleKey} cycle` : "无可用模型",
+				empty: mode === "role" ? `${cycleKey} 循环中没有快捷角色` : "无可用模型",
 				actions: compact([
 					pickerAction(
 						"use",
 						mode === "role"
-							? "Apply role"
+							? "应用角色"
 							: mode === "task"
-								? "Use for Task subagents"
+								? "用于任务子代理"
 								: mode === "selection"
-									? "Select model"
-									: "Use for session",
+									? "选择模型"
+									: "用于会话",
 						"enter",
 						{ primary: true },
 					),
 					this.#taskModeKey !== undefined && mode !== "role" && mode !== "selection"
-						? pickerAction("task", "Task model", this.#taskModeKey, { on: mode === "task" })
+						? pickerAction("task", "任务模型", this.#taskModeKey, { on: mode === "task" })
 						: undefined,
 					query.length > 0 ? { ...CLOSE_ACTION, label: "清除搜索" } : CLOSE_ACTION,
 				]),
@@ -495,7 +495,7 @@ export class ModelPickerComponent implements Component {
 			{ keys: [], label: "输入以搜索" },
 		];
 		if (mode === "session") hints.push({ keys: ["@"], label: "快捷角色" });
-		hints.push(actionHint("tui.select.cancel", "close"));
+		hints.push(actionHint("tui.select.cancel", "关闭"));
 		if (this.#taskModeKey !== undefined && !this.#roleMode && mode !== "selection") {
 			hints.push({ keys: [this.#taskModeKey], label: this.#taskMode ? "会话模型" : "任务模型" });
 		}

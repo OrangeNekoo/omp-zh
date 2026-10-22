@@ -59,7 +59,7 @@ export const cfgCollabAutoStart = register({
 			{
 				value: "view",
 				label: "查看",
-				description: "Auto-host; the registry hands out view-only links (omp collab link --view)",
+				description: "自动托管；注册表会发出仅查看链接（omp collab link --view）",
 			},
 			{
 				value: "control",

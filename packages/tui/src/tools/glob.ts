@@ -15,9 +15,10 @@ import type { OutputMeta } from "./output-meta";
 import type { TruncationResult } from "./streaming-output";
 import { toPathList } from "../render/render-utils";
 import * as path from "node:path";
-import { Ellipsis, fileHyperlink, renderFileList, renderStatusLine, renderTreeList, truncateToWidth } from "../render";
+import { fileHyperlink, renderFileList, renderStatusLine, renderTreeList } from "../render";
 import {
 	createCachedComponent,
+	fitHeaderedRows,
 	formatCount,
 	formatEmptyMessage,
 	formatErrorMessage,
@@ -205,7 +206,7 @@ export const globToolRenderer = {
 						},
 						uiTheme,
 					);
-					return [header, ...listLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
+					return fitHeaderedRows(header, listLines, width);
 				},
 			);
 		}
@@ -222,7 +223,7 @@ export const globToolRenderer = {
 
 		const missingPaths = details?.missingPaths ?? [];
 		const missingNote =
-			missingPaths.length > 0 ? uiTheme.fg("warning", `skipped missing: ${missingPaths.join(", ")}`) : undefined;
+			missingPaths.length > 0 ? uiTheme.fg("warning", `已跳过缺失项：${missingPaths.join(", ")}`) : undefined;
 
 		if (fileCount === 0) {
 			// `truncated` on an empty result means the scan timed out mid-walk —
@@ -268,7 +269,7 @@ export const globToolRenderer = {
 
 		const extraLines: string[] = [];
 		if (truncationReasons.length > 0) {
-			extraLines.push(uiTheme.fg("warning", `truncated: ${truncationReasons.join(", ")}`));
+			extraLines.push(uiTheme.fg("warning", `已截断：${truncationReasons.join(", ")}`));
 		}
 		if (missingNote) extraLines.push(missingNote);
 
@@ -295,7 +296,7 @@ export const globToolRenderer = {
 					},
 					uiTheme,
 				);
-				return [header, ...fileLines, ...extraLines].map(l => truncateToWidth(l, width, Ellipsis.Omit));
+				return fitHeaderedRows(header, [...fileLines, ...extraLines], width);
 			},
 		);
 	},

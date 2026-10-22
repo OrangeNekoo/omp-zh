@@ -69,7 +69,7 @@ export interface SearchRenderDetails {
 /** Render a web search failure as a framed error panel, matching the success layout. */
 function renderSearchErrorPanel(message: string, providerLabel: string | undefined, theme: Theme): Component {
 	const header = renderStatusLine({ icon: "error", title: "网络搜索", description: providerLabel }, theme);
-	const body = theme.fg("error", `Error: ${replaceTabs(message)}`);
+	const body = theme.fg("error", `错误：${replaceTabs(message)}`);
 	return framedToolCard(theme, () => ({
 		header,
 		phase: "error",

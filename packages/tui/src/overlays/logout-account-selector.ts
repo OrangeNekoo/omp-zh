@@ -145,7 +145,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 	override describe(cx: DescribeContext): NativeNode {
 		if (cx.supports("picker")) {
 			this.#pickerRoot ??= dockedPicker({
-				title: `${this.#providerName} accounts`,
+				title: `${this.#providerName} 个账户`,
 				subtitle: "选择要退出登录的账户",
 				icon: "key-round",
 				noun: "accounts",
@@ -162,7 +162,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 				current: this.#accounts.filter(account => account.active).map(account => String(account.credentialId)),
 				selected: this.#menu.selectedKey ?? null,
 				empty: "没有可登出的已存账户",
-				actions: [pickerAction("confirm", "Sign out", "enter", { primary: true, danger: true }), CLOSE_ACTION],
+				actions: [pickerAction("confirm", "登出", "enter", { primary: true, danger: true }), CLOSE_ACTION],
 			});
 			return this.#pickerRoot;
 		}

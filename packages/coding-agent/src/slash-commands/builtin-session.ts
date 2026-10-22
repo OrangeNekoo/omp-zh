@@ -49,7 +49,7 @@ async function handleUsageResetCommand(
 	try {
 		accounts = toResetUsageAccounts(await session.listResetCredits());
 	} catch (error) {
-		await output(`Could not load saved resets: ${oneLine(errorMessage(error))}`);
+		await output(`无法加载已保存的重置：${oneLine(errorMessage(error))}`);
 		return;
 	}
 	if (accounts.length === 0) {
@@ -99,20 +99,20 @@ async function handleJobsKillCommand(
 		}
 		await output(
 			cancelled === 0
-				? "No running background jobs to cancel."
-				: `Cancelled ${cancelled} background job${cancelled === 1 ? "" : "s"}.`,
+				? "没有正在运行的后台任务可取消。"
+				: `已取消 ${cancelled} 个后台任务${cancelled === 1 ? "" : "s"}。`,
 		);
 		return;
 	}
 	const safeTarget = truncateToWidth(sanitizeText(target).replace(/\s+/g, " ").trim(), 60);
 	if (!snapshot.running.some(job => job.id === target)) {
-		await output(`No running background job with id "${safeTarget}".`);
+		await output(`没有 id 为 "${safeTarget}" 的后台任务在运行。`);
 		return;
 	}
 	await output(
 		session.cancelAsyncJob(target)
-			? `Cancelled background job ${safeTarget}.`
-			: `Could not cancel background job ${safeTarget}.`,
+			? `已取消后台任务 ${safeTarget}。`
+			: `无法取消后台任务 ${safeTarget}。`,
 	);
 }
 
@@ -129,7 +129,7 @@ async function handleSessionPinCommand(
 	try {
 		accountList = await session.listCurrentProviderOAuthAccounts();
 	} catch (error) {
-		await output(`Could not load provider accounts: ${errorMessage(error)}`);
+		await output(`无法加载服务商账户：${errorMessage(error)}`);
 		return;
 	}
 	if (!accountList) {
@@ -143,8 +143,8 @@ async function handleSessionPinCommand(
 		const source = session.modelRegistry.authStorage.keys.describe(accountList.provider, session.sessionId);
 		await output(
 			source
-				? `No stored OAuth accounts for ${providerName}. Current auth comes from ${source}.`
-				: `No stored OAuth accounts for ${providerName}. Use /login to add one.`,
+				? `${providerName} 没有已存的 OAuth 账户。当前认证来自 ${source}。`
+				: `${providerName} 没有已存的 OAuth 账户。用 /login 添加一个。`,
 		);
 		return;
 	}
@@ -162,23 +162,23 @@ async function handleSessionPinCommand(
 
 	const matches = matchSessionPinAccounts(accounts, selector);
 	if (matches.length === 0) {
-		await output(`No ${providerName} account matches "${selector}".`);
+		await output(`没有 ${providerName} 账户匹配 "${selector}"。`);
 		return;
 	}
 	if (matches.length > 1) {
 		await output(
-			`"${selector}" matches multiple ${providerName} accounts: ${matches
+			`"${selector}" 匹配到多个 ${providerName} 账户：${matches
 				.map(account => `${account.position + 1}. ${account.label}`)
-				.join(", ")}. Use the account number.`,
+				.join(", ")}。请使用账户编号。`,
 		);
 		return;
 	}
 	const account = matches[0];
 	if (!account || !session.pinCurrentProviderOAuthAccount(account.credentialId)) {
-		await output(`${account?.label ?? selector} is no longer available to pin.`);
+		await output(`${account?.label ?? selector} 已不可固定。`);
 		return;
 	}
-	await output(`Pinned ${account.label} to this session for ${providerName}.`);
+	await output(`已将 ${account.label} 固定到本次会话，持续 ${providerName}。`);
 }
 
 /**
@@ -262,9 +262,9 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!verb || (verb === "info" && !rest)) {
 				await runtime.output(
 					[
-						`Session: ${runtime.session.sessionId}`,
-						`Title: ${runtime.session.sessionName}`,
-						`CWD: ${runtime.cwd}`,
+						`会话：${runtime.session.sessionId}`,
+						`标题：${runtime.session.sessionName}`,
+						`工作目录：${runtime.cwd}`,
 					].join("\n"),
 				);
 				return commandConsumed();
@@ -281,10 +281,10 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				try {
 					await runtime.sessionManager.dropSession(sessionFile);
 				} catch (err) {
-					return usage(`Failed to delete session: ${errorMessage(err)}`, runtime);
+					return usage(`删除会话失败：${errorMessage(err)}`, runtime);
 				}
 				await runtime.output(
-					`Session deleted: ${sessionFile}. Use ACP \`session/load\` to switch to another session.`,
+					`会话已删除：${sessionFile}。使用 ACP \`session/load\` 切换到其他会话。`,
 				);
 				return commandConsumed();
 			}
@@ -373,7 +373,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const body = rows.join("\n");
 			const fence = markdownFenceFor(body);
 			await runtime.output(
-				["Background Jobs", `Running: ${tree.running.length}`, "", `${fence}text`, body, fence].join("\n"),
+				["后台任务", `运行中：${tree.running.length}`, "", `${fence}text`, body, fence].join("\n"),
 			);
 			return commandConsumed();
 		},
@@ -451,7 +451,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const result = await launchSessionStatsDashboard(parsed, runtime);
 				await runtime.output(result.message);
 			} catch (error) {
-				await runtime.output(`Stats dashboard failed: ${errorMessage(error)}`);
+				await runtime.output(`统计面板失败：${errorMessage(error)}`);
 				// Mark the failure like `usage()` does, for hosts that report a
 				// failed builtin (print mode does not dispatch `/stats`).
 				return commandConsumed({ failed: true });
@@ -470,7 +470,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const result = await launchSessionStatsDashboard(parsed, ctx);
 				ctx.presentCommandOutput(new StatsNotice(result.message, result.url));
 			} catch (error) {
-				ctx.showError(`Stats dashboard failed: ${errorMessage(error)}`);
+				ctx.showError(`统计面板失败：${errorMessage(error)}`);
 			}
 		},
 	},
@@ -722,7 +722,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (providerId) {
 				const matchedProvider = getOAuthProviders().find(provider => provider.id === providerId);
 				if (!matchedProvider) {
-					runtime.ctx.showWarning(`Unknown OAuth provider: ${providerId}`);
+					runtime.ctx.showWarning(`未知的 OAuth 服务商：${providerId}`);
 					clearSubmittedText(runtime);
 					return;
 				}

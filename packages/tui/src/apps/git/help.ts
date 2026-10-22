@@ -129,7 +129,7 @@ export class GitHelpSheet implements Component {
 			}
 			lines.push("");
 		}
-		lines.push(truncateToWidth(` ${theme.fg("dim", `${formatKeyHint("escape")} close`)}`, width));
+		lines.push(truncateToWidth(` ${theme.fg("dim", `${formatKeyHint("escape")} 关闭`)}`, width));
 		return lines;
 	}
 

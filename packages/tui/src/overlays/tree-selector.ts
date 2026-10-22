@@ -837,14 +837,14 @@ class TreeList implements Component {
 		const query = this.getSearchQuery();
 		if (query.length > 0) {
 			return [
-				span(`No entries match search "${query}". Press `, "muted"),
+				span(`没有条目匹配搜索 "${query}"。按 `, "muted"),
 				span("backspace", "key"),
 				span(" 以清除搜索", "muted"),
 			];
 		}
 		const filterLabel = this.#getFilterLabel().trim() || "[default]";
 		return [
-			span(`${total} entries hidden by the current filter ${filterLabel}. Press `, "muted"),
+			span(`${total} 条被当前筛选隐藏 ${filterLabel}。按 `, "muted"),
 			span("alt+a", "key"),
 			span(" 以显示全部，", "muted"),
 			span("alt+d", "key"),
@@ -910,7 +910,7 @@ class TreeList implements Component {
 				lines.push(truncateToWidth(theme.fg("muted", "未找到条目"), width));
 				lines.push(truncateToWidth(theme.fg("muted", `(0/0)${this.#getFilterLabel()}`), width));
 			} else if (this.getSearchQuery().length > 0) {
-				lines.push(truncateToWidth(theme.fg("muted", `No entries match search "${this.getSearchQuery()}"`), width));
+				lines.push(truncateToWidth(theme.fg("muted", `没有条目匹配搜索 "${this.getSearchQuery()}"`), width));
 				lines.push(
 					truncateToWidth(theme.fg("muted", `Press ${formatKeyHint("backspace")} to 清除 the search`), width),
 				);
@@ -919,7 +919,7 @@ class TreeList implements Component {
 				const filterLabel = this.#getFilterLabel().trim() || "[default]";
 				lines.push(
 					truncateToWidth(
-						theme.fg("muted", `${totalCount} entries hidden by the current filter ${filterLabel}`),
+						theme.fg("muted", `${totalCount} 条被当前筛选隐藏 ${filterLabel}`),
 						width,
 					),
 				);
@@ -1437,7 +1437,7 @@ class LabelInput implements Component {
 		lines.push(truncateToWidth(theme.fg("muted", "标签（留空以移除）："), width));
 		lines.push(...this.#input.render(width));
 		const cancel = interruptKey();
-		lines.push(truncateToWidth(theme.fg("dim", `${formatKeyHint("enter")}: save  ${cancel}: cancel`), width));
+		lines.push(truncateToWidth(theme.fg("dim", `${formatKeyHint("enter")}：保存  ${cancel}：取消`), width));
 		return lines;
 	}
 
@@ -1593,14 +1593,14 @@ export class TreeSelectorComponent extends OverlayPanel {
 			focus: label ? "preview" : "list",
 			actions: label
 				? [
-						pickerAction("label-save", "Save label", "enter", { primary: true }),
+						pickerAction("label-save", "保存标签", "enter", { primary: true }),
 						{ ...CLOSE_ACTION, label: "取消" },
 					]
 				: [
 						pickerAction("switch", "Switch", "enter", { primary: true }),
-						pickerAction("summarize", "Summarize & switch", "shift+enter"),
-						pickerAction("label", "Label", "shift+l"),
-						pickerAction("filter", "Filter", "ctrl+o"),
+						pickerAction("summarize", "汇总并切换", "shift+enter"),
+						pickerAction("label", "标签", "shift+l"),
+						pickerAction("filter", "筛选", "ctrl+o"),
 						CLOSE_ACTION,
 					],
 		};
@@ -1677,7 +1677,7 @@ export class TreeSelectorComponent extends OverlayPanel {
 			hintsRow([
 				{ keys: ["enter"], label: "switch" },
 				{ keys: ["alt+up", "alt+down"], label: "上一轮/下一轮" },
-				actionHint(["app.tree.previousBranch", "app.tree.nextBranch"], "previous/next branch"),
+				actionHint(["app.tree.previousBranch", "app.tree.nextBranch"], "上一个/下一个分支"),
 				actionHint(["tui.select.pageUp", "tui.select.pageDown"], "page"),
 				{ keys: ["home", "end"], label: "first/last" },
 				{ keys: ["shift+enter"], label: "总结并切换" },

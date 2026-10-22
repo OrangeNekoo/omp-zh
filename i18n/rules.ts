@@ -56,6 +56,15 @@ export const INCLUDE_FILES: readonly RegExp[] = [
 	// ── 设置面板结构 ────────────────────────────────────────────
 	/^packages\/tui\/src\/overlays\/settings-defs\.ts$/,
 
+	// ── MCP OAuth 重授权：错误消息经 showError/usage() 直达用户 ──
+	// 上游把 OAuth 流程从 modes/controllers 挪进了这个文件，其中
+	// `throw new Error("…")` / `McpReauthRefusalError("…")` 的消息会
+	// 在控制器与 /mcp 命令里显示。整文件模式下按词典精确匹配；
+	// abort 原因（"MCP OAuth flow timed out" 等）与错误分类输入
+	// （"invalid_grant"/"ECONNREFUSED" 等）**绝不能进词典**——它们是
+	// 跨模块契约与 .includes() 分类依据，翻译会破坏运行时判断。
+	/^packages\/coding-agent\/src\/mcp\/oauth-reauth\.ts$/,
+
 	// ── CLI 界面帮助（命令描述，不是模型提示词） ────────────────
 	/^packages\/coding-agent\/src\/cli\/command-help\.ts$/,
 	/^packages\/coding-agent\/src\/cli\/help-extra\.ts$/,
@@ -190,7 +199,22 @@ export const TRANSLATABLE_CALLS: ReadonlySet<string> = new Set([
 	"formatEmptyMessage",
 	"formatErrorMessage",
 	"toolHead",
+	// 私有的 Smithery API 密钥输入提示（首参是给用户看的标签模板）。
+	"promptSmitheryApiKey",
 ]);
+
+/**
+ * 标签不在第一实参的可译调用：`pickerAction(id, label, keys)`、
+ * `actionHint(keys, label)`、`notice(key, label, icon)`、
+ * `errorView(title, message)`（title 是工具名，正文在第二实参）。
+ * 第一实参是协议 id / 键位 / 工具名，不能走默认下标。
+ */
+export const TRANSLATABLE_CALL_LABEL_INDEX: Readonly<Record<string, number>> = {
+	pickerAction: 1,
+	actionHint: 1,
+	notice: 1,
+	errorView: 1,
+};
 
 /** `new Text("…")` 这类组件的第一个字符串参数。 */
 export const TRANSLATABLE_CONSTRUCTORS: ReadonlySet<string> = new Set(["Text", "Markdown", "TruncatedText"]);
@@ -253,6 +277,9 @@ export const WHOLE_FILE_LITERALS: readonly RegExp[] = [
 	/^packages\/tui\/src\/prompt\/composer-hints\.ts$/,
 	/^packages\/tui\/src\/overlays\/settings-defs\.ts$/,
 	/^packages\/coding-agent\/src\/cli\/command-help\.ts$/,
+	// OAuth 错误消息散落在 `new Error(…)`/`new McpReauthRefusalError(…)`
+	// 与带插值的模板串里，没有统一的可译调用位；整文件按词典精确匹配。
+	/^packages\/coding-agent\/src\/mcp\/oauth-reauth\.ts$/,
 ];
 
 /** 判断文件是否在汉化范围内。 */

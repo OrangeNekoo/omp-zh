@@ -146,7 +146,7 @@ export const retainToolRenderer = {
 	): NativeToolView | undefined {
 		return retainResultMemo.get(result, [], () => {
 			if (result.isError)
-				return { ...errorView("保留", resultText(result).trim() || "Retain failed"), inline: true };
+				return { ...errorView("Retain", resultText(result).trim() || "保存记忆失败"), inline: true };
 			return describeRetain(retainContents(args), resultText(result).trim().replace(/\.$/, ""));
 		});
 	},
@@ -209,7 +209,7 @@ export const recallToolRenderer = {
 		return recallResultMemo.get(result, [], () => {
 			const query = args?.query?.trim();
 			const output = resultText(result).trim();
-			if (result.isError) return { ...errorView("Recall", output || "Recall failed", query), inline: true };
+			if (result.isError) return { ...errorView("Recall", output || "召回记忆失败", query), inline: true };
 			const found = Number(output.match(/^Found (\d+) relevant/)?.[1] ?? 0);
 			if (found === 0) return { head: toolHead("Recall", query, "no matches"), tone: "warning", inline: true };
 			// Collapsed keeps to the header; expanding reveals the recalled memories.
@@ -284,7 +284,7 @@ export const reflectToolRenderer = {
 		return reflectResultMemo.get(result, [], () => {
 			const query = args?.query?.trim();
 			const answer = resultText(result).trim();
-			if (result.isError) return { ...errorView("反思", answer || "Reflect failed", query), inline: true };
+			if (result.isError) return { ...errorView("Reflect", answer || "反思记忆失败", query), inline: true };
 			const shown = answer.split("\n").slice(0, PREVIEW_LIMITS.OUTPUT_EXPANDED).join("\n").trim();
 			return {
 				head: toolHead("反思", query),
