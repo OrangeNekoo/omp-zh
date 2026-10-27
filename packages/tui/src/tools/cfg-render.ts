@@ -58,7 +58,7 @@ export function renderCfgRead(
 	return card((_width, expanded) => {
 		const meta: string[] = [];
 		if (details) {
-			meta.push(details.count === 1 ? "1 setting" : `${details.count} settings`);
+			meta.push(details.count === 1 ? "1 setting" : `${details.count} 到设置`);
 			if (details.modified) meta.push(`${details.modified} modified`);
 		}
 		const header = renderStatusLine(
@@ -89,7 +89,7 @@ export function describeCfgRead(
 	const description = (details?.path ?? parseCfgUrl(url)?.segments.join(".")) || "all settings";
 	const meta: string[] = [];
 	if (details) {
-		meta.push(details.count === 1 ? "1 setting" : `${details.count} settings`);
+		meta.push(details.count === 1 ? "1 setting" : `${details.count} 到设置`);
 		if (details.modified) meta.push(`${details.modified} modified`);
 	}
 	if (result?.isError) return errorView("Config", firstText(result) || "读取设置失败。", description, ...meta);

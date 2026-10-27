@@ -96,8 +96,8 @@ export class GitHelpSheet implements Component {
 							node("table", {
 								role: "omp.hotkeys.table",
 								cols: [
-									{ id: "keys", head: "Keys" },
-									{ id: "does", head: "Action", grow: 1 },
+									{ id: "keys", head: "键" },
+									{ id: "does", head: "操作", grow: 1 },
 								],
 								rows: group.rows.map((row, index) => ({
 									id: String(index),

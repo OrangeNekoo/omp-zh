@@ -48,6 +48,11 @@ import { getEditorCommand, openInEditor } from "../../utils/external-editor";
 import { launchTerminal } from "../../subprocess/terminal-launch";
 import { approvalAnswerForChoice, approvalChoiceLabels, approvalOnceLabel } from "../../tools/approval";
 
+function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
+	return actual === english || actual === chinese;
+}
+
 const MAX_WIDGET_LINES = 10;
 
 /**
@@ -55,7 +60,7 @@ const MAX_WIDGET_LINES = 10;
  * the keys, so the host can't know its bindings: advertise the defaults.
  */
 function guestAskHelpText(enterAction: string, extra = ""): string {
-	return `${formatKeyHints(["up", "down"])} navigate  ${formatKeyHint("enter")} ${enterAction}  ${extra}${formatKeyHint("escape")} cancel`;
+	return `${formatKeyHints(["up", "down"])} 导航  ${formatKeyHint("enter")} ${enterAction}  ${extra}${formatKeyHint("escape")} 取消`;
 }
 
 const ASK_OTHER_OPTION = "其他（自行输入）";
@@ -251,6 +256,7 @@ export class ExtensionUiController {
 			resolvePlanReview: (reviewId, choice, input) => this.ctx.resolvePlanReview(reviewId, choice, input),
 			getPendingPlanReview: () => this.ctx.getPendingPlanReview(),
 			openPlanReview: () => this.ctx.openPlanReview({ fromExtension: true }),
+			sessionModes: this.ctx.sessionModes,
 			getContextUsage: () => this.ctx.session.getContextUsage(),
 			compact: instructionsOrOptions => this.#compactSession(instructionsOrOptions),
 			getSystemPrompt: () => this.ctx.session.systemPrompt,
@@ -482,6 +488,7 @@ export class ExtensionUiController {
 			resolvePlanReview: (reviewId, choice, input) => this.ctx.resolvePlanReview(reviewId, choice, input),
 			getPendingPlanReview: () => this.ctx.getPendingPlanReview(),
 			openPlanReview: () => this.ctx.openPlanReview({ fromExtension: true }),
+			sessionModes: this.ctx.sessionModes,
 			getContextUsage: () => this.ctx.session.getContextUsage(),
 			compact: instructionsOrOptions => this.#compactSession(instructionsOrOptions),
 			getSystemPrompt: () => this.ctx.session.systemPrompt,
@@ -799,16 +806,19 @@ export class ExtensionUiController {
 			let promptResolve: ((value: AskDialogPromptValue | undefined) => void) | undefined;
 			let closed = false;
 			const draftEditor = this.ctx.editor;
+			// A draft in progress when the ask lands keeps the keyboard, so in-flight
+			// typing never answers by accident; up/down hand input to the ask and the
+			// draft stays parked beneath it until the ask closes.
 			const inputGuard =
 				draftEditor.getText().length > 0
 					? {
 							isBlocked: () => draftEditor.getText().length > 0,
 							handleInput: (keyData: string) => draftEditor.handleDraftEdit(keyData),
-							hint: "完成或清空当前提示词以作答",
+							hint: "typing edits your prompt",
 							// Show the draft's insertion cursor while it owns input; drop it
-							// once the draft clears and the ask controls take over.
-							syncPresentation: () => {
-								draftEditor.focused = draftEditor.getText().length > 0;
+							// once the ask controls take over.
+							syncPresentation: (blocked: boolean) => {
+								draftEditor.focused = blocked;
 							},
 						}
 					: undefined;
@@ -1183,7 +1193,7 @@ export class ExtensionUiController {
 		dialogOptions?: InteractiveSelectorDialogOptions,
 	): Promise<boolean> {
 		const result = await this.showHookSelector(`${title}\n${message}`, ["是", "否"], dialogOptions);
-		return result === "Yes";
+		return labelEq(result, "Yes", "是");
 	}
 
 	/**
@@ -1203,6 +1213,7 @@ export class ExtensionUiController {
 				{
 					timeout: dialogOptions?.timeout,
 					onTimeout: dialogOptions?.onTimeout,
+					secret: dialogOptions?.secret,
 					tui: this.ctx.ui,
 				},
 			);

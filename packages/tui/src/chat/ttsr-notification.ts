@@ -121,7 +121,7 @@ export class TtsrNotificationComponent extends Container {
 
 		const body: Component[] = [new Text(theme.italic(displayText), 0, 0)];
 		if (truncated) {
-			body.push(new Text(theme.italic(` (${expandKeyHint()} to 展开)`), 0, 0));
+			body.push(new Text(theme.italic(` (${expandKeyHint()} to expand)`), 0, 0));
 		}
 		return { icon: theme.icon.warning, header, body };
 	}
@@ -152,9 +152,9 @@ export class TtsrNotificationComponent extends Container {
 
 		const hidden = this.#rules.length - visible.length;
 		if (hidden > 0) {
-			body.push(new Text(theme.italic(`… +${hidden} more (${expandKeyHint()} to 展开)`), 0, 0));
+			body.push(new Text(theme.italic(`… +${hidden} more (${expandKeyHint()} to expand)`), 0, 0));
 		} else if (elidedDetail) {
-			body.push(new Text(theme.italic(` (${expandKeyHint()} to 展开)`), 0, 0));
+			body.push(new Text(theme.italic(` (${expandKeyHint()} to expand)`), 0, 0));
 		}
 		return { icon: theme.icon.warning, header, body };
 	}

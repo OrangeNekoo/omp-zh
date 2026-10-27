@@ -139,6 +139,7 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 				{ keys: [act("app.approval.approve")], action: "批准待处理的工具调用" },
 				{ keys: [act("app.thinking.toggle")], action: "切换思考块可见性" },
 				{ keys: [act("app.editor.external")], action: "在外部编辑器中编辑消息" },
+				{ keys: [act("app.local.open")], action: "在外部编辑器中打开 local:// 文件" },
 				{ keys: [act("app.retry")], action: "重试上次失败的助手回合" },
 				{ keys: [act("app.clipboard.pasteImage")], action: "从剪贴板粘贴图像或文本" },
 				{
@@ -184,7 +185,7 @@ export function buildHotkeysMarkdown(bindings: HotkeysMarkdownBindings): string 
 	const lines: string[] = [];
 	for (const [index, group] of hotkeyGroups(bindings).entries()) {
 		if (index > 0) lines.push("");
-		lines.push(`**${group.title}**`, "| Key | Action |", "|-----|--------|");
+		lines.push(`**${group.title}**`, "| 键 | 操作 |", "|-----|--------|");
 		for (const row of group.rows) {
 			const keys = row.keys.map(part => markdownPart(bindings, part)).join("");
 			lines.push(`| ${keys} | ${row.action} |`);
@@ -249,8 +250,8 @@ export class HotkeysSheetComponent implements Component {
 					node("table", {
 						role: "omp.hotkeys.table",
 						cols: [
-							{ id: "keys", head: "Key" },
-							{ id: "action", head: "Action", grow: 1 },
+							{ id: "keys", head: "键" },
+							{ id: "action", head: "操作", grow: 1 },
 						],
 						rows: group.rows.map((row, rowIndex) => ({
 							id: String(rowIndex),

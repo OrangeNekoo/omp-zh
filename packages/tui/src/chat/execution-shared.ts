@@ -65,7 +65,7 @@ export function buildExecutionFrame(
 		ui,
 		spinner => theme.fg(colorKey, spinner),
 		text => theme.fg("muted", text),
-		`Running… (${interruptKey()} to 取消)`,
+		`Running… (${interruptKey()} to cancel)`,
 		getSymbolTheme().spinnerFrames,
 	);
 
@@ -90,7 +90,7 @@ export function buildStatusFooter(opts: {
 	const parts: string[] = [];
 
 	if (opts.hiddenLineCount > 0 && !opts.suppressHiddenCount) {
-		parts.push(theme.fg("dim", `… ${opts.hiddenLineCount} more lines (${expandKeyHint()} to 展开)`));
+		parts.push(theme.fg("dim", `… ${opts.hiddenLineCount} more lines (${expandKeyHint()} to expand)`));
 	}
 	if (opts.status === "cancelled") {
 		parts.push(theme.fg("warning", "(cancelled)"));
@@ -159,7 +159,7 @@ export function describeExecutionCard(input: ExecutionCardInput): NativeNode {
 	if (input.images) children.push(...input.images);
 	if (running) {
 		children.push(
-			node("spinner", { label: [span(`Running… (${interruptKey()} to 取消)`, "muted")] }, undefined, "running"),
+			node("spinner", { label: [span(`Running… (${interruptKey()} to cancel)`, "muted")] }, undefined, "running"),
 		);
 	}
 	const notes: TspSpan[] = [];

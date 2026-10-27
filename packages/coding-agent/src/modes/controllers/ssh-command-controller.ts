@@ -78,7 +78,7 @@ export class SSHCommandController {
 		const rest = prefixMatch?.[1]?.trim() ?? "";
 		if (!rest) {
 			this.ctx.showError(
-				"Usage: /ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
+				"用法：/ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
 			);
 			return;
 		}
@@ -86,7 +86,7 @@ export class SSHCommandController {
 		const tokens = parseCommandArgs(rest);
 		if (tokens.length === 0) {
 			this.ctx.showError(
-				"Usage: /ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
+				"用法：/ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
 			);
 			return;
 		}
@@ -270,7 +270,7 @@ export class SSHCommandController {
 					[
 						theme.fg("muted", "未配置 SSH 主机。"),
 						"",
-						`Use ${theme.fg("accent", "/ssh add")} to 添加 a host.`,
+						`使用 ${theme.fg("accent", "/ssh add")} 添加主机。`,
 					].join("\n"),
 				);
 				return;

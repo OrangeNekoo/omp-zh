@@ -1035,7 +1035,7 @@ function renderCollapsedLine(runtime: AutoresearchDashboardRuntime, state: Exper
 	} else if (!runtime.autoresearchMode) {
 		parts.push(theme.fg("dim", ` | ${renderModeStatus(runtime, state)}`));
 	}
-	parts.push(theme.fg("dim", ` | ${formatKeyHint("ctrl+x")} expand`));
+	parts.push(theme.fg("dim", ` | ${formatKeyHint("ctrl+x")} 展开`));
 	return parts.join("");
 }
 

@@ -246,15 +246,15 @@ export class CleansePanelComponent extends OverlayPanel {
 			case undefined:
 				return theme.fg("muted", `${esc} 取消 /cleanse`);
 			case "clean":
-				return theme.fg("success", `${theme.status.success} Clean · ${esc} dismiss`);
+				return theme.fg("success", `${theme.status.success} Clean · ${esc} 忽略`);
 			case "unresolved":
-				return theme.fg("warning", `${theme.status.warning} Diagnostics remain · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Diagnostics remain · ${esc} 忽略`);
 			case "unsupported":
-				return theme.fg("warning", `${theme.status.warning} No runnable checker · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} No runnable checker · ${esc} 忽略`);
 			case "cancelled":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 忽略`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} dismiss`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 忽略`);
 		}
 	}
 }

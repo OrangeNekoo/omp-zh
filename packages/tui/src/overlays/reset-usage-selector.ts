@@ -191,7 +191,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 			? theme.fg("warning", oneLine(this.#confirmationMessage(pending)))
 			: theme.fg(
 					"muted",
-					`${editorKeys("tui.select.up", "tui.select.down")} select · ${formatKeyHint("enter")} spend a reset · ${editorKey("tui.select.cancel")} cancel`,
+					`${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${formatKeyHint("enter")} spend a reset · ${editorKey("tui.select.cancel")} 取消`,
 				);
 		this.#listContainer.addChild(new Text(hint, 0, 0));
 

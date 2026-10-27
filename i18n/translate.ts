@@ -187,6 +187,20 @@ function findReplacements(
 		onHit({ start: node.start, end: node.end }, value, kind, translated);
 	};
 
+	/** 三元/逻辑表达式里的字符串分支：`a ? "X" : b ? "Y" : "Z"`。 */
+	const considerLiteralBranches = (expression: any, kind: string, depth = 0): void => {
+		if (depth > 5 || !expression) return;
+		if (expression.type === "StringLiteral") consider(expression, kind, expression.value);
+		else if (expression.type === "TemplateLiteral") considerTemplate(expression, kind);
+		else if (expression.type === "ConditionalExpression") {
+			considerLiteralBranches(expression.consequent, kind, depth + 1);
+			considerLiteralBranches(expression.alternate, kind, depth + 1);
+		} else if (expression.type === "LogicalExpression") {
+			considerLiteralBranches(expression.left, kind, depth + 1);
+			considerLiteralBranches(expression.right, kind, depth + 1);
+		}
+	};
+
 	/** 选项对象：只翻译 `label` 与 `description`。 */
 	const translateOptionObject = (object: any): void => {
 		for (const property of object.properties ?? []) {
@@ -212,12 +226,19 @@ function findReplacements(
 			if (id.type !== "Identifier") return;
 			// 会进入协议 enum 的常量不能译（见 PROTOCOL_CONSTANTS）。
 			if (PROTOCOL_CONSTANTS[id.name] === true) return;
-			// 后缀白名单 + `helpText`（controller 里的帮助文本数组，camelCase 无后缀）。
-			if (!/^(?:helpText|.*_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION))$/.test(id.name)) {
+			// 后缀白名单 + `helpText`（controller 里的帮助文本数组，camelCase 无后缀）
+			// + `title`（面板标题，如变更日志的「最近的变更」/「最近 N 个版本」）。
+			if (!/^(?:helpText|title|.*_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION))$/.test(id.name)) {
 				return;
 			}
 			const init = p.node.init;
 			if (!init) return;
+			// `const title = kind === "full" ? "Full Changelog" : "Recent Changes"`：
+			// 标题常由三元分支给出，逐个分支查词典。是否替换仍由词典把关。
+			if (init.type === "ConditionalExpression" || init.type === "LogicalExpression") {
+				considerLiteralBranches(init, `const:${id.name}`);
+				return;
+			}
 			// `const NATIVE_TITLE = "Plan review"`：单值的界面常量。
 			if (init.type === "StringLiteral") {
 				consider(init, `const:${id.name}`, init.value);
@@ -369,7 +390,23 @@ function findReplacements(
 		},
 		NewExpression(p: any) {
 			const callee = p.node.callee;
-			if (callee.type !== "Identifier" || !TRANSLATABLE_CONSTRUCTORS.has(callee.name)) return;
+			if (callee.type !== "Identifier") return;
+			// `new HookSelectorComponent(title, ["Yes", "No"], …)`：对话框标题与选项
+			// 都是界面文案。选项同时是回传值，因此比较处需中英双认
+			// （见 i18n/patch-label-compare.ts）。
+			if (callee.name === "HookSelectorComponent") {
+				const [title, options] = p.node.arguments;
+				if (title?.type === "StringLiteral") consider(title, "new:selector:title", title.value);
+				else if (title?.type === "TemplateLiteral") considerTemplate(title, "new:selector:title");
+				if (options?.type === "ArrayExpression") {
+					for (const element of options.elements) {
+						if (element?.type === "StringLiteral") consider(element, "new:selector:option", element.value);
+						else if (element?.type === "TemplateLiteral") considerTemplate(element, "new:selector:option");
+					}
+				}
+				return;
+			}
+			if (!TRANSLATABLE_CONSTRUCTORS.has(callee.name)) return;
 			const first = p.node.arguments[0];
 			if (first?.type === "StringLiteral") consider(first, `new:${callee.name}`, first.value);
 			else if (first?.type === "TemplateLiteral") considerTemplate(first, `new:${callee.name}`);

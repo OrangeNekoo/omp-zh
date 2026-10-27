@@ -14,6 +14,8 @@ type BtwPanelState = "running" | "complete" | "branching" | "aborted" | "error";
 
 interface BtwPanelComponentOptions {
 	question: string;
+	/** Heading shown instead of `/btw <question>`, e.g. `/sitrep the migration` for a side command. */
+	title?: string;
 	tui: TUI;
 	canBranch?: () => boolean;
 	canFollowUp?: () => boolean;
@@ -30,15 +32,13 @@ export class BtwPanelComponent extends OverlayPanel {
 	#closed = false;
 	#copied = false;
 	#baseTitle: string;
-	readonly #question: string;
 	readonly #content: StreamingPanelContent;
 	#native: { node: NativeNode; canFollowUp: boolean; canBranch: boolean } | undefined;
 
 	constructor(options: BtwPanelComponentOptions) {
-		const baseTitle = `/btw ${replaceTabs(options.question)}`;
+		const baseTitle = replaceTabs(options.title ?? `/btw ${options.question}`);
 		super(baseTitle, "omp.overlay.btw");
 		this.#baseTitle = baseTitle;
-		this.#question = replaceTabs(options.question);
 		this.#tui = options.tui;
 		this.#canBranch = options.canBranch;
 		this.#canFollowUp = options.canFollowUp;
@@ -138,7 +138,11 @@ export class BtwPanelComponent extends OverlayPanel {
 		const memo = this.#native;
 		if (memo && memo.canFollowUp === canFollowUp && memo.canBranch === canBranch) return memo.node;
 		// Inline in the dock, styled as a sheet by role: a borderless column headed by the question.
-		const title = text([span("/btw", "accent"), span(` ${this.#question}`)], { truncate: "end", lines: 1 });
+		// The command word is the accent; the rest of the heading is the question or arguments.
+		const space = this.#baseTitle.indexOf(" ");
+		const command = space === -1 ? this.#baseTitle : this.#baseTitle.slice(0, space);
+		const rest = space === -1 ? "" : this.#baseTitle.slice(space);
+		const title = text([span(command, "accent"), ...(rest ? [span(rest)] : [])], { truncate: "end", lines: 1 });
 		const live = this.#state === "running" || this.#state === "branching";
 		const head = node("row", { role: "omp.sheet.head", gap: "sm", align: "center" }, [
 			...(live ? [node("spinner", {})] : []),
@@ -201,14 +205,14 @@ export class BtwPanelComponent extends OverlayPanel {
 		const esc = interruptKey();
 		switch (this.#state) {
 			case "running":
-				return theme.fg("muted", `${esc} to 取消`);
+				return theme.fg("muted", `${esc} 取消`);
 			case "complete": {
 				const actions: string[] = [];
 				const copyKey = formatKeyHint("c");
-				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to 复制 again` : `${copyKey} to 复制`);
-				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to 追问`);
-				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to 分支`);
-				actions.push(`${esc} to 关闭`);
+				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} 再次复制` : `${copyKey} 复制`);
+				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} 追问`);
+				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} 分支`);
+				actions.push(`${esc} 关闭`);
 				if (this.#copied) {
 					return `${theme.fg("success", "✓ 已复制到剪贴板")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
 				}
@@ -217,9 +221,9 @@ export class BtwPanelComponent extends OverlayPanel {
 			case "branching":
 				return theme.fg("muted", `${theme.status.pending} Branching to chat…`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} to 关闭`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 关闭`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} to 关闭`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 关闭`);
 		}
 	}
 

@@ -912,7 +912,7 @@ class TreeList implements Component {
 			} else if (this.getSearchQuery().length > 0) {
 				lines.push(truncateToWidth(theme.fg("muted", `没有条目匹配搜索 "${this.getSearchQuery()}"`), width));
 				lines.push(
-					truncateToWidth(theme.fg("muted", `Press ${formatKeyHint("backspace")} to 清除 the search`), width),
+					truncateToWidth(theme.fg("muted", `按 ${formatKeyHint("backspace")} 清除搜索`), width),
 				);
 				lines.push(truncateToWidth(theme.fg("muted", `(0/${totalCount})${this.#getFilterLabel()}`), width));
 			} else {
@@ -927,7 +927,7 @@ class TreeList implements Component {
 					truncateToWidth(
 						theme.fg(
 							"muted",
-							`Press ${formatKeyHint("alt+a")} to 显示 all, ${formatKeyHint("alt+d")} for default`,
+							`按 ${formatKeyHint("alt+a")} 显示全部，按 ${formatKeyHint("alt+d")} 回到默认`,
 						),
 						width,
 					),
@@ -1685,7 +1685,7 @@ export class TreeSelectorComponent extends OverlayPanel {
 				{ keys: ["ctrl+o"], label: "filter" },
 			]),
 		];
-		const result = overlayCard("omp.overlay.tree", "Session Tree", children);
+		const result = overlayCard("omp.overlay.tree", "会话树", children);
 		this.#nativeMemo = { content, query, cursor, filterMode, node: result };
 		return result;
 	}

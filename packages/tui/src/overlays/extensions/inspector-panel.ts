@@ -243,7 +243,7 @@ export class InspectorPanel implements Component {
 	}
 
 	#nativeMore(hidden: number, noun: string): NativeNode {
-		return text([span(`… ${hidden} more ${noun} (${expandKeyHint()} to 展开)`, "dim")]);
+		return text([span(`… ${hidden} more ${noun} (${expandKeyHint()} to expand)`, "dim")]);
 	}
 
 	/** Tool/argument rows: name, type and required flag, then the description. */
@@ -281,7 +281,7 @@ export class InspectorPanel implements Component {
 				description ? text(sanitizeDisplayText(description), { wrap: "word" }) : undefined,
 				inline
 					? this.#nativeParams(params)
-					: text([span(`${params.length} args (${expandKeyHint()} to 展开)`, "dim")]),
+					: text([span(`${params.length} 个参数（${expandKeyHint()} 展开）`, "dim")]),
 			]),
 			{ gap: "xs" },
 		);
@@ -426,7 +426,7 @@ export class InspectorPanel implements Component {
 		const shown = items.slice(0, cap).map(item => sanitizeDisplayText(item));
 		const hidden = items.length - shown.length;
 		const spans: TspSpan[] = [span(shown.join("\n"), "accent")];
-		if (hidden > 0) spans.push(span(`\n… ${hidden} more (${expandKeyHint()} to 展开)`, "dim"));
+		if (hidden > 0) spans.push(span(`\n… ${hidden} more (${expandKeyHint()} to expand)`, "dim"));
 		return spans;
 	}
 
@@ -582,10 +582,10 @@ export class InspectorPanel implements Component {
 				toolsBody.push("");
 			}
 			if (hidden > 0) {
-				toolsBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to 展开)`));
+				toolsBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to expand)`));
 				toolsBody.push("");
 			} else if (collapsedArgs) {
-				toolsBody.push(theme.fg("dim", `  … args (${expandKeyHint()} to 展开)`));
+				toolsBody.push(theme.fg("dim", `  … args (${expandKeyHint()} to expand)`));
 				toolsBody.push("");
 			}
 			contents.push(...this.#section("Tools", toolsBody, width));
@@ -601,7 +601,7 @@ export class InspectorPanel implements Component {
 				resourcesBody.push(`  ${theme.fg("accent", resource.name)}`);
 			}
 			if (hidden > 0) {
-				resourcesBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to 展开)`));
+				resourcesBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to expand)`));
 			}
 			resourcesBody.push("");
 			contents.push(...this.#section("Resources", resourcesBody, width));
@@ -617,7 +617,7 @@ export class InspectorPanel implements Component {
 				promptsBody.push(`  ${theme.fg("accent", prompt.name)}`);
 			}
 			if (hidden > 0) {
-				promptsBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to 展开)`));
+				promptsBody.push(theme.fg("dim", `  … ${hidden} more (${expandKeyHint()} to expand)`));
 			}
 			promptsBody.push("");
 			contents.push(...this.#section("Prompts", promptsBody, width));
@@ -669,7 +669,7 @@ export class InspectorPanel implements Component {
 				factoryBody.push("");
 			}
 			if (collapsedArgs) {
-				factoryBody.push(theme.fg("dim", `  … args (${expandKeyHint()} to 展开)`));
+				factoryBody.push(theme.fg("dim", `  … args (${expandKeyHint()} to expand)`));
 				factoryBody.push("");
 			}
 			surface.push(...this.#section("Tools", factoryBody, width));
@@ -865,7 +865,7 @@ export class InspectorPanel implements Component {
 		} else {
 			lines.push(...wrapped.slice(0, MCP_INLINE_DESC_LINES));
 			lines.push(
-				theme.fg("dim", `  … ${wrapped.length - MCP_INLINE_DESC_LINES} more (${expandKeyHint()} to 展开)`),
+				theme.fg("dim", `  … ${wrapped.length - MCP_INLINE_DESC_LINES} more (${expandKeyHint()} to expand)`),
 			);
 		}
 		lines.push("");
@@ -910,7 +910,7 @@ export class InspectorPanel implements Component {
 		if (hidden > 0) {
 			this.#pushLabeled(lines, label, `${items.length} patterns`, width, "dim");
 			for (const item of shown) this.#pushWrapped(lines, item, width, indent);
-			lines.push(theme.fg("dim", `${indent}… ${hidden} more (${expandKeyHint()} to 展开)`));
+			lines.push(theme.fg("dim", `${indent}… ${hidden} more (${expandKeyHint()} to expand)`));
 			return;
 		}
 		this.#pushLabeled(lines, label, shown[0] ?? "", width);
@@ -962,7 +962,7 @@ export class InspectorPanel implements Component {
 		}
 		const shownBudget = Math.max(1, budget - 1);
 		lines.push(...wrapped.slice(0, shownBudget));
-		lines.push(theme.fg("dim", `  … ${wrapped.length - shownBudget} more (${expandKeyHint()} to 展开)`));
+		lines.push(theme.fg("dim", `  … ${wrapped.length - shownBudget} more (${expandKeyHint()} to expand)`));
 	}
 
 	#highlightMarkdown(line: string): string {

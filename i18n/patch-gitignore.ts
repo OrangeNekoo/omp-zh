@@ -22,6 +22,8 @@ const ENTRIES: readonly string[] = [
 	"i18n/report.json",
 	"# 本地 omp 配置（每台机器不同）",
 	"/.omp/config.yml",
+	"# 原生插件的安装标记（由 bun i18n/fetch-native.ts 写入）",
+	"packages/natives/native/pi_natives.version",
 ];
 
 function main(): void {

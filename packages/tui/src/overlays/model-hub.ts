@@ -75,6 +75,10 @@ import {
 } from "./hub-frame";
 import { renderSegmentTrack } from "../chrome/segment-track";
 
+function labelStartsWith(actual: string | undefined, english: string, chinese: string): boolean {
+	return actual !== undefined && (actual.startsWith(english) || actual.startsWith(chinese));
+}
+
 const MODEL_HUB_BODY_MIN_WIDTH = 28;
 
 /**
@@ -2550,7 +2554,7 @@ export class ModelHubComponent implements Component {
 				} else if (entry.providerId && this.#refreshingProviders.has(entry.providerId)) {
 					text = `${entry.label} · refreshing model list…`;
 				} else {
-					text = `${entry.label} · ${entry.annotation ?? "0"} models${scopedSuffix}`;
+					text = `${entry.label} · ${entry.annotation ?? "0"} 模型${scopedSuffix}`;
 				}
 				break;
 			default:
@@ -2771,29 +2775,29 @@ export class ModelHubComponent implements Component {
 		if (strip) {
 			if (strip.kind === "name") {
 				if (strip.purpose === "compaction") {
-					return `${enter} ${compactionConfirmPending(strip) ? "accept" : "set"} compaction point · ${cancel} cancel`;
+					return `${enter} ${compactionConfirmPending(strip) ? "accept" : "set"} compaction point · ${cancel} 取消`;
 				}
 				if (strip.purpose === "preset") {
-					return `${enter} save preset · ${cancel} cancel`;
+					return `${enter} save preset · ${cancel} 取消`;
 				}
-				return `${enter} create + pick model · ${cancel} cancel`;
+				return `${enter} create + pick model · ${cancel} 取消`;
 			}
-			if (strip.kind === "role") return `${leftRight} choose · ${enter} assign/clear · ${cancel} cancel`;
-			if (strip.kind === "scope") return `${leftRight} save scope · ${enter} choose · ${cancel} cancel`;
-			return `${leftRight} thinking level · ${enter} apply · ${cancel} keep`;
+			if (strip.kind === "role") return `${leftRight} 选择 · ${enter} assign/clear · ${cancel} 取消`;
+			if (strip.kind === "scope") return `${leftRight} save scope · ${enter} 选择 · ${cancel} 取消`;
+			return `${leftRight} thinking level · ${enter} 应用 · ${cancel} keep`;
 		}
 		if (this.#assigning !== null) {
 			if (this.#focus === "scope") {
-				return `${enterRight} models · ${upDown} providers · type to search · ${altLeftRight} kind · ${cancel} cancel`;
+				return `${enterRight} 模型 · ${upDown} 服务商 · 输入以搜索 · ${altLeftRight} 类型 · ${cancel} 取消`;
 			}
-			const browse = `${upDown} models · ${left} providers · type to search · ${altLeftRight} kind · ${cancel} cancel`;
+			const browse = `${upDown} 模型 · ${left} 服务商 · 输入以搜索 · ${altLeftRight} 类型 · ${cancel} 取消`;
 			switch (this.#assigning.kind) {
 				case "fallback":
 					return `${enter} pick fallback · ${browse}`;
 				case "fallbackKey":
 					return `${enter} pick the protected model · ${browse}`;
 				default:
-					return `${enter} assign · ${browse}`;
+					return `${enter} 赋值 · ${browse}`;
 			}
 		}
 		const entry = this.#activeEntry();
@@ -2801,11 +2805,11 @@ export class ModelHubComponent implements Component {
 			if (this.#focus !== "list") {
 				const presets =
 					this.#presets().names.length > 0 ? ` · ${formatKeyHints(["ctrl+left", "ctrl+right"])} preset` : "";
-				return `${upDown} providers · ${enterRight} roles · ${altLeftRight} tabs${presets} · ${cancel} close`;
+				return `${upDown} 服务商 · ${enterRight} 角色 · ${altLeftRight} tabs${presets} · ${cancel} 关闭`;
 			}
 			// A live query takes printable keys and backspace, so the letter commands rest.
 			if (this.#browser.query.length > 0) {
-				return `${upDown} rows · ${enter} pick · type to search · ${left} providers · ${cancel} close`;
+				return `${upDown} 行 · ${enter} 选择 · 输入以搜索 · ${left} 服务商 · ${cancel} 关闭`;
 			}
 			const row = this.#rolesRows[this.#roleIndex];
 			const compaction =
@@ -2818,13 +2822,13 @@ export class ModelHubComponent implements Component {
 				// action would be inert there.
 				const editable = this.#resolveFallbackEntry(row.role, row.chainIndex) !== undefined;
 				const thinking = editable ? ` · ${formatKeyHint("t")} thinking` : "";
-				return `${upDown} rows · ${enter} replace · ${formatKeyHint("f")} add another · ${formatKeyHint("x")} remove${thinking}${compaction} · [/] reorder · ${left} providers`;
+				return `${upDown} 行 · ${enter} replace · ${formatKeyHint("f")} add another · ${formatKeyHint("x")} 移除${thinking}${compaction} · [/] reorder · ${left} 服务商`;
 			}
 			if (row?.kind === "chainKey") {
-				return `${upDown} rows · ${formatKeyHints(["enter", "f"])} add fallback · ${formatKeyHint("x")} clear chain · ${left} providers`;
+				return `${upDown} 行 · ${formatKeyHints(["enter", "f"])} add fallback · ${formatKeyHint("x")} clear chain · ${left} 服务商`;
 			}
 			if (row?.kind === "newFallback") {
-				return `${upDown} rows · ${enter} new model/provider fallback chain · ${left} providers`;
+				return `${upDown} 行 · ${enter} new model/provider fallback chain · ${left} 服务商`;
 			}
 			// Same rule as fallback rows: advertise `t` only where a strip would
 			// open — an assigned role whose model has thinking levels to offer.
@@ -2832,18 +2836,18 @@ export class ModelHubComponent implements Component {
 			const thinking = editable ? ` · ${formatKeyHint("t")} thinking` : "";
 			const savePreset = this.#callbacks.onSavePreset ? ` · ${formatKeyHint("s")} save preset` : "";
 			const switchPreset = this.#presets().names.length > 0 ? ` · ${formatKeyHints(["p", "shift+p"])} preset` : "";
-			return `${upDown} rows · ${enter} pick · ${formatKeyHint("f")} fallback · ${formatKeyHint("x")} clear${thinking}${compaction} · ${formatKeyHint("c")} cycle · [/] reorder · ${formatKeyHint("n")} new${savePreset}${switchPreset}`;
+			return `${upDown} 行 · ${enter} 选择 · ${formatKeyHint("f")} fallback · ${formatKeyHint("x")} 清除${thinking}${compaction} · ${formatKeyHint("c")} 循环 · [/] reorder · ${formatKeyHint("n")} new${savePreset}${switchPreset}`;
 		}
 		if (entry.kind === "provider" && entry.locked) {
 			return entry.oauth
-				? `${enter} log in · ${upDown} providers · ${cancel} close`
-				: `${upDown} providers · ${cancel} close`;
+				? `${enter} log in · ${upDown} 服务商 · ${cancel} 关闭`
+				: `${upDown} 服务商 · ${cancel} 关闭`;
 		}
-		const refresh = entry.kind === "provider" ? ` · ${formatKeyHint("f5")} refresh` : "";
+		const refresh = entry.kind === "provider" ? ` · ${formatKeyHint("f5")} 刷新` : "";
 		if (this.#focus === "scope") {
-			return `${enterRight} models · ${upDown} providers · type to search · ${altLeftRight} kind${refresh} · ${cancel} close`;
+			return `${enterRight} 模型 · ${upDown} 服务商 · 输入以搜索 · ${altLeftRight} 类型${refresh} · ${cancel} 关闭`;
 		}
-		return `${enter} assign roles · ${upDown} models · ${left} providers · type to search · ${altLeftRight} kind${refresh} · ${cancel} close`;
+		return `${enter} assign roles · ${upDown} 模型 · ${left} 服务商 · 输入以搜索 · ${altLeftRight} 类型${refresh} · ${cancel} 关闭`;
 	}
 
 	#renderFooter(width: number): string {
@@ -3099,7 +3103,7 @@ export class ModelHubComponent implements Component {
 						"status",
 					);
 				} else {
-					spans = [span(`${entry.label} · ${entry.annotation ?? "0"} models${scopedSuffix}`, "muted")];
+					spans = [span(`${entry.label} · ${entry.annotation ?? "0"} 模型${scopedSuffix}`, "muted")];
 				}
 				break;
 			default:
@@ -3664,7 +3668,7 @@ export class ModelHubComponent implements Component {
 		let label: TspSpan[];
 		if (strip.kind === "role") {
 			// The second step of "New fallback chain…" reuses the role strip with key chips only.
-			const keyStrip = strip.chips.every(chip => chip.label.startsWith("for "));
+			const keyStrip = strip.chips.every(chip => labelStartsWith(chip.label, "for ", "适用于 "));
 			label = keyStrip
 				? [span("新建备用链", "muted")]
 				: [span("分配 ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];

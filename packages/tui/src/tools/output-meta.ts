@@ -244,7 +244,7 @@ export function formatTruncationMetaNotice(truncation: TruncationMeta, source?: 
 			notice = `Showing ${Math.min(truncation.outputLines, totalLines)} of ${totalLines} lines; middle elided`;
 		}
 		if (truncation.nextOffset != null) {
-			notice += `. Use :${truncation.nextOffset} to 继续`;
+			notice += `. Use :${truncation.nextOffset} to continue`;
 		}
 		if (artifactReference) {
 			notice += `. ${artifactReference}`;
@@ -274,7 +274,7 @@ export function formatTruncationMetaNotice(truncation: TruncationMeta, source?: 
 	}
 
 	if (truncation.nextOffset != null) {
-		notice += `. Use :${truncation.nextOffset} to 继续`;
+		notice += `. Use :${truncation.nextOffset} to continue`;
 	}
 
 	if (artifactReference) {

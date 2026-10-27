@@ -19,6 +19,7 @@ import { theme } from "@oh-my-pi/pi-tui/theme";
 import { sanitizeText } from "@oh-my-pi/pi-utils";
 import { handleMcpAcp } from "./helpers/mcp";
 import { markdownFenceFor } from "../utils/markdown-fence";
+import { openLocalFileInEditor } from "../modes/local-file-editor";
 import { commandConsumed, errorMessage, parseSubcommand, usage } from "./helpers/parse";
 import {
 	describeRedeemOutcome,
@@ -544,7 +545,7 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "context",
 		icon: "context",
-		description: "显示预估上下文用量明细",
+		description: "浏览上下文用量与详细内容",
 		acpDescription: "显示上下文用量",
 		getTuiAutocompleteDescription: runtime => {
 			const usage = runtime.ctx.session.getContextUsage();
@@ -591,9 +592,21 @@ export const BUILTIN_SESSION_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		},
 	},
 	{
+		name: "local",
+		icon: "pencil",
+		description: "用 $EDITOR 打开会话的 local:// 文件（不指定名称时弹出选择器）",
+		inlineHint: "[name]",
+		allowArgs: true,
+		handleTui: async (command, runtime) => {
+			clearSubmittedText(runtime);
+			await openLocalFileInEditor(runtime.ctx, command.args);
+		},
+	},
+	{
 		name: "hub",
+		aliases: ["subagents"],
 		icon: "agents",
-		description: "打开实时代理中心",
+		description: "Open the live Agent Hub (subagents, including finished ones)",
 		handleTui: (_command, runtime) => {
 			runtime.ctx.showAgentHub({ initialSection: "activity" });
 			clearSubmittedText(runtime);

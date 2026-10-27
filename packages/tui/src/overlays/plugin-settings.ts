@@ -344,7 +344,7 @@ export class PluginListComponent extends OverlayPanel {
 			new Text(
 				theme.fg(
 					"dim",
-					`${editorKey("tui.select.confirm")} to configure · ${editorKey("tui.select.cancel")} to 返回`,
+					`${editorKey("tui.select.confirm")} to configure · ${editorKey("tui.select.cancel")} 返回`,
 				),
 				0,
 				0,
@@ -555,7 +555,7 @@ export class PluginDetailComponent extends OverlayPanel {
 			items,
 			maxVisible: Math.min(items.length, 10),
 			settingsTheme: getSettingsListTheme(),
-			hint: `${editorKey("tui.select.confirm")} to 编辑 · ${editorKey("tui.select.cancel")} to 返回`,
+			hint: `${editorKey("tui.select.confirm")} 编辑 · ${editorKey("tui.select.cancel")} 返回`,
 			onChange: (id, newValue) => {
 				if (id === "__enabled__") {
 					this.callbacks.onEnabledChange(newValue === "true");
@@ -701,7 +701,7 @@ export class MarketplacePluginDetailComponent extends OverlayPanel {
 			maxVisible: Math.min(items.length, 10),
 			settingsTheme: getSettingsListTheme(),
 			summary,
-			hint: `${editorKey("tui.select.confirm")} to 编辑 · ${editorKey("tui.select.cancel")} to 返回`,
+			hint: `${editorKey("tui.select.confirm")} 编辑 · ${editorKey("tui.select.cancel")} 返回`,
 			onChange: (id, newValue) => {
 				if (id === "__enabled__") {
 					const next = newValue === "true";
@@ -803,7 +803,7 @@ function createConfigEnumPanel(
 		currentValue,
 		maxVisible: 8,
 		selectTheme: getSelectListTheme(),
-		hint: `${editorKey("tui.select.confirm")} to 选择 · ${editorKey("tui.select.cancel")} to 取消`,
+		hint: `${editorKey("tui.select.confirm")} 选择 · ${editorKey("tui.select.cancel")} 取消`,
 		onSubmit: onSelect,
 		onCancel,
 		requestRender,
@@ -832,7 +832,7 @@ function createConfigInputPanel(
 		secret: schema.secret,
 		initialValue: !schema.secret ? currentValue : undefined,
 		empty: "cancel",
-		hint: `${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消`,
+		hint: `${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消`,
 		onSubmit,
 		onCancel,
 		requestRender,

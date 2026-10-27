@@ -175,7 +175,7 @@ function createSettingsTextField(
 		secret,
 		initialValue: currentValue || undefined,
 		empty: "submit",
-		hint: `  ${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消 · Clear field to unset`,
+		hint: `  ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消 · Clear field to unset`,
 		onSubmit,
 		onCancel,
 		requestRender,
@@ -212,7 +212,7 @@ function createSettingsSelectField(
 		onSelectionChange,
 		onSubmit: onSelect,
 		onCancel,
-		hint: `  ${editorKey("tui.select.confirm")} to 选择 · ${editorKey("tui.select.cancel")} to 返回`,
+		hint: `  ${editorKey("tui.select.confirm")} 选择 · ${editorKey("tui.select.cancel")} 返回`,
 		footer,
 		requestRender,
 		picker,
@@ -279,10 +279,10 @@ class MultiSelectSubmenu extends Container {
 			this.#cursor = this.#options.findIndex(option => option.value === item.value);
 		};
 		this.#selectList.onCancel = this.#onClose;
-		const back = `${editorKey("tui.select.cancel")} to 返回`;
+		const back = `${editorKey("tui.select.cancel")} 返回`;
 		const hint = this.#ordered
-			? `  Click to toggle · drag selected items to reorder · ${formatKeyHints(["left", "right"])} move · 1-9 place · ${back}`
-			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to 切换 · ${back}`;
+			? `  Click to toggle · drag selected items to reorder · ${formatKeyHints(["left", "right"])} 移动 · 1-9 place · ${back}`
+			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} 切换 · ${back}`;
 		this.#field = new FormField(this.#selectList, {
 			theme: formTheme,
 			label: this.#title,
@@ -458,7 +458,7 @@ class ProviderLimitsSubmenu extends Container {
 			items,
 			maxVisible: 12,
 			selectTheme: getSelectListTheme(),
-			hint: `  ${editorKey("tui.select.confirm")} to 编辑 provider · ${editorKey("tui.select.cancel")} to 返回`,
+			hint: `  ${editorKey("tui.select.confirm")} 编辑服务商 · ${editorKey("tui.select.cancel")} 返回`,
 			onSubmit: value => {
 				if (value === "__clear_all") {
 					this.#settings.set("providers.maxInFlightRequests", {});
@@ -487,7 +487,7 @@ class ProviderLimitsSubmenu extends Container {
 					"输入一个正数。小数向下取整。清空该字段可让此服务商不受限制。",
 				initialValue: limits[provider]?.toString() ?? undefined,
 				empty: "submit",
-				hint: `  ${editorKey("tui.input.submit")} to 保存 · ${editorKey("tui.select.cancel")} to 取消 · Clear field to unset`,
+				hint: `  ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消 · Clear field to unset`,
 				validate: value => {
 					if (value.trim() === "") return undefined;
 					const limit = Number(value.trim());
@@ -550,7 +550,7 @@ function getSettingsTabs(): Tab[] {
 			const icon = theme.symbol(meta.icon);
 			return { id, label: `${icon} ${meta.label}`, short: icon };
 		}),
-		{ id: "plugins", label: `${theme.icon.package} 个插件`, short: theme.icon.package },
+		{ id: "plugins", label: `${theme.icon.package} 插件`, short: theme.icon.package },
 	];
 }
 
@@ -703,18 +703,18 @@ export class SettingsSelectorComponent implements Component {
 		const confirm = editorKey("tui.select.confirm");
 		const cancel = editorKey("tui.select.cancel");
 		const tab = formatKeyHint("tab");
-		const switchTabs = `${formatKeyHints(["left", "right"])} to 切换标签页`;
+		const switchTabs = `${formatKeyHints(["left", "right"])} 切换标签页`;
 		if (this.#searchList) {
-			return `${confirm} to 更改 · ${tab} to 跳转标签页 · ${cancel} to 退出搜索`;
+			return `${confirm} 更改 · ${tab} 跳转标签页 · ${cancel} 退出搜索`;
 		}
 		if (this.#currentTabId === "plugins") {
-			return `${tab} to 切换标签页 · ${cancel} to 关闭`;
+			return `${tab} 切换标签页 · ${cancel} 关闭`;
 		}
 		if (this.#currentList?.sectionFocused) {
-			return `${editorKeys("tui.select.up", "tui.select.down")} to 跳转分节 · ${tab}/${confirm} to settings · ${switchTabs} · ${cancel} to 关闭`;
+			return `${editorKeys("tui.select.up", "tui.select.down")} 跳转分节 · ${tab}/${confirm} 到设置 · ${switchTabs} · ${cancel} 关闭`;
 		}
-		const nav = this.#hasSectionJump ? `${tab} to 跳转分节 · ${switchTabs}` : `${tab} to 切换标签页`;
-		return `${confirm}/${formatKeyHint("space")} to 更改 · ${nav} · Type to search · ${cancel} to 关闭`;
+		const nav = this.#hasSectionJump ? `${tab} 跳转分节 · ${switchTabs}` : `${tab} 切换标签页`;
+		return `${confirm}/${formatKeyHint("space")} 更改 · ${nav} · 输入以搜索 · ${cancel} 关闭`;
 	}
 
 	/** Single-line search banner: accent icon, editable query with live cursor, right-aligned match count. */
@@ -761,7 +761,7 @@ export class SettingsSelectorComponent implements Component {
 		}
 
 		const out: string[] = [];
-		out.push(topBorder(width, "Settings"));
+		out.push(topBorder(width, "设置"));
 		this.#tabRowStart = out.length;
 		this.#tabRowCount = tabLines.length;
 		for (const line of tabLines) {
@@ -1201,7 +1201,7 @@ export class SettingsSelectorComponent implements Component {
 		children.push(memo.hints[mode]);
 
 		if (memo.root && sameItems(memo.root.children, children)) return memo.root.node;
-		const root = overlayCard("omp.overlay.settings", "Settings", children);
+		const root = overlayCard("omp.overlay.settings", "设置", children);
 		memo.root = { children, node: root };
 		return root;
 	}
@@ -1427,7 +1427,7 @@ export class SettingsSelectorComponent implements Component {
 		// Plugins hosts its own UI; it is not part of the schema-backed search.
 		empty.push({
 			id: "plugins",
-			label: `${theme.icon.package} 个插件`,
+			label: `${theme.icon.package} 插件`,
 			short: theme.icon.package,
 			muted: true,
 		});

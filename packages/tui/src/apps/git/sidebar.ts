@@ -1521,7 +1521,7 @@ export class Sidebar {
 	#changesHeaderRows(width: number): Row[] {
 		const total = this.#model.unstaged.length + this.#model.staged.length;
 		const branch = this.#model.branch ? tintChip(` ${this.#model.branch} `, theme.getColorHex("accent")) : "";
-		const label = theme.bold(`${total} file change${total === 1 ? "" : "s"} on `);
+		const label = theme.bold(`${total} 个文件变更${total === 1 ? "" : "s"}：`);
 		return [
 			{ text: ` ${label}${branch}` },
 			this.#viewToggleRow(width),

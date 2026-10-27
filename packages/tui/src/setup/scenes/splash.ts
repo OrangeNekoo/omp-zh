@@ -28,7 +28,7 @@ const MIN_SCENE_HEIGHT = 22;
 
 /** Skip affordance; built at render time so it follows the live symbol preset. */
 function skipHint(): string {
-	return `press ${formatKeyHint("enter")} to 跳过`;
+	return `press ${formatKeyHint("enter")} to skip`;
 }
 
 function starAt(x: number, y: number, frame: number): string {

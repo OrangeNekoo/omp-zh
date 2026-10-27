@@ -1046,7 +1046,7 @@ export class DebugLogViewerComponent implements Component {
 	}
 
 	#controlsText(): string {
-		return `${formatKeyHint("escape")} close · ${formatKeyHint("ctrl+c")} copy · ${formatKeyHints(["up", "down"])}/wheel move · ${formatKeyHints(["pageUp", "pageDown"])} page · ${formatKeyHints(["home", "end"])} first/last · click toggle · ${formatKeyHints(["shift+up", "shift+down"])} select · ${formatKeyHints(["left", "right"])} collapse/expand · ${formatKeyHint("ctrl+a")} all · ${formatKeyHint("ctrl+o")} older · ${formatKeyHint("ctrl+p")} pid`;
+		return `${formatKeyHint("escape")} 关闭 · ${formatKeyHint("ctrl+c")} 复制 · ${formatKeyHints(["up", "down"])}/wheel move · ${formatKeyHints(["pageUp", "pageDown"])} page · ${formatKeyHints(["home", "end"])} first/last · click toggle · ${formatKeyHints(["shift+up", "shift+down"])} 选择 · ${formatKeyHints(["left", "right"])} collapse/expand · ${formatKeyHint("ctrl+a")} all · ${formatKeyHint("ctrl+o")} older · ${formatKeyHint("ctrl+p")} pid`;
 	}
 
 	#filterText(): string {

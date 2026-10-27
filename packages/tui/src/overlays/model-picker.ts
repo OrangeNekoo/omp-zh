@@ -98,16 +98,16 @@ const SELECT_ONLY_STATUS_HINT = "Selection only — does not change the session 
 function footerHint(mode: "session" | "role" | "task" | "selection"): string {
 	const upDown = editorKeys("tui.select.up", "tui.select.down");
 	const enter = formatKeyHint("enter");
-	const close = `${editorKey("tui.select.cancel")} close`;
+	const close = `${editorKey("tui.select.cancel")} 关闭`;
 	switch (mode) {
 		case "role":
-			return `${upDown} roles · ${enter} apply role model · type to search · ${close}`;
+			return `${upDown} 角色 · ${enter} 应用角色模型 · 输入以搜索 · ${close}`;
 		case "task":
-			return `${upDown} models · ${enter} use for Task subagents · type to search · ${close}`;
+			return `${upDown} 模型 · ${enter} use for Task subagents · 输入以搜索 · ${close}`;
 		case "selection":
-			return `${upDown} models · ${enter} select model · type to search · ${close}`;
+			return `${upDown} 模型 · ${enter} select model · 输入以搜索 · ${close}`;
 		default:
-			return `${upDown} models · ${enter} use for this session · type to search · @ quick roles · ${close}`;
+			return `${upDown} 模型 · ${enter} 用于本会话 · 输入以搜索 · @ quick roles · ${close}`;
 	}
 }
 
@@ -328,7 +328,7 @@ export class ModelPickerComponent implements Component {
 		out.push(
 			topBorder(
 				width,
-				this.#taskMode ? "Switch Task Model" : selectionOnly ? "Select Model" : "Switch Model",
+				this.#taskMode ? "切换任务模型" : selectionOnly ? "选择模型" : "切换模型",
 				borderColor,
 			),
 		);

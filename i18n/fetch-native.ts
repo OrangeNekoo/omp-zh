@@ -100,8 +100,27 @@ async function resolveNativeVersion(packageName: string, requested: string): Pro
 	return newest.version;
 }
 
+/**
+ * 记录已安装原生模块的平台包版本。
+ *
+ * 只判断 `.node` 是否存在是不够的：上游发版后工作区源码升级到新版本，
+ * 旧的原生模块仍会留在原处，启动时才在 `missingNativeExport` 处炸掉
+ * （`@18.12.6 addon, not @18.13.1`）。同步流程因此必须在版本变化时重装。
+ */
+const VERSION_MARKER = "pi_natives.version";
+
+function installedVersion(): string | undefined {
+	try {
+		return fs.readFileSync(path.join(NATIVE_OUT, VERSION_MARKER), "utf8").trim();
+	} catch {
+		return undefined;
+	}
+}
+
 function alreadyInstalled(tag: string): boolean {
-	return addonFilenames(tag).some(filename => fs.existsSync(path.join(NATIVE_OUT, filename)));
+	const present = addonFilenames(tag).some(filename => fs.existsSync(path.join(NATIVE_OUT, filename)));
+	// 没有标记文件的旧安装按「版本不明」处理，宁可重下一次。
+	return present && installedVersion() === nativeVersion();
 }
 
 async function download(tag: string, version: string): Promise<void> {
@@ -129,6 +148,8 @@ async function download(tag: string, version: string): Promise<void> {
 	fs.mkdirSync(NATIVE_OUT, { recursive: true });
 	const destination = path.join(NATIVE_OUT, source);
 	fs.copyFileSync(path.join(extractedDir, source), destination);
+	// 标记实际安装的平台包版本，供 alreadyInstalled 判断是否需要重装。
+	fs.writeFileSync(path.join(NATIVE_OUT, VERSION_MARKER), `${nativeVersion()}\n`, "utf8");
 	fs.rmSync(tempDir, { recursive: true, force: true });
 	process.stdout.write(`已安装 ${path.relative(ROOT, destination)}\n`);
 }

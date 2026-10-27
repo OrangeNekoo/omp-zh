@@ -49,13 +49,13 @@ export interface ResolveInvocation {
 
 /** Streaming-safe call preview for a resolution-device write: `Resolve/Reject/Propose: <text>`. */
 export function renderResolutionDeviceCall(device: ResolutionDeviceName, content: unknown, uiTheme: Theme): Component {
-	const title = device === PROPOSE_DEVICE_NAME ? "Propose" : device === REJECT_DEVICE_NAME ? "Reject" : "Resolve";
+	const title = device === PROPOSE_DEVICE_NAME ? "Propose" : device === REJECT_DEVICE_NAME ? "Reject" : "解决";
 	return renderDeviceCallPreview(title, content, uiTheme, Ellipsis.Omit);
 }
 
 /** Native form of {@link renderResolutionDeviceCall}: `Resolve/Reject/Propose` head with the first content line. */
 export function describeResolutionDeviceCall(device: ResolutionDeviceName, content: unknown): NativeToolView {
-	const title = device === PROPOSE_DEVICE_NAME ? "Propose" : device === REJECT_DEVICE_NAME ? "Reject" : "Resolve";
+	const title = device === PROPOSE_DEVICE_NAME ? "Propose" : device === REJECT_DEVICE_NAME ? "Reject" : "解决";
 	return describeDeviceCallPreview(title, content);
 }
 

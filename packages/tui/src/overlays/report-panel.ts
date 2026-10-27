@@ -82,7 +82,7 @@ export class ReportPanel extends OverlayPanel {
 		this.#body = options.body;
 		this.#onClose = options.onClose;
 		this.#maxRows = options.maxRows;
-		this.#closeHint = `${options.closeKey} to 关闭`;
+		this.#closeHint = `${options.closeKey} 关闭`;
 		this.#view = new ScrollView(options.body, {
 			height: 0,
 			scrollbar: "auto",
@@ -101,7 +101,7 @@ export class ReportPanel extends OverlayPanel {
 	 * its own {@link handleInput} closes it, so the hint names that key.
 	 */
 	holdFocus(): void {
-		this.#closeHint = `${editorKey("tui.select.cancel")} to 关闭`;
+		this.#closeHint = `${editorKey("tui.select.cancel")} 关闭`;
 	}
 
 	/**
@@ -118,7 +118,7 @@ export class ReportPanel extends OverlayPanel {
 		const overflows = rows > bodyMax;
 		this.#bodyRows = Math.min(rows, bodyMax);
 		this.#view.setHeight(this.#bodyRows);
-		const scrollHint = `${editorKey("tui.select.pageUp")}/${editorKey("tui.select.pageDown")} scroll · `;
+		const scrollHint = `${editorKey("tui.select.pageUp")}/${editorKey("tui.select.pageDown")} 滚动 · `;
 		this.#footer.setText(theme.fg("muted", overflows ? scrollHint + this.#closeHint : this.#closeHint));
 		const lines = super.render(width);
 		return cap !== undefined && lines.length > cap ? lines.slice(0, Math.max(0, cap)) : lines;

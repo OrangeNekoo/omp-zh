@@ -144,7 +144,7 @@ export class MoveOverlay implements Component, Focusable {
 		}
 		const lines: string[] = [];
 
-		lines.push(topBorder(w, "Move to directory"));
+		lines.push(topBorder(w, "移动到目录"));
 		for (const fieldLine of fieldLines) {
 			lines.push(row(fieldLine, w));
 		}
@@ -164,7 +164,7 @@ export class MoveOverlay implements Component, Focusable {
 
 		lines.push(row("", w));
 		const nav = editorKeys("tui.select.up", "tui.select.down");
-		const hint = `Type to filter · ${nav} navigate · ${formatKeyHint("tab")} accept · ${formatKeyHint("enter")} confirm · ${editorKey("tui.select.cancel")} cancel`;
+		const hint = `Type to filter · ${nav} 导航 · ${formatKeyHint("tab")} 接受 · ${formatKeyHint("enter")} 确认 · ${editorKey("tui.select.cancel")} 取消`;
 		lines.push(row(theme.fg("dim", hint), w));
 		lines.push(bottomBorder(w));
 		this.#renderMemo = { width: w, fieldLines, revision: this.#revision, lines };
@@ -198,7 +198,7 @@ export class MoveOverlay implements Component, Focusable {
 			actionButton("取消", "cancel", { keys: getKeybindings().getKeys("tui.select.cancel")[0] ?? "escape" }),
 			actionButton("确认", "confirm", { keys: "enter", tone: "accent" }),
 		]);
-		const described = overlayCard("omp.dialog.move", "Move to directory", [this.#field, list, hints, actions]);
+		const described = overlayCard("omp.dialog.move", "移动到目录", [this.#field, list, hints, actions]);
 		this.#native = { revision: this.#revision, node: described };
 		return described;
 	}

@@ -1073,7 +1073,7 @@ export const evalToolRenderer = {
 									outputLines.push(
 										uiTheme.fg(
 											"dim",
-											`… ${outputContent.hiddenCount} more lines (${expandKeyHint()} to 展开)`,
+											`… ${outputContent.hiddenCount} more lines (${expandKeyHint()} to expand)`,
 										),
 									);
 								}
@@ -1221,7 +1221,7 @@ export const evalToolRenderer = {
 					outputLines.push("");
 					const skippedLine = uiTheme.fg(
 						"dim",
-						`… (${cachedSkipped} earlier lines, showing ${cachedLines.length} of ${cachedSkipped + cachedLines.length}) (${expandKeyHint()} to 展开)`,
+						`… (${cachedSkipped} earlier lines, showing ${cachedLines.length} of ${cachedSkipped + cachedLines.length}) (${expandKeyHint()} to expand)`,
 					);
 					outputLines.push(truncateToWidth(skippedLine, width));
 				}

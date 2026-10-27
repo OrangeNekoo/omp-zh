@@ -304,7 +304,7 @@ export function createHandoffSummaryMessageComponent(
 export class BranchSummaryMessageComponent extends SummaryMessageComponent {
 	constructor(message: BranchSummaryMessage) {
 		super({
-			label: () => `${theme.icon.branch} branch`,
+			label: () => `${theme.icon.branch} 分支`,
 			nativeLabel: () => [span("分支已总结", "muted")],
 			role: "omp.branch",
 			detailMarkdown: () => `**Branch summary**\n\n${message.summary}`,

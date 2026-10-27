@@ -62,7 +62,9 @@ export interface ReadToolDetails {
 	 * screenshots, URL reads and other images not backed by a file. Display-only.
 	 */
 	mediaPath?: string;
-	suffixResolution?: { from: string; to: string };
+	suffixResolution?: { from: string; to: string; raw?: boolean };
+	/** Raw source output keeps descriptive diagnostics in details, not in the body. */
+	raw?: boolean;
 	url?: string;
 	finalUrl?: string;
 	contentType?: string;
@@ -582,7 +584,7 @@ export const readToolRenderer = {
 					offset: args?.offset,
 					sourcePath: linkPath ?? result.details?.displayTarget ?? readSourceFsPath(result.details),
 				}) || sanitizeText(shortenPath(rawPath));
-			let title = filePath ? `Read ${filePath}` : "Read";
+			let title = filePath ? `Read ${filePath}` : "读取";
 			if (args?.offset !== undefined || args?.limit !== undefined) {
 				const startLine = args.offset ?? 1;
 				const endLine = args.limit !== undefined ? startLine + args.limit - 1 : "";
@@ -671,7 +673,7 @@ export const readToolRenderer = {
 			offset: args?.offset,
 		});
 		const correction = suffix ? ` ${uiTheme.fg("dim", `（已根据 ${shortenPath(suffix.from)} 更正）`)}` : "";
-		let title = displayPath ? `Read ${displayPath}${correction}` : "Read";
+		let title = displayPath ? `Read ${displayPath}${correction}` : "读取";
 		if (args?.offset !== undefined || args?.limit !== undefined) {
 			const startLine = args.offset ?? 1;
 			const endLine = args.limit !== undefined ? startLine + args.limit - 1 : "";

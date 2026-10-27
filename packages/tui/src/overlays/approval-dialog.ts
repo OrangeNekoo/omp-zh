@@ -410,8 +410,8 @@ export class ApprovalDialogComponent implements Component {
 			: "";
 		const keys = `${approve} approve · ${editorKey("tui.select.cancel")} deny${expand}`;
 		if (drafting) return `${editorKey("tui.input.submit")} deny and send · ${keys}`;
-		const choose = `${editorKeys("tui.select.up", "tui.select.down")} choose · ${editorKey("tui.select.confirm")} select`;
-		const scroll = overflows ? ` · ${editorKeys("tui.select.pageUp", "tui.select.pageDown")} scroll` : "";
+		const choose = `${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${editorKey("tui.select.confirm")} 选择`;
+		const scroll = overflows ? ` · ${editorKeys("tui.select.pageUp", "tui.select.pageDown")} 滚动` : "";
 		return `${choose} · ${keys}${scroll}${this.options.draft ? " · type to deny and steer" : ""}`;
 	}
 

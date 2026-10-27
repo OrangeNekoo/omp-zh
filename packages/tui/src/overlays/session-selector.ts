@@ -57,6 +57,11 @@ import { MenuSelection, getMenuWindow } from "../components/menu-selection";
 import { formatKeyHint, formatKeyHints } from "../app-keybindings";
 import { boundKeys, interruptKey } from "../chrome/keybinding-hints";
 
+function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
+	return actual === english || actual === chinese;
+}
+
 /**
  * Themed glyph + colored label for a session's lifecycle status, or `undefined`
  * when there is nothing useful to show (`unknown`/unset) so the metadata line
@@ -1136,7 +1141,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 				// "Current folder" scope - hint to try "all"
 				lines.push(
 					truncateToWidth(
-						theme.fg("muted", `No sessions in current folder. Press ${formatKeyHint("tab")} to 查看 all.`),
+						theme.fg("muted", `当前文件夹没有会话。按 ${formatKeyHint("tab")} 查看全部。`),
 						width,
 					),
 				);
@@ -1452,7 +1457,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		onExit: () => void,
 		options: SessionSelectorOptions<T> = {},
 	) {
-		super(options.title ?? "Resume Session");
+		super(options.title ?? "恢复会话");
 
 		this.#messageContainer = new Container();
 		this.#onDelete = options.onDelete;
@@ -1464,7 +1469,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		this.#globalSessions = options.allSessions ?? null;
 		this.#getTerminalRows = options.getTerminalRows ?? (() => 24);
 		this.#fillHeight = options.fillHeight ?? false;
-		this.#title = options.title ?? "Resume Session";
+		this.#title = options.title ?? "恢复会话";
 		this.#actionLabel = options.actionLabel ?? "Resume";
 		this.#pickerTitle = options.title;
 		this.#standalone = options.standalone ?? false;
@@ -1517,7 +1522,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	#headerLabel(): string {
 		if (this.#scopeLabel === false) return this.#title;
-		const scopeLabel = this.#scopeLabel ?? (this.#scope === "all" ? "all projects" : "current folder");
+		const scopeLabel = this.#scopeLabel ?? (this.#scope === "all" ? "所有项目" : "当前文件夹");
 		return `${this.#title} (${scopeLabel})`;
 	}
 
@@ -1535,7 +1540,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 				this.#toggling = true;
 				this.#messageContainer.clear();
 				this.#messageContainer.addChild(new Text(theme.fg("muted", "正在加载所有项目…"), 0, 0));
-				this.#message = { kind: "loading", text: "Loading all projects…" };
+				this.#message = { kind: "loading", text: "正在加载所有项目…" };
 				this.#onRequestRender?.();
 				try {
 					global = await this.#loadAllSessions();
@@ -1590,7 +1595,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	#showError(message: string): void {
 		this.#messageContainer.clear();
-		this.#message = { kind: "error", text: `Error: ${plainText(message)}` };
+		this.#message = { kind: "error", text: `错误：${plainText(message)}` };
 		this.#pickerErrorOpen = true;
 		this.#messageContainer.addChild(new Text(theme.fg("error", `错误：${replaceTabs(message)}`), 0, 0));
 		this.#messageContainer.addChild(new Spacer(1));
@@ -1609,7 +1614,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 			this.#onRequestRender?.();
 		};
 		const answer = async (option: string) => {
-			if (option === "Yes" && this.#onDelete) {
+			if (labelEq(option, "Yes", "是") && this.#onDelete) {
 				this.#clearError();
 				try {
 					const deleted = await this.#onDelete(session);
@@ -1627,8 +1632,9 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 			closeDialog();
 		};
 		this.#confirmationDialog = new HookSelectorComponent(
-			`Delete session?\n${displayName}`,
-			["Yes", "No"],
+			`删除会话？
+${displayName}`,
+			["是", "否"],
 			answer,
 			closeDialog,
 		);
@@ -1677,12 +1683,12 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	/** Blank · keybinding hint · bottom border. Rendered by {@link render}. */
 	#footerLines(width: number): string[] {
-		const scopeHint = this.#scope === "all" ? "current folder" : "all projects";
+		const scopeHint = this.#scope === "all" ? "当前文件夹" : "所有项目";
 		// Keys mirror SessionList#handleInput; cancel is `app.interrupt` (raw Escape when unbound).
 		const cancel = interruptKey();
 		const hint = theme.fg(
 			"muted",
-			`[${this.#onDelete ? `${formatKeyHints(["delete", "backspace"])} delete · ` : ""}${formatKeyHint("enter")} select · ${formatKeyHint("tab")} ${scopeHint} · ${cancel} cancel]`,
+			`[${this.#onDelete ? `${formatKeyHints(["delete", "backspace"])} 删除 · ` : ""}${formatKeyHint("enter")} 选择 · ${formatKeyHint("tab")} ${scopeHint} · ${cancel} 取消]`,
 		);
 		return [row("", width), row(hint, width), row("", width), bottomBorder(width)];
 	}
@@ -1734,7 +1740,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		if (this.#onDelete) hints.push({ keys: ["delete", "backspace"], label: "delete" });
 		hints.push({ keys: ["enter"], label: "select" });
 		if (this.#sessionList.onToggleScope) {
-			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "当前目录" : "所有项目" });
+			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "当前文件夹" : "所有项目" });
 		}
 		hints.push({ keys: [boundKeys("app.interrupt", ["escape"])[0] ?? "escape"], label: "cancel" });
 		const result = overlayCard("omp.overlay.sessions", tabs ? this.#title : this.title, [

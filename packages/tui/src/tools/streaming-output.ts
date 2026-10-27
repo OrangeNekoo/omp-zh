@@ -1742,7 +1742,7 @@ export function formatHeadTruncationNotice(
 	const totalFileLines = options.totalFileLines ?? truncation.totalLines;
 	const endLineDisplay = startLineDisplay + (truncation.outputLines ?? truncation.totalLines) - 1;
 	const nextOffset = endLineDisplay + 1;
-	const notice = `[Showing lines ${startLineDisplay}-${endLineDisplay} of ${totalFileLines}. Use :${nextOffset} to 继续]`;
+	const notice = `[Showing lines ${startLineDisplay}-${endLineDisplay} of ${totalFileLines}. Use :${nextOffset} to continue]`;
 	return `\n\n${notice}`;
 }
 

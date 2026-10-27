@@ -320,7 +320,7 @@ export class HookSelectorComponent extends OverlayPanel {
 		this.addChild(new Spacer(1));
 		const controlsHint =
 			opts?.helpText ??
-			`${editorKeys("tui.select.up", "tui.select.down")} navigate  ${formatKeyHint("enter")} select  ${editorKey("tui.select.cancel")} cancel`;
+			`${editorKeys("tui.select.up", "tui.select.down")} 导航  ${formatKeyHint("enter")} select  ${editorKey("tui.select.cancel")} cancel`;
 		this.addChild(new Text(theme.fg("dim", controlsHint), 0, 0));
 		this.addChild(new Spacer(1));
 

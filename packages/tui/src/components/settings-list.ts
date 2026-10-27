@@ -738,11 +738,11 @@ export class SettingsList implements Component {
 	#hintText(): string {
 		const jumpHint =
 			this.#sections().length >= 2
-				? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} to 跳转分节 · `
+				? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} 跳转分节 · `
 				: "";
 		return (
 			this.#options.hint ??
-			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to 更改 · ${jumpHint}Type to search · ${editorKey("tui.select.cancel")} to 取消`
+			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} 更改 · ${jumpHint}输入以搜索 · ${editorKey("tui.select.cancel")} 取消`
 		);
 	}
 
@@ -813,7 +813,7 @@ export class SettingsList implements Component {
 			lines.push("");
 			const editKey = editorKey("tui.editor.deleteCharBackward");
 			const cancelKey = editorKey("tui.select.cancel");
-			lines.push(truncateToWidth(this.#theme.hint(`  ${editKey} to 编辑 search · ${cancelKey} to 取消`), width));
+			lines.push(truncateToWidth(this.#theme.hint(`  ${editKey} 编辑搜索 · ${cancelKey} 取消`), width));
 			return lines;
 		}
 

@@ -35,7 +35,8 @@ export const cfgAutoResume = register({
 		tab: "interaction",
 		group: "启动与更新",
 		label: "自动恢复",
-		description: "自动恢复当前目录中最近的会话",
+		description:
+			"自动恢复当前目录中最近的会话。若其模型无法恢复且模型回退已关闭，交互式启动会给出警告并开启不带保存历史的新会话",
 	},
 });
 
@@ -278,14 +279,14 @@ export const cfgStatusLineLeftSegments = register({
 	id: "statusLine.leftSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.left,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏片段" },
 });
 
 export const cfgStatusLineRightSegments = register({
 	id: "statusLine.rightSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.right,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏片段" },
 });
 
 export const cfgStatusLineSegmentOptions = register({

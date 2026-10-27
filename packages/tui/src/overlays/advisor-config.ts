@@ -64,10 +64,11 @@ import { getThinkingLevelMetadata, parseThinkingLevel } from "../thinking";
 
 export const ADVISOR_REVIEW_MODES = ["turn", "agent-end"] as const;
 export const ADVISOR_SYNC_BACKLOG_MODES = ["off", "1", "3", "5", "strict"] as const;
+export const ADVISOR_SESSION_SCOPES = ["main", "subagent", "all"] as const;
 
 export type AdvisorReviewMode = (typeof ADVISOR_REVIEW_MODES)[number];
 export type AdvisorSyncBacklog = (typeof ADVISOR_SYNC_BACKLOG_MODES)[number];
-
+export type AdvisorSessionScope = (typeof ADVISOR_SESSION_SCOPES)[number];
 /** One advisor declared in `WATCHDOG.yml`; its instructions specialize the shared baseline. */
 export interface AdvisorConfig {
 	name: string;
@@ -83,6 +84,10 @@ export interface AdvisorConfig {
 	reviewMode?: AdvisorReviewMode;
 	reviewInterval?: number;
 	syncBacklog?: AdvisorSyncBacklog;
+	/** Which session kinds this advisor attaches to (`main`, `subagent`, or `all`; defaults to `all`). */
+	scope?: AdvisorSessionScope;
+	/** Whether primary assistant thinking blocks are included in updates sent to this advisor (defaults to `true`). */
+	includeReasoning?: boolean;
 }
 
 /** Which level a `WATCHDOG.yml` lives at: the project root or the user agent dir. */
@@ -1202,7 +1207,9 @@ export class AdvisorConfigOverlayComponent implements Component {
 			advisor.syncBacklog === undefined &&
 			!advisor.instructions?.trim() &&
 			advisor.enabled !== false &&
-			advisor.maxNotesPerUpdate === undefined
+			advisor.maxNotesPerUpdate === undefined &&
+			advisor.scope === undefined &&
+			advisor.includeReasoning === undefined
 		);
 	}
 
@@ -1249,7 +1256,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"list",
 			list,
-			`${editorKeys("tui.select.up", "tui.select.down")} move · ${editorKey("tui.select.confirm")} / click select · scroll preview on the right · ${editorKey("tui.select.cancel")} close`,
+			`${editorKeys("tui.select.up", "tui.select.down")} 移动 · ${editorKey("tui.select.confirm")} / click select · scroll preview on the right · ${editorKey("tui.select.cancel")} 关闭`,
 		);
 	}
 
@@ -1345,7 +1352,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"detail",
 			list,
-			`Editing "${advisor.name}" · ${editorKey("tui.select.confirm")} / click edit field · ${editorKey("tui.select.cancel")} back`,
+			`Editing "${advisor.name}" · ${editorKey("tui.select.confirm")} / click edit field · ${editorKey("tui.select.cancel")} 返回`,
 		);
 	}
 
@@ -1411,7 +1418,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"name",
 			input,
-			`Type a name · ${editorKey("tui.input.submit")} save · ${editorKey("tui.select.cancel")} cancel`,
+			`Type a name · ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消`,
 		);
 	}
 
@@ -1456,7 +1463,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"model",
 			picker,
-			`Type to search · ${formatKeyHint("enter")} / click twice picks · ${editorKey("tui.select.cancel")} back`,
+			`Type to search · ${formatKeyHint("enter")} / click twice picks · ${editorKey("tui.select.cancel")} 返回`,
 		);
 	}
 
@@ -1479,7 +1486,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"thinking",
 			list,
-			`Thinking effort for ${selector} · ${editorKey("tui.select.confirm")} / click pick · ${editorKey("tui.select.cancel")} back`,
+			`Thinking effort for ${selector} · ${editorKey("tui.select.confirm")} / click pick · ${editorKey("tui.select.cancel")} 返回`,
 			{
 				title: "思考等级",
 				subtitle: `${this.#doc.advisors[index]?.name || "the advisor"} 在 ${selector} 上的推理强度。`,
@@ -1525,7 +1532,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"review-mode",
 			list,
-			`${editorKey("tui.select.confirm")} / click choose review mode · ${editorKey("tui.select.cancel")} back`,
+			`${editorKey("tui.select.confirm")} / click choose review mode · ${editorKey("tui.select.cancel")} 返回`,
 			{
 				title: "审查模式",
 				subtitle: `${advisor.name || "the advisor"} 何时审查会话。`,
@@ -1559,7 +1566,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"review-interval",
 			input,
-			`Type a positive integer · ${editorKey("tui.input.submit")} save · ${editorKey("tui.select.cancel")} cancel`,
+			`Type a positive integer · ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消`,
 		);
 	}
 
@@ -1595,7 +1602,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"sync-backlog",
 			list,
-			`${editorKey("tui.select.confirm")} / click choose catch-up policy · ${editorKey("tui.select.cancel")} back`,
+			`${editorKey("tui.select.confirm")} / click choose catch-up policy · ${editorKey("tui.select.cancel")} 返回`,
 			{
 				title: "同步积压",
 				subtitle: `会话等待 ${advisor.name || "the advisor"} 待处理审查的时长。`,
@@ -1639,7 +1646,7 @@ export class AdvisorConfigOverlayComponent implements Component {
 		this.#setScreen(
 			"tools",
 			list,
-			`${editorKey("tui.select.confirm")} / click toggle · select Done or ${editorKey("tui.select.cancel")} to 应用 (empty = no tools; read/grep/glob = default)`,
+			`${editorKey("tui.select.confirm")} / click toggle · select Done or ${editorKey("tui.select.cancel")} to apply (empty = no tools; read/grep/glob = default)`,
 			{
 				title: "工具",
 				subtitle: `${this.#doc.advisors[index]?.name || "the advisor"} 可以调用的工具。None 表示不授予任何工具；默认为 read、grep 和 glob。`,

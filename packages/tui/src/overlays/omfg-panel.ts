@@ -199,14 +199,14 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "saved":
 				return theme.fg(
 					"success",
-					`${theme.status.success} Registered live · ${replaceTabs(this.#savedPath ?? "saved")} · ${esc} dismiss`,
+					`${theme.status.success} Registered live · ${replaceTabs(this.#savedPath ?? "saved")} · ${esc} 忽略`,
 				);
 			case "rejected":
-				return theme.fg("warning", `${theme.status.warning} Not saved · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Not saved · ${esc} 忽略`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 忽略`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} dismiss`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 忽略`);
 		}
 	}
 

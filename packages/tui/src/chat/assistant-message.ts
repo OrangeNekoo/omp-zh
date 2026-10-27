@@ -947,7 +947,7 @@ export class AssistantMessageComponent extends Container {
 					// Hidden (Ctrl+T): only the live "Thinking…" head shows; a finished thought leaves nothing.
 					if (this.#hideThinkingBlock && !thinkingLive) continue;
 					const tokens = thinkingLive ? this.#thinkingTokens : (clock?.tokens ?? 0);
-					const title = tokens > 0 ? `${formatNumber(tokens)} tokens` : undefined;
+					const title = tokens > 0 ? `${formatNumber(tokens)} 令牌` : undefined;
 					// Live: starburst · "Thinking…" · ticking timer · tok/s. Done: "Thought for 12s".
 					const head = thinkingLive
 						? node(

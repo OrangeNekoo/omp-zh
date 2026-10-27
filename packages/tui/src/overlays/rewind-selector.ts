@@ -927,7 +927,7 @@ export class RewindSelectorComponent implements Component {
 		const upDown = editorKeys("tui.select.up", "tui.select.down");
 		const leftRight = formatKeyHints(["left", "right"]);
 		const lateral = columns.length > 0 ? `${leftRight} branches` : `${leftRight} user turns`;
-		const keys = `${upDown} step  ${lateral}  ${formatKeyHint("f")} filter  ${formatKeyHint("enter")} rewind  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} expand  ${editorKey("tui.select.cancel")} cancel`;
+		const keys = `${upDown} step  ${lateral}  ${formatKeyHint("f")} 筛选  ${formatKeyHint("enter")} rewind  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} 展开  ${editorKey("tui.select.cancel")} cancel`;
 		return {
 			header: [this.#header()],
 			body: {

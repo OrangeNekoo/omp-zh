@@ -104,13 +104,13 @@ export function gitFooterHints(clean: boolean, focus: Focus): string {
 	const edit = clean
 		? ""
 		: focus === "diff"
-			? ` · ${formatKeyHints(["s", "u"])} stage · ${formatKeyHints(["x", "delete"])} discard`
-			: ` · ${formatKeyHint("space")} stage · ${formatKeyHint("delete")} discard`;
+			? ` · ${formatKeyHints(["s", "u"])} stage · ${formatKeyHints(["x", "delete"])} 放弃`
+			: ` · ${formatKeyHint("space")} stage · ${formatKeyHint("delete")} 放弃`;
 	const commit = clean ? "" : ` · ${formatKeyHint("c")} commit`;
-	const select = clean || focus !== "diff" ? "" : ` · ${formatKeyHints(["shift+up", "shift+down"])} select`;
+	const select = clean || focus !== "diff" ? "" : ` · ${formatKeyHints(["shift+up", "shift+down"])} 选择`;
 	return focus === "diff"
-		? `${formatKeyHints(["alt+down", "alt+up"])} hunk · ${formatKeyHints(["]", "["])} file${select}${edit} · ${formatKeyHint("v")} view${commit} · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} quit`
-		: `${formatKeyHints(["up", "down"])} move · ${formatKeyHints(["left", "right"])} fold${edit} · ${formatKeyHint("enter")} open · ${formatKeyHints(["alt+down", "alt+up"])} hunk${commit} · ${formatKeyHint("t")} tree · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} quit`;
+		? `${formatKeyHints(["alt+down", "alt+up"])} hunk · ${formatKeyHints(["]", "["])} file${select}${edit} · ${formatKeyHint("v")} 查看${commit} · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} 退出`
+		: `${formatKeyHints(["up", "down"])} 移动 · ${formatKeyHints(["left", "right"])} fold${edit} · ${formatKeyHint("enter")} 打开 · ${formatKeyHints(["alt+down", "alt+up"])} hunk${commit} · ${formatKeyHint("t")} tree · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} 退出`;
 }
 
 /** Tone of a status message: its colour in the header and its span token natively. */

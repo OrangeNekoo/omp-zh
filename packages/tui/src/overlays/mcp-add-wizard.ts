@@ -181,12 +181,12 @@ function nativeErrorText(error: unknown): string {
 
 /** Footer for text steps; the field submits on `tui.input.submit` and cancels on `tui.select.cancel`. */
 function inputHint(escapeAction: string): string {
-	return `[${editorKey("tui.input.submit")} to 继续, ${editorKey("tui.select.cancel")} to ${escapeAction}]`;
+	return `[${editorKey("tui.input.submit")} to continue, ${editorKey("tui.select.cancel")} to ${escapeAction}]`;
 }
 
 /** Footer for choice steps; the wizard routes navigation, Enter, and Escape itself. */
 function choiceHint(escapeAction: string): string {
-	return `[${editorKeys("tui.select.up", "tui.select.down")} to 导航, ${formatKeyHint("enter")} to 选择, ${interruptKey()} to ${escapeAction}]`;
+	return `[${editorKeys("tui.select.up", "tui.select.down")} to navigate, ${formatKeyHint("enter")} to select, ${interruptKey()} to ${escapeAction}]`;
 }
 
 /** The wizard's phases, the native progress strip's segments in order. */
@@ -455,7 +455,7 @@ export class MCPAddWizard extends OverlayPanel {
 		const phase = STEP_PHASE[this.#currentStep];
 		const keyHint =
 			options.escape === undefined
-				? `[Press ${editorKey("tui.input.submit")} to 跳过 or continue]`
+				? `[Press ${editorKey("tui.input.submit")} to skip or continue]`
 				: inputHint(options.escape);
 		const field = new TextFormField({
 			theme: mcpFormTheme,
@@ -956,7 +956,7 @@ export class MCPAddWizard extends OverlayPanel {
 				heading: ansiHeading("Review", "accent", PHASE_REVIEW),
 				content: summary,
 				footer: new Text(
-					theme.fg("muted", `[${formatKeyHint("enter")} to 保存, ${interruptKey()} to 返回]`),
+					theme.fg("muted", `[${formatKeyHint("enter")} to save, ${interruptKey()} to go back]`),
 					0,
 					0,
 				),
@@ -981,6 +981,11 @@ export class MCPAddWizard extends OverlayPanel {
 				},
 			},
 		);
+	}
+
+	/** Route enhanced clipboard text into the active wizard field, never the hidden chat editor. */
+	pasteText(text: string): void {
+		if (this.#stepKind === "input") this.#inputField?.pasteText(text);
 	}
 
 	handleInput(keyData: string): void {
@@ -1651,7 +1656,7 @@ export class MCPAddWizard extends OverlayPanel {
 				tone: "error",
 				ansi: new Text("授权 URL 与令牌 URL 为必填项。", 0, 0),
 				native: [statusRow("error", "Authorization and token URLs are required.")],
-				footer: new Text(theme.fg("muted", `[Press ${interruptKey()} to 返回]`), 0, 0),
+				footer: new Text(theme.fg("muted", `[Press ${interruptKey()} to go back]`), 0, 0),
 			});
 			this.#requestRender();
 			return;
@@ -1676,7 +1681,7 @@ export class MCPAddWizard extends OverlayPanel {
 					authHost ? [span("等待 "), span(authHost, "mono"), span("…")] : "Waiting for the browser…",
 				),
 			],
-			footer: new Text(theme.fg("muted", `(Press ${interruptKey()} to 取消)`), 0, 0),
+			footer: new Text(theme.fg("muted", `（按 ${interruptKey()} 取消）`), 0, 0),
 			back: "Stop waiting",
 		});
 		this.#requestRender();

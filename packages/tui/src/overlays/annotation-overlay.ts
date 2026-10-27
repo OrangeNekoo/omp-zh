@@ -1180,7 +1180,7 @@ export class AnnotationOverlay implements Focusable {
 		const options = chooser.entries
 			.slice(start, start + optionLimit)
 			.map((index, windowIndex) => this.#renderAnnotationChooserEntry(chooser, index, start + windowIndex, width));
-		const keysHint = `${this.#key("tui.select.up")}/${this.#key("tui.select.down")} choose · ${this.#key("tui.select.confirm")} edit · ${this.#key("tui.select.cancel")} cancel`;
+		const keysHint = `${this.#key("tui.select.up")}/${this.#key("tui.select.down")} 选择 · ${this.#key("tui.select.confirm")} 编辑 · ${this.#key("tui.select.cancel")} 取消`;
 		const lines =
 			availableRows === 2
 				? [this.#theme.fg("dim", `Edit annotation · ${keysHint}`), ...options.slice(0, 1)]
@@ -1222,9 +1222,9 @@ export class AnnotationOverlay implements Focusable {
 				Ellipsis.Unicode,
 			);
 			const hints = [
-				`${editorKey("tui.input.submit")} save`,
+				`${editorKey("tui.input.submit")} 保存`,
 				`${editorKey("tui.input.newLine")} newline`,
-				`${this.#key("tui.select.cancel")} cancel`,
+				`${this.#key("tui.select.cancel")} 取消`,
 			];
 			hints.push(`${formatKeyHint(appExternalEditorKey())} editor`);
 			return [caption, ...this.#editor.render(width), this.#theme.fg("dim", hints.join(" · "))];
@@ -1276,9 +1276,9 @@ export class AnnotationOverlay implements Focusable {
 				? `${upDown} file · ${confirm} diff · ${formatKeyHints(["a", "shift+a"])} file note · ${editNote}`
 				: this.#focus === "diff"
 					? `${upDown} line · ${formatKeyHint("shift")} faster · ${this.#key("tui.select.pageUp")}/${this.#key("tui.select.pageDown")} · ${formatKeyHints(["g", "shift+g"])} ends · ${formatKeyHint("a")} line note · ${formatKeyHint("shift+a")} ${this.#textSource ? "text" : "file"} note · ${editNote}`
-					: `${upDown} select · ${confirm} confirm`;
+					: `${upDown} 选择 · ${confirm} 确认`;
 		const editorHint = this.#callbacks.onExternalEditor ? ` · ${formatKeyHint(appExternalEditorKey())} editor` : "";
-		return `${focusHelp} · ${formatKeyHint("u")} undo · ${formatKeyHint("tab")} regions${editorHint} · ${this.#key("tui.select.cancel")} cancel`;
+		return `${focusHelp} · ${formatKeyHint("u")} 撤销 · ${formatKeyHint("tab")} regions${editorHint} · ${this.#key("tui.select.cancel")} 取消`;
 	}
 
 	#ensureCursorVisible(renderedRowBySource: readonly number[]): boolean {

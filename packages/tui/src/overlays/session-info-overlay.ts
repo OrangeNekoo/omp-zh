@@ -382,7 +382,7 @@ export class SessionInfoOverlay implements Component {
 
 	render(width: number): readonly string[] {
 		const innerWidth = Math.max(1, width - 4);
-		const footerHint = `${formatKeyHints(["up", "down"])} scroll · ${editorKey("tui.select.cancel")} close`;
+		const footerHint = `${formatKeyHints(["up", "down"])} 滚动 · ${editorKey("tui.select.cancel")} 关闭`;
 		this.#footer.setLines([theme.fg("dim", truncateToWidth(footerHint, innerWidth))]);
 
 		const maxBodyHeight = Math.max(1, this.#host.terminal.rows - PANEL_CHROME_ROWS);

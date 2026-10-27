@@ -178,7 +178,16 @@ export function buildProviderCards(
 		for (const report of providerReports) {
 			for (const limit of report.limits) {
 				const label = formatLimitTitle(limit);
-				const key = `${label}|${limit.window?.id ?? limit.scope.windowId ?? "default"}`;
+				// Distinct buckets can share a label and window (Antigravity's Gemini
+				// vs Gemini (Argon) weekly) and must not average into one row, so the
+				// id joins the key. The label and window stay in it too: some
+				// providers build ids positionally or per plan (kimi's `${index}`,
+				// copilot's allowance), where ids differ across accounts for the
+				// same quota, so an id-only key would split those accounts apart.
+				// `sharedGroup` already names the routing copies of one shared bucket.
+				const key =
+					limit.scope.sharedGroup ??
+					`${label}|${limit.window?.id ?? limit.scope.windowId ?? "default"}|${limit.id}`;
 				const entry = buckets.get(key) ?? { label, limits: [] };
 				entry.limits.push(limit);
 				buckets.set(key, entry);
@@ -1047,15 +1056,15 @@ export class UsageDashboardComponent implements Component {
 			: latestFetchedAt
 				? `checked ${formatDuration(this.#nowMs - latestFetchedAt)} ago`
 				: "";
-		const title = this.#view === "detail" ? "Usage · Details" : "Usage";
+		const title = this.#view === "detail" ? "用量 · 详情" : "用量";
 
-		const scrollHint = maxScroll > 0 ? `${editorKeys("tui.select.up", "tui.select.down")} scroll · ` : "";
+		const scrollHint = maxScroll > 0 ? `${editorKeys("tui.select.up", "tui.select.down")} 滚动 · ` : "";
 		const cancel = editorKey("tui.select.cancel");
 		const refreshHint = this.#options.refresh ? "r refresh · " : "";
 		const hint =
 			this.#view === "detail"
-				? `${scrollHint}${refreshHint}${cancel} back`
-				: `${scrollHint}${refreshHint}${formatKeyHint("enter")} details · ${cancel} close`;
+				? `${scrollHint}${refreshHint}${cancel} 返回`
+				: `${scrollHint}${refreshHint}${formatKeyHint("enter")} details · ${cancel} 关闭`;
 		this.#panel.title = title;
 		this.#header.setLines([checkedText ? theme.fg("dim", checkedText) : ""]);
 		this.#body.setLines(contentSource.slice(this.#scroll, this.#scroll + contentRows));
@@ -1394,7 +1403,7 @@ export class UsageDashboardComponent implements Component {
 			if (resets.redeemableCount === 0 && resets.unavailableReasons.length > 0) {
 				details.push(`unavailable: ${sanitizeDisplayLine(resets.unavailableReasons.join(" • "))}`);
 			}
-			const label = `${resets.bankedCount} reset${resets.bankedCount === 1 ? "" : "s"} banked`;
+			const label = `${resets.bankedCount} 重置${resets.bankedCount === 1 ? "" : "s"} banked`;
 			who.push(
 				text([span(label, resets.redeemableCount > 0 ? "success" : "warning")], {
 					role: "omp.usage.provider.meta",
@@ -1678,7 +1687,11 @@ export class UsageDashboardComponent implements Component {
 			for (const [index, report] of reports.entries()) {
 				for (const limit of report.limits) {
 					const label = sanitizeDisplayLine(formatLimitTitle(limit));
-					const key = `${label}|${limit.window?.id ?? limit.scope.windowId ?? "default"}`;
+					// Same hybrid key as the cards: distinct buckets that share a
+					// label and window (Gemini vs Gemini (Argon) weekly) stay separate.
+					const key =
+						limit.scope.sharedGroup ??
+						`${label}|${limit.window?.id ?? limit.scope.windowId ?? "default"}|${limit.id}`;
 					let bucket = buckets.get(key);
 					if (!bucket) {
 						bucket = { label, window: detailWindowLabel(label, limit), rows: [] };

@@ -1216,28 +1216,28 @@ export class AgentsHubComponent implements Component {
 			if (this.#strip.kind === "pattern") {
 				const property = this.#strip.property;
 				const values = property === "model" ? "a model pattern" : '"on", "off", or a model pattern';
-				return `Enter ${values} (role aliases like @smol and :level suffixes work; empty clears) · ${cancel} back`;
+				return `Enter ${values} (role aliases like @smol and :level suffixes work; empty clears) · ${cancel} 返回`;
 			}
 			const choose = formatKeyHints(["left", "right"]);
 			return this.#strip.property
-				? `${choose} choose · ${enter} apply · ${cancel} back`
-				: `${choose} choose · ${enter} open · ${cancel} cancel`;
+				? `${choose} 选择 · ${enter} 应用 · ${cancel} 返回`
+				: `${choose} 选择 · ${enter} 打开 · ${cancel} 取消`;
 		}
 		if (this.#assigning) {
-			return `${enter} pick · ${upDown} models · type to search · ${cancel} cancel`;
+			return `${enter} 选择 · ${upDown} 模型 · 输入以搜索 · ${cancel} 取消`;
 		}
 		if (this.#createActive) {
 			const tab = formatKeyHint("tab");
 			if (this.#createSpec)
-				return `${enter} save · ${tab} scope · ${formatKeyHint("r")} regenerate · ${cancel} cancel`;
+				return `${enter} 保存 · ${tab} scope · ${formatKeyHint("r")} regenerate · ${cancel} 取消`;
 			if (this.#createGenerating) return "Generating…";
 			const generate = formatKeyHints(boundKeys("app.message.followUp", ["ctrl+q", "ctrl+enter"]));
-			return `${generate} generate · ${enter} newline · ${tab} scope · ${cancel} cancel`;
+			return `${generate} generate · ${enter} newline · ${tab} scope · ${cancel} 取消`;
 		}
 		if (this.#focus === "scope") {
-			return `${upDown} scopes · ${formatKeyHints(["right", "enter"])} agents · ${cancel} close`;
+			return `${upDown} scopes · ${formatKeyHints(["right", "enter"])} agents · ${cancel} 关闭`;
 		}
-		return `${enter} configure · ${formatKeyHint("space")} enable/disable · ${upDown} rows · type to search · ${formatKeyHint("ctrl+r")} reload · ${cancel} close`;
+		return `${enter} configure · ${formatKeyHint("space")} enable/disable · ${upDown} 行 · 输入以搜索 · ${formatKeyHint("ctrl+r")} 重新加载 · ${cancel} 关闭`;
 	}
 
 	#renderFooter(width: number): string {

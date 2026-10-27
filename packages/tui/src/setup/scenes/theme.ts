@@ -65,7 +65,7 @@ function renderMockEditor(width: number): string[] {
 	const prompt = `${theme.fg("accent", ">")} ${theme.fg("text", "提问、编辑文件、运行工具")}${theme.inverse(" ")}`;
 	const hint = theme.fg(
 		"dim",
-		`${editorKey("tui.input.submit")} send · ${editorKey("tui.input.newLine")} newline · / commands`,
+		`${editorKey("tui.input.submit")} 发送 · ${editorKey("tui.input.newLine")} newline · / commands`,
 	);
 	return [
 		top,
@@ -123,7 +123,7 @@ function describeThemePreview(): NativeNode {
 			}),
 			text([
 				span(
-					`${editorKey("tui.input.submit")} send · ${editorKey("tui.input.newLine")} newline · / commands`,
+					`${editorKey("tui.input.submit")} 发送 · ${editorKey("tui.input.newLine")} newline · / commands`,
 					"dim",
 				),
 			]),

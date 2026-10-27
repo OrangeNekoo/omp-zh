@@ -1240,35 +1240,35 @@ export class PlanReviewOverlay implements Component {
 		const enter = formatKeyHint("enter");
 		switch (this.#focus) {
 			case "actions":
-				parts.push(`${upDown} select`, `${enter} confirm`);
+				parts.push(`${upDown} 选择`, `${enter} 确认`);
 				if (this.#slider) parts.push(`${formatKeyHints(["left", "right"])} model`);
 				break;
 			case "toc":
 				parts.push(
 					`${upDown} section`,
-					`${enter} open`,
+					`${enter} 打开`,
 					`${formatKeyHint("a")} annotate`,
-					`${formatKeyHint("e")} edit`,
-					`${formatKeyHint("d")} delete`,
-					`${formatKeyHint("u")} undo`,
+					`${formatKeyHint("e")} 编辑`,
+					`${formatKeyHint("d")} 删除`,
+					`${formatKeyHint("u")} 撤销`,
 				);
 				break;
 			case "body":
 				parts.push(
-					`${upDown} scroll`,
+					`${upDown} 滚动`,
 					`${formatKeyHint("shift")} faster`,
 					formatKeyHints(["pageUp", "pageDown"]),
 					`${formatKeyHints(["g", "shift+g"])} ends`,
 					`${formatKeyHint("a")} annotate`,
-					`${formatKeyHint("e")} edit`,
-					`${formatKeyHint("u")} undo`,
+					`${formatKeyHint("e")} 编辑`,
+					`${formatKeyHint("u")} 撤销`,
 				);
 				break;
 		}
-		if (this.callbacks.onCopyPlan) parts.push(`${formatKeyHint("c")} copy`);
+		if (this.callbacks.onCopyPlan) parts.push(`${formatKeyHint("c")} 复制`);
 		parts.push(`${formatKeyHint("tab")} regions`);
 		if (this.#externalEditorLabel && this.#focus !== "toc") parts.push(`${this.#externalEditorLabel} editor`);
-		parts.push(this.#helpSuffix ?? `${editorKey("tui.select.cancel")} cancel`);
+		parts.push(this.#helpSuffix ?? `${editorKey("tui.select.cancel")} 取消`);
 		return parts.join(sep);
 	}
 
@@ -1481,7 +1481,7 @@ export class PlanReviewOverlay implements Component {
 			lines.push(
 				theme.fg(
 					"dim",
-					`${upDown} choose · ${formatKeyHint("enter")} edit · ${editorKey("tui.select.cancel")} cancel`,
+					`${upDown} 选择 · ${formatKeyHint("enter")} 编辑 · ${editorKey("tui.select.cancel")} 取消`,
 				),
 			);
 		}
@@ -1504,9 +1504,9 @@ export class PlanReviewOverlay implements Component {
 				Ellipsis.Unicode,
 			);
 			const hintParts = [
-				`${editorKey("tui.input.submit")} save`,
+				`${editorKey("tui.input.submit")} 保存`,
 				`${editorKey("tui.input.newLine")} newline`,
-				`${editorKey("tui.select.cancel")} cancel`,
+				`${editorKey("tui.select.cancel")} 取消`,
 			];
 			if (this.#editingAnnotation) hintParts.push("empty deletes");
 			if (this.#externalEditorLabel) hintParts.push(`${this.#externalEditorLabel} editor`);

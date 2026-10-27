@@ -52,6 +52,8 @@ export const INCLUDE_FILES: readonly RegExp[] = [
 	/^packages\/coding-agent\/src\/tts\/models\.ts$/,
 	/^packages\/coding-agent\/src\/stt\/models\.ts$/,
 	/^packages\/coding-agent\/src\/utils\/title-settings\.ts$/,
+	// 启动时的 MCP 连接状态行（`Connected to MCP servers: …`）：直接显示在会话里。
+	/^packages\/coding-agent\/src\/mcp\/startup-events\.ts$/,
 
 	// ── 设置面板结构 ────────────────────────────────────────────
 	/^packages\/tui\/src\/overlays\/settings-defs\.ts$/,
@@ -201,6 +203,12 @@ export const TRANSLATABLE_CALLS: ReadonlySet<string> = new Set([
 	"toolHead",
 	// 私有的 Smithery API 密钥输入提示（首参是给用户看的标签模板）。
 	"promptSmitheryApiKey",
+	// 覆盖层边框标题与卡片标题：`topBorder(width, "Settings")`、
+	// `overlayCard("omp.overlay.settings", "Settings", …)`。首参分别是宽度
+	// 与 role id，标题都在第二实参。
+	"topBorder",
+	"topBorderSplit",
+	"overlayCard",
 ]);
 
 /**
@@ -214,6 +222,9 @@ export const TRANSLATABLE_CALL_LABEL_INDEX: Readonly<Record<string, number>> = {
 	actionHint: 1,
 	notice: 1,
 	errorView: 1,
+	topBorder: 1,
+	topBorderSplit: 1,
+	overlayCard: 1,
 };
 
 /** `new Text("…")` 这类组件的第一个字符串参数。 */
@@ -280,6 +291,12 @@ export const WHOLE_FILE_LITERALS: readonly RegExp[] = [
 	// OAuth 错误消息散落在 `new Error(…)`/`new McpReauthRefusalError(…)`
 	// 与带插值的模板串里，没有统一的可译调用位；整文件按词典精确匹配。
 	/^packages\/coding-agent\/src\/mcp\/oauth-reauth\.ts$/,
+	// 启动时的 MCP 连接状态行同样由格式化函数拼出，文案散在
+	// `new Error`/模板串里，没有统一的可译调用位。
+	/^packages\/coding-agent\/src\/mcp\/startup-events\.ts$/,
+	// 会话选择器的标题/作用域默认值藏在 `options.title ?? "Resume Session"`
+	// 这类回退表达式里，没有可译的调用位；整文件按词典精确匹配。
+	/^packages\/tui\/src\/overlays\/session-selector\.ts$/,
 ];
 
 /** 判断文件是否在汉化范围内。 */

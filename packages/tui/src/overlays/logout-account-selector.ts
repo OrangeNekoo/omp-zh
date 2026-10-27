@@ -105,7 +105,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 			new TruncatedText(
 				theme.fg(
 					"muted",
-					`${editorKeys("tui.select.up", "tui.select.down")} select · ${formatKeyHint("enter")} log out account · ${editorKey("tui.select.cancel")} cancel`,
+					`${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${formatKeyHint("enter")} log out account · ${editorKey("tui.select.cancel")} 取消`,
 				),
 				0,
 				0,

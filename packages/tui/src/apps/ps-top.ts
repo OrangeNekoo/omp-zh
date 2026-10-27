@@ -652,7 +652,7 @@ export class PsTopComponent implements Component {
 		const header = this.#header(width, scopesLabel);
 		const footer = this.#footer(
 			width,
-			`${formatKeyHints(["up", "down"])} select · ${formatKeyHint("enter")} info · ${formatKeyHint("l")} logs · ${formatKeyHint("s")} stop · ${formatKeyHint("x")} kill · ${formatKeyHint("r")} restart · ${formatKeyHint("a")} all scopes · ${formatKeyHint("q")} quit`,
+			`${formatKeyHints(["up", "down"])} 选择 · ${formatKeyHint("enter")} info · ${formatKeyHint("l")} logs · ${formatKeyHint("s")} 停止 · ${formatKeyHint("x")} kill · ${formatKeyHint("r")} restart · ${formatKeyHint("a")} all scopes · ${formatKeyHint("q")} 退出`,
 		);
 		const bodyHeight = height - 1 - footer.length;
 
@@ -717,7 +717,7 @@ export class PsTopComponent implements Component {
 	#renderInfo(width: number, height: number): string[] {
 		const info = this.#info;
 		const header = this.#header(width, "process info");
-		const footer = this.#footer(width, `${formatKeyHint("escape")} back · ${formatKeyHint("q")} back`);
+		const footer = this.#footer(width, `${formatKeyHint("escape")} 返回 · ${formatKeyHint("q")} 返回`);
 		const body = [""];
 		if (info) {
 			const daemon = info.daemon;
@@ -752,7 +752,7 @@ export class PsTopComponent implements Component {
 		);
 		const footer = this.#footer(
 			width,
-			`${formatKeyHint("escape")} back · ${formatKeyHint("q")} back · view refreshes live`,
+			`${formatKeyHint("escape")} 返回 · ${formatKeyHint("q")} 返回 · view refreshes live`,
 		);
 		const bodyHeight = height - 1 - footer.length;
 		this.#logsView.setLines(this.#logsLines.map(line => ` ${line}`));

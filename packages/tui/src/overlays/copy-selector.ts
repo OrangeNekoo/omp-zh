@@ -916,14 +916,14 @@ export class CopySelectorComponent implements Component {
 		}
 
 		const selectedBlock = this.#blocks?.[this.#blockSelected];
-		const openHint = selectedBlock?.href && this.deps.onOpen ? `  ${formatKeyHint("o")} open` : "";
+		const openHint = selectedBlock?.href && this.deps.onOpen ? `  ${formatKeyHint("o")} 打开` : "";
 		const action = this.deps.actionLabel ?? "copy";
 		const upDown = editorKeys("tui.select.up", "tui.select.down");
 		const enter = formatKeyHint("enter");
 		const cancel = editorKey("tui.select.cancel");
 		const hint = this.#blocks
-			? `${this.#blockSelected + 1}/${this.#blocks.length}  ${upDown} block  ${formatKeyHint("left")}/${cancel} back  ${enter} ${action}${openHint}  click ${theme.cmd.copy}/${theme.cmd.share}`
-			: `${this.#targets.length > 0 ? `${this.#selected + 1}/${this.#targets.length}  ` : ""}${upDown} step  ${blocks.length > 0 ? `${formatKeyHint("right")} blocks  ` : ""}${enter} ${action}  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} expand  ${cancel} close`;
+			? `${this.#blockSelected + 1}/${this.#blocks.length}  ${upDown} block  ${formatKeyHint("left")}/${cancel} 返回  ${enter} ${action}${openHint}  click ${theme.cmd.copy}/${theme.cmd.share}`
+			: `${this.#targets.length > 0 ? `${this.#selected + 1}/${this.#targets.length}  ` : ""}${upDown} step  ${blocks.length > 0 ? `${formatKeyHint("right")} blocks  ` : ""}${enter} ${action}  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} 展开  ${cancel} close`;
 		const anchorId = target
 			? this.#blocks
 				? `copy:${target.turnId}:block:${this.#blockSelected}`
@@ -966,7 +966,7 @@ export class CopySelectorComponent implements Component {
 			const controls: Array<{ action: ControlRegion["action"]; text: string }> = [
 				{ action: "copy", text: `${theme.cmd.copy} ${this.deps.actionLabel ?? "copy"}` },
 			];
-			if (block.href && this.deps.onOpen) controls.push({ action: "open", text: `${theme.cmd.share} open` });
+			if (block.href && this.deps.onOpen) controls.push({ action: "open", text: `${theme.cmd.share} 打开` });
 			const controlsWidth = controls.reduce((sum, control) => sum + visibleWidth(control.text) + 2, 0);
 			const summary = truncateToWidth(
 				`${index + 1}/${blocks.length}${theme.sep.dot}${block.label}${theme.sep.dot}${lineCount} line${lineCount === 1 ? "" : "s"}`,

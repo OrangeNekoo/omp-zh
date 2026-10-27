@@ -65,7 +65,7 @@ export class PlanSaveOverlay implements Component, Focusable {
 	render(width: number): readonly string[] {
 		const innerWidth = Math.max(0, width - 4);
 		this.#input.focused = this.#focused;
-		const hint = `${editorKey("tui.input.submit")} save and quit · ${editorKey("tui.select.cancel")} cancel`;
+		const hint = `${editorKey("tui.input.submit")} save and quit · ${editorKey("tui.select.cancel")} 取消`;
 		this.#body.setLines([this.#renderInput(innerWidth), theme.fg("dim", hint)]);
 		return this.#panel.render(width);
 	}

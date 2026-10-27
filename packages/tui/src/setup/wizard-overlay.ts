@@ -36,7 +36,7 @@ const DONE_NODE = col([]);
 
 function sceneFooterHint(): string {
 	const navKeys = editorKeys("tui.select.up", "tui.select.down");
-	return `${navKeys} select · ${editorKey("tui.select.confirm")} confirm · ${editorKey("tui.select.cancel")} skip · ${formatKeyHint("ctrl+c")} exit setup`;
+	return `${navKeys} 选择 · ${editorKey("tui.select.confirm")} 确认 · ${editorKey("tui.select.cancel")} 跳过 · ${formatKeyHint("ctrl+c")} exit setup`;
 }
 
 function indentLine(line: string, width: number, indent: number): string {
