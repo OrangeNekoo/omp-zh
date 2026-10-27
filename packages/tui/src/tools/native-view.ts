@@ -149,7 +149,7 @@ export function errorView(title: string, message: string, ...meta: readonly (str
 	return {
 		head: toolHead(title, ...meta),
 		tone: "error",
-		body: [errorText(plainText(message).trim() || `${title} failed`)],
+		body: [errorText(plainText(message).trim() || `${title} 失败`)],
 	};
 }
 
@@ -200,12 +200,12 @@ export const RUN_INPUT_PREVIEW_LINES = 6;
 export type RunState = "running" | "background" | "done" | "failed" | "cancelled" | "timed-out";
 
 const RUN_STATE: Record<RunState, { readonly word: string; readonly tone: TspTone }> = {
-	running: { word: "Running", tone: "pending" },
-	background: { word: "In background", tone: "pending" },
-	done: { word: "Done", tone: "success" },
-	failed: { word: "Failed", tone: "error" },
-	cancelled: { word: "Cancelled", tone: "muted" },
-	"timed-out": { word: "Timed out", tone: "warning" },
+	running: { word: "运行中", tone: "pending" },
+	background: { word: "后台运行中", tone: "pending" },
+	done: { word: "完成", tone: "success" },
+	failed: { word: "失败", tone: "error" },
+	cancelled: { word: "已取消", tone: "muted" },
+	"timed-out": { word: "已超时", tone: "warning" },
 };
 
 /** Inputs of {@link runFoot}. */
@@ -363,12 +363,12 @@ export function diagnosticsSection(
 	const shown = rows.slice(0, DIAGNOSTIC_ROWS);
 	const hidden = rows.length - shown.length;
 	if (hidden > 0) {
-		shown.push(text([span(`+${hidden} more`, "muted")], { role: "omp.tool.stats", key: "more" }));
+		shown.push(text([span(`另加 ${hidden} 条`, "muted")], { role: "omp.tool.stats", key: "more" }));
 	}
 	return node(
 		"section",
 		{
-			head: [span("Diagnostics")],
+			head: [span("诊断")],
 			tone: diagnostics.errored ? "error" : "warning",
 			role: "omp.tool.diagnostics",
 		},

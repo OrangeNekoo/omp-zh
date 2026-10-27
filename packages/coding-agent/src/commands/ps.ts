@@ -13,27 +13,27 @@ export default class Ps extends Command {
 
 	static args = {
 		action: Args.string({
-			description: "list (default), info, logs, stop, kill, or restart",
+			description: "list（默认）、info、logs、stop、kill 或 restart",
 			required: false,
 			options: ACTIONS,
 		}),
 		name: Args.string({
-			description: "Process name (required for every action except list)",
+			description: "进程名（除 list 外的操作均必填）",
 			required: false,
 		}),
 	};
 
 	static flags = {
-		all: Flags.boolean({ char: "a", description: "Also list other projects and exited global services (list)" }),
-		json: Flags.boolean({ char: "j", description: "Emit machine-readable JSON" }),
-		plain: Flags.boolean({ description: "Static listing instead of the interactive monitor (list)" }),
-		dir: Flags.string({ description: "Target another project directory instead of the current one" }),
-		global: Flags.string({ description: "Target a machine-global service scope (e.g. browser-relay)" }),
-		follow: Flags.boolean({ char: "f", description: "Keep streaming new output (logs)" }),
-		head: Flags.boolean({ description: "Read from the beginning instead of the tail (logs)" }),
-		lines: Flags.integer({ char: "n", description: "Number of log lines, max 1000 (logs)" }),
-		grep: Flags.string({ description: "Regex filter applied to log lines (logs)" }),
-		timeout: Flags.integer({ description: "Grace period in seconds before hard kill (stop)" }),
+		all: Flags.boolean({ char: "a", description: "同时列出其他项目与已退出的全局服务（list）" }),
+		json: Flags.boolean({ char: "j", description: "输出机器可读的 JSON" }),
+		plain: Flags.boolean({ description: "使用静态列表而非交互式监视器（list）" }),
+		dir: Flags.string({ description: "指定另一个项目目录而非当前目录" }),
+		global: Flags.string({ description: "指定机器全局服务作用域（如 browser-relay）" }),
+		follow: Flags.boolean({ char: "f", description: "持续流式输出新日志（logs）" }),
+		head: Flags.boolean({ description: "从头读取而非读取尾部（logs）" }),
+		lines: Flags.integer({ char: "n", description: "日志行数，最多 1000（logs）" }),
+		grep: Flags.string({ description: "应用于日志行的正则筛选（logs）" }),
+		timeout: Flags.integer({ description: "强制终止前的宽限期（秒，stop）" }),
 	};
 
 	static examples = [

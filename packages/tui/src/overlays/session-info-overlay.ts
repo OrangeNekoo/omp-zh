@@ -11,6 +11,13 @@ import type { DescribeContext, NativeChild, NativeNode, NativeUiEvent } from "..
 import { actionBar, actionButton } from "../native/overlay";
 import { plainText, styledSpans } from "../native/spans";
 import type { ContextUsage } from "../status-line/types";
+
+function reportKeyEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 报告由本仓库的汉化源码产出（中文键），而上游测试与英文环境给出英文键；
+	// 解析方不站队，两种都认，免得换个输入就丢分组。签名收 undefined 是为了
+	// 完全对齐 x === "Key" 的语义——左侧可能是可选属性（facts[0]?.k）。
+	return actual === english || actual === chinese;
+}
 const PANEL_CHROME_ROWS = 4;
 
 /** One headed block of a key/value report. */
@@ -120,7 +127,7 @@ export class SessionInfoOverlay implements Component {
 		role: "omp.overlay.sessionInfo",
 		size: "md",
 		anchor: "center",
-		head: "Session info",
+		head: "会话信息",
 	} as const;
 	readonly #host: SessionInfoOverlayHost;
 	readonly #onClose: () => void;
@@ -200,18 +207,18 @@ export class SessionInfoOverlay implements Component {
 		// The report prints the append-only context mode after the message counts;
 		// it is a provider setting, so it joins the Provider group when there is one.
 		const parsed = parseKvReport(this.#infoSource);
-		const hasProvider = parsed.some(section => section.head === "Provider");
+		const hasProvider = parsed.some(section => reportKeyEq(section.head, "Provider", "服务商"));
 		const moved: KvReportEntry[] = [];
 		const sections = parsed.map(section => ({
 			head: section.head,
 			entries: section.entries.filter(entry => {
-				if (!hasProvider || section.head === "Provider" || !("k" in entry) || entry.k !== "Append-Only")
+				if (!hasProvider || reportKeyEq(section.head, "Provider", "服务商") || !("k" in entry) || !reportKeyEq(entry.k, "Append-Only", "仅追加"))
 					return true;
 				moved.push(entry);
 				return false;
 			}),
 		}));
-		sections.find(section => section.head === "Provider")?.entries.push(...moved);
+		sections.find(section => reportKeyEq(section.head, "Provider", "服务商"))?.entries.push(...moved);
 		const body: NativeChild[] = [];
 		const stats: { head: string; key: string; items: { k: string; v: TspSpan[] }[] }[] = [];
 		const flushStats = (): void => {
@@ -226,7 +233,7 @@ export class SessionInfoOverlay implements Component {
 					if (!("k" in entry)) rest.push(text(entry.line, { wrap: "word", role: "omp.info.note" }));
 					else if (entry.k === "ID")
 						identity.unshift(identityField("ID", [span(joined(entry.v), "mono")], "id", "Copy session ID"));
-					else if (entry.k === "File") {
+					else if (reportKeyEq(entry.k, "File", "文件")) {
 						const path = joined(entry.v);
 						identity.push(
 							path.includes("/")
@@ -247,13 +254,13 @@ export class SessionInfoOverlay implements Component {
 				pairs.length === entries.length &&
 				pairs.every(p => NUMERIC.test(joined(p.v).trim()))
 			) {
-				const cost = head === "Cost";
+				const cost = reportKeyEq(head, "Cost", "费用");
 				stats.push({
 					head,
 					key: `s${index}`,
 					items: pairs.map(p => ({
 						k: sentenceCase(p.k),
-						v: [span(cost && p.k === "Total" ? `$${joined(p.v).trim()}` : joined(p.v).trim(), "mono")],
+						v: [span(cost && reportKeyEq(p.k, "Total", "合计") ? `$${joined(p.v).trim()}` : joined(p.v).trim(), "mono")],
 					})),
 				});
 				continue;
@@ -263,13 +270,13 @@ export class SessionInfoOverlay implements Component {
 				node(
 					"section",
 					{ head: sentenceCase(head), role: "omp.info.group" },
-					this.#describeEntries(entries, head === "Provider"),
+					this.#describeEntries(entries, reportKeyEq(head, "Provider", "服务商")),
 					`s${index}`,
 				),
 			);
 		}
 		flushStats();
-		body.push(actionBar([null, actionButton("Close", "close", { keys: "escape" })]));
+		body.push(actionBar([null, actionButton("关闭", "close", { keys: "escape" })]));
 		const described = col(body, { gap: "md" });
 		this.#nativeNode = { meter, node: described };
 		return described;
@@ -312,7 +319,7 @@ export class SessionInfoOverlay implements Component {
 			{ lines: 0, children: [] },
 		];
 		for (const g of groups) {
-			const total = g.items.length > 1 ? g.items.find(item => item.k === "Total") : undefined;
+			const total = g.items.length > 1 ? g.items.find(item => reportKeyEq(item.k, "Total", "合计")) : undefined;
 			const items = total ? g.items.filter(item => item !== total) : g.items;
 			const children: NativeChild[] = [node("kv", { items, layout: "grid", role: "omp.info.nums" })];
 			if (total) children.push(node("kv", { items: [total], layout: "grid", role: "omp.info.total" }));
@@ -343,7 +350,7 @@ export class SessionInfoOverlay implements Component {
 					"row",
 					{ align: "baseline", role: "omp.info.contextHead" },
 					[
-						text([span("Context window")], { grow: 1, shrink: 1, truncate: "end" }),
+						text([span("上下文窗口")], { grow: 1, shrink: 1, truncate: "end" }),
 						text(
 							[
 								span(`${formatNumber(context.tokens)} / ${formatNumber(context.contextWindow)}`, "mono muted"),
@@ -375,7 +382,7 @@ export class SessionInfoOverlay implements Component {
 
 	render(width: number): readonly string[] {
 		const innerWidth = Math.max(1, width - 4);
-		const footerHint = `${formatKeyHints(["up", "down"])} scroll · ${editorKey("tui.select.cancel")} close`;
+		const footerHint = `${formatKeyHints(["up", "down"])} 滚动 · ${editorKey("tui.select.cancel")} 关闭`;
 		this.#footer.setLines([theme.fg("dim", truncateToWidth(footerHint, innerWidth))]);
 
 		const maxBodyHeight = Math.max(1, this.#host.terminal.rows - PANEL_CHROME_ROWS);

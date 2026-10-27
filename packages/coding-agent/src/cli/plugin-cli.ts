@@ -5,7 +5,7 @@
  */
 
 import * as path from "node:path";
-import { APP_NAME, getPluginsNodeModules, getProjectDir } from "@oh-my-pi/pi-utils";
+import { CLI_NAME, getPluginsNodeModules, getProjectDir } from "@oh-my-pi/pi-utils";
 import chalk from "@oh-my-pi/pi-utils/chalk";
 import { resolveOrDefaultProjectRegistryPath } from "../discovery/helpers";
 import { PluginManager, parseSettingValue, validateSetting } from "../extensibility/plugins";
@@ -152,7 +152,7 @@ export { classifyInstallTarget } from "./classify-install-target";
  */
 function refuseDryRun(flags: { dryRun?: boolean }, command: string): void {
 	if (!flags.dryRun) return;
-	console.error(chalk.red(`--dry-run is not supported by '${APP_NAME} plugin ${command}'. Nothing was changed.`));
+	console.error(chalk.red(`--dry-run is not supported by '${CLI_NAME} plugin ${command}'. Nothing was changed.`));
 	process.exit(1);
 }
 
@@ -224,7 +224,7 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 		case "add": {
 			const source = args[1];
 			if (!source) {
-				console.error(chalk.red(`Usage: ${APP_NAME} plugin marketplace add <source>`));
+				console.error(chalk.red(`Usage: ${CLI_NAME} plugin marketplace add <source>`));
 				process.exit(1);
 			}
 			refuseDryRun(flags, "marketplace add");
@@ -241,7 +241,7 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 		case "rm": {
 			const name = args[1];
 			if (!name) {
-				console.error(chalk.red(`Usage: ${APP_NAME} plugin marketplace remove <name>`));
+				console.error(chalk.red(`Usage: ${CLI_NAME} plugin marketplace remove <name>`));
 				process.exit(1);
 			}
 			refuseDryRun(flags, "marketplace remove");
@@ -281,7 +281,7 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 				const marketplaces = await manager.listMarketplaces();
 				if (marketplaces.length === 0) {
 					console.log(chalk.dim("No marketplaces configured"));
-					console.log(chalk.dim(`\nAdd one with: ${APP_NAME} plugin marketplace add <source>`));
+					console.log(chalk.dim(`\nAdd one with: ${CLI_NAME} plugin marketplace add <source>`));
 					return;
 				}
 				console.log(chalk.bold("Configured Marketplaces:\n"));
@@ -332,7 +332,7 @@ async function handleUpgrade(
 			if (flags.scope) {
 				console.error(
 					chalk.yellow(
-						`Warning: --scope is ignored when upgrading all plugins. Use 'omp plugin upgrade <id> --scope ${flags.scope}' to target a specific plugin and scope.`,
+						`Warning: --scope is ignored when upgrading all plugins. Use '${CLI_NAME} plugin upgrade <id> --scope ${flags.scope}' to target a specific plugin and scope.`,
 					),
 				);
 			}
@@ -483,13 +483,13 @@ async function handleInstall(
 	flags: { json?: boolean; force?: boolean; dryRun?: boolean; scope?: "user" | "project" },
 ): Promise<void> {
 	if (packages.length === 0) {
-		console.error(chalk.red(`Usage: ${APP_NAME} plugin install <source>[features] ...`));
+		console.error(chalk.red(`Usage: ${CLI_NAME} plugin install <source>[features] ...`));
 		console.error(chalk.dim("Examples:"));
-		console.error(chalk.dim(`  ${APP_NAME} plugin install @oh-my-pi/exa`));
-		console.error(chalk.dim(`  ${APP_NAME} plugin install name@marketplace`));
-		console.error(chalk.dim(`  ${APP_NAME} plugin install github:user/repo`));
-		console.error(chalk.dim(`  ${APP_NAME} plugin install https://github.com/user/repo#v1.0`));
-		console.error(chalk.dim(`  ${APP_NAME} plugin install ./path/to/local/plugin`));
+		console.error(chalk.dim(`  ${CLI_NAME} plugin install @oh-my-pi/exa`));
+		console.error(chalk.dim(`  ${CLI_NAME} plugin install name@marketplace`));
+		console.error(chalk.dim(`  ${CLI_NAME} plugin install github:user/repo`));
+		console.error(chalk.dim(`  ${CLI_NAME} plugin install https://github.com/user/repo#v1.0`));
+		console.error(chalk.dim(`  ${CLI_NAME} plugin install ./path/to/local/plugin`));
 		process.exit(1);
 	}
 
@@ -616,7 +616,7 @@ async function handleUninstall(
 	flags: { json?: boolean; dryRun?: boolean; scope?: "user" | "project" },
 ): Promise<void> {
 	if (packages.length === 0) {
-		console.error(chalk.red(`Usage: ${APP_NAME} plugin uninstall <package> ...`));
+		console.error(chalk.red(`Usage: ${CLI_NAME} plugin uninstall <package> ...`));
 		process.exit(1);
 	}
 
@@ -723,7 +723,7 @@ async function handleList(manager: PluginManager, flags: { json?: boolean }): Pr
 
 	if (npmPlugins.length === 0 && mktPlugins.length === 0) {
 		console.log(chalk.dim("No plugins installed"));
-		console.log(chalk.dim(`\nInstall plugins with: ${APP_NAME} plugin install <package>`));
+		console.log(chalk.dim(`\nInstall plugins with: ${CLI_NAME} plugin install <package>`));
 		return;
 	}
 
@@ -771,7 +771,7 @@ async function handleLink(
 	flags: { json?: boolean; dryRun?: boolean },
 ): Promise<void> {
 	if (paths.length === 0) {
-		console.error(chalk.red(`Usage: ${APP_NAME} plugin link <path>`));
+		console.error(chalk.red(`Usage: ${CLI_NAME} plugin link <path>`));
 		process.exit(1);
 	}
 
@@ -844,7 +844,7 @@ async function handleFeatures(
 ): Promise<void> {
 	if (args.length === 0) {
 		console.error(
-			chalk.red(`Usage: ${APP_NAME} plugin features <plugin> [--enable f1,f2] [--disable f1] [--set f1,f2]`),
+			chalk.red(`Usage: ${CLI_NAME} plugin features <plugin> [--enable f1,f2] [--disable f1] [--set f1,f2]`),
 		);
 		process.exit(1);
 	}
@@ -937,7 +937,7 @@ async function handleConfig(
 ): Promise<void> {
 	if (args.length === 0) {
 		console.error(
-			chalk.red(`Usage: ${APP_NAME} plugin config <list|get|set|delete|validate> <plugin> [key] [value]`),
+			chalk.red(`Usage: ${CLI_NAME} plugin config <list|get|set|delete|validate> <plugin> [key] [value]`),
 		);
 		process.exit(1);
 	}
@@ -1144,7 +1144,7 @@ async function handleSetEnabled(
 	const jsonKey = enabled ? "enabled" : "disabled";
 
 	if (plugins.length === 0) {
-		console.error(chalk.red(`Usage: ${APP_NAME} plugin ${action} <plugin> ...`));
+		console.error(chalk.red(`Usage: ${CLI_NAME} plugin ${action} <plugin> ...`));
 		process.exit(1);
 	}
 
@@ -1179,7 +1179,7 @@ async function handleSetEnabled(
 // =============================================================================
 
 export function printPluginHelp(): void {
-	console.log(`${chalk.bold(`${APP_NAME} plugin`)} - Plugin lifecycle management
+	console.log(`${chalk.bold(`${CLI_NAME} plugin`)} - Plugin lifecycle management
 
 ${chalk.bold("Commands:")}
   install <source>[features]     Install plugins from npm, GitHub, or git URL
@@ -1223,12 +1223,12 @@ ${chalk.bold("Options:")}
   -l, --local      Use project-local overrides
 
 ${chalk.bold("Examples:")}
-  ${APP_NAME} plugin install @oh-my-pi/exa[search]
-  ${APP_NAME} plugin list --json
-  ${APP_NAME} plugin features my-plugin --enable search,web
-  ${APP_NAME} plugin config set my-plugin apiKey sk-xxx
-  ${APP_NAME} plugin doctor --fix
-  ${APP_NAME} plugin install --scope project name@marketplace
-  ${APP_NAME} plugin install github:user/repo#v1.0
+  ${CLI_NAME} plugin install @oh-my-pi/exa[search]
+  ${CLI_NAME} plugin list --json
+  ${CLI_NAME} plugin features my-plugin --enable search,web
+  ${CLI_NAME} plugin config set my-plugin apiKey sk-xxx
+  ${CLI_NAME} plugin doctor --fix
+  ${CLI_NAME} plugin install --scope project name@marketplace
+  ${CLI_NAME} plugin install github:user/repo#v1.0
 `);
 }

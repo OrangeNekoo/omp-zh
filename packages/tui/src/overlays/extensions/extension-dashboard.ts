@@ -111,7 +111,7 @@ export function buildTabBarTabs(tabs: ProviderTab[]): Tab[] {
 }
 
 /** The sheet/page title, shared by the ANSI frame and the native views. */
-const DASHBOARD_TITLE = "Extension Control Center";
+const DASHBOARD_TITLE = "扩展控制中心";
 
 /** The kind column shown when rows are not grouped under kind headers (a provider scope or a search). */
 const KIND_COLUMNS: readonly TspPickerColumn[] = [{ id: "kind", format: "dim", priority: 1 }];
@@ -133,14 +133,14 @@ function providerInitials(label: string): string {
  */
 export function buildPickerScopes(tabs: ProviderTab[]): TspPickerScope[] {
 	return tabs.map(tab => {
-		if (tab.id === "all") return { id: tab.id, label: "All", icon: "extension", count: tab.count };
+		if (tab.id === "all") return { id: tab.id, label: "全部", icon: "extension", count: tab.count };
 		const emptyEnabled = tab.count === 0 && tab.enabled;
 		return {
 			id: tab.id,
 			label: tab.label,
 			mark: { text: providerInitials(tab.label), seed: tab.id },
 			count: tab.count,
-			group: "Providers",
+			group: "服务商",
 			dot: !tab.enabled ? "muted" : emptyEnabled ? "warning" : "success",
 			disabled: emptyEnabled ? "No extensions" : undefined,
 		};
@@ -655,7 +655,7 @@ export class ExtensionDashboard implements Component {
 				layout: "rows",
 				preview: "side",
 				...this.#mainList.nativeQuery(),
-				placeholder: "Search extensions…",
+				placeholder: "搜索扩展…",
 				scopes: buildPickerScopes(this.#state.tabs),
 				scope: activeTab?.id ?? "all",
 				columns: view.grouped ? undefined : KIND_COLUMNS,
@@ -664,7 +664,7 @@ export class ExtensionDashboard implements Component {
 				hits: view.hits,
 				selected: view.selected,
 				total: this.#state.tabFiltered.length,
-				empty: "No extensions found for this provider.",
+				empty: "此服务商没有可用扩展。",
 				actions: this.#pickerActions(this.#mainList.selectedSwitch()),
 				focus: "list",
 			},
@@ -684,12 +684,12 @@ export class ExtensionDashboard implements Component {
 	#pickerActions(selected: ExtensionListSwitch | undefined): TspPickerAction[] {
 		const expanded = this.#inspector.isExpanded();
 		return [
-			pickerAction("toggle", "Toggle", "space", {
+			pickerAction("toggle", "切换", "space", {
 				primary: true,
 				on: selected?.on,
 				disabled: selected ? selected.blocked : "Select an extension",
 			}),
-			pickerAction("expand", expanded ? "Collapse" : "Expand", this.#expandKey(), { on: expanded }),
+			pickerAction("expand", expanded ? "折叠" : "Expand", this.#expandKey(), { on: expanded }),
 			CLOSE_ACTION,
 		];
 	}
@@ -709,19 +709,19 @@ export class ExtensionDashboard implements Component {
 			[
 				node("row", { gap: "sm", align: "center", role: "omp.app.where" }, [
 					text(DASHBOARD_TITLE, { role: "omp.app.title" }),
-					text([span(query ? `${shown} of ${total}` : `${total} extensions`, "muted")], { truncate: "end" }),
+					text([span(query ? `${shown} / ${total}` : `${total} 个扩展`, "muted")], { truncate: "end" }),
 				]),
 				node("icon", {
 					name: "x",
 					role: "omp.app.ibtn",
-					title: `Close  ${formatTooltipKey(boundKeys("app.interrupt", ["escape"])[0] ?? "escape")}`,
+					title: `关闭  ${formatTooltipKey(boundKeys("app.interrupt", ["escape"])[0] ?? "escape")}`,
 					aria: "Close",
 					actions: { click: "close" },
 				}),
 			],
 			"head",
 		);
-		const search = text([span("Search: ", "muted"), query ? span(query, "accent") : span("type to filter", "dim")], {
+		const search = text([span("搜索：", "muted"), query ? span(query, "accent") : span("输入以筛选", "dim")], {
 			truncate: "end",
 		});
 		const body = node(
@@ -738,15 +738,15 @@ export class ExtensionDashboard implements Component {
 		);
 		const expanded = this.#inspector.isExpanded();
 		const buttons: (NativeNode | null)[] = [
-			actionButton(selected?.on === false ? "Enable" : selected ? "Disable" : "Toggle", "toggle", {
+			actionButton(selected?.on === false ? "Enable" : selected ? "禁用" : "切换", "toggle", {
 				keys: "space",
 				tone: "accent",
-				title: selected?.blocked ?? (selected ? undefined : "Select an extension"),
+				title: selected?.blocked ?? (selected ? undefined : "选择扩展"),
 			}),
-			actionButton(expanded ? "Collapse" : "Expand", "expand", { keys: this.#expandKey() }),
+			actionButton(expanded ? "折叠" : "Expand", "expand", { keys: this.#expandKey() }),
 		];
-		if (query) buttons.push(actionButton("Clear search", "clear", { keys: "escape" }));
-		buttons.push(null, actionButton("Close", "close", { keys: "escape" }));
+		if (query) buttons.push(actionButton("清除搜索", "clear", { keys: "escape" }));
+		buttons.push(null, actionButton("关闭", "close", { keys: "escape" }));
 		return col([head, this.#tabBar, keyed(search, "search"), body, actionBar(buttons)], { gap: "md", grow: 1 });
 	}
 

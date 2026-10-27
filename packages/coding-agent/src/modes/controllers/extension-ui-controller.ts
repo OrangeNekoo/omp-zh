@@ -48,6 +48,11 @@ import { getEditorCommand, openInEditor } from "../../utils/external-editor";
 import { launchTerminal } from "../../subprocess/terminal-launch";
 import { approvalAnswerForChoice, approvalChoiceLabels, approvalOnceLabel } from "../../tools/approval";
 
+function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
+	return actual === english || actual === chinese;
+}
+
 const MAX_WIDGET_LINES = 10;
 
 /**
@@ -55,12 +60,12 @@ const MAX_WIDGET_LINES = 10;
  * the keys, so the host can't know its bindings: advertise the defaults.
  */
 function guestAskHelpText(enterAction: string, extra = ""): string {
-	return `${formatKeyHints(["up", "down"])} navigate  ${formatKeyHint("enter")} ${enterAction}  ${extra}${formatKeyHint("escape")} cancel`;
+	return `${formatKeyHints(["up", "down"])} 导航  ${formatKeyHint("enter")} ${enterAction}  ${extra}${formatKeyHint("escape")} 取消`;
 }
 
-const ASK_OTHER_OPTION = "Other (type your own)";
-const ASK_CHAT_OPTION = "Chat about this";
-const ASK_NEXT_OPTION = "Next →";
+const ASK_OTHER_OPTION = "其他（自行输入）";
+const ASK_CHAT_OPTION = "就此提问";
+const ASK_NEXT_OPTION = "下一个 →";
 
 function withTerminalLauncher(uiContext: ExtensionUIContext, hasUI: boolean): ExtensionUIContext {
 	if (!hasUI || uiContext.openTerminal) return uiContext;
@@ -204,8 +209,8 @@ export class ExtensionUiController {
 					? "inside the configured reserve margin"
 					: `${confirmation.remainingPercent.toFixed(1)}% remaining`;
 			return this.showHookConfirm(
-				"Coding-plan reserve reached",
-				`${confirmation.from} has ${reserve}. Switch to ${confirmation.to}? Choose No to keep using the current plan.`,
+				"已达编码套餐保留额度",
+				`${confirmation.from} 使用 ${reserve}。要切换到 ${confirmation.to} 吗？选「否」则继续使用当前计划。`,
 				{ signal },
 			);
 		});
@@ -264,7 +269,7 @@ export class ExtensionUiController {
 				await this.ctx.session.reload();
 				await this.ctx.renderInitialMessages({ clearTerminalHistory: true });
 				await this.ctx.reloadTodos();
-				this.ctx.showStatus("Reloaded session");
+				this.ctx.showStatus("已重新加载会话");
 			},
 			newSession: async options => {
 				await this.ctx.prepareSessionSwitch();
@@ -292,7 +297,7 @@ export class ExtensionUiController {
 
 				this.ctx.present([
 					new Spacer(1),
-					new Text(`${theme.fg("accent", `${theme.status.success} New session started`)}`, 1, 1),
+					new Text(`${theme.fg("accent", `${theme.status.success} 新会话已开始`)}`, 1, 1),
 				]);
 				await this.ctx.reloadTodos();
 				this.ctx.ui.requestRender(true, { clearScrollback: true });
@@ -310,7 +315,7 @@ export class ExtensionUiController {
 				await this.ctx.renderInitialMessages({ clearTerminalHistory: true });
 				await this.ctx.reloadTodos();
 				this.ctx.editor.setDraft(result.selectedText, result.selectedImages);
-				this.ctx.showStatus("Branched to new session");
+				this.ctx.showStatus("已分支到新会话");
 
 				return { cancelled: false };
 			},
@@ -326,7 +331,7 @@ export class ExtensionUiController {
 				if (result.editorText && !this.ctx.editor.getText().trim()) {
 					this.ctx.editor.setDraft(result.editorText, result.editorImages);
 				}
-				this.ctx.showStatus("Navigated to selected point");
+				this.ctx.showStatus("已跳转到所选位置");
 
 				return { cancelled: false };
 			},
@@ -403,7 +408,7 @@ export class ExtensionUiController {
 				container.addChild(new Text(line, 1, 0));
 			}
 			if (content.length > MAX_WIDGET_LINES) {
-				container.addChild(new Text(theme.fg("muted", "... (widget truncated)"), 1, 0));
+				container.addChild(new Text(theme.fg("muted", "…（小组件已截断）"), 1, 0));
 			}
 			return container;
 		}
@@ -496,7 +501,7 @@ export class ExtensionUiController {
 				await this.ctx.session.reload();
 				await this.ctx.renderInitialMessages({ clearTerminalHistory: true });
 				await this.ctx.reloadTodos();
-				this.ctx.showStatus("Reloaded session");
+				this.ctx.showStatus("已重新加载会话");
 			},
 			newSession: async options => {
 				await this.ctx.prepareSessionSwitch();
@@ -521,7 +526,7 @@ export class ExtensionUiController {
 
 				this.ctx.present([
 					new Spacer(1),
-					new Text(`${theme.fg("accent", `${theme.status.success} New session started`)}`, 1, 1),
+					new Text(`${theme.fg("accent", `${theme.status.success} 新会话已开始`)}`, 1, 1),
 				]);
 				await this.ctx.reloadTodos();
 				this.ctx.ui.requestRender(true, { clearScrollback: true });
@@ -539,7 +544,7 @@ export class ExtensionUiController {
 				await this.ctx.renderInitialMessages({ clearTerminalHistory: true });
 				await this.ctx.reloadTodos();
 				this.ctx.editor.setDraft(result.selectedText, result.selectedImages);
-				this.ctx.showStatus("Branched to new session");
+				this.ctx.showStatus("已分支到新会话");
 
 				return { cancelled: false };
 			},
@@ -555,7 +560,7 @@ export class ExtensionUiController {
 				if (result.editorText && !this.ctx.editor.getText().trim()) {
 					this.ctx.editor.setDraft(result.editorText, result.editorImages);
 				}
-				this.ctx.showStatus("Navigated to selected point");
+				this.ctx.showStatus("已跳转到所选位置");
 
 				return { cancelled: false };
 			},
@@ -617,7 +622,7 @@ export class ExtensionUiController {
 	 * Show a tool error in the chat.
 	 */
 	showToolError(toolName: string, error: string): void {
-		const errorText = new Text(`Tool "${toolName}" error: ${error}`, 1, 0).setStyleFn(t => theme.fg("error", t));
+		const errorText = new Text(`工具 "${toolName}" 错误：${error}`, 1, 0).setStyleFn(t => theme.fg("error", t));
 		this.ctx.present(errorText);
 	}
 
@@ -1187,8 +1192,8 @@ export class ExtensionUiController {
 		message: string,
 		dialogOptions?: InteractiveSelectorDialogOptions,
 	): Promise<boolean> {
-		const result = await this.showHookSelector(`${title}\n${message}`, ["Yes", "No"], dialogOptions);
-		return result === "Yes";
+		const result = await this.showHookSelector(`${title}\n${message}`, ["是", "否"], dialogOptions);
+		return labelEq(result, "Yes", "是");
 	}
 
 	/**
@@ -1400,7 +1405,7 @@ export class ExtensionUiController {
 	}
 
 	showExtensionError(extensionPath: string, error: string): void {
-		const errorText = new Text(`Extension "${extensionPath}" error: ${error}`, 1, 0).setStyleFn(t =>
+		const errorText = new Text(`扩展 "${extensionPath}" 错误：${error}`, 1, 0).setStyleFn(t =>
 			theme.fg("error", t),
 		);
 		this.ctx.present(errorText);
@@ -1429,7 +1434,7 @@ export class ExtensionUiController {
 	 */
 	#rejectGuestExtensionTurn(): boolean {
 		if (!this.ctx.collabGuest) return false;
-		this.ctx.showStatus("Extension-initiated turns are host-only during a collab session");
+		this.ctx.showStatus("协作会话中，由扩展发起的回合仅在主机端可用");
 		return true;
 	}
 
@@ -1453,7 +1458,7 @@ export class ExtensionUiController {
 				this.#applyCustomMessageDisplay(wasStreaming, normalized, silentAppend ? messageCountBefore : undefined);
 			})
 			.catch((err: unknown) => {
-				this.ctx.showError(`Extension sendMessage failed: ${err instanceof Error ? err.message : String(err)}`);
+				this.ctx.showError(`扩展 sendMessage 失败：${err instanceof Error ? err.message : String(err)}`);
 			});
 	};
 
@@ -1461,7 +1466,7 @@ export class ExtensionUiController {
 	#sendExtensionUserMessage: SendUserMessageHandler = (content, options) => {
 		if (this.#rejectGuestExtensionTurn()) return;
 		this.ctx.session.sendUserMessage(content, options).catch((err: unknown) => {
-			this.ctx.showError(`Extension sendUserMessage failed: ${err instanceof Error ? err.message : String(err)}`);
+			this.ctx.showError(`扩展 sendUserMessage 失败：${err instanceof Error ? err.message : String(err)}`);
 		});
 	};
 

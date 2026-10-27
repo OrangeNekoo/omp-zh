@@ -147,8 +147,8 @@ export class ComposerShapePreview implements Component {
 		if (option?.description) caption.push(span(` · ${option.description}`, "muted"));
 		const described = col(
 			[
-				text([span("Preview:", "muted")]),
-				node("editor", { placeholder: "Ask anything, edit files, run tools", readonly: true, maxLines: 1 }),
+				text([span("预览：", "muted")]),
+				node("editor", { placeholder: "提问、编辑文件、运行工具", readonly: true, maxLines: 1 }),
 				text(caption, { wrap: "word" }),
 			],
 			{ role: "omp.preview.composer-shape", gap: "xs" },
@@ -159,6 +159,6 @@ export class ComposerShapePreview implements Component {
 
 	render(width: number): readonly string[] {
 		const lines = renderComposerShapePreview(this.#shape, width, this.#options.status);
-		return ["", theme.fg("muted", "Preview:"), ...lines];
+		return ["", theme.fg("muted", "预览："), ...lines];
 	}
 }

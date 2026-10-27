@@ -947,7 +947,7 @@ export class AssistantMessageComponent extends Container {
 					// Hidden (Ctrl+T): only the live "Thinking…" head shows; a finished thought leaves nothing.
 					if (this.#hideThinkingBlock && !thinkingLive) continue;
 					const tokens = thinkingLive ? this.#thinkingTokens : (clock?.tokens ?? 0);
-					const title = tokens > 0 ? `${formatNumber(tokens)} tokens` : undefined;
+					const title = tokens > 0 ? `${formatNumber(tokens)} 令牌` : undefined;
 					// Live: starburst · "Thinking…" · ticking timer · tok/s. Done: "Thought for 12s".
 					const head = thinkingLive
 						? node(
@@ -955,7 +955,7 @@ export class AssistantMessageComponent extends Container {
 								{ gap: "sm", title },
 								[
 									node("spinner", { style: "starburst", role: "omp.thinking.spin" }),
-									text([span("Thinking…", "muted")]),
+									text([span("思考中…", "muted")]),
 									elapsed(performance.now() - (this.#thinkingClock.get(index)?.start ?? performance.now())),
 									...(rate >= 0.05 ? [node("rate", { value: rate, unit: "tok/s" })] : []),
 								],
@@ -1037,7 +1037,7 @@ export class AssistantMessageComponent extends Container {
 						{
 							name: "copy",
 							role: "omp.turn.copy",
-							title: "Copy answer",
+							title: "复制回答",
 							aria: "Copy answer",
 							actions: { click: "copy-answer" },
 						},
@@ -1073,7 +1073,7 @@ export class AssistantMessageComponent extends Container {
 				"section",
 				{
 					role: "omp.assistant.recovered",
-					head: [span(`↻ Recovered after ${attempt} ${attempt === 1 ? "retry" : "retries"}`, "muted")],
+					head: [span(`↻ 在 ${attempt} ${attempt === 1 ? "retry" : "retries"} 后恢复`, "muted")],
 					collapsible: true,
 					collapsed: true,
 				},
@@ -1101,7 +1101,7 @@ export class AssistantMessageComponent extends Container {
 				"row",
 				{ gap: "sm" },
 				[
-					text([span("Request failed", "error strong")]),
+					text([span("请求失败", "error strong")]),
 					...(code ? [node("badge", { text: code[1]!, tone: "error", role: "omp.error.code" })] : []),
 				],
 				"head",

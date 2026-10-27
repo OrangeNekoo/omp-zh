@@ -6,7 +6,7 @@ import type { SessionManager } from "../session/session-manager";
 import { getEditorCommand, openEditorOnPath } from "../utils/external-editor";
 import type { InteractiveModeContext } from "./types";
 
-const PICKER_TITLE = "Open local:// file in external editor";
+const PICKER_TITLE = "在外部编辑器中打开 local:// 文件";
 
 function errorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
@@ -83,11 +83,11 @@ async function pickLocalFile(
 	try {
 		files = await listLocalFiles(options);
 	} catch (error) {
-		ctx.showError(`Failed to list local:// files: ${showErrorMessage(error)}`);
+		ctx.showError(`列出 local:// 文件失败：${showErrorMessage(error)}`);
 		return undefined;
 	}
 	if (files.length === 0) {
-		ctx.showStatus("No local:// files in this session yet.");
+		ctx.showStatus("本会话还没有 local:// 文件。");
 		return undefined;
 	}
 	// Sanitize labels so filenames with ANSI/C0 escapes or tabs cannot corrupt the picker,
@@ -113,7 +113,7 @@ export async function openLocalFileInEditor(ctx: InteractiveModeContext, target?
 	}
 	const editorCmd = getEditorCommand();
 	if (!editorCmd) {
-		ctx.showWarning("No editor configured. Set $VISUAL or $EDITOR environment variable.");
+		ctx.showWarning("未配置编辑器。请设置 $VISUAL 或 $EDITOR 环境变量。");
 		return;
 	}
 	const options = sessionLocalProtocolOptions(ctx.sessionManager);
@@ -144,7 +144,7 @@ export async function openLocalFileInEditor(ctx: InteractiveModeContext, target?
 		ctx.ui.stop();
 		exitCode = await openEditorOnPath(editorCmd, chosen.path);
 	} catch (error) {
-		ctx.showWarning(`Failed to open external editor: ${showErrorMessage(error)}`);
+		ctx.showWarning(`打开外部编辑器失败：${showErrorMessage(error)}`);
 		return;
 	} finally {
 		ctx.ui.start();
@@ -152,8 +152,8 @@ export async function openLocalFileInEditor(ctx: InteractiveModeContext, target?
 	}
 
 	if (exitCode !== 0) {
-		ctx.showWarning(`Editor exited with code ${exitCode}; ${sanitizeText(chosen.url)} keeps whatever it saved.`);
+		ctx.showWarning(`编辑器以代码 ${exitCode} 退出；${sanitizeText(chosen.url)} 保留它保存的内容。`);
 		return;
 	}
-	ctx.showStatus(`Closed ${sanitizeText(chosen.url)} in editor.`);
+	ctx.showStatus(`已在编辑器中关闭 ${sanitizeText(chosen.url)}。`);
 }

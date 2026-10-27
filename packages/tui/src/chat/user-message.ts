@@ -219,7 +219,7 @@ export class UserMessageComponent extends Container implements ReactionTarget, T
 					{
 						name: "copy",
 						role: "omp.user.tool",
-						title: "Copy message",
+						title: "复制消息",
 						aria: "Copy message",
 						actions: { click: "copy-message" },
 					},
@@ -231,7 +231,7 @@ export class UserMessageComponent extends Container implements ReactionTarget, T
 					{
 						name: "rewind",
 						role: "omp.user.tool",
-						title: "Rewind the conversation to an earlier message",
+						title: "将对话回退到更早的消息",
 						aria: "Rewind",
 						actions: { click: "rewind" },
 					},
@@ -272,7 +272,7 @@ export class UserMessageComponent extends Container implements ReactionTarget, T
 				node("badge", {
 					text: "steered",
 					tone: "accent",
-					title: "Delivered into the response that was streaming",
+					title: "投递到当时正在流式传输的响应中",
 				}),
 			);
 		}

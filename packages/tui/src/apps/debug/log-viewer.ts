@@ -24,7 +24,7 @@ export interface LogViewerDeps {
 /** Separator marking logs captured before the current process started. */
 export const SESSION_BOUNDARY_WARNING = "### WARNING - Logs above are older than current session!";
 /** Action row for loading earlier log entries. */
-export const LOAD_OLDER_LABEL = "### MOVE UP TO LOAD MORE...";
+export const LOAD_OLDER_LABEL = "### 上移以加载更多…";
 
 const INITIAL_LOG_CHUNK = 50;
 const LOAD_OLDER_CHUNK = 50;
@@ -678,7 +678,7 @@ export class DebugLogViewerComponent implements Component {
 		this.#onError = options.onError;
 		this.#onUpdate = options.onUpdate;
 		this.#frame = new DebugViewerFrame({
-			title: "Recent Logs",
+			title: "最近日志",
 			getHeight: () => process.stdout.rows || this.#terminalRows || 24,
 			headerRows: 2,
 			footerRows: 2,
@@ -883,11 +883,11 @@ export class DebugLogViewerComponent implements Component {
 				const needle = query.toLowerCase();
 				for (const viewerRow of model.rows) {
 					if (viewerRow.kind === "warning") {
-						order.push({ group: "session", label: "This session" });
+						order.push({ group: "session", label: "本会话" });
 						continue;
 					}
 					if (viewerRow.kind === "load-older") {
-						items.push({ id: OLDER_ITEM, label: "Load older entries", tone: "muted" });
+						items.push({ id: OLDER_ITEM, label: "加载更早的条目", tone: "muted" });
 						order.push(OLDER_ITEM);
 						continue;
 					}
@@ -915,14 +915,14 @@ export class DebugLogViewerComponent implements Component {
 					.join(" · ");
 				return picker(
 					{
-						title: "Recent logs",
+						title: "最近日志",
 						subtitle,
 						noun: "entries",
 						size: "lg",
 						layout: "rows",
 						preview: preview ? "below" : "none",
 						...pickerQuery(this.#filter),
-						placeholder: "Filter logs…",
+						placeholder: "筛选日志…",
 						columns: [
 							{ id: "pid", format: "dim", priority: 0 },
 							{ id: "time", format: "dim", priority: 1 },
@@ -938,13 +938,13 @@ export class DebugLogViewerComponent implements Component {
 									: `l${cursorLog}`,
 						current: selected.length > 1 ? selected.map(index => `l${index}`) : [],
 						total: model.logCount,
-						empty: query ? "No matching log entries" : "No log entries",
+						empty: query ? "无匹配日志条目" : "无日志条目",
 						message: this.#statusMessage,
 						actions: [
-							pickerAction("copy", "Copy", "ctrl+c", { primary: true }),
-							pickerAction("all", "Select all", "ctrl+a"),
-							pickerAction("pid", "This process", "ctrl+p", { on: model.isProcessFilterEnabled() }),
-							pickerAction("older", "Load older", "ctrl+o", {
+							pickerAction("copy", "复制", "ctrl+c", { primary: true }),
+							pickerAction("all", "全选", "ctrl+a"),
+							pickerAction("pid", "此进程", "ctrl+p", { on: model.isProcessFilterEnabled() }),
+							pickerAction("older", "加载更早内容", "ctrl+o", {
 								disabled: model.canLoadOlder()
 									? undefined
 									: model.historyLimitReached
@@ -1015,7 +1015,7 @@ export class DebugLogViewerComponent implements Component {
 		let anchor: DebugViewerFrameContent["body"]["anchor"];
 
 		if (rendered.length === 0) {
-			lines.push(theme.fg("muted", "no matches"));
+			lines.push(theme.fg("muted", "无匹配"));
 			mapping.push(undefined);
 		} else {
 			for (const entry of rendered) {
@@ -1041,29 +1041,29 @@ export class DebugLogViewerComponent implements Component {
 	#summaryText(): string {
 		const selected = this.#model.getSelectedCount();
 		const expanded = this.#model.expandedCount;
-		const limitText = this.#model.historyLimitReached ? `  ${theme.fg("warning", "history limit reached")}` : "";
+		const limitText = this.#model.historyLimitReached ? `  ${theme.fg("warning", "已达历史记录上限")}` : "";
 		return `${theme.fg("muted", "showing")} ${theme.fg("accent", `${this.#model.visibleLogCount}/${this.#model.logCount}`)}  ${theme.fg("muted", "selected")} ${theme.fg(selected > 0 ? "accent" : "muted", String(selected))}  ${theme.fg("muted", "expanded")} ${theme.fg(expanded > 0 ? "accent" : "muted", String(expanded))}${limitText}`;
 	}
 
 	#controlsText(): string {
-		return `${formatKeyHint("escape")} close · ${formatKeyHint("ctrl+c")} copy · ${formatKeyHints(["up", "down"])}/wheel move · ${formatKeyHints(["pageUp", "pageDown"])} page · ${formatKeyHints(["home", "end"])} first/last · click toggle · ${formatKeyHints(["shift+up", "shift+down"])} select · ${formatKeyHints(["left", "right"])} collapse/expand · ${formatKeyHint("ctrl+a")} all · ${formatKeyHint("ctrl+o")} older · ${formatKeyHint("ctrl+p")} pid`;
+		return `${formatKeyHint("escape")} 关闭 · ${formatKeyHint("ctrl+c")} 复制 · ${formatKeyHints(["up", "down"])}/wheel move · ${formatKeyHints(["pageUp", "pageDown"])} page · ${formatKeyHints(["home", "end"])} first/last · click toggle · ${formatKeyHints(["shift+up", "shift+down"])} 选择 · ${formatKeyHints(["left", "right"])} collapse/expand · ${formatKeyHint("ctrl+a")} all · ${formatKeyHint("ctrl+o")} older · ${formatKeyHint("ctrl+p")} pid`;
 	}
 
 	#filterText(): string {
 		const value = this.#filter.getValue();
 		const [field = ""] = this.#filter.render(visibleWidth(value) + 1);
-		const query = value.length === 0 ? field + theme.fg("muted", "type to filter") : theme.fg("accent", field);
+		const query = value.length === 0 ? field + theme.fg("muted", "输入以筛选") : theme.fg("accent", field);
 		const pidStatus = this.#model.isProcessFilterEnabled()
-			? theme.fg("success", "pid on")
-			: theme.fg("muted", "pid off");
-		const loading = this.#loadingOlder ? `  ${theme.fg("warning", "loading older…")}` : "";
+			? theme.fg("success", "显示 pid")
+			: theme.fg("muted", "关闭 pid");
+		const loading = this.#loadingOlder ? `  ${theme.fg("warning", "正在加载更早记录…")}` : "";
 		return `${theme.fg("muted", "filter")} ${query}  ${pidStatus}${loading}`;
 	}
 
 	#statusText(): string {
 		return this.#statusMessage
 			? theme.fg("success", this.#statusMessage)
-			: theme.fg("dim", `${formatKeyHint("enter")} loads older when highlighted; printable keys update filter`);
+			: theme.fg("dim", `高亮 ${formatKeyHint("enter")} 时加载更早内容；可打印按键更新筛选`);
 	}
 
 	async #handleLoadOlder(additionalCount: number = LOAD_OLDER_CHUNK): Promise<void> {

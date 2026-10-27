@@ -179,7 +179,7 @@ export const globToolRenderer = {
 				textContent.includes("No files found") ||
 				textContent.trim() === ""
 			) {
-				return new Text(formatEmptyMessage("No files found", uiTheme), 0, 0);
+				return new Text(formatEmptyMessage("未找到文件", uiTheme), 0, 0);
 			}
 
 			const lines = textContent.split("\n").filter(l => l.trim());
@@ -223,7 +223,7 @@ export const globToolRenderer = {
 
 		const missingPaths = details?.missingPaths ?? [];
 		const missingNote =
-			missingPaths.length > 0 ? uiTheme.fg("warning", `skipped missing: ${missingPaths.join(", ")}`) : undefined;
+			missingPaths.length > 0 ? uiTheme.fg("warning", `已跳过缺失项：${missingPaths.join(", ")}`) : undefined;
 
 		if (fileCount === 0) {
 			// `truncated` on an empty result means the scan timed out mid-walk —
@@ -238,7 +238,7 @@ export const globToolRenderer = {
 					title: "Glob",
 					titleColor: "toolTitle",
 					description: formatGlobRenderPaths(args),
-					meta: emptyTimedOut ? ["0 files", uiTheme.fg("warning", "timed out")] : ["0 files"],
+					meta: emptyTimedOut ? ["0 files", uiTheme.fg("warning", "已超时")] : ["0 files"],
 				},
 				uiTheme,
 			);
@@ -269,7 +269,7 @@ export const globToolRenderer = {
 
 		const extraLines: string[] = [];
 		if (truncationReasons.length > 0) {
-			extraLines.push(uiTheme.fg("warning", `truncated: ${truncationReasons.join(", ")}`));
+			extraLines.push(uiTheme.fg("warning", `已截断：${truncationReasons.join(", ")}`));
 		}
 		if (missingNote) extraLines.push(missingNote);
 
@@ -348,7 +348,7 @@ export const globToolRenderer = {
 				// `truncated` on an empty result means the scan timed out mid-walk.
 				tool: {
 					...globNativeHead(args, compact(["0 files", scope])),
-					note: timedOut || truncated ? "timed out" : undefined,
+					note: timedOut || truncated ? "已超时" : undefined,
 				},
 				tone: "warning",
 				inline: true,

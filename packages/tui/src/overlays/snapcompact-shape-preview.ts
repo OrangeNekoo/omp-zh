@@ -97,9 +97,9 @@ export class SnapcompactShapePreview implements Component {
 		if (memo !== undefined && memo.variant === this.#variant && memo.entry === entry) return memo.node;
 		const { label, stats } = this.#caption(shape, name);
 		let sample: NativeNode;
-		if (!entry) sample = text([span("(graphic sample needs an image-capable terminal)", "dim")]);
-		else if (entry.state === "rendering") sample = node("spinner", { label: [span("rendering sample…", "dim")] });
-		else if (entry.state === "failed") sample = text([span("(sample render failed)", "dim")]);
+		if (!entry) sample = text([span("（图形示例需要支持图像的终端）", "dim")]);
+		else if (entry.state === "rendering") sample = node("spinner", { label: [span("正在渲染示例…", "dim")] });
+		else if (entry.state === "failed") sample = text([span("（示例渲染失败）", "dim")]);
 		else {
 			sample = nativeImageNode(entry.bytes, "image/png", {
 				alt: `snapcompact ${label} sample`,
@@ -134,17 +134,17 @@ export class SnapcompactShapePreview implements Component {
 		const lines: string[] = [theme.fg("muted", `  Sample (zoomed) · ${label} · ${stats}`), ""];
 
 		if (!this.#budget || !TERMINAL.imageProtocol) {
-			lines.push(theme.fg("dim", "  (graphic sample needs a Kitty-graphics terminal)"));
+			lines.push(theme.fg("dim", "  （图形示例需要 Kitty 图形终端）"));
 			return lines;
 		}
 
 		const entry = this.#ensureEntry(name, shape);
 		if (entry.state === "rendering") {
-			lines.push(theme.fg("dim", "  rendering sample…"));
+			lines.push(theme.fg("dim", "  正在渲染示例…"));
 			return lines;
 		}
 		if (entry.state === "failed") {
-			lines.push(theme.fg("dim", "  (sample render failed)"));
+			lines.push(theme.fg("dim", "  （示例渲染失败）"));
 			return lines;
 		}
 
@@ -161,7 +161,7 @@ export class SnapcompactShapePreview implements Component {
 		// Only the unicode-placeholder path returns text-cell `lines`; cursor-moving
 		// placements would corrupt the bordered settings frame, so skip them.
 		if (!result?.lines) {
-			lines.push(theme.fg("dim", "  (graphic sample needs Kitty unicode-placeholder graphics)"));
+			lines.push(theme.fg("dim", "  （图形示例需要 Kitty Unicode 占位符图形）"));
 			return lines;
 		}
 		if (result.transmit) {

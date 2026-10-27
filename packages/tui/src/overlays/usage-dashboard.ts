@@ -450,7 +450,7 @@ function resetLabel(nowMs: number, resetMs: number): { text: string; title: stri
 			: `resets ${at.getDate()} ${MONTH_NAMES[at.getMonth()]}`;
 	return {
 		text,
-		title: `Resets ${shortDate(at)} ${at.getFullYear()}, ${clockTime(at)} (in ${formatDuration(resetMs)})`,
+		title: `重置 ${shortDate(at)} ${at.getFullYear()}、${clockTime(at)}（${formatDuration(resetMs)} 后）`,
 	};
 }
 
@@ -511,7 +511,7 @@ function statTile(
 /** `62%` in mono, toned like the window's status, then a quiet `left`. */
 function leftSpans(fraction: number, status: UsageLimit["status"]): TspSpan[] {
 	const token = status === "exhausted" ? "mono error" : status === "warning" ? "mono warning" : "mono";
-	return [span(`${Math.max(0, Math.round((1 - fraction) * 100))}%`, token), span(" left", "dim")];
+	return [span(`${Math.max(0, Math.round((1 - fraction) * 100))}%`, token), span(" 剩余", "dim")];
 }
 
 /** Stable, human account name for a report in the detail view. */
@@ -679,7 +679,7 @@ interface CardRowLayout {
 
 export class UsageDashboardComponent implements Component {
 	/** The terminal draws the sheet: a large glass overlay titled Usage. */
-	readonly nativeOverlay = { role: "omp.overlay.usage", size: "lg", anchor: "center", head: "Usage" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.usage", size: "lg", anchor: "center", head: "用量" } as const;
 	#options: UsageDashboardOptions;
 	#reports: UsageReport[];
 	#cards: ProviderCard[];
@@ -786,7 +786,7 @@ export class UsageDashboardComponent implements Component {
 				: card.unlimited
 					? "ok"
 					: aggregateStatus(card.windows);
-		const accountsText = card.accounts > 1 ? theme.fg("dim", `${card.accounts} accts`) : "";
+		const accountsText = card.accounts > 1 ? theme.fg("dim", `${card.accounts} 个账户`) : "";
 		const titleBudget = width - 2 - visibleWidth(accountsText) - (accountsText ? 1 : 0);
 		const title = theme.bold(truncateToWidth(card.name, Math.max(4, titleBudget)));
 		const titlePad = Math.max(0, width - 2 - visibleWidth(title) - visibleWidth(accountsText));
@@ -824,7 +824,7 @@ export class UsageDashboardComponent implements Component {
 		}
 
 		if (card.unlimited) {
-			lines.push(`  ${theme.fg("dim", "no limits")}`);
+			lines.push(`  ${theme.fg("dim", "无限制")}`);
 			return lines;
 		}
 
@@ -857,12 +857,12 @@ export class UsageDashboardComponent implements Component {
 				lines.push(`  ${line}`);
 			}
 		}
-		if (hidden > 0) lines.push(`  ${theme.fg("dim", `+${hidden} more`)}`);
+		if (hidden > 0) lines.push(`  ${theme.fg("dim", `另加 ${hidden} 条`)}`);
 		return lines;
 	}
 
 	#renderCardsGrid(innerWidth: number): string[] {
-		if (this.#cards.length === 0) return [theme.fg("dim", "No usage data available.")];
+		if (this.#cards.length === 0) return [theme.fg("dim", "无可用用量数据。")];
 		const active = this.#cards.filter(card => !card.idle);
 		const idle = this.#cards.filter(card => card.idle);
 		const columns = Math.max(1, Math.floor((innerWidth + CARD_GUTTER) / (CARD_MIN_WIDTH + CARD_GUTTER)));
@@ -941,7 +941,7 @@ export class UsageDashboardComponent implements Component {
 			if (active.length > 0) lines.push("");
 			const names = idle.map(card => card.name).join(" · ");
 			const prefix = `${theme.fg("success", theme.status.success)} `;
-			lines.push(truncateToWidth(`${prefix}${theme.fg("dim", `untouched: ${names}`)}`, innerWidth));
+			lines.push(truncateToWidth(`${prefix}${theme.fg("dim", `未改动：${names}`)}`, innerWidth));
 		}
 		return lines;
 	}
@@ -978,7 +978,7 @@ export class UsageDashboardComponent implements Component {
 			return [theme.fg("dim", detail ? `Usage history unavailable (${detail}).` : "Usage history unavailable.")];
 		}
 		const points = this.#activity;
-		if (!points) return [theme.fg("dim", "Loading usage history…")];
+		if (!points) return [theme.fg("dim", "正在加载用量历史…")];
 
 		const labelWidth = 2;
 		const weeks = Math.max(4, Math.min(53, Math.floor((innerWidth - labelWidth) / 2)));
@@ -987,7 +987,7 @@ export class UsageDashboardComponent implements Component {
 		const reset = "\x1b[39m";
 
 		summary.push(
-			`${theme.bold(theme.fg("accent", "Activity"))} ${theme.fg("dim", `${formatActivityTotals(layout)} · last ${weeks} weeks`)}${this.#syncing ? theme.fg("dim", " · syncing…") : ""}`,
+			`${theme.bold(theme.fg("accent", "活动"))} ${theme.fg("dim", `${formatActivityTotals(layout)} · last ${weeks} weeks`)}${this.#syncing ? theme.fg("dim", " · syncing…") : ""}`,
 		);
 		summary.push("");
 
@@ -1056,15 +1056,15 @@ export class UsageDashboardComponent implements Component {
 			: latestFetchedAt
 				? `checked ${formatDuration(this.#nowMs - latestFetchedAt)} ago`
 				: "";
-		const title = this.#view === "detail" ? "Usage · Details" : "Usage";
+		const title = this.#view === "detail" ? "用量 · 详情" : "用量";
 
-		const scrollHint = maxScroll > 0 ? `${editorKeys("tui.select.up", "tui.select.down")} scroll · ` : "";
+		const scrollHint = maxScroll > 0 ? `${editorKeys("tui.select.up", "tui.select.down")} 滚动 · ` : "";
 		const cancel = editorKey("tui.select.cancel");
 		const refreshHint = this.#options.refresh ? "r refresh · " : "";
 		const hint =
 			this.#view === "detail"
-				? `${scrollHint}${refreshHint}${cancel} back`
-				: `${scrollHint}${refreshHint}${formatKeyHint("enter")} details · ${cancel} close`;
+				? `${scrollHint}${refreshHint}${cancel} 返回`
+				: `${scrollHint}${refreshHint}${formatKeyHint("enter")} details · ${cancel} 关闭`;
 		this.#panel.title = title;
 		this.#header.setLines([checkedText ? theme.fg("dim", checkedText) : ""]);
 		this.#body.setLines(contentSource.slice(this.#scroll, this.#scroll + contentRows));
@@ -1094,7 +1094,7 @@ export class UsageDashboardComponent implements Component {
 		}
 		const body = this.#view === "detail" ? this.#describeDetail() : this.#describeOverview(meter, chart);
 		// Esc leaves Details for Overview first, so only Overview's Close wears its keycap.
-		const close = actionButton("Close", "close", this.#view === "overview" ? { keys: "escape" } : {});
+		const close = actionButton("关闭", "close", this.#view === "overview" ? { keys: "escape" } : {});
 		const root = col(
 			[
 				this.#describeHead(),
@@ -1126,17 +1126,17 @@ export class UsageDashboardComponent implements Component {
 		const checked: NativeChild[] = [];
 		const latestFetchedAt = Math.max(0, ...this.#reports.map(report => report.fetchedAt ?? 0));
 		if (this.#refreshing) {
-			checked.push(node("spinner", { style: "dots", label: [span("Refreshing…", "dim")] }));
+			checked.push(node("spinner", { style: "dots", label: [span("刷新中…", "dim")] }));
 		} else if (this.#refreshError) {
 			checked.push(
-				text([span(`Refresh failed: ${sanitizeDisplayLine(this.#refreshError)}`, "warning")], {
+				text([span(`刷新失败：${sanitizeDisplayLine(this.#refreshError)}`, "warning")], {
 					truncate: "end",
 					title: sanitizeDisplayLine(this.#refreshError),
 				}),
 			);
 		} else if (latestFetchedAt) {
 			checked.push(
-				text([span("Updated", "dim")]),
+				text([span("已更新", "dim")]),
 				elapsed(Date.now() - latestFetchedAt),
 				text([span("ago", "dim")]),
 			);
@@ -1146,8 +1146,8 @@ export class UsageDashboardComponent implements Component {
 				"tabs",
 				{
 					items: [
-						{ id: "overview", label: "Overview" },
-						{ id: "detail", label: "Details" },
+						{ id: "overview", label: "概览" },
+						{ id: "detail", label: "详情" },
 					],
 					active: this.#view,
 				},
@@ -1157,7 +1157,7 @@ export class UsageDashboardComponent implements Component {
 			node("spacer", { grow: 1 }),
 			node("row", { gap: "xs", align: "baseline", shrink: 1 }, checked, "checked"),
 		];
-		if (this.#options.refresh) children.push(actionButton("Refresh", "refresh", { keys: "r" }));
+		if (this.#options.refresh) children.push(actionButton("刷新", "refresh", { keys: "r" }));
 		return node("row", { role: "omp.usage.head", gap: "md", align: "center" }, children, "head");
 	}
 
@@ -1214,11 +1214,11 @@ export class UsageDashboardComponent implements Component {
 		if (framed.length === 0 && quiet && !this.#activityError) {
 			const children: NativeChild[] = [
 				node("icon", { name: "gauge" }, undefined, "icon"),
-				text([span("No usage yet")], { role: "omp.usage.empty.title" }),
+				text([span("暂无用量")], { role: "omp.usage.empty.title" }),
 				text(
 					[
 						span(
-							"Quotas show here once a signed-in provider reports usage, and the calendar fills in as you work.",
+							"一旦已登录的服务商报告用量，配额就会显示在此处，日历也会随你的使用填充。",
 							"muted",
 						),
 					],
@@ -1232,9 +1232,9 @@ export class UsageDashboardComponent implements Component {
 		const quotas: NativeChild[] = [sectionHead("Quotas", this.#quotaMeta(framed))];
 		for (const entry of framed) quotas.push(this.#describeProvider(entry, meter));
 		if (this.#cards.length === 0) {
-			quotas.push(text([span("No usage data available.", "muted")], { role: "omp.usage.none", wrap: "word" }));
+			quotas.push(text([span("无可用用量数据。", "muted")], { role: "omp.usage.none", wrap: "word" }));
 		} else if (framed.length === 0) {
-			quotas.push(text([span("Nothing used on any quota yet.", "muted")], { role: "omp.usage.none", wrap: "word" }));
+			quotas.push(text([span("尚未使用任何配额。", "muted")], { role: "omp.usage.none", wrap: "word" }));
 		}
 		quotas.push(...notes);
 		return [
@@ -1253,7 +1253,7 @@ export class UsageDashboardComponent implements Component {
 		return [
 			text([span(parts.join(" · "), "dim")], {
 				role: "omp.usage.section.meta",
-				title: "Each quota shows the mean across a provider's accounts; it resets with the fullest one",
+				title: "每项配额显示服务商各账户的平均值；随最满的账户一起重置",
 			}),
 		];
 	}
@@ -1298,13 +1298,13 @@ export class UsageDashboardComponent implements Component {
 					"quota",
 					"Tightest quota",
 					[span("—", "dim")],
-					[span(this.#cards.length > 0 ? "Every quota untouched" : "No quotas reported", "dim")],
+					[span(this.#cards.length > 0 ? "所有配额均未动用" : "未报告配额", "dim")],
 				),
 			);
 		}
 
 		if (!figures || !layout) {
-			const sub = [span(this.#activityError ? "History unavailable" : "Loading…", "dim")];
+			const sub = [span(this.#activityError ? "历史记录不可用" : "加载中…", "dim")];
 			tiles.push(
 				statTile("year", "Past year", [span("—", "dim")], sub),
 				statTile("month", "Last 30 days", [span("—", "dim")], sub),
@@ -1360,7 +1360,7 @@ export class UsageDashboardComponent implements Component {
 							"dim",
 						),
 					])
-				: statTile("busiest", "Busiest day", [span("—", "dim")], [span("No activity yet", "dim")]),
+				: statTile("busiest", "Busiest day", [span("—", "dim")], [span("暂无活动", "dim")]),
 		);
 		return node("row", { role: "omp.usage.stats", wrap: true }, tiles, "stats");
 	}
@@ -1389,7 +1389,7 @@ export class UsageDashboardComponent implements Component {
 			),
 		];
 		if (entry.accounts > 1) {
-			who.push(text([span(`${entry.accounts} accounts`, "dim")], { role: "omp.usage.provider.meta" }));
+			who.push(text([span(`${entry.accounts} 个账户`, "dim")], { role: "omp.usage.provider.meta" }));
 		}
 		if (entry.resetCredits) {
 			const resets = entry.resetCredits;
@@ -1403,7 +1403,7 @@ export class UsageDashboardComponent implements Component {
 			if (resets.redeemableCount === 0 && resets.unavailableReasons.length > 0) {
 				details.push(`unavailable: ${sanitizeDisplayLine(resets.unavailableReasons.join(" • "))}`);
 			}
-			const label = `${resets.bankedCount} reset${resets.bankedCount === 1 ? "" : "s"} banked`;
+			const label = `${resets.bankedCount} 重置${resets.bankedCount === 1 ? "" : "s"} banked`;
 			who.push(
 				text([span(label, resets.redeemableCount > 0 ? "success" : "warning")], {
 					role: "omp.usage.provider.meta",
@@ -1424,17 +1424,17 @@ export class UsageDashboardComponent implements Component {
 		for (const account of entry.unavailableAccounts) {
 			const name = sanitizeDisplayLine(account);
 			who.push(
-				text([span(`${name}: no usage data`, "warning")], {
+				text([span(`${name}：无用量数据`, "warning")], {
 					role: "omp.usage.provider.meta",
 					truncate: "middle",
-					title: `${name}: no usage data`,
+					title: `${name}：无用量数据`,
 				}),
 			);
 		}
 
 		const rows: NativeChild[] = [];
 		if (entry.unlimited) {
-			rows.push(text([span("No quotas reported", "muted")], { role: "omp.usage.none" }));
+			rows.push(text([span("未报告配额", "muted")], { role: "omp.usage.none" }));
 		} else {
 			for (const [index, window] of entry.windows.slice(0, CARD_MAX_WINDOWS).entries()) {
 				const label: TspSpan[] = [span(sanitizeDisplayLine(window.label))];
@@ -1444,7 +1444,7 @@ export class UsageDashboardComponent implements Component {
 				];
 				if (window.fraction === undefined) {
 					cells.push(
-						text([span(window.usedText ?? "No data", "muted")], { role: "omp.usage.amount", truncate: "end" }),
+						text([span(window.usedText ?? "无数据", "muted")], { role: "omp.usage.amount", truncate: "end" }),
 					);
 				} else {
 					cells.push(
@@ -1461,9 +1461,9 @@ export class UsageDashboardComponent implements Component {
 			const hidden = entry.windows.length - CARD_MAX_WINDOWS;
 			if (hidden > 0) {
 				rows.push(
-					text([span(`${hidden} more in Details`, "dim")], {
+					text([span(`详情中还有 ${hidden} 条`, "dim")], {
 						role: "omp.usage.more",
-						title: "Details lists every quota per account  ⏎",
+						title: "详情列出每个账户的每项配额  ⏎",
 					}),
 				);
 			}
@@ -1491,7 +1491,7 @@ export class UsageDashboardComponent implements Component {
 	): NativeNode {
 		const meta: NativeChild[] = [];
 		if (this.#syncing && this.#activity) {
-			meta.push(node("spinner", { style: "dots", label: [span("Syncing", "dim")] }));
+			meta.push(node("spinner", { style: "dots", label: [span("同步中", "dim")] }));
 		} else if (layout) {
 			const today = new Date();
 			const range = `${layout.start.getDate()} ${MONTH_NAMES[layout.start.getMonth()]} ${layout.start.getFullYear()} – ${today.getDate()} ${MONTH_NAMES[today.getMonth()]} ${today.getFullYear()}`;
@@ -1502,14 +1502,14 @@ export class UsageDashboardComponent implements Component {
 		if (this.#activityError) {
 			const detail = formatActivityErrorDetail(this.#activityError);
 			children.push(
-				text([span(detail ? `Usage history unavailable (${detail}).` : "Usage history unavailable.", "muted")], {
+				text([span(detail ? `用量历史不可用（${detail}）。` : "使用历史不可用。", "muted")], {
 					role: "omp.usage.none",
 					wrap: "word",
 				}),
 			);
 		} else if (!points || !layout || !figures) {
 			children.push(
-				node("spinner", { style: "dots", label: [span("Loading usage history…", "muted")] }, undefined, "loading"),
+				node("spinner", { style: "dots", label: [span("正在加载用量历史…", "muted")] }, undefined, "loading"),
 			);
 		} else {
 			const summary =
@@ -1523,7 +1523,7 @@ export class UsageDashboardComponent implements Component {
 						span(
 							figures.activeDays > 0
 								? `${figures.activeDays} active day${figures.activeDays === 1 ? "" : "s"} · longest streak ${figures.longestStreak} day${figures.longestStreak === 1 ? "" : "s"}`
-								: `No activity in the last ${NATIVE_HEATMAP_WEEKS} weeks`,
+								: `过去 ${NATIVE_HEATMAP_WEEKS} 周内无活动`,
 							"dim",
 						),
 					],
@@ -1537,14 +1537,14 @@ export class UsageDashboardComponent implements Component {
 						"row",
 						{ role: "omp.usage.legend", gap: "sm", align: "center" },
 						[
-							text([span("Less", "dim")]),
+							text([span("更少", "dim")]),
 							node(
 								"chart",
 								{ kind: "heatmap", cells: [[0, 0.25, 0.5, 0.75, 1]], token: "accent", size: "md" },
 								undefined,
 								"scale",
 							),
-							text([span("More", "dim")]),
+							text([span("更多", "dim")]),
 						],
 						"legend",
 					),
@@ -1635,25 +1635,25 @@ export class UsageDashboardComponent implements Component {
 				text([span(entry.name)], { role: "omp.usage.provider.name", truncate: "end" }),
 			];
 			if (entry.accounts > 1) {
-				head.push(text([span(`${entry.accounts} accounts`, "dim")], { role: "omp.usage.provider.meta" }));
+				head.push(text([span(`${entry.accounts} 个账户`, "dim")], { role: "omp.usage.provider.meta" }));
 			}
 			const children: NativeChild[] = [
 				node("row", { role: "omp.usage.report.head", gap: "sm", align: "baseline" }, head, "head"),
 			];
 			for (const account of unavailable) {
 				if (account.provider !== entry.provider) continue;
-				children.push(mutedText(`${sanitizeDisplayLine(account.label)}: no usage data`, true));
+				children.push(mutedText(`${sanitizeDisplayLine(account.label)}：无用量数据`, true));
 			}
 
 			const facts: { k: TspText; v: TspText }[] = [];
 			const notes = [...new Set(reports.flatMap(report => report.notes ?? []))];
-			if (notes.length > 0) facts.push({ k: [span("Notes", "muted")], v: sanitizeDisplayLine(notes.join(" • ")) });
+			if (notes.length > 0) facts.push({ k: [span("备注", "muted")], v: sanitizeDisplayLine(notes.join(" • ")) });
 			for (const [index, report] of reports.entries()) {
 				const resets = summarizeUsageResetCredits(report.resetCredits, nowMs);
 				if (!resets || resets.bankedCount <= 0) continue;
 				const value: TspSpan[] = [
 					span(
-						`${resets.bankedCount} saved reset${resets.bankedCount === 1 ? "" : "s"}`,
+						`${resets.bankedCount} 已保存重置${resets.bankedCount === 1 ? "" : "s"}`,
 						resets.redeemableCount > 0 ? "success" : "warning",
 					),
 				];
@@ -1703,13 +1703,13 @@ export class UsageDashboardComponent implements Component {
 						account: [span(reportAccountLabel(report, limit, index), "muted")],
 						left:
 							fraction === undefined
-								? [span(formatAbsoluteOnlyAmount([limit]) ?? "No data", "muted")]
+								? [span(formatAbsoluteOnlyAmount([limit]) ?? "无数据", "muted")]
 								: leftSpans(fraction, limit.status),
 						reset:
 							resetsAt !== undefined && resetsAt > nowMs
 								? [
 										span(
-											`${limit.window?.resetLabel ?? "resets"} in ${formatDuration(resetsAt - nowMs)}`,
+											`${limit.window?.resetLabel ?? "resets"} 于 ${formatDuration(resetsAt - nowMs)}`,
 											"dim",
 										),
 									]
@@ -1731,19 +1731,19 @@ export class UsageDashboardComponent implements Component {
 				}
 				const cols: TspTableColumn[] = [
 					{ id: "limit", head: "Limit", grow: 1, priority: 4 },
-					{ id: "account", head: "Account", truncate: "middle", priority: 1 },
+					{ id: "account", head: "账户", truncate: "middle", priority: 1 },
 					{ id: "left", head: "Left", align: "end", priority: 3 },
 					{ id: "reset", head: "Resets", align: "end", priority: 2 },
 				];
 				children.push(node("table", { cols, rows, role: "omp.usage.limits" }, undefined, "limits"));
 				for (const note of new Set(limitNotes)) children.push(mutedText(note, true));
 			} else if (unavailable.every(account => account.provider !== entry.provider)) {
-				children.push(mutedText("No quotas reported"));
+				children.push(mutedText("未报告配额"));
 			}
 			sections.push(node("col", { role: "omp.usage.report", gap: "sm" }, children, entry.provider));
 		}
 		if (sections.length === 0) {
-			sections.push(text([span("No usage data available.", "muted")], { role: "omp.usage.none" }));
+			sections.push(text([span("无可用用量数据。", "muted")], { role: "omp.usage.none" }));
 		}
 		return sections;
 	}

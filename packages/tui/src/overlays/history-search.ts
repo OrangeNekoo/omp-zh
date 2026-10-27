@@ -369,7 +369,7 @@ export class HistorySearchComponent extends OverlayPanel {
 			{
 				selected: selected ? nativeEntryKey(selected) : null,
 				filter: query || undefined,
-				empty: query ? "No matching history" : "No history yet",
+				empty: query ? "无匹配历史" : "还没有历史记录",
 				max: { lines: MAX_VISIBLE },
 				virtual: true,
 			},
@@ -405,14 +405,14 @@ export class HistorySearchComponent extends OverlayPanel {
 			layout: "rows",
 			preview: "none",
 			...pickerQuery(this.#searchInput),
-			placeholder: "Search prompts…",
+			placeholder: "搜索提示词…",
 			columns: [{ id: "when", format: "time" }],
 			items: rows.rows,
 			selected: selected ? nativeEntryKey(selected) : null,
-			empty: "No history yet",
+			empty: "还没有历史记录",
 			actions: [
 				pickerAction("insert", "Insert", "enter", { primary: true }),
-				pickerAction("close", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
+				pickerAction("close", "关闭", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
 			],
 		});
 	}

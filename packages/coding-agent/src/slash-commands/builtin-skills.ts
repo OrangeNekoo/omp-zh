@@ -48,13 +48,13 @@ async function withClient<T>(run: (client: SkillshareClient) => Promise<T>): Pro
 function tuiHooks(ctx: InteractiveModeContext): SkillInstallHooks {
 	return {
 		warn: message => ctx.showWarning(message),
-		confirmScripts: request => ctx.showHookConfirm("Install skill with scripts?", formatScriptApproval(request)),
+		confirmScripts: request => ctx.showHookConfirm("安装带脚本的技能？", formatScriptApproval(request)),
 	};
 }
 
 async function reportChanges(ctx: InteractiveModeContext, changes: SkillChange[]): Promise<void> {
 	if (changes.length === 0) {
-		ctx.showStatus("Registry skills are already up to date.");
+		ctx.showStatus("注册表中的技能已是最新。");
 		return;
 	}
 	await ctx.refreshSkillState();
@@ -65,14 +65,14 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "skills",
 		icon: "skill",
-		description: "Search, install, and update skills from the skills.omp.sh registry",
+		description: "从 skills.omp.sh 注册表搜索、安装和更新技能",
 		subcommands: [
-			{ name: "search", description: "Search the skill registry", usage: "<query>" },
-			{ name: "install", description: "Install registry skills", usage: "<@scope/name[@range]>… [--global]" },
-			{ name: "installed", description: "List installed registry skills" },
+			{ name: "search", description: "搜索技能注册表", usage: "<query>" },
+			{ name: "install", description: "安装注册表技能", usage: "<@scope/name[@range]>… [--global]" },
+			{ name: "installed", description: "列出已安装的注册表技能" },
 			{
 				name: "update",
-				description: "Update registry skills within their ranges",
+				description: "在其版本范围内更新注册表技能",
 				usage: "[@scope/name…] [--global]",
 			},
 		],
@@ -86,7 +86,7 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				switch (verb) {
 					case "search": {
 						if (!rest) {
-							ctx.showError("Usage: /skills search <query>");
+							ctx.showError("用法：/skills search <query>");
 							return;
 						}
 						const response = await withClient(client => client.search(rest));
@@ -100,7 +100,7 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 							return;
 						}
 						if (targets.names.length === 0) {
-							ctx.showError("Usage: /skills install <@scope/name[@range]>… [--global]");
+							ctx.showError("用法：/skills install <@scope/name[@range]>… [--global]");
 							return;
 						}
 						ctx.showStatus(`Installing ${targets.names.join(", ")}…`, { dim: true });
@@ -124,7 +124,7 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 							ctx.showError(targets.error);
 							return;
 						}
-						ctx.showStatus("Checking the registry for updates…", { dim: true });
+						ctx.showStatus("正在检查注册表更新…", { dim: true });
 						const changes = await withClient(client =>
 							updateSkillPackages(client, { names: targets.names, global: targets.global, cwd }, tuiHooks(ctx)),
 						);
@@ -136,11 +136,11 @@ export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						ctx.showStatus(USAGE);
 						return;
 					default:
-						ctx.showError(`Unknown /skills subcommand: ${verb}\n\n${USAGE}`);
+						ctx.showError(`未知的 /skills 子命令：${verb}\n\n${USAGE}`);
 						return;
 				}
 			} catch (error) {
-				ctx.showError(`Skills: ${errorMessage(error)}`);
+				ctx.showError(`技能：${errorMessage(error)}`);
 			}
 		},
 	},

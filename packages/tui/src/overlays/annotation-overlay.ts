@@ -119,8 +119,8 @@ interface NativeBody {
 
 const SOURCE_SELECTION_GUTTER_WIDTH = 2;
 
-const OVERLAY_TITLE = "Code Review";
-const TEXT_OVERLAY_TITLE = "Annotate Text";
+const OVERLAY_TITLE = "代码审查";
+const TEXT_OVERLAY_TITLE = "批注文本";
 const MIN_BODY_ROWS = 3;
 const SIDEBAR_MIN_TOTAL_WIDTH = 64;
 const SIDEBAR_MIN_BODY_WIDTH = 40;
@@ -157,8 +157,8 @@ interface NativeSheet {
 	readonly size: "full";
 	readonly head: TspSpan[];
 }
-const DIFF_SHEET_TITLE = "Code review";
-const TEXT_SHEET_TITLE = "Annotate text";
+const DIFF_SHEET_TITLE = "代码审查";
+const TEXT_SHEET_TITLE = "批注文本";
 
 const NOTE_PLACEHOLDER = "Write a note…";
 
@@ -1180,7 +1180,7 @@ export class AnnotationOverlay implements Focusable {
 		const options = chooser.entries
 			.slice(start, start + optionLimit)
 			.map((index, windowIndex) => this.#renderAnnotationChooserEntry(chooser, index, start + windowIndex, width));
-		const keysHint = `${this.#key("tui.select.up")}/${this.#key("tui.select.down")} choose · ${this.#key("tui.select.confirm")} edit · ${this.#key("tui.select.cancel")} cancel`;
+		const keysHint = `${this.#key("tui.select.up")}/${this.#key("tui.select.down")} 选择 · ${this.#key("tui.select.confirm")} 编辑 · ${this.#key("tui.select.cancel")} 取消`;
 		const lines =
 			availableRows === 2
 				? [this.#theme.fg("dim", `Edit annotation · ${keysHint}`), ...options.slice(0, 1)]
@@ -1222,9 +1222,9 @@ export class AnnotationOverlay implements Focusable {
 				Ellipsis.Unicode,
 			);
 			const hints = [
-				`${editorKey("tui.input.submit")} save`,
+				`${editorKey("tui.input.submit")} 保存`,
 				`${editorKey("tui.input.newLine")} newline`,
-				`${this.#key("tui.select.cancel")} cancel`,
+				`${this.#key("tui.select.cancel")} 取消`,
 			];
 			hints.push(`${formatKeyHint(appExternalEditorKey())} editor`);
 			return [caption, ...this.#editor.render(width), this.#theme.fg("dim", hints.join(" · "))];
@@ -1276,9 +1276,9 @@ export class AnnotationOverlay implements Focusable {
 				? `${upDown} file · ${confirm} diff · ${formatKeyHints(["a", "shift+a"])} file note · ${editNote}`
 				: this.#focus === "diff"
 					? `${upDown} line · ${formatKeyHint("shift")} faster · ${this.#key("tui.select.pageUp")}/${this.#key("tui.select.pageDown")} · ${formatKeyHints(["g", "shift+g"])} ends · ${formatKeyHint("a")} line note · ${formatKeyHint("shift+a")} ${this.#textSource ? "text" : "file"} note · ${editNote}`
-					: `${upDown} select · ${confirm} confirm`;
+					: `${upDown} 选择 · ${confirm} 确认`;
 		const editorHint = this.#callbacks.onExternalEditor ? ` · ${formatKeyHint(appExternalEditorKey())} editor` : "";
-		return `${focusHelp} · ${formatKeyHint("u")} undo · ${formatKeyHint("tab")} regions${editorHint} · ${this.#key("tui.select.cancel")} cancel`;
+		return `${focusHelp} · ${formatKeyHint("u")} 撤销 · ${formatKeyHint("tab")} regions${editorHint} · ${this.#key("tui.select.cancel")} 取消`;
 	}
 
 	#ensureCursorVisible(renderedRowBySource: readonly number[]): boolean {
@@ -1437,7 +1437,7 @@ export class AnnotationOverlay implements Focusable {
 			selected: rowCount > 0 ? `l${this.#sourceIndex}` : null,
 			// Past 200 rows the terminal virtualizes the list itself (fixed one-line rows).
 			max: { lines: this.#bodyHeight },
-			empty: [span(this.#textSource ? "This text is empty" : "Nothing to review", "muted")],
+			empty: [span(this.#textSource ? "文本为空" : "没有需要审查的内容", "muted")],
 			role: this.#textSource ? "omp.review.text" : "omp.review.diff",
 			tone: this.#focus === "diff" && !editing ? "accent" : undefined,
 		});
@@ -1563,9 +1563,9 @@ export class AnnotationOverlay implements Focusable {
 					}
 				}
 				if (file.isBinary) {
-					notice("binary", "Binary file: no lines to annotate, but a file note works", "binary");
+					notice("binary", "二进制文件：没有可批注的行，但可以添加文件备注", "binary");
 				} else if (file.rows.length === 0) {
-					notice("empty", "No hunks: this looks like a rename-only change", "forward");
+					notice("empty", "没有差异块：这看起来只是重命名", "forward");
 				}
 				let lineWidth = 1;
 				for (const diffRow of file.isBinary ? [] : file.rows) {
@@ -1590,7 +1590,7 @@ export class AnnotationOverlay implements Focusable {
 						} else {
 							items.push(
 								item(`r${rowIndex}`, {
-									label: [span("No newline at end of file", "muted")],
+									label: [span("文件末尾无换行", "muted")],
 									value: blankGutter,
 									disabled: true,
 									tone: "muted",
@@ -1675,7 +1675,7 @@ export class AnnotationOverlay implements Focusable {
 			{
 				selected: this.#files.length > 0 ? `f${this.#fileIndex}` : null,
 				max: { lines: this.#bodyHeight },
-				empty: [span("No files", "muted")],
+				empty: [span("无文件", "muted")],
 				role: "omp.review.files",
 				tone: this.#focus === "files" && !editing ? "accent" : undefined,
 			},
@@ -1702,7 +1702,7 @@ export class AnnotationOverlay implements Focusable {
 			return node("row", props, children, "head");
 		}
 		const file = this.#currentFile();
-		if (!file) return node("row", props, [text([span("No reviewable files", "muted")])], "head");
+		if (!file) return node("row", props, [text([span("无可审查的文件", "muted")])], "head");
 		const status = fileStatus(file);
 		children.push(
 			text([span(sanitizeStatusText(displayFileLabel(file)), "path")], { truncate: "middle", min: { w: 0 } }),
@@ -1774,7 +1774,7 @@ export class AnnotationOverlay implements Focusable {
 				"col",
 				{ role: "omp.review.composer" },
 				[
-					keyed(text([span("Edit which note?", "strong")]), "caption"),
+					keyed(text([span("编辑哪条备注？", "strong")]), "caption"),
 					selectList("chooser", entries, { selected: `c${chooser.selected}`, tone: "accent" }),
 				],
 				"chooser",
@@ -1791,11 +1791,11 @@ export class AnnotationOverlay implements Focusable {
 
 	/** Where the open note lands: `Note on line 42 in src/app.ts`, `Edit note on src/app.ts`, `Note on the whole text`. */
 	#noteCaption(): TspSpan[] {
-		const verb = span(this.#editingAnnotationIndex === undefined ? "Note on " : "Edit note on ", "muted");
+		const verb = span(this.#editingAnnotationIndex === undefined ? "备注：" : "编辑备注：", "muted");
 		if (this.#textSource) {
 			return this.#annotationScope === "text"
-				? [verb, span("the whole text", "strong")]
-				: [verb, span(`line ${this.#sourceIndex + 1}`, "strong")];
+				? [verb, span("全文", "strong")]
+				: [verb, span(`第 ${this.#sourceIndex + 1} 行`, "strong")];
 		}
 		const file = this.#currentFile();
 		const path = file ? sanitizeStatusText(displayFileLabel(file)) : "file";
@@ -1824,16 +1824,16 @@ export class AnnotationOverlay implements Focusable {
 			mark ? ({ ...button, p: { ...button.p, mark } } as NativeNode) : button;
 		const hasNotes = this.#textSource ? this.#textAnnotations.length > 0 : this.#annotations.length > 0;
 		const pasteTitle = hasNotes ? PASTE_CODE_REVIEW_ACTION : "Add a note to paste it into the prompt";
-		const buttons: NativeNode[] = [actionButton("Cancel", "close", { keys: "escape" })];
+		const buttons: NativeNode[] = [actionButton("取消", "close", { keys: "escape" })];
 		if (this.#textSource) {
 			buttons.push(
-				marked(actionButton("Paste into prompt", "paste", { tone: "accent", title: pasteTitle }), pick(0)),
+				marked(actionButton("粘贴到提示词", "paste", { tone: "accent", title: pasteTitle }), pick(0)),
 			);
 		} else {
 			buttons.push(
-				marked(actionButton("Paste into prompt", "paste", { title: pasteTitle }), pick(1)),
+				marked(actionButton("粘贴到提示词", "paste", { title: pasteTitle }), pick(1)),
 				marked(
-					actionButton("Review with LLM", "review", { tone: "accent", title: CONTINUE_CODE_REVIEW_ACTION }),
+					actionButton("用 LLM 审查", "review", { tone: "accent", title: CONTINUE_CODE_REVIEW_ACTION }),
 					pick(0),
 				),
 			);

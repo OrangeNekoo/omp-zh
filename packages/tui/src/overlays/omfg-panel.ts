@@ -162,22 +162,22 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "validating":
 			case "confirming":
 			case "saving":
-				return hintsRow([{ ...esc, label: "cancel /omfg" }]);
+				return hintsRow([{ ...esc, label: "取消 /omfg" }]);
 			case "saved":
 				return statusHintsRow(
 					[
-						span(`${theme.status.success} Registered live`, "success"),
+						span(`${theme.status.success} 已注册为在线`, "success"),
 						span(" · ", "muted"),
 						span(replaceTabs(this.#savedPath ?? "saved"), "path"),
 					],
 					[esc],
 				);
 			case "rejected":
-				return statusHintsRow([span(`${theme.status.warning} Not saved`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 未保存`, "warning")], [esc]);
 			case "aborted":
-				return statusHintsRow([span(`${theme.status.warning} Cancelled`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 已取消`, "warning")], [esc]);
 			case "error":
-				return statusHintsRow([span(`${theme.status.error} Error`, "error")], [esc]);
+				return statusHintsRow([span(`${theme.status.error} 错误`, "error")], [esc]);
 		}
 	}
 
@@ -195,18 +195,18 @@ export class OmfgPanelComponent extends OverlayPanel {
 			case "validating":
 			case "confirming":
 			case "saving":
-				return theme.fg("muted", `${esc} cancel /omfg`);
+				return theme.fg("muted", `${esc} 取消 /omfg`);
 			case "saved":
 				return theme.fg(
 					"success",
-					`${theme.status.success} Registered live · ${replaceTabs(this.#savedPath ?? "saved")} · ${esc} dismiss`,
+					`${theme.status.success} Registered live · ${replaceTabs(this.#savedPath ?? "saved")} · ${esc} 忽略`,
 				);
 			case "rejected":
-				return theme.fg("warning", `${theme.status.warning} Not saved · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Not saved · ${esc} 忽略`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 忽略`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} dismiss`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 忽略`);
 		}
 	}
 

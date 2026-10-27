@@ -30,9 +30,9 @@ export const cfgTaskIsolationEnabled = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Allow Isolated Subagents",
-		description: "Allow per-task isolation with `isolated: true`; tasks without it run in the shared checkout",
+		group: "隔离",
+		label: "允许隔离子代理",
+		description: "允许通过 `isolated: true` 按任务隔离；未设置的任务在共享检出中运行",
 	},
 });
 
@@ -44,30 +44,30 @@ export const cfgIsolationBackend = register({
 	default: "auto",
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Isolation Backend",
-		description: "Backend used for subagent isolation and worktree cloning",
+		group: "隔离",
+		label: "隔离后端",
+		description: "子代理隔离与工作树克隆使用的后端",
 		options: [
-			{ value: "auto", label: "Auto", description: "Let the PAL pick the best available backend" },
-			{ value: "apfs", label: "APFS", description: "macOS clonefile reflink (APFS)" },
-			{ value: "btrfs", label: "btrfs", description: "btrfs subvolume snapshot" },
-			{ value: "zfs", label: "ZFS", description: "ZFS snapshot + clone" },
-			{ value: "reflink", label: "Reflink", description: "Linux FICLONE per-file reflink" },
+			{ value: "auto", label: "自动", description: "让 PAL 选择最佳可用后端" },
+			{ value: "apfs", label: "APFS", description: "macOS clonefile 重链接（APFS）" },
+			{ value: "btrfs", label: "btrfs", description: "btrfs 子卷快照" },
+			{ value: "zfs", label: "ZFS", description: "ZFS 快照 + 克隆" },
+			{ value: "reflink", label: "Reflink", description: "Linux FICLONE 逐文件 reflink" },
 			{
 				value: "overlayfs",
 				label: "Overlayfs",
-				description: "Linux kernel overlay (or fuse-overlayfs fallback)",
+				description: "Linux 内核 overlay（或 fuse-overlayfs 回退）",
 			},
-			{ value: "projfs", label: "ProjFS", description: "Windows Projected File System" },
+			{ value: "projfs", label: "ProjFS", description: "Windows 投影文件系统" },
 			{
 				value: "block-clone",
-				label: "Block clone",
-				description: "Windows FSCTL_DUPLICATE_EXTENTS_TO_FILE (NTFS/ReFS)",
+				label: "阻止克隆",
+				description: "Windows FSCTL_DUPLICATE_EXTENTS_TO_FILE（NTFS/ReFS）",
 			},
 			{
 				value: "rcopy",
-				label: "Recursive copy",
-				description: "git worktree if available, otherwise recursive copy",
+				label: "递归复制",
+				description: "可用时使用 git worktree，否则递归复制",
 			},
 		],
 	},
@@ -80,10 +80,10 @@ export const cfgWorktreeClone = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Clone Checkout into Worktrees",
+		group: "隔离",
+		label: "将检出克隆到工作树",
 		description:
-			"New worktrees from `github pr_checkout` and `git worktree add` in bash start as a copy-on-write clone of the current checkout so ignored build artifacts (node_modules, target) carry over; falls back to a plain checkout when the filesystem cannot clone",
+			"由 `github pr_checkout` 与 bash 中的 `git worktree add` 创建的新工作树会以当前检出的写时复制克隆开始，使被忽略的构建产物（node_modules、target）得以保留；当文件系统无法克隆时回退为普通检出",
 	},
 });
 
@@ -94,10 +94,10 @@ export const cfgWorktreeCleanSource = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Clean Source Checkout on /wt",
+		group: "隔离",
+		label: "在 /wt 时清理源检出",
 		description:
-			"When creating a worktree with `/wt`, reset tracked changes and remove untracked files from the original checkout after carrying them over",
+			"使用 `/wt` 创建工作树时，在把更改带过去之后，重置原始检出中的已跟踪更改并移除未跟踪文件",
 	},
 });
 
@@ -109,13 +109,13 @@ export const cfgWorktreeOnStart = register({
 	default: "off",
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Worktree on Start",
-		description: "Whether fresh interactive sessions start in a new linked worktree",
+		group: "隔离",
+		label: "启动时工作树",
+		description: "全新的交互式会话是否在新建的链接工作树中启动",
 		options: [
-			{ value: "off", label: "Off", description: "Start in the current checkout" },
-			{ value: "ask", label: "Ask", description: "Ask at session start" },
-			{ value: "create", label: "Create", description: "Always start in a new worktree on a `wt/*` branch" },
+			{ value: "off", label: "关闭", description: "在当前检出中启动" },
+			{ value: "ask", label: "询问", description: "会话开始时询问" },
+			{ value: "create", label: "创建", description: "始终在 `wt/*` 分支上的新工作树中启动" },
 		],
 	},
 });
@@ -128,17 +128,17 @@ export const cfgWorktreeOnExit = register({
 	default: "keep",
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Worktree on Exit",
-		description: "What to do on exit with worktrees created since omp started (on start or with `/wt`)",
+		group: "隔离",
+		label: "退出时工作树",
+		description: "退出时如何处理自 omp 启动以来创建的工作树（启动时或通过 `/wt`）",
 		options: [
-			{ value: "keep", label: "Keep", description: "Leave worktrees in place" },
-			{ value: "ask", label: "Ask", description: "Ask on exit" },
+			{ value: "keep", label: "保留", description: "保留工作树" },
+			{ value: "ask", label: "询问", description: "退出时询问" },
 			{
 				value: "remove",
-				label: "Remove",
+				label: "移除",
 				description:
-					"Remove clean worktrees; ask when they have uncommitted changes or new commits. Gitignored files (e.g. `.env`) are deleted too",
+					"移除干净的工作树；存在未提交更改或新提交时会询问。被 gitignore 的文件（例如 `.env`）也会一并删除",
 			},
 		],
 	},
@@ -151,10 +151,10 @@ export const cfgTaskIsolationApply = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Apply Isolated Changes",
+		group: "隔离",
+		label: "应用隔离更改",
 		description:
-			"Automatically apply successful isolated task changes to the parent checkout; disable to retain patch or branch artifacts",
+			"自动把成功的隔离任务更改应用到父检出；关闭则保留补丁或分支产物",
 	},
 });
 
@@ -166,12 +166,12 @@ export const cfgTaskIsolationMerge = register({
 	default: "patch",
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Isolation Merge Strategy",
-		description: "How isolated task changes are integrated (patch apply or branch merge)",
+		group: "隔离",
+		label: "隔离合并策略",
+		description: "隔离任务更改的集成方式（应用补丁或合并分支）",
 		options: [
-			{ value: "patch", label: "Patch", description: "Combine diffs and git apply" },
-			{ value: "branch", label: "Branch", description: "Commit per task, merge with --no-ff" },
+			{ value: "patch", label: "补丁", description: "合并差异并使用 git apply" },
+			{ value: "branch", label: "分支", description: "每个任务一个提交，合并时使用 --no-ff" },
 		],
 	},
 });
@@ -184,12 +184,12 @@ export const cfgTaskIsolationCommits = register({
 	default: "generic",
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Isolation Commit Style",
-		description: "Commit message style for nested repo changes (generic or AI-generated)",
+		group: "隔离",
+		label: "隔离提交风格",
+		description: "嵌套仓库更改的提交消息风格（通用或 AI 生成）",
 		options: [
-			{ value: "generic", label: "Generic", description: "Static commit message" },
-			{ value: "ai", label: "AI", description: "AI-generated commit message from diff" },
+			{ value: "generic", label: "通用", description: "静态提交消息" },
+			{ value: "ai", label: "AI", description: "根据差异生成 AI 提交消息" },
 		],
 	},
 });
@@ -200,10 +200,10 @@ export const cfgWorktreeBase = register({
 	default: undefined,
 	ui: {
 		tab: "tasks",
-		group: "Isolation",
-		label: "Worktree Base Directory",
+		group: "隔离",
+		label: "工作树基础目录",
 		description:
-			"Base directory for agent-managed worktrees — task-isolation copies, `github` PR checkouts, and `omp worktree` cleanup all live here. Unset uses ~/.omp/wt. Must be an absolute or ~-relative path; relative paths are ignored. The OMP_WORKTREE_DIR env var overrides this.",
+			"代理托管工作树的基础目录 — 任务隔离副本、`github` PR 检出以及 `omp worktree` 清理都存放于此。未设置时使用 ~/.omp/wt。必须是绝对路径或 ~ 相对路径；相对路径会被忽略。环境变量 OMP_WORKTREE_DIR 会覆盖此项。",
 	},
 });
 effect(cfgWorktreeBase, value => {
@@ -223,17 +223,17 @@ export const cfgTaskEager = register({
 	default: "default",
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Prefer Task Delegation",
-		description: "How strongly to push delegating work to subagents",
+		group: "子代理",
+		label: "优先任务委派",
+		description: "向子代理委派工作的强度",
 		options: [
 			{
 				value: "default",
-				label: "Default",
-				description: "Uses the selected model's policy; some models require an explicit delegation request",
+				label: "默认",
+				description: "使用所选模型的策略；某些模型需要显式委派请求",
 			},
-			{ value: "preferred", label: "Preferred", description: "Adds delegation guidance to the system prompt" },
-			{ value: "always", label: "Always", description: "Prompt guidance plus a first-turn delegation reminder" },
+			{ value: "preferred", label: "首选", description: "在系统提示词中加入委派指引" },
+			{ value: "always", label: "总是", description: "提示词指引加首轮委派提醒" },
 		],
 	},
 });
@@ -245,10 +245,10 @@ export const cfgTaskBatch = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Batch Task Calls",
+		group: "子代理",
+		label: "批量任务调用",
 		description:
-			"Switch the task tool to its batch shape: one call carries { context, tasks[] } — one subagent per item, with an optional per-item agent (defaulting to the session spawn-policy agent), per-item isolation, and a required shared context prepended to every assignment. With async.enabled=true, each spawn runs as an independent background agent with the normal idle/parked lifecycle; otherwise the call blocks for merged results. Disable to restore the flat single-spawn schema.",
+			"将 task 工具切换为批量形态：一次调用携带 { context, tasks[] } — 每个条目一个子代理，可为每个条目指定代理（默认使用会话派生策略代理）、按条目隔离，并有一个必需的共享上下文前置到每个分派。当 async.enabled=true 时，每次派生都作为独立后台代理运行，遵循正常的空闲/停放生命周期；否则该调用会阻塞以等待合并结果。关闭可恢复为扁平的单一派生 schema。",
 	},
 });
 
@@ -258,10 +258,10 @@ export const cfgTaskStructured = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Structured Task Results",
+		group: "子代理",
+		label: "结构化任务结果",
 		description:
-			"Expose outputSchema/schemaMode on the task tool and return subagent results through the yield tool, validated against caller or agent output schemas. Off: task subagents have no yield tool and return their final message as plain text, except agents whose definition sets structured: true. Eval agent()/workpool spawns always keep structured results.",
+			"在 task 工具上暴露 outputSchema/schemaMode，并通过 yield 工具返回子代理结果，按调用方或代理的输出 schema 校验。关闭时：任务子代理没有 yield 工具，其最终消息以纯文本返回，除非代理定义设置了 structured: true。Eval agent()/workpool 派生的结果始终保留结构化结果。",
 	},
 });
 
@@ -271,10 +271,10 @@ export const cfgTaskSpeculativeLaunch = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Speculative Task Launch",
+		group: "子代理",
+		label: "推测性任务启动",
 		description:
-			"Start each batch subagent as soon as its tasks[] item finishes streaming instead of waiting for the whole task call. Launched agents are aborted if the finished call fails validation, is blocked, or its arguments change. Requires auto-allowed task approval and no extension tool lifecycle handlers.",
+			"每个批次子代理在其 tasks[] 条目流式结束后立即启动，而不必等待整个 task 调用完成。若已完成的调用未通过校验、被阻止或其参数发生变化，已启动的代理会被中止。需要 task 批准已设为自动允许，且没有扩展工具生命周期处理器。",
 	},
 });
 
@@ -284,10 +284,10 @@ export const cfgTaskEnableEffort = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Per-Task Effort",
+		group: "子代理",
+		label: "每任务强度",
 		description:
-			"Expose the optional effort parameter on task spawns, allowing callers to override each subagent's thinking level",
+			"在任务派生时暴露可选的 effort 参数，允许调用方覆盖每个子代理的思考等级",
 	},
 });
 
@@ -298,18 +298,18 @@ export const cfgTaskMaxConcurrency = register({
 	default: 32,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Max Concurrent Tasks",
-		description: "Maximum number of subagents running concurrently",
+		group: "子代理",
+		label: "最大并发任务数",
+		description: "同时运行的子代理最大数量",
 		options: [
-			{ value: "0", label: "Unlimited" },
-			{ value: "1", label: "1 task" },
-			{ value: "2", label: "2 tasks" },
-			{ value: "4", label: "4 tasks" },
-			{ value: "8", label: "8 tasks" },
-			{ value: "16", label: "16 tasks" },
-			{ value: "32", label: "32 tasks" },
-			{ value: "64", label: "64 tasks" },
+			{ value: "0", label: "无限制" },
+			{ value: "1", label: "1 个任务" },
+			{ value: "2", label: "2 个任务" },
+			{ value: "4", label: "4 个任务" },
+			{ value: "8", label: "8 个任务" },
+			{ value: "16", label: "16 个任务" },
+			{ value: "32", label: "32 个任务" },
+			{ value: "64", label: "64 个任务" },
 		],
 	},
 });
@@ -320,10 +320,10 @@ export const cfgTaskEnableLsp = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "LSP in Subagents",
+		group: "子代理",
+		label: "子代理中的 LSP",
 		description:
-			"Allow subagents spawned via the task tool to use the lsp tool. Off by default to keep subagents cheap; enable when LSP-aware delegation is worth the extra tokens.",
+			"允许通过 task 工具派生的子代理使用 lsp 工具。默认关闭以保持子代理低成本；当能感知 LSP 的委派值得额外令牌时再启用。",
 	},
 });
 
@@ -334,15 +334,15 @@ export const cfgTaskMaxRecursionDepth = register({
 	default: 2,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Max Task Recursion",
-		description: "How many levels deep subagents can spawn their own subagents",
+		group: "子代理",
+		label: "最大任务递归深度",
+		description: "子代理可以派生自己的子代理的层数",
 		options: [
-			{ value: "-1", label: "Unlimited" },
-			{ value: "0", label: "None" },
-			{ value: "1", label: "Single" },
-			{ value: "2", label: "Double" },
-			{ value: "3", label: "Triple" },
+			{ value: "-1", label: "无限制" },
+			{ value: "0", label: "无" },
+			{ value: "1", label: "单次" },
+			{ value: "2", label: "两次" },
+			{ value: "3", label: "三次" },
 		],
 	},
 });
@@ -353,16 +353,16 @@ export const cfgTaskMaxRuntimeMs = register({
 	default: 0,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Max Subagent Runtime",
+		group: "子代理",
+		label: "子代理最长运行时间",
 		description:
-			"Hard wall-clock limit per subagent (ms). 0 disables it. Defense-in-depth against provider-side stream hangs that escape the inference-layer watchdog; triggers a normal subagent abort with a 'timed out' reason.",
+			"每个子代理的硬性墙钟时限（毫秒）。0 表示禁用。作为纵深防御，应对绕过推理层看门狗的服务商侧流挂起；会以 \"timed out\" 原因触发正常的子代理中止。",
 		options: [
-			{ value: "0", label: "Unlimited", description: "Default" },
-			{ value: "300000", label: "5 minutes" },
-			{ value: "900000", label: "15 minutes" },
-			{ value: "1800000", label: "30 minutes" },
-			{ value: "3600000", label: "1 hour" },
+			{ value: "0", label: "无限制", description: "默认" },
+			{ value: "300000", label: "5 分钟" },
+			{ value: "900000", label: "15 分钟" },
+			{ value: "1800000", label: "30 分钟" },
+			{ value: "3600000", label: "1 小时" },
 		],
 	},
 });
@@ -373,10 +373,10 @@ export const cfgTaskCompletionProbe = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Subagent Completion Probe",
+		group: "子代理",
+		label: "子代理完成探测",
 		description:
-			"Ask a working subagent, through a cached side request like /btw, to estimate how complete its task is: after 2, 5, 10 and 30 more minutes, then hourly. The estimate shows next to the subagent in wait and task views. Only subagents spawned by the main agent of an interactive session are asked; print, RPC, ACP and SDK runs never probe.",
+			"通过类似 /btw 的缓存侧请求，要求工作中的子代理估计任务完成度：在之后 2、5、10、30 分钟时，随后每小时一次。估计值显示在等待视图与任务视图中该子代理旁边。只有交互式会话主代理派生的子代理会被询问；print、RPC、ACP 与 SDK 运行从不探测。",
 	},
 });
 
@@ -386,10 +386,10 @@ export const cfgTaskAgentIdleTtlMs = register({
 	default: 420_000,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Agent Idle TTL",
+		group: "子代理",
+		label: "代理空闲 TTL",
 		description:
-			"How long an idle subagent stays live in memory before being parked to disk (ms). Parked agents are revived automatically when messaged or resumed. 0 keeps idle agents live until exit.",
+			"空闲子代理在内存中保持活跃多久后停放到磁盘（毫秒）。被停放的代理在收到消息或恢复时会自动复活。0 表示空闲代理一直保持活跃直到退出。",
 	},
 });
 
@@ -399,15 +399,15 @@ export const cfgTaskSoftRequestBudget = register({
 	default: 200,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Soft Subagent Request Budget",
+		group: "子代理",
+		label: "软子代理请求预算",
 		description:
-			"Soft per-subagent request budget (assistant requests per run). Crossing it injects a wrap-up steering notice (see task.softRequestBudgetNotice); at 1.5x the budget the run is force-stopped and the agent must hand back its partial findings. 0 disables the guard. Bundled scout/sonic agents cap out at a lower built-in budget, so a value below that cap still applies to them. A task.agentSoftRequestBudget entry replaces this budget for the agent it names.",
+			"每个子代理的软请求预算（每次运行的助手请求数）。超出时会注入收尾引导通知（见 task.softRequestBudgetNotice）；达到 1.5 倍预算时运行被强制停止，代理必须交回阶段性结论。0 表示禁用该守卫。内置的 scout/sonic 代理有更低的内置预算上限，低于该上限的值仍会对其生效。task.agentSoftRequestBudget 中针对某代理的条目会替换该代理的预算。",
 		options: [
-			{ value: "0", label: "Disabled" },
-			{ value: "90", label: "90 requests" },
-			{ value: "150", label: "150 requests" },
-			{ value: "200", label: "200 requests", description: "Default" },
+			{ value: "0", label: "已禁用" },
+			{ value: "90", label: "90 次请求" },
+			{ value: "150", label: "150 次请求" },
+			{ value: "200", label: "200 次请求", description: "默认" },
 		],
 	},
 });
@@ -446,10 +446,10 @@ export const cfgTaskSoftRequestBudgetNotice = register({
 	default: true,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Soft Request Budget Notice",
+		group: "子代理",
+		label: "软请求预算提示",
 		description:
-			"Inject one steering notice when a subagent crosses its soft request budget, asking it to wrap up before the 1.5x forced-yield stop.",
+			"当子代理超出软请求预算时注入一条引导通知，要求它在 1.5 倍强制让出停止前收尾。",
 	},
 });
 
@@ -460,10 +460,10 @@ export const cfgTaskMaxEffort = register({
 	default: "max",
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Maximum Per-Spawn Effort",
+		group: "子代理",
+		label: "每次生成的最大强度",
 		description:
-			"Maximum reasoning effort allowed for the task tool's per-spawn effort hint. Lower values prevent callers from escalating subagents above this ceiling; the default preserves the model's full range.",
+			"task 工具按派生传递的 effort 提示所允许的最大推理强度。较低的值可防止调用方把子代理提升到超过此上限；默认值保留模型的完整范围。",
 		options: THINKING_EFFORTS.map(getThinkingLevelMetadata),
 	},
 });
@@ -526,10 +526,10 @@ export const cfgTaskPrewalk = register({
 	default: false,
 	ui: {
 		tab: "tasks",
-		group: "Subagents",
-		label: "Generic Task Prewalk",
+		group: "子代理",
+		label: "通用任务预走",
 		description:
-			"Arm prewalk for the bundled generic `task` subagent: it starts on its resolved model, plans and begins the implementation, then hands off to the 'smol' role at its first edit/write. Per-agent overrides (task.agentPrewalk, configured from the /agents hub) and user agent `prewalk` frontmatter apply regardless of this toggle.",
+			"为内置的通用 `task` 子代理启用预走：它先使用解析出的模型规划并开始实现，在首次编辑/写入时移交给 'smol' 角色。按代理的覆盖设置（task.agentPrewalk，在 /agents 中心配置）和用户代理的 `prewalk` frontmatter 不受此开关影响。",
 	},
 });
 
@@ -539,9 +539,9 @@ export const cfgTaskShowResolvedModelBadge = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Show Resolved Model Badge",
-		description: "Display the actual model ID used by each subagent in the task widget status line",
+		group: "显示",
+		label: "显示已解析模型徽标",
+		description: "在任务组件状态行显示每个子代理实际使用的模型 ID",
 	},
 });
 effect(cfgTaskShowResolvedModelBadge, setFeedModelBadgeEnabled);

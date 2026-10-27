@@ -25,32 +25,32 @@ export const DEFAULT_BASH_INTERCEPTOR_RULES: BashInterceptorRule[] = [
 		pattern:
 			"^\\s*(?:(?:head|tail|less|more)\\s+|cat\\s+(?!\\s|(?:[02-9]>{1,2}\\|?\\s*[^\\s>|]\\S*\\s+)*(?:<<|1?>(?!&)|&>)))",
 		tool: "read",
-		message: "Use the `read` tool instead of cat/head/tail. It provides better context and handles binary files.",
+		message: "请使用 `read` 工具代替 cat/head/tail。它提供更好的上下文并处理二进制文件。",
 	},
 	{
 		pattern: "^\\s*(grep|rg|ripgrep|ag|ack)\\s+",
 		tool: "grep",
-		message: "Use the `grep` tool instead of grep/rg. It respects .gitignore and provides structured output.",
+		message: "请使用 `grep` 工具代替 grep/rg。它遵循 .gitignore 并提供结构化输出。",
 	},
 	{
 		pattern: "^\\s*(find|fd|locate)\\s+.*(-name|-iname|-type|--type|-glob)",
 		tool: "glob",
-		message: "Use the `glob` tool instead of find/fd. It respects .gitignore and is faster for glob patterns.",
+		message: "请使用 `glob` 工具代替 find/fd。它遵循 .gitignore，且对 glob 模式更快。",
 	},
 	{
 		pattern: "^\\s*sed\\s+(-i|--in-place)",
 		tool: "edit",
-		message: "Use the `edit` tool instead of sed -i. It provides diff preview and fuzzy matching.",
+		message: "请使用 `edit` 工具代替 sed -i。它提供差异预览与模糊匹配。",
 	},
 	{
 		pattern: "^\\s*perl\\s+.*-[pn]?i",
 		tool: "edit",
-		message: "Use the `edit` tool instead of perl -i. It provides diff preview and fuzzy matching.",
+		message: "请使用 `edit` 工具代替 perl -i。它提供差异预览与模糊匹配。",
 	},
 	{
 		pattern: "^\\s*awk\\s+.*-i\\s+inplace",
 		tool: "edit",
-		message: "Use the `edit` tool instead of awk -i inplace. It provides diff preview and fuzzy matching.",
+		message: "请使用 `edit` 工具代替 awk -i inplace。它提供差异预览与模糊匹配。",
 	},
 	{
 		// `>` must sit outside quoted regions (so `echo "a -> b"` passes) and be
@@ -75,25 +75,25 @@ export const DEFAULT_BASH_INTERCEPTOR_RULES: BashInterceptorRule[] = [
 			"^\\s*(?:(?:echo|printf)\\s+|cat\\s*<<|cat(?=\\s+(?:\\d+|&)?>)\\s+)(?:(?:\\\\[\\s\\S]|\\$\\((?:[^()\"'`]|\"[^\"]*\"|'[^']*'|`[^`]*`|\\([^()]*\\))*\\)|\\$\\{[^{}]*\\}|`[^`]*`|\\$(?!\\((?:[^()\"'`]|\"[^\"]*\"|'[^']*'|`[^`]*`|\\([^()]*\\))*\\)|\\{[^{}]*\\})|`(?![^`]*`)|[^\"'>;&|\\n\\\\$`]|(?<=[<>])&|(?<![<>])&(?=>)|(?<=(?:^|\\s)[02-9])>{1,2}\\|?|\"[^\"]*\"|'[^']*')|(?<!\\||>|(?:^|\\s)[02-9])>{1,2}\\|?\\s*(?:\"/dev/(?:null|tty|stdout|stderr)\"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?=[\\s;&|]|$))*(?<!\\||>|(?:^|\\s)[02-9])>{1,2}\\|?\\s*(?!(?:\"/dev/(?:null|tty|stdout|stderr)\"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?:[\\s;&|]|$))[$\\w./~\"'-]",
 		tool: "write",
 		message:
-			"Use the `write` tool instead of echo/cat redirection. It handles encoding and provides confirmation. `write` replaces the whole file; to append to an existing file, use `edit` to insert after its last line.",
+			"请使用 `write` 工具代替 echo/cat 重定向。它能处理编码并提供确认。`write` 会覆盖整个文件；若要追加到已有文件，请用 `edit` 在其最后一行之后插入。",
 	},
 	{
 		pattern: "^\\s*nohup\\s+|(?<!&)\\&\\s*$",
 		tool: "bash",
 		message:
-			"Use `bash` with `name` instead of nohup or background shell syntax so the service stays observable and managed.",
+			"请使用带 `name` 的 `bash` 代替 nohup 或后台 shell 语法，使服务保持可观测与受管。",
 	},
 	{
 		pattern:
 			"^\\s*(?:(?:bun|npm|pnpm|yarn)\\s+(?:run\\s+)?(?:dev|start)(?:\\s|$)|(?:vite|next\\s+dev|nuxt\\s+dev|nodemon|lldb|gdb|tail\\s+-f)(?:\\s|$)|docker\\s+compose\\s+up(?!.*(?:\\s-d(?:\\s|$)|--detach))(?:\\s|$))",
 		tool: "bash",
-		message: "Use `bash` with `name` for services, watchers, and debuggers; inspect with `read proc://<name>`.",
+		message: "对服务、监视器和调试器使用带 `name` 的 `bash`；通过 `read proc://<name>` 查看。",
 	},
 	{
 		pattern:
 			"^\\s*(?:(?:bun|npm|pnpm|yarn)\\s+(?:run\\s+)?\\S+|cargo\\s+watch|watchexec|pytest|vitest|jest|tsc)(?:.|\\n)*(?:--watch|-w)(?:\\s|$)",
 		tool: "bash",
-		message: "Use `bash` with `name` for watch mode so its output, input, and lifecycle stay managed.",
+		message: "监视模式请使用带 `name` 的 `bash`，以便其输出、输入与生命周期都处于受管状态。",
 	},
 ];
 
@@ -110,7 +110,7 @@ export const cfgBashEnabled = register({
 		tab: "shell",
 		group: "Bash",
 		label: "Bash",
-		description: "Enable the bash tool for shell command execution",
+		description: "启用 bash 工具以执行 shell 命令",
 	},
 });
 
@@ -121,9 +121,9 @@ export const cfgBashAllowCompoundCommands = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Allow Compound Commands",
+		label: "允许复合命令",
 		description:
-			"Evaluate literal && chains per command; unmatched commands use normal bash approval policy and mode",
+			"按命令逐条评估字面量 && 链；未匹配的命令使用正常的 bash 批准策略与模式",
 	},
 });
 
@@ -135,8 +135,8 @@ export const cfgBashAutoBackgroundEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Auto-Background",
-		description: "Automatically background long-running bash commands and deliver the result later",
+		label: "Bash 自动后台",
+		description: "自动将长时间运行的 bash 命令转入后台，稍后投递结果",
 	},
 });
 
@@ -147,9 +147,9 @@ export const cfgBashGitGuard = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Git Guard",
+		label: "Git 守卫",
 		description:
-			"Refuse git commands that discard or move shared work in the bash tool: stash, reset --hard or to another commit, and checkout/switch/restore outside a merge or rebase conflict",
+			"在 bash 工具中拒绝会丢弃或移动共享工作的 git 命令：stash、reset --hard 或重置到其他提交，以及在合并/rebase 冲突之外的 checkout/switch/restore",
 	},
 });
 
@@ -160,9 +160,9 @@ export const cfgBashPatterns = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Approval Patterns",
+		label: "Bash 批准模式",
 		description:
-			"Ordered bash command approval rules. Each item has match and approval fields; only '*' wildcards are supported.",
+			"有序的 bash 命令批准规则。每项包含 match 与 approval 字段；仅支持 '*' 通配符。",
 	},
 });
 
@@ -174,8 +174,8 @@ export const cfgBashInterceptorEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Bash Interceptor",
-		description: "Block shell commands that have dedicated tools",
+		label: "Bash 拦截器",
+		description: "阻止已有专用工具的 shell 命令",
 	},
 });
 
@@ -193,9 +193,9 @@ export const cfgBashDirenv = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "direnv Auto-Load",
+		label: "direnv 自动加载",
 		description:
-			"Auto-load a repo's direnv/devenv `.envrc` into the bash session so devenv tools and env vars are present without manual `direnv exec`. Honors direnv's allow list: an `.envrc` you haven't `direnv allow`ed is never executed",
+			"自动把仓库的 direnv/devenv `.envrc` 加载到 bash 会话，使 devenv 工具与环境变量无需手动 `direnv exec` 即可使用。遵循 direnv 的允许列表：未执行过 `direnv allow` 的 `.envrc` 绝不会被执行",
 	},
 });
 
@@ -206,9 +206,9 @@ export const cfgBashDirenvLoadTimeoutMs = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "direnv Load Timeout (ms)",
+		label: "direnv 加载超时（毫秒）",
 		description:
-			"Max wait for the first `direnv export` (a cold devenv shell can be slow); on timeout the session runs without the direnv env",
+			"首次 `direnv export` 的最长等待时间（冷启动的 devenv shell 可能很慢）；超时后会话将在没有 direnv 环境的情况下运行",
 	},
 });
 
@@ -220,8 +220,8 @@ export const cfgShellMinimizerEnabled = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Shell Minimizer",
-		description: "Compress verbose shell output (git, npm, cargo, etc.) before returning it to the agent",
+		label: "Shell 精简器",
+		description: "在把冗长的 shell 输出（git、npm、cargo 等）返回给代理前先压缩",
 	},
 });
 
@@ -257,8 +257,8 @@ export const cfgShellMinimizerSourceOutlineLevel = register({
 	ui: {
 		tab: "shell",
 		group: "Bash",
-		label: "Shell Minimizer Source Outline",
-		description: "Source outline mode for cat/read of source files: default or aggressive",
+		label: "Shell 精简器源码大纲",
+		description: "对源文件的 cat/read 使用的源码大纲模式：default 或 aggressive",
 	},
 });
 

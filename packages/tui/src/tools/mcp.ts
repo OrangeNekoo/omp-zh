@@ -237,7 +237,7 @@ export function renderMCPResult(
 		// component selection so the opt-in Markdown path can use its own renderer.
 
 		if (!trimmedOutput) {
-			body.push(theme.fg("dim", "(no output)"));
+			body.push(theme.fg("dim", "（无输出）"));
 			return body;
 		}
 
@@ -353,7 +353,7 @@ export function describeMCPResult(
 				// Bracketed non-JSON text falls through to Markdown/raw output.
 			}
 		}
-		if (!output) body.push(noteText("(no output)"));
+		if (!output) body.push(noteText("（无输出）"));
 		else if (isError) body.push(errorText(output));
 		else if (isJson) body.push(describeJsonTree(parsed));
 		else if (renderMarkdownResults) body.push(md(output));

@@ -57,6 +57,11 @@ import { MenuSelection, getMenuWindow } from "../components/menu-selection";
 import { formatKeyHint, formatKeyHints } from "../app-keybindings";
 import { boundKeys, interruptKey } from "../chrome/keybinding-hints";
 
+function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
+	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
+	return actual === english || actual === chinese;
+}
+
 /**
  * Themed glyph + colored label for a session's lifecycle status, or `undefined`
  * when there is nothing useful to show (`unknown`/unset) so the metadata line
@@ -66,15 +71,15 @@ import { boundKeys, interruptKey } from "../chrome/keybinding-hints";
 function formatSessionStatus(status: SessionSelectorStatus | undefined): string | undefined {
 	switch (status) {
 		case "complete":
-			return theme.fg("success", `${theme.status.success} done`);
+			return theme.fg("success", `${theme.status.success} 完成`);
 		case "interrupted":
-			return theme.fg("warning", `${theme.status.warning} interrupted`);
+			return theme.fg("warning", `${theme.status.warning} 已中断`);
 		case "aborted":
-			return theme.fg("muted", `${theme.status.aborted} aborted`);
+			return theme.fg("muted", `${theme.status.aborted} 已中止`);
 		case "error":
-			return theme.fg("error", `${theme.status.error} error`);
+			return theme.fg("error", `${theme.status.error} 个错误`);
 		case "pending":
-			return theme.fg("accent", `${theme.status.pending} pending`);
+			return theme.fg("accent", `${theme.status.pending} 个待处理`);
 		default:
 			return undefined;
 	}
@@ -126,15 +131,15 @@ const PREVIEW_EXCERPT_CHARS = 1200;
 /** The preview follows the selection once it rests this long (holding ↓ doesn't flood the wire). */
 const PREVIEW_SETTLE_MS = 60;
 const DAY_MS = 86_400_000;
-const PINNED_GROUP = { id: "pinned", label: "Pinned" };
+const PINNED_GROUP = { id: "pinned", label: "已固定" };
 
 /** Day group of a session's last modification, relative to local midnight today. */
 function sessionDayGroup(modified: Date, startOfToday: number): { id: string; label: string } {
 	const at = modified.getTime();
-	if (at >= startOfToday) return { id: "today", label: "Today" };
-	if (at >= startOfToday - DAY_MS) return { id: "yesterday", label: "Yesterday" };
-	if (at >= startOfToday - 6 * DAY_MS) return { id: "week", label: "This week" };
-	return { id: "earlier", label: "Earlier" };
+	if (at >= startOfToday) return { id: "today", label: "今天" };
+	if (at >= startOfToday - DAY_MS) return { id: "yesterday", label: "昨天" };
+	if (at >= startOfToday - 6 * DAY_MS) return { id: "week", label: "本周" };
+	return { id: "earlier", label: "更早" };
 }
 
 /** A cwd as dim-prefix / strong-tail path spans. */
@@ -175,7 +180,7 @@ function sessionPreview(session: SessionSelectorEntry, forkedFrom: string | unde
 			["Status", status && [status]],
 			["Forked from", forkedFrom],
 		]),
-		conversation.length > 0 && node("section", { head: "Conversation" }, conversation),
+		conversation.length > 0 && node("section", { head: "对话" }, conversation),
 	]);
 }
 
@@ -259,8 +264,8 @@ interface SessionPickerMessage {
 }
 
 const SCOPE_TABS: readonly { id: "folder" | "all"; label: string }[] = [
-	{ id: "folder", label: "Current folder" },
-	{ id: "all", label: "All projects" },
+	{ id: "folder", label: "当前文件夹" },
+	{ id: "all", label: "所有项目" },
 ];
 
 /** Returns the IDs of sessions whose recorded prompts match a query, best first. */
@@ -979,7 +984,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 		const title = session.title ? plainText(session.title).trim() : "";
 		const badges: { text: string; tone?: TspTone; title?: string }[] = [];
 		if (session.parentSessionPath) {
-			badges.push({ text: "fork", title: `Forked from “${this.parentLabel(session.parentSessionPath)}”` });
+			badges.push({ text: "fork", title: `复刻自 “${this.parentLabel(session.parentSessionPath)}”` });
 		}
 		if (session.path === currentPath) badges.push({ text: "current", tone: "accent" });
 		const when = pickerDate(session.modified);
@@ -1026,7 +1031,7 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 			if (!base) continue;
 			add.push(
 				now.has(key)
-					? { ...base, badges: [...(base.badges ?? []), { text: "history", title: "Matched in prompt history" }] }
+					? { ...base, badges: [...(base.badges ?? []), { text: "history", title: "在提示词历史中匹配" }] }
 					: base,
 			);
 		}
@@ -1064,8 +1069,8 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 		const memo = this.#listNative;
 		if (memo?.items === items.items && memo.selected === selected && memo.query === query) return memo.node;
 		const empty: TspText = this.#showCwd
-			? [span("No sessions found", "muted")]
-			: [span("No sessions in current folder. Press ", "muted"), span("tab", "key"), span(" to view all.", "muted")];
+			? [span("未找到会话", "muted")]
+			: [span("当前文件夹中没有会话。按 ", "muted"), span("tab", "key"), span(" 以查看全部。", "muted")];
 		const list = node(
 			"list",
 			{ selected: selected ?? null, filter: query.trim() || undefined, empty, virtual: true },
@@ -1131,12 +1136,12 @@ class SessionList<T extends SessionSelectorEntry> implements Component {
 
 		if (this.#menu.visibleItems.length === 0) {
 			if (this.#showCwd) {
-				lines.push(truncateToWidth(theme.fg("muted", "No sessions found"), width));
+				lines.push(truncateToWidth(theme.fg("muted", "未找到会话"), width));
 			} else {
 				// "Current folder" scope - hint to try "all"
 				lines.push(
 					truncateToWidth(
-						theme.fg("muted", `No sessions in current folder. Press ${formatKeyHint("tab")} to view all.`),
+						theme.fg("muted", `当前文件夹没有会话。按 ${formatKeyHint("tab")} 查看全部。`),
 						width,
 					),
 				);
@@ -1452,7 +1457,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		onExit: () => void,
 		options: SessionSelectorOptions<T> = {},
 	) {
-		super(options.title ?? "Resume Session");
+		super(options.title ?? "恢复会话");
 
 		this.#messageContainer = new Container();
 		this.#onDelete = options.onDelete;
@@ -1464,7 +1469,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		this.#globalSessions = options.allSessions ?? null;
 		this.#getTerminalRows = options.getTerminalRows ?? (() => 24);
 		this.#fillHeight = options.fillHeight ?? false;
-		this.#title = options.title ?? "Resume Session";
+		this.#title = options.title ?? "恢复会话";
 		this.#actionLabel = options.actionLabel ?? "Resume";
 		this.#pickerTitle = options.title;
 		this.#standalone = options.standalone ?? false;
@@ -1517,7 +1522,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	#headerLabel(): string {
 		if (this.#scopeLabel === false) return this.#title;
-		const scopeLabel = this.#scopeLabel ?? (this.#scope === "all" ? "all projects" : "current folder");
+		const scopeLabel = this.#scopeLabel ?? (this.#scope === "all" ? "所有项目" : "当前文件夹");
 		return `${this.#title} (${scopeLabel})`;
 	}
 
@@ -1534,8 +1539,8 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 				if (!this.#loadAllSessions) return;
 				this.#toggling = true;
 				this.#messageContainer.clear();
-				this.#messageContainer.addChild(new Text(theme.fg("muted", "Loading all projects…"), 0, 0));
-				this.#message = { kind: "loading", text: "Loading all projects…" };
+				this.#messageContainer.addChild(new Text(theme.fg("muted", "正在加载所有项目…"), 0, 0));
+				this.#message = { kind: "loading", text: "正在加载所有项目…" };
 				this.#onRequestRender?.();
 				try {
 					global = await this.#loadAllSessions();
@@ -1590,9 +1595,9 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	#showError(message: string): void {
 		this.#messageContainer.clear();
-		this.#message = { kind: "error", text: `Error: ${plainText(message)}` };
+		this.#message = { kind: "error", text: `错误：${plainText(message)}` };
 		this.#pickerErrorOpen = true;
-		this.#messageContainer.addChild(new Text(theme.fg("error", `Error: ${replaceTabs(message)}`), 0, 0));
+		this.#messageContainer.addChild(new Text(theme.fg("error", `错误：${replaceTabs(message)}`), 0, 0));
 		this.#messageContainer.addChild(new Spacer(1));
 	}
 
@@ -1609,7 +1614,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 			this.#onRequestRender?.();
 		};
 		const answer = async (option: string) => {
-			if (option === "Yes" && this.#onDelete) {
+			if (labelEq(option, "Yes", "是") && this.#onDelete) {
 				this.#clearError();
 				try {
 					const deleted = await this.#onDelete(session);
@@ -1627,8 +1632,9 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 			closeDialog();
 		};
 		this.#confirmationDialog = new HookSelectorComponent(
-			`Delete session?\n${displayName}`,
-			["Yes", "No"],
+			`删除会话？
+${displayName}`,
+			["是", "否"],
 			answer,
 			closeDialog,
 		);
@@ -1677,12 +1683,12 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 
 	/** Blank · keybinding hint · bottom border. Rendered by {@link render}. */
 	#footerLines(width: number): string[] {
-		const scopeHint = this.#scope === "all" ? "current folder" : "all projects";
+		const scopeHint = this.#scope === "all" ? "当前文件夹" : "所有项目";
 		// Keys mirror SessionList#handleInput; cancel is `app.interrupt` (raw Escape when unbound).
 		const cancel = interruptKey();
 		const hint = theme.fg(
 			"muted",
-			`[${this.#onDelete ? `${formatKeyHints(["delete", "backspace"])} delete · ` : ""}${formatKeyHint("enter")} select · ${formatKeyHint("tab")} ${scopeHint} · ${cancel} cancel]`,
+			`[${this.#onDelete ? `${formatKeyHints(["delete", "backspace"])} 删除 · ` : ""}${formatKeyHint("enter")} 选择 · ${formatKeyHint("tab")} ${scopeHint} · ${cancel} 取消]`,
 		);
 		return [row("", width), row(hint, width), row("", width), bottomBorder(width)];
 	}
@@ -1734,7 +1740,7 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		if (this.#onDelete) hints.push({ keys: ["delete", "backspace"], label: "delete" });
 		hints.push({ keys: ["enter"], label: "select" });
 		if (this.#sessionList.onToggleScope) {
-			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "current folder" : "all projects" });
+			hints.push({ keys: ["tab"], label: this.#scope === "all" ? "当前文件夹" : "所有项目" });
 		}
 		hints.push({ keys: [boundKeys("app.interrupt", ["escape"])[0] ?? "escape"], label: "cancel" });
 		const result = overlayCard("omp.overlay.sessions", tabs ? this.#title : this.title, [
@@ -1780,12 +1786,12 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 		const loading = message?.kind === "loading";
 		const toggle = list.onToggleScope !== undefined;
 		const actions = [pickerAction("resume", this.#actionLabel, "enter", { primary: true })];
-		if (this.#onDelete) actions.push(pickerAction("delete", "Delete", "backspace"));
+		if (this.#onDelete) actions.push(pickerAction("delete", "删除", "backspace"));
 		if (toggle) {
-			actions.push(pickerAction("scope", this.#scope === "all" ? "This folder" : "All projects", "tab"));
+			actions.push(pickerAction("scope", this.#scope === "all" ? "此文件夹" : "所有项目", "tab"));
 		}
 		actions.push(
-			pickerAction("close", "Close", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
+			pickerAction("close", "关闭", boundKeys("app.interrupt", ["escape"])[0] ?? "escape", { end: true }),
 		);
 		const folder = this.#scopeLabel === false ? undefined : (this.#scopeLabel ?? path.basename(getProjectDir()));
 		const title = this.#pickerTitle;
@@ -1820,12 +1826,12 @@ export class SessionSelectorComponent<T extends SessionSelectorEntry = SessionSe
 				actions,
 				state: loading ? "loading" : errorOpen ? "error" : "ready",
 				...(loading || errorOpen ? { message: message!.text } : {}),
-				empty: this.#scope === "all" || !toggle ? "No sessions yet" : "No sessions in this folder yet",
+				empty: this.#scope === "all" || !toggle ? "还没有会话" : "此目录中还没有会话",
 				confirm: choice
 					? {
 							text: `Delete “${sessionLabel(choice.session)}”? This removes the session file.`,
 							act: "delete-confirm",
-							label: "Delete",
+							label: "删除",
 						}
 					: null,
 			},

@@ -375,7 +375,7 @@ function shellToolHead(
 		targetKind: intent ? "text" : undefined,
 		command,
 		exit,
-		note: settled && details?.timedOut === true ? "timed out" : undefined,
+		note: settled && details?.timedOut === true ? "已超时" : undefined,
 	};
 }
 
@@ -460,7 +460,7 @@ export function createShellRenderer<TArgs>(config: ShellRendererConfig<TArgs>) {
 					footerMeta:
 						elapsedMs === undefined || elapsedMs < 1000
 							? undefined
-							: uiTheme.fg("dim", `elapsed ${formatDuration(Math.floor(elapsedMs / 1000) * 1000)}`),
+							: uiTheme.fg("dim", `已用时 ${formatDuration(Math.floor(elapsedMs / 1000) * 1000)}`),
 					sections: [{ content: capPreviewLines(cmdLines, uiTheme, { expanded: options.expanded }) }],
 				};
 			});
@@ -620,7 +620,7 @@ export function createShellRenderer<TArgs>(config: ShellRendererConfig<TArgs>) {
 									{ expanded },
 								),
 							},
-							{ label: uiTheme.fg("toolTitle", "Output"), content: outputLines },
+							{ label: uiTheme.fg("toolTitle", "输出"), content: outputLines },
 						],
 					};
 

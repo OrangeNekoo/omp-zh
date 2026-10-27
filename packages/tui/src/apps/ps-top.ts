@@ -398,10 +398,10 @@ export class PsTopComponent implements Component {
 			const running = this.#flat.filter(flat => !TERMINAL_STATES[flat.row.snapshot.state]).length;
 			const stopped = this.#flat.length - running;
 			left.push(
-				text("Processes", { role: "omp.app.title" }),
+				text("进程", { role: "omp.app.title" }),
 				text(
 					[
-						span(`${running} running`, running > 0 ? "success" : "muted"),
+						span(`${running} 个运行中`, running > 0 ? "success" : "muted"),
 						...(stopped > 0 ? [span(` · ${stopped} stopped`, "muted")] : []),
 						span(` · ${this.#reports.length} scope${this.#reports.length === 1 ? "" : "s"}`, "muted"),
 					],
@@ -413,7 +413,7 @@ export class PsTopComponent implements Component {
 				node("icon", {
 					name: "back",
 					role: "omp.app.ibtn",
-					title: "Back  esc",
+					title: "返回  esc",
 					aria: "Back",
 					actions: { click: "back" },
 				}),
@@ -440,10 +440,10 @@ export class PsTopComponent implements Component {
 								id: "current",
 								label:
 									this.#target.dir !== undefined || this.#target.global !== undefined
-										? "Target"
-										: "This project",
+										? "目标"
+										: "本项目",
 							},
-							{ id: "all", label: "All scopes" },
+							{ id: "all", label: "所有范围" },
 						],
 						active: this.#all ? "all" : "current",
 						role: "omp.app.seg",
@@ -468,7 +468,7 @@ export class PsTopComponent implements Component {
 						align: "center",
 						role: "omp.app.fresh",
 					}),
-			node("icon", { name: "x", role: "omp.app.ibtn", title: "Quit  q", aria: "Quit", actions: { click: "quit" } }),
+			node("icon", { name: "x", role: "omp.app.ibtn", title: "退出  q", aria: "Quit", actions: { click: "quit" } }),
 		);
 		return keyed(
 			row(
@@ -497,13 +497,13 @@ export class PsTopComponent implements Component {
 					[
 						text(
 							[
-								span(`Kill ${entry.row.snapshot.name}${pid === undefined ? "" : ` (pid ${pid})`}?`, "strong"),
-								span("  It stops at once, without cleanup.", "muted"),
+								span(`终止 ${entry.row.snapshot.name}${pid === undefined ? "" : ` (pid ${pid})`}？`, "strong"),
+								span("  它会立即停止，不做清理。", "muted"),
 							],
 							{ truncate: "end", grow: 1 },
 						),
-						actionButton("Cancel", "kill-cancel"),
-						actionButton("Kill", "kill-confirm", { tone: "error" }),
+						actionButton("取消", "kill-cancel"),
+						actionButton("终止", "kill-confirm", { tone: "error" }),
 					],
 					{ gap: "sm", align: "center", role: "omp.app.confirm", tone: "error" },
 				),
@@ -512,19 +512,19 @@ export class PsTopComponent implements Component {
 		}
 		if (this.#view !== "table") {
 			return actionBar([
-				actionButton("Back", "back", { keys: "escape", tone: "accent" }),
-				...(this.#view === "info" ? [actionButton("Logs", "logs")] : []),
+				actionButton("返回", "back", { keys: "escape", tone: "accent" }),
+				...(this.#view === "info" ? [actionButton("日志", "logs")] : []),
 			]);
 		}
-		if (!entry) return actionBar([null, actionButton("Quit", "quit", { keys: "q" })]);
+		if (!entry) return actionBar([null, actionButton("退出", "quit", { keys: "q" })]);
 		return actionBar([
-			actionButton("Info", "info", { keys: "enter", tone: "accent" }),
-			actionButton("Logs", "logs", { keys: "l" }),
-			actionButton("Restart", "restart", { keys: "r" }),
-			actionButton("Stop", "stop", { keys: "s" }),
-			actionButton("Kill", "kill", { keys: "x", tone: "error", title: "Kill the process (asks first)" }),
+			actionButton("信息", "info", { keys: "enter", tone: "accent" }),
+			actionButton("日志", "logs", { keys: "l" }),
+			actionButton("重启", "restart", { keys: "r" }),
+			actionButton("停止", "stop", { keys: "s" }),
+			actionButton("终止", "kill", { keys: "x", tone: "error", title: "终止进程（会先询问）" }),
 			null,
-			actionButton("Quit", "quit", { keys: "q" }),
+			actionButton("退出", "quit", { keys: "q" }),
 		]);
 	}
 
@@ -533,10 +533,10 @@ export class PsTopComponent implements Component {
 			return keyed(
 				col(
 					[
-						text("No broker scopes", { role: "omp.app.empty-title" }),
+						text("无代理作用域", { role: "omp.app.empty-title" }),
 						text([
-							span("No omp process broker runs here. ", "muted"),
-							span(this.#all ? "Nothing runs anywhere." : "Show every scope with ", "muted"),
+							span("此处没有运行 omp 进程代理。", "muted"),
+							span(this.#all ? "没有任何进程在运行。" : "显示所有作用域：", "muted"),
 							...(this.#all ? [] : [span("a", "key"), span(".", "muted")]),
 						]),
 					],
@@ -558,7 +558,7 @@ export class PsTopComponent implements Component {
 								selected && selected.scope.runtimeDir === report.scope.runtimeDir
 									? stableKey(flatKey(selected))
 									: null,
-							empty: "No processes",
+							empty: "无进程",
 							role: "omp.ps.processes",
 						},
 						report.daemons.map(daemon => describeProcess(report.scope, daemon)),
@@ -574,26 +574,26 @@ export class PsTopComponent implements Component {
 		const info = this.#info;
 		if (!info) {
 			return keyed(
-				row([node("spinner", { style: "dots" }), text([span("Loading…", "muted")])], { gap: "sm" }),
+				row([node("spinner", { style: "dots" }), text([span("加载中…", "muted")])], { gap: "sm" }),
 				"info",
 			);
 		}
 		const { daemon, spec } = info;
 		const items: { k: string; v: TspText }[] = [
-			{ k: "Command", v: [span(collapseCommand(formatCommand(spec)), "mono")] },
-			{ k: "Directory", v: [span(spec.cwd, "path")] },
+			{ k: "命令", v: [span(collapseCommand(formatCommand(spec)), "mono")] },
+			{ k: "目录", v: [span(spec.cwd, "path")] },
 		];
 		if (daemon.pid !== undefined && !TERMINAL_STATES[daemon.state])
 			items.push({ k: "PID", v: [span(String(daemon.pid), "num")] });
-		if (daemon.exitReason) items.push({ k: "Exit", v: [span(daemon.exitReason, "error")] });
-		items.push({ k: "Restarts", v: `${daemon.restartCount} (policy ${spec.restart})` });
-		items.push({ k: "Owner", v: daemon.owner ?? "—" });
+		if (daemon.exitReason) items.push({ k: "退出", v: [span(daemon.exitReason, "error")] });
+		items.push({ k: "重启次数", v: `${daemon.restartCount}（策略 ${spec.restart}）` });
+		items.push({ k: "所有者", v: daemon.owner ?? "—" });
 		const flags = [spec.pty && "pty", spec.persist && "persist", spec.detached && "detached"].filter(Boolean);
-		items.push({ k: "Flags", v: flags.length > 0 ? flags.join(" · ") : "—" });
+		items.push({ k: "标志", v: flags.length > 0 ? flags.join(" · ") : "—" });
 		const body: NativeNode[] = [];
 		if (!TERMINAL_STATES[daemon.state]) {
 			body.push(
-				row([text([span("Up for", "muted")]), elapsed(Date.now() - daemon.startedAt)], {
+				row([text([span("可用于", "muted")]), elapsed(Date.now() - daemon.startedAt)], {
 					gap: "xs",
 					role: "omp.app.fresh",
 				}),
@@ -652,7 +652,7 @@ export class PsTopComponent implements Component {
 		const header = this.#header(width, scopesLabel);
 		const footer = this.#footer(
 			width,
-			`${formatKeyHints(["up", "down"])} select · ${formatKeyHint("enter")} info · ${formatKeyHint("l")} logs · ${formatKeyHint("s")} stop · ${formatKeyHint("x")} kill · ${formatKeyHint("r")} restart · ${formatKeyHint("a")} all scopes · ${formatKeyHint("q")} quit`,
+			`${formatKeyHints(["up", "down"])} 选择 · ${formatKeyHint("enter")} info · ${formatKeyHint("l")} logs · ${formatKeyHint("s")} 停止 · ${formatKeyHint("x")} kill · ${formatKeyHint("r")} restart · ${formatKeyHint("a")} all scopes · ${formatKeyHint("q")} 退出`,
 		);
 		const bodyHeight = height - 1 - footer.length;
 
@@ -679,7 +679,7 @@ export class PsTopComponent implements Component {
 		for (const report of this.#reports) {
 			body.push({ text: ` ${scopeHeader(report.scope)}` });
 			if (report.daemons.length === 0) {
-				body.push({ text: chalk.dim("   no processes") });
+				body.push({ text: chalk.dim("   无进程") });
 			} else {
 				body.push({ text: chalk.dim(renderRow([...TABLE_HEADER])) });
 				for (const row of report.daemons) {
@@ -693,7 +693,7 @@ export class PsTopComponent implements Component {
 			}
 			body.push({ text: "" });
 		}
-		if (body.length === 0) body.push({ text: chalk.dim(" No daemon broker scopes found.") });
+		if (body.length === 0) body.push({ text: chalk.dim(" 未找到守护进程作用域。") });
 
 		// Keep the selected logical row visible through refreshes and resizes.
 		const selectedLine = body.findIndex(line => line.flat === this.#selected);
@@ -717,21 +717,21 @@ export class PsTopComponent implements Component {
 	#renderInfo(width: number, height: number): string[] {
 		const info = this.#info;
 		const header = this.#header(width, "process info");
-		const footer = this.#footer(width, `${formatKeyHint("escape")} back · ${formatKeyHint("q")} back`);
+		const footer = this.#footer(width, `${formatKeyHint("escape")} 返回 · ${formatKeyHint("q")} 返回`);
 		const body = [""];
 		if (info) {
 			const daemon = info.daemon;
 			body.push(` ${chalk.bold(daemonLabel(daemon))}`);
 			body.push("");
 			const rows: KeyValueRow[] = [
-				{ label: "command:", value: collapseCommand(formatCommand(info.spec)) },
-				{ label: "cwd:", value: info.spec.cwd },
+				{ label: "命令：", value: collapseCommand(formatCommand(info.spec)) },
+				{ label: "工作目录：", value: info.spec.cwd },
 			];
 			if (!TERMINAL_STATES[daemon.state])
-				rows.push({ label: "uptime:", value: formatDuration(Date.now() - daemon.startedAt) });
-			if (daemon.exitReason) rows.push({ label: "exit:", value: daemon.exitReason });
-			rows.push({ label: "restarts:", value: `${daemon.restartCount} (policy: ${info.spec.restart})` });
-			rows.push({ label: "owner:", value: daemon.owner ?? "-" });
+				rows.push({ label: "运行时长：", value: formatDuration(Date.now() - daemon.startedAt) });
+			if (daemon.exitReason) rows.push({ label: "退出：", value: daemon.exitReason });
+			rows.push({ label: "重启次数：", value: `${daemon.restartCount} (policy: ${info.spec.restart})` });
+			rows.push({ label: "所有者：", value: daemon.owner ?? "-" });
 			this.#infoList.setRows(rows);
 			body.push(...this.#infoList.render(width));
 			body.push(`   pty: ${info.spec.pty}  persist: ${info.spec.persist}  detached: ${info.spec.detached}`);
@@ -752,7 +752,7 @@ export class PsTopComponent implements Component {
 		);
 		const footer = this.#footer(
 			width,
-			`${formatKeyHint("escape")} back · ${formatKeyHint("q")} back · view refreshes live`,
+			`${formatKeyHint("escape")} 返回 · ${formatKeyHint("q")} 返回 · view refreshes live`,
 		);
 		const bodyHeight = height - 1 - footer.length;
 		this.#logsView.setLines(this.#logsLines.map(line => ` ${line}`));
@@ -784,8 +784,8 @@ function scopeSpans(scope: PsScope): TspSpan[] {
 	spans.push(span(" — ", "dim"));
 	spans.push(
 		scope.brokerPid !== undefined
-			? span(`broker pid ${scope.brokerPid}`, "success")
-			: span("broker not running", "dim"),
+			? span(`代理进程 pid ${scope.brokerPid}`, "success")
+			: span("代理未运行", "dim"),
 	);
 	return spans;
 }

@@ -4,7 +4,7 @@
  * intentional user-facing output.
  */
 import * as path from "node:path";
-import { VERSION } from "@oh-my-pi/pi-utils/dirs";
+import { CLI_NAME, VERSION } from "@oh-my-pi/pi-utils/dirs";
 import { probeRelayServer } from "../tools/browser/relay/daemon";
 import { defaultRelayExtensionDir, writeRelayExtension } from "../tools/browser/relay/extension-files";
 import { DEFAULT_RELAY_URL } from "../tools/browser/relay/kind";
@@ -43,10 +43,10 @@ async function runInstall(dirOverride: string | undefined): Promise<void> {
 	console.log("Finish setup in Chrome:");
 	console.log("  1. Open chrome://extensions and enable Developer mode.");
 	console.log(`  2. Click "Load unpacked" and select: ${dir}`);
-	console.log("  3. Enable the mode:  omp config set browser.relay true");
+	console.log("  3. Enable the mode:  omp-zh config set browser.relay true");
 	console.log("");
 	console.log("omp starts the relay automatically when the browser prelude needs it;");
-	console.log("run `omp browser-relay` yourself only for --token or --no-group.");
+	console.log("run `omp-zh browser-relay` yourself only for --token or --no-group.");
 	console.log("The extension badge shows 'on' once it reaches a relay.");
 	if (!dirOverride) console.log("Newer omp versions update the extension in this folder and reload it on their own.");
 	console.log(
@@ -80,13 +80,13 @@ async function runServe(args: BrowserRelayCommandArgs): Promise<void> {
 	console.log(`omp browser relay listening on http://127.0.0.1:${args.port}`);
 	console.log(`  extension endpoint  ws://127.0.0.1:${args.port}/ext${args.token ? "?token=***" : ""}`);
 	if (args.port === DEFAULT_RELAY_PORT) {
-		console.log("  enable with         omp config set browser.relay true");
+		console.log("  enable with         omp-zh config set browser.relay true");
 	} else {
 		console.log(
-			`  enable with         omp config set browser.relay true && omp config set browser.relayUrl http://127.0.0.1:${args.port}`,
+			`  enable with         ${CLI_NAME} config set browser.relay true && ${CLI_NAME} config set browser.relayUrl http://127.0.0.1:${args.port}`,
 		);
 	}
-	console.log("Waiting for the OMP Browser Relay extension to connect (omp browser-relay install)...");
+	console.log("Waiting for the OMP Browser Relay extension to connect (omp-zh browser-relay install)...");
 
 	let announced = false;
 	const readiness = setInterval(() => {

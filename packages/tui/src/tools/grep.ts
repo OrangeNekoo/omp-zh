@@ -384,7 +384,7 @@ export const grepToolRenderer = {
 		if (!hasDetailedData) {
 			const textContent = result.details?.displayContent ?? result.content?.find(c => c.type === "text")?.text;
 			if (!textContent || textContent === "No matches found") {
-				return new Text(formatEmptyMessage("No matches found", uiTheme), 0, 0);
+				return new Text(formatEmptyMessage("未找到匹配项", uiTheme), 0, 0);
 			}
 			const lines = textContent.split("\n").filter(line => line.trim() !== "");
 			const description = args?.pattern ?? undefined;
@@ -427,7 +427,7 @@ export const grepToolRenderer = {
 		const missingPathsList = details?.missingPaths ?? [];
 		const missingNote =
 			missingPathsList.length > 0
-				? uiTheme.fg("warning", `skipped missing: ${missingPathsList.join(", ")}`)
+				? uiTheme.fg("warning", `已跳过缺失项：${missingPathsList.join(", ")}`)
 				: undefined;
 
 		if (matchCount === 0) {
@@ -438,7 +438,7 @@ export const grepToolRenderer = {
 				{ icon: "warning", title: "Grep", titleColor: "toolTitle", description: args?.pattern, meta },
 				uiTheme,
 			);
-			const lines = [header, formatEmptyMessage("No matches found", uiTheme)];
+			const lines = [header, formatEmptyMessage("未找到匹配项", uiTheme)];
 			if (missingNote) lines.push(missingNote);
 			return new Text(lines.join("\n"), 0, 0);
 		}

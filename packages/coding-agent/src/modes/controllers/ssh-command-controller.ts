@@ -48,7 +48,7 @@ export class SSHCommandController {
 				await this.#handleRemove(text);
 				break;
 			default:
-				this.ctx.showError(`Unknown subcommand: ${subcommand}. Type /ssh help for usage.`);
+				this.ctx.showError(`未知子命令：${subcommand}。输入 /ssh help 查看用法。`);
 		}
 	}
 
@@ -57,17 +57,17 @@ export class SSHCommandController {
 	 */
 	#showHelp(): void {
 		const helpText = [
-			"Manage SSH host configurations for remote command execution.",
+			"管理 SSH 主机配置，用于远程命令执行。",
 			"",
-			theme.fg("accent", "Commands:"),
+			theme.fg("accent", "命令："),
 			"  /ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
-			"  /ssh list             List all configured SSH hosts",
+			"  /ssh list             列出所有已配置的 SSH 主机",
 			"  /ssh remove <name> [--scope project|user]    Remove an SSH host (default: project)",
-			"  /ssh help             Show this help message",
+			"  /ssh help             显示此帮助信息",
 			"",
 		].join("\n");
 
-		this.#showReport("SSH Host Management", helpText);
+		this.#showReport("SSH 主机管理", helpText);
 	}
 
 	/**
@@ -78,7 +78,7 @@ export class SSHCommandController {
 		const rest = prefixMatch?.[1]?.trim() ?? "";
 		if (!rest) {
 			this.ctx.showError(
-				"Usage: /ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
+				"用法：/ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
 			);
 			return;
 		}
@@ -86,7 +86,7 @@ export class SSHCommandController {
 		const tokens = parseCommandArgs(rest);
 		if (tokens.length === 0) {
 			this.ctx.showError(
-				"Usage: /ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
+				"用法：/ssh add <name> --host <host> [--user <user>] [--port <port>] [--key <keyPath>] [--desc <description>] [--compat] [--scope project|user]",
 			);
 			return;
 		}
@@ -136,7 +136,7 @@ export class SSHCommandController {
 				}
 				const parsed = Number.parseInt(value, 10);
 				if (Number.isNaN(parsed) || parsed < 1 || parsed > 65535) {
-					this.ctx.showError("Invalid --port value. Must be an integer between 1 and 65535.");
+					this.ctx.showError("--port 值无效。必须是 1 到 65535 之间的整数。");
 					return;
 				}
 				port = parsed;
@@ -178,12 +178,12 @@ export class SSHCommandController {
 				i += 2;
 				continue;
 			}
-			this.ctx.showError(`Unknown option: ${argToken}`);
+			this.ctx.showError(`未知选项：${argToken}`);
 			return;
 		}
 
 		if (!name) {
-			this.ctx.showError("Host name required. Usage: /ssh add <name> --host <host> ...");
+			this.ctx.showError("需要主机名。用法：/ssh add <name> --host <host> ...");
 			return;
 		}
 
@@ -209,7 +209,7 @@ export class SSHCommandController {
 			const scopeLabel = scope === "user" ? "user" : "project";
 			const lines = [
 				"",
-				theme.fg("success", `+ Added SSH host "${name}" to ${scopeLabel} config`),
+				theme.fg("success", `+ 已将 SSH 主机 "${name}" 添加到 ${scopeLabel} 配置`),
 				"",
 				`  Host: ${host}`,
 			];
@@ -219,7 +219,7 @@ export class SSHCommandController {
 			if (description) lines.push(`  Desc: ${description}`);
 			if (compat) lines.push(`  Compat: true`);
 			lines.push("");
-			lines.push(theme.fg("muted", `Run ${theme.fg("accent", "/ssh list")} to see all configured hosts.`));
+			lines.push(theme.fg("muted", `运行 ${theme.fg("accent", "/ssh list")} 查看所有已配置的主机。`));
 			lines.push("");
 
 			this.#showMessage(lines.join("\n"));
@@ -231,7 +231,7 @@ export class SSHCommandController {
 				helpText = `\n\nTip: Use ${theme.fg("accent", "/ssh remove")} first, or choose a different name.`;
 			}
 
-			this.ctx.showError(`Failed to add host: ${errorMsg}${helpText}`);
+			this.ctx.showError(`添加主机失败：${errorMsg}${helpText}`);
 		}
 	}
 
@@ -266,11 +266,11 @@ export class SSHCommandController {
 
 			if (userHosts.length === 0 && projectHosts.length === 0 && discoveredHosts.length === 0) {
 				this.#showReport(
-					"SSH Hosts",
+					"SSH 主机",
 					[
-						theme.fg("muted", "No SSH hosts configured."),
+						theme.fg("muted", "未配置 SSH 主机。"),
 						"",
-						`Use ${theme.fg("accent", "/ssh add")} to add a host.`,
+						`使用 ${theme.fg("accent", "/ssh add")} 添加主机。`,
 					].join("\n"),
 				);
 				return;
@@ -280,7 +280,7 @@ export class SSHCommandController {
 
 			// Show user-level hosts
 			if (userHosts.length > 0) {
-				lines.push(theme.fg("accent", "User level") + theme.fg("muted", ` (${shortenPath(userPath)}):`));
+				lines.push(theme.fg("accent", "用户级") + theme.fg("muted", ` (${shortenPath(userPath)}):`));
 				for (const name of userHosts) {
 					const config = userConfig.hosts![name];
 					const details = this.#formatHostDetails(config);
@@ -291,7 +291,7 @@ export class SSHCommandController {
 
 			// Show project-level hosts
 			if (projectHosts.length > 0) {
-				lines.push(theme.fg("accent", "Project level") + theme.fg("muted", ` (${shortenPath(projectPath)}):`));
+				lines.push(theme.fg("accent", "项目级") + theme.fg("muted", ` (${shortenPath(projectPath)}):`));
 				for (const name of projectHosts) {
 					const config = projectConfig.hosts![name];
 					const details = this.#formatHostDetails(config);
@@ -304,7 +304,7 @@ export class SSHCommandController {
 			if (discoveredHosts.length > 0) {
 				for (const { providerName, shortPath, items: hosts } of groupBySource(discoveredHosts, h => h._source)) {
 					lines.push(
-						theme.fg("accent", "Discovered") +
+						theme.fg("accent", "已发现") +
 							theme.fg("muted", ` (${providerName}: ${shortPath}):`) +
 							theme.fg("dim", " read-only"),
 					);
@@ -320,9 +320,9 @@ export class SSHCommandController {
 				}
 			}
 
-			this.#showReport("Configured SSH Hosts", lines.join("\n"));
+			this.#showReport("已配置的 SSH 主机", lines.join("\n"));
 		} catch (error) {
-			this.ctx.showError(`Failed to list hosts: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`列出主机失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -350,7 +350,7 @@ export class SSHCommandController {
 		}
 		const { name, scope } = parsed.value;
 		if (!name) {
-			this.ctx.showError("Host name required. Usage: /ssh remove <name> [--scope project|user]");
+			this.ctx.showError("需要主机名。用法：/ssh remove <name> [--scope project|user]");
 			return;
 		}
 
@@ -359,7 +359,7 @@ export class SSHCommandController {
 			const filePath = getSSHConfigPath(scope, cwd);
 			const config = await readSSHConfigFile(filePath);
 			if (!config.hosts?.[name]) {
-				this.ctx.showError(`Host "${name}" not found in ${scope} config.`);
+				this.ctx.showError(`主机 "${name}" 在 ${scope} 配置中未找到。`);
 				return;
 			}
 
@@ -370,7 +370,7 @@ export class SSHCommandController {
 				["", theme.fg("success", `- Removed SSH host "${name}" from ${scope} config`), ""].join("\n"),
 			);
 		} catch (error) {
-			this.ctx.showError(`Failed to remove host: ${error instanceof Error ? error.message : String(error)}`);
+			this.ctx.showError(`移除主机失败：${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 

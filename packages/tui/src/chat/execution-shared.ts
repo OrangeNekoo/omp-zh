@@ -95,7 +95,7 @@ export function buildStatusFooter(opts: {
 	if (opts.status === "cancelled") {
 		parts.push(theme.fg("warning", "(cancelled)"));
 	} else if (opts.status === "error") {
-		parts.push(theme.fg("error", `(exit ${opts.exitCode})`));
+		parts.push(theme.fg("error", `（退出码 ${opts.exitCode}）`));
 	}
 	if (opts.truncation) {
 		parts.push(theme.fg("warning", formatTruncationMetaNotice(opts.truncation)));
@@ -250,7 +250,7 @@ export function describeExecutionTool(input: ExecutionToolInput): NativeNode {
 		{ key: "run", tone: state === "failed" ? "error" : undefined },
 	);
 	const badges: { text: string; tone?: TspTone; title?: string }[] = [{ text: "you", tone: "user" }];
-	if (input.excluded) badges.push({ text: "not sent", title: "Not sent to the model", tone: "muted" });
+	if (input.excluded) badges.push({ text: "not sent", title: "不发送给模型", tone: "muted" });
 	return node(
 		"tool",
 		{

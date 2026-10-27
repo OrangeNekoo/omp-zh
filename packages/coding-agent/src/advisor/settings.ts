@@ -16,10 +16,10 @@ export const cfgAdvisorEnabled = register({
 	default: false,
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Enable Advisor",
+		group: "顾问",
+		label: "启用顾问",
 		description:
-			"Pair a second model (assigned to the 'advisor' role) that passively reviews each turn and injects notes.",
+			"挂载第二个模型（分配给 'advisor' 角色），被动审查每个回合并注入备注。",
 	},
 });
 
@@ -31,10 +31,10 @@ export const cfgAdvisorSyncBacklog = register({
 	default: "off",
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Sync Backlog",
+		group: "顾问",
+		label: "顾问同步积压",
 		description:
-			"Pause main agent until advisor backlog falls below threshold. Numeric values cap wait at 30 seconds; strict waits for all scheduled reviews without a wall-clock cap. Off disables catch-up delays. Abort, failure, and disposal release waits.",
+			"暂停主代理，直到顾问积压降至阈值以下。数值会将等待上限设为 30 秒；strict 会等待所有计划审查完成，不设墙钟上限。Off 禁用追赶延迟。中止、失败与销毁都会解除等待。",
 		condition: "advisorEnabled",
 	},
 });
@@ -46,17 +46,17 @@ export const cfgAdvisorImmuneTurns = register({
 	default: 3,
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Immune Turns",
+		group: "顾问",
+		label: "顾问免疫回合",
 		description:
-			"After an advisor concern or blocker interrupts, route further concerns as non-interrupting asides for this many primary turns. Blockers are exempt from the cooldown.",
+			"在顾问的关注点或阻塞项中断之后，接下来这么多个主回合内把新的关注点作为非中断的旁注处理。阻塞项不受冷却限制。",
 		options: [
-			{ value: "0", label: "0 steps", description: "No cooldown." },
-			{ value: "1", label: "1 step" },
-			{ value: "2", label: "2 steps" },
-			{ value: "3", label: "3 steps", description: "Default." },
-			{ value: "4", label: "4 steps" },
-			{ value: "5", label: "5 steps" },
+			{ value: "0", label: "0 步", description: "无冷却。" },
+			{ value: "1", label: "1 步" },
+			{ value: "2", label: "2 步" },
+			{ value: "3", label: "3 步", description: "默认。" },
+			{ value: "4", label: "4 步" },
+			{ value: "5", label: "5 步" },
 		],
 		condition: "advisorEnabled",
 	},
@@ -70,14 +70,14 @@ export const cfgAdvisorContinueSeverity = register({
 	default: "concern",
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Continue Severity",
+		group: "顾问",
+		label: "顾问继续严重度",
 		description:
-			"Minimum severity of an advisor note that wakes the agent after it finished with a final answer. Lower-severity notes stay as a card at the end of the transcript and reach the agent with your next message.",
+			"在代理以最终回答结束后，能唤醒它的顾问备注最低严重度。较低严重度的备注会作为卡片留在会话记录末尾，并随你的下一条消息传达给代理。",
 		options: [
-			{ value: "nit", label: "Nit", description: "Every note continues the run." },
-			{ value: "concern", label: "Concern", description: "Concerns and blockers continue the run. Default." },
-			{ value: "blocker", label: "Blocker", description: "Only blockers continue the run." },
+			{ value: "nit", label: "细节", description: "每条备注都继续运行。" },
+			{ value: "concern", label: "关注点", description: "关注点和阻塞项继续运行。默认。" },
+			{ value: "blocker", label: "阻塞项", description: "仅阻塞项继续运行。" },
 		],
 		condition: "advisorEnabled",
 	},
@@ -91,13 +91,13 @@ export const cfgAdvisorReviewMode = register({
 	default: "turn",
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Review Mode",
+		group: "顾问",
+		label: "顾问审查模式",
 		description:
-			"Default advisor cadence when no WATCHDOG.yml roster is present. turn reviews every primary turn; agent-end reviews only final yields.",
+			"没有 WATCHDOG.yml 名单时的默认顾问节奏。turn 审查每个主回合；agent-end 仅在最终让出时审查。",
 		options: [
-			{ value: "turn", label: "Every turn", description: "Review every primary update (tool-call round)." },
-			{ value: "agent-end", label: "Agent end", description: "Review only at final yields (once per run)." },
+			{ value: "turn", label: "每一轮", description: "审查每次主要更新（即一轮工具调用）" },
+			{ value: "agent-end", label: "代理结束", description: "仅在最终让出时审查（每次运行一次）。" },
 		],
 		condition: "advisorEnabled",
 	},
@@ -110,16 +110,16 @@ export const cfgAdvisorReviewInterval = register({
 	default: 1,
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Review Interval",
+		group: "顾问",
+		label: "顾问审查间隔",
 		description:
-			"Default advisor cadence when no WATCHDOG.yml roster is present: review every Nth eligible primary update. 1 = every update. Skipped updates are sent with the next scheduled review.",
+			"没有 WATCHDOG.yml 名单时的默认顾问节奏：每第 N 次符合条件的主动更新进行一次审查。1 = 每次更新。被跳过的更新会随下一次计划审查一并发送。",
 		options: [
-			{ value: "1", label: "Every eligible update", description: "Default." },
-			{ value: "2", label: "Every 2nd" },
-			{ value: "3", label: "Every 3rd" },
-			{ value: "5", label: "Every 5th" },
-			{ value: "10", label: "Every 10th" },
+			{ value: "1", label: "每次符合条件的更新", description: "默认。" },
+			{ value: "2", label: "每 2 次" },
+			{ value: "3", label: "每 3 次" },
+			{ value: "5", label: "每 5 次" },
+			{ value: "10", label: "每 10 次" },
 		],
 		condition: "advisorEnabled",
 	},
@@ -132,16 +132,16 @@ export const cfgAdvisorMaxNotesPerUpdate = register({
 	default: ADVISOR_DEFAULT_BUDGET_PER_UPDATE,
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Max Notes Per Update",
+		group: "顾问",
+		label: "顾问每次更新最大备注数",
 		description:
-			"Maximum non-blocker advice notes accepted per advisor prompt update (1–32; UI offers 1–5 quick picks). Blockers are exempt.",
+			"每次顾问提示词更新最多接受的非阻塞建议备注数（1–32；界面提供 1–5 的快捷选项）。阻塞项不受限制。",
 		options: [
-			{ value: "1", label: "1 note", description: "Anti-flood (strict)." },
-			{ value: "2", label: "2 notes" },
-			{ value: "3", label: "3 notes" },
-			{ value: "4", label: "4 notes", description: "Frontier reasoning models. Default." },
-			{ value: "5", label: "5 notes" },
+			{ value: "1", label: "1 条备注", description: "防刷屏（严格）。" },
+			{ value: "2", label: "2 条备注" },
+			{ value: "3", label: "3 条备注" },
+			{ value: "4", label: "4 条备注", description: "前沿推理模型。默认。" },
+			{ value: "5", label: "5 条备注" },
 		],
 		condition: "advisorEnabled",
 	},
@@ -154,10 +154,10 @@ export const cfgAdvisorEvictStaleResults = register({
 	default: true,
 	ui: {
 		tab: "model",
-		group: "Advisor",
-		label: "Advisor Evict Stale Results",
+		group: "顾问",
+		label: "顾问驱逐过期结果",
 		description:
-			"Before each review, replace the advisor's read/grep/glob output from older reviews with a short placeholder. The latest review is kept.",
+			"每次审查前，把顾问在旧审查中的 read/grep/glob 输出替换为简短占位符。最新一次审查保留。",
 		condition: "advisorEnabled",
 	},
 });

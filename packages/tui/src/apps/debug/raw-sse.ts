@@ -126,7 +126,7 @@ export class RawSseViewerComponent implements Component {
 			this.#onUpdate?.();
 		});
 		this.#frame = new DebugViewerFrame({
-			title: "Raw Provider Stream",
+			title: "原始服务商流",
 			getHeight: () => process.stdout.rows || this.#terminalRows || 24,
 			headerRows: 1,
 			footerRows: 1,
@@ -278,9 +278,9 @@ export class RawSseViewerComponent implements Component {
 				: keyed(
 						col(
 							[
-								text("No raw SSE frames captured yet", { role: "omp.app.empty-title" }),
+								text("尚未捕获原始 SSE 帧", { role: "omp.app.empty-title" }),
 								text([
-									span("HTTP SSE providers populate this view while a model response is streaming.", "muted"),
+									span("HTTP SSE 服务商会在模型响应流式传输时填充此视图。", "muted"),
 								]),
 							],
 							{ gap: "xs", align: "center", role: "omp.app.empty" },
@@ -305,9 +305,9 @@ export class RawSseViewerComponent implements Component {
 							"status",
 						),
 					actionBar([
-						actionButton("Copy raw", "copy-raw", { keys: "ctrl+c", tone: "accent" }),
+						actionButton("复制原始内容", "copy-raw", { keys: "ctrl+c", tone: "accent" }),
 						null,
-						actionButton("Close", "close", { keys: "escape" }),
+						actionButton("关闭", "close", { keys: "escape" }),
 					]),
 				]),
 				{ role: "omp.debug.bar", gap: "sm" },
@@ -317,21 +317,21 @@ export class RawSseViewerComponent implements Component {
 
 	#describeHead(snapshot: RawSseDebugSnapshot): NativeNode {
 		const stats = [
-			span(`${snapshot.totalEvents} events`, "num"),
+			span(`${snapshot.totalEvents} 个事件`, "num"),
 			span(" · ", "dim"),
-			span(`${snapshot.records.length} records`, "num"),
+			span(`${snapshot.records.length} 条记录`, "num"),
 		];
 		if (snapshot.droppedRecords > 0) {
-			stats.push(span(" · ", "dim"), span(`${snapshot.droppedRecords} dropped`, "warning"));
+			stats.push(span(" · ", "dim"), span(`${snapshot.droppedRecords} 已丢弃`, "warning"));
 		}
 		stats.push(
 			span(" · ", "dim"),
 			snapshot.lastUpdatedAt
-				? span(`last ${formatRawSseIsoTime(snapshot.lastUpdatedAt)}`, "muted")
-				: span("waiting for first frame", "muted"),
+				? span(`最近 ${formatRawSseIsoTime(snapshot.lastUpdatedAt)}`, "muted")
+				: span("等待首帧", "muted"),
 		);
 		return keyed(
-			row([text("Raw provider stream", { role: "omp.app.title" }), text(stats, { truncate: "end" })], {
+			row([text("原始服务商流", { role: "omp.app.title" }), text(stats, { truncate: "end" })], {
 				gap: "sm",
 				align: "center",
 				role: "omp.app.head",
@@ -411,8 +411,8 @@ export class RawSseViewerComponent implements Component {
 	#formatRawLines(snapshot: RawSseDebugSnapshot, innerWidth: number): string[] {
 		if (snapshot.records.length === 0) {
 			return [
-				theme.fg("muted", "No raw SSE frames captured yet."),
-				theme.fg("muted", "HTTP SSE providers populate this view while a model response is streaming."),
+				theme.fg("muted", "尚未捕获原始 SSE 帧。"),
+				theme.fg("muted", "HTTP SSE 服务商会在模型响应流式传输时填充此视图。"),
 			];
 		}
 		const lines: string[] = [];
@@ -458,15 +458,15 @@ export class RawSseViewerComponent implements Component {
 		const snapshot = this.#currentSnapshot();
 		const last = snapshot.lastUpdatedAt
 			? `${theme.fg("muted", "last")} ${theme.fg("accent", formatRawSseIsoTime(snapshot.lastUpdatedAt))}`
-			: theme.fg("muted", "waiting for first frame");
+			: theme.fg("muted", "等待首帧");
 		const follow = this.#frame.isFollowingTail()
-			? theme.fg("success", "follow on")
-			: theme.fg("warning", "follow off");
+			? theme.fg("success", "跟随开启")
+			: theme.fg("warning", "跟随关闭");
 		return `${theme.fg("muted", "events")} ${theme.fg("accent", String(snapshot.totalEvents))}  ${theme.fg("muted", "records")} ${theme.fg("accent", String(snapshot.records.length))}  ${last}  ${follow}`;
 	}
 
 	#statusText(): string {
-		const help = `${formatKeyHint("escape")} close · ${formatKeyHint("ctrl+c")} copy raw · ${formatKeyHint("end")} follow tail · wheel scroll · click summary toggles follow`;
+		const help = `${formatKeyHint("escape")} 关闭 · ${formatKeyHint("ctrl+c")} copy raw · ${formatKeyHint("end")} follow tail · wheel scroll · click summary toggles follow`;
 		return this.#statusMessage
 			? `${theme.fg("success", this.#statusMessage)}  ${theme.fg("dim", help)}`
 			: theme.fg("dim", help);

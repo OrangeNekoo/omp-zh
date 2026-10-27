@@ -116,9 +116,9 @@ export function renderPauseScreen(
 			? centerLine(theme.bold(sessionName.replace(/\s+/g, " ").trim()), screenWidth).trimEnd()
 			: undefined;
 		const titleLine = centerLine(theme.bold(theme.fg("accent", `▌▌ ${TITLE}`)), screenWidth).trimEnd();
-		const clockLine = centerLine(theme.fg("dim", `paused for ${formatClock(elapsedMs)}`), screenWidth).trimEnd();
+		const clockLine = centerLine(theme.fg("dim", `已暂停 ${formatClock(elapsedMs)}`), screenWidth).trimEnd();
 		const statusLine = centerLine(theme.fg(outstanding ? "warning" : "success", status), screenWidth).trimEnd();
-		const resumeLine = centerLine(theme.fg("dim", `${esc} to resume`), screenWidth).trimEnd();
+		const resumeLine = centerLine(theme.fg("dim", `${esc} 恢复`), screenWidth).trimEnd();
 		const fullContent: string[] = [];
 		if (sessionLine) fullContent.push(sessionLine);
 		fullContent.push(titleLine, "", clockLine, statusLine);
@@ -132,10 +132,10 @@ export function renderPauseScreen(
 			// Keep the live state and a way out on screen before the decorative card details.
 			if (screenHeight === 1) {
 				const counts = `T:${workStatus.unsettledTurns} J:${workStatus.unfinishedJobs}`;
-				const summary = outstanding ? `${counts} · ${esc} to resume` : `Paused · ${esc} to resume`;
+				const summary = outstanding ? `${counts} · ${esc} 恢复` : `Paused · ${esc} 恢复`;
 				const abbreviatedSummary = outstanding
-					? `T${workStatus.unsettledTurns} J${workStatus.unfinishedJobs} ${esc} resume`
-					: `${esc} resume`;
+					? `T${workStatus.unsettledTurns} J${workStatus.unfinishedJobs} ${esc} 恢复`
+					: `${esc} 恢复`;
 				const visibleSummary = visibleWidth(summary) > screenWidth ? abbreviatedSummary : summary;
 				content.push(
 					centerLine(theme.fg(outstanding ? "warning" : "success", visibleSummary), screenWidth).trimEnd(),
@@ -183,7 +183,7 @@ export function renderPauseScreen(
 			content.push(centerLine(theme.fg("muted", workCounts[0]!), screenWidth).trimEnd());
 			content.push(centerLine(theme.fg("muted", workCounts[1]!), screenWidth).trimEnd());
 		}
-		content.push(centerLine(theme.fg("dim", `paused for ${formatClock(elapsedMs)}`), screenWidth).trimEnd());
+		content.push(centerLine(theme.fg("dim", `已暂停 ${formatClock(elapsedMs)}`), screenWidth).trimEnd());
 		content.push("");
 		const resumeHint = `${esc} · ${formatKeyHint("enter")} · ${formatKeyHint("space")} — resume`;
 		content.push(centerLine(theme.fg("dim", resumeHint), screenWidth).trimEnd());
@@ -334,13 +334,13 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 								age: Date.now() - this.#startedAt,
 								format: "clock",
 								role: "omp.pause.clock",
-								title: "Paused for",
+								title: "暂停",
 							},
 							undefined,
 							"clock",
 						),
 						keyed(
-							text([span(this.host.sessionName ?? "Every agent in this session", "muted")], {
+							text([span(this.host.sessionName ?? "本会话中的每个代理", "muted")], {
 								role: "omp.pause.session",
 								wrap: "none",
 								truncate: "end",
@@ -379,7 +379,7 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 				keyed(facts, "facts"),
 				actionBar([
 					null,
-					actionButton("Resume", "resume", {
+					actionButton("恢复", "resume", {
 						keys: resumeKey,
 						tone: "accent",
 						// Each ` · ` clause ending in two spaces and a key is a keycap: `Resume [esc] · [⏎] · [space]`.

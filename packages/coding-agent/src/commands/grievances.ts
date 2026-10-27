@@ -13,7 +13,7 @@ export default class Grievances extends Command {
 		// arg keeps the historical `omp grievances` invocation working unchanged
 		// while reusing the same command surface for the clean/push verbs.
 		action: Args.string({
-			description: "list (default), clean, or push",
+			description: "list（默认）、clean 或 push",
 			required: false,
 			options: ["list", "clean", "push"],
 			default: "list",
@@ -21,11 +21,11 @@ export default class Grievances extends Command {
 	};
 
 	static flags = {
-		limit: Flags.integer({ char: "n", description: "Number of recent issues to show (list)", default: 20 }),
-		tool: Flags.string({ char: "t", description: "Filter by tool name (list, clean)" }),
-		json: Flags.boolean({ char: "j", description: "Output as JSON", default: false }),
-		id: Flags.integer({ description: "Delete a single grievance by id (clean)" }),
-		all: Flags.boolean({ description: "Delete every grievance (clean)", default: false }),
+		limit: Flags.integer({ char: "n", description: "显示最近问题的数量（list）", default: 20 }),
+		tool: Flags.string({ char: "t", description: "按工具名筛选（list、clean）" }),
+		json: Flags.boolean({ char: "j", description: "以 JSON 输出", default: false }),
+		id: Flags.integer({ description: "按 id 删除单条问题反馈（clean）" }),
+		all: Flags.boolean({ description: "删除全部问题反馈（clean）", default: false }),
 	};
 
 	static examples = [
