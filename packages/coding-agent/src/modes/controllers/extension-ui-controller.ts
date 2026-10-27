@@ -48,11 +48,6 @@ import { getEditorCommand, openInEditor } from "../../utils/external-editor";
 import { launchTerminal } from "../../subprocess/terminal-launch";
 import { approvalAnswerForChoice, approvalChoiceLabels, approvalOnceLabel } from "../../tools/approval";
 
-function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
-	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
-	return actual === english || actual === chinese;
-}
-
 const MAX_WIDGET_LINES = 10;
 
 /**
@@ -256,7 +251,6 @@ export class ExtensionUiController {
 			resolvePlanReview: (reviewId, choice, input) => this.ctx.resolvePlanReview(reviewId, choice, input),
 			getPendingPlanReview: () => this.ctx.getPendingPlanReview(),
 			openPlanReview: () => this.ctx.openPlanReview({ fromExtension: true }),
-			sessionModes: this.ctx.sessionModes,
 			getContextUsage: () => this.ctx.session.getContextUsage(),
 			compact: instructionsOrOptions => this.#compactSession(instructionsOrOptions),
 			getSystemPrompt: () => this.ctx.session.systemPrompt,
@@ -488,7 +482,6 @@ export class ExtensionUiController {
 			resolvePlanReview: (reviewId, choice, input) => this.ctx.resolvePlanReview(reviewId, choice, input),
 			getPendingPlanReview: () => this.ctx.getPendingPlanReview(),
 			openPlanReview: () => this.ctx.openPlanReview({ fromExtension: true }),
-			sessionModes: this.ctx.sessionModes,
 			getContextUsage: () => this.ctx.session.getContextUsage(),
 			compact: instructionsOrOptions => this.#compactSession(instructionsOrOptions),
 			getSystemPrompt: () => this.ctx.session.systemPrompt,
@@ -1190,7 +1183,7 @@ export class ExtensionUiController {
 		dialogOptions?: InteractiveSelectorDialogOptions,
 	): Promise<boolean> {
 		const result = await this.showHookSelector(`${title}\n${message}`, ["是", "否"], dialogOptions);
-		return labelEq(result, "Yes", "是");
+		return result === "Yes";
 	}
 
 	/**
@@ -1210,7 +1203,6 @@ export class ExtensionUiController {
 				{
 					timeout: dialogOptions?.timeout,
 					onTimeout: dialogOptions?.onTimeout,
-					secret: dialogOptions?.secret,
 					tui: this.ctx.ui,
 				},
 			);

@@ -150,28 +150,26 @@ async function fetchJson(ctx: UsageFetchContext, url: string, init: RequestInit)
 	return response.json();
 }
 
-/**
- * Resolves the token owner's login via `/user`; throws `ProviderHttpError` on a
- * non-2xx response or a body without a string `login`.
- */
 async function resolveGitHubUsername(
 	ctx: UsageFetchContext,
 	baseUrl: string,
 	token: string,
 	signal?: AbortSignal,
 ): Promise<string | undefined> {
-	const data = await fetchJson(ctx, `${baseUrl}/user`, {
-		headers: {
-			Accept: "application/vnd.github+json",
-			Authorization: `Bearer ${token}`,
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-		signal,
-	});
-	if (!isRecord(data) || typeof data.login !== "string") {
-		throw new AIError.ProviderHttpError("Invalid GitHub user response", 200);
+	try {
+		const data = await fetchJson(ctx, `${baseUrl}/user`, {
+			headers: {
+				Accept: "application/vnd.github+json",
+				Authorization: `Bearer ${token}`,
+				"X-GitHub-Api-Version": "2022-11-28",
+			},
+			signal,
+		});
+		if (!isRecord(data)) return undefined;
+		return typeof data.login === "string" ? data.login : undefined;
+	} catch {
+		return undefined;
 	}
-	return data.login;
 }
 
 async function fetchInternalUsage(
@@ -341,19 +339,6 @@ function normalizeBillingUsage(data: BillingUsageResponse): UsageLimit[] {
 	return limits;
 }
 
-/**
- * Rethrows when every endpoint `fetchUsage` attempted rejected the token with
- * 401/403. AuthStorage purges the credential's last-good report only for a
- * thrown auth error, while `null` serves the cached report as a transient
- * failure; any non-auth failure (network, timeout, 5xx, 404) stays transient.
- */
-function rethrowAuthRejection(failures: unknown[]): void {
-	const rejected = failures.every(
-		error => error instanceof AIError.ProviderHttpError && (error.status === 401 || error.status === 403),
-	);
-	if (failures.length > 0 && rejected) throw failures.at(-1);
-}
-
 export const githubCopilotUsageProvider: UsageProvider = {
 	id: "github-copilot",
 	supports: ({ provider, credential }) => {
@@ -368,7 +353,6 @@ export const githubCopilotUsageProvider: UsageProvider = {
 
 		const githubApiBaseUrl = resolveGitHubApiBaseUrl(params);
 		let report: UsageReport | null = null;
-		const failures: unknown[] = [];
 
 		if (params.credential.type === "api_key") {
 			let username: string | undefined;
@@ -378,13 +362,7 @@ export const githubCopilotUsageProvider: UsageProvider = {
 				username = candidate.trim();
 			}
 			if (!username && params.credential.apiKey) {
-				try {
-					username = await resolveGitHubUsername(ctx, githubApiBaseUrl, params.credential.apiKey, params.signal);
-				} catch (error) {
-					// A failed lookup skips billing, so it votes in the auth consensus:
-					// a transient `/user` failure must keep the cached report.
-					failures.push(error);
-				}
+				username = await resolveGitHubUsername(ctx, githubApiBaseUrl, params.credential.apiKey, params.signal);
 			}
 			if (!username) {
 				ctx.logger?.warn("Copilot usage requires username for billing API", { provider: params.provider });
@@ -408,7 +386,6 @@ export const githubCopilotUsageProvider: UsageProvider = {
 						},
 					};
 				} catch (error) {
-					failures.push(error);
 					ctx.logger?.warn("Copilot usage fetch failed", { error: String(error) });
 				}
 			}
@@ -428,7 +405,6 @@ export const githubCopilotUsageProvider: UsageProvider = {
 						raw: usage,
 					};
 				} catch (error) {
-					failures.push(error);
 					ctx.logger?.warn("Copilot usage fetch failed", { error: String(error) });
 				}
 			}
@@ -442,16 +418,11 @@ export const githubCopilotUsageProvider: UsageProvider = {
 			try {
 				const usage = await fetchInternalUsage(ctx, githubApiBaseUrl, githubToken, params.signal);
 				let accountId = params.credential.accountId;
-				// The usage report already landed; the login only labels it.
 				if (!accountId && refreshToken) {
-					accountId = await resolveGitHubUsername(ctx, githubApiBaseUrl, refreshToken, params.signal).catch(
-						() => undefined,
-					);
+					accountId = await resolveGitHubUsername(ctx, githubApiBaseUrl, refreshToken, params.signal);
 				}
 				if (!accountId && accessToken) {
-					accountId = await resolveGitHubUsername(ctx, githubApiBaseUrl, accessToken, params.signal).catch(
-						() => undefined,
-					);
+					accountId = await resolveGitHubUsername(ctx, githubApiBaseUrl, accessToken, params.signal);
 				}
 				const normalized = normalizeQuotaSnapshots(usage, accountId);
 				report = {
@@ -467,12 +438,10 @@ export const githubCopilotUsageProvider: UsageProvider = {
 					raw: usage,
 				};
 			} catch (error) {
-				failures.push(error);
 				ctx.logger?.warn("Copilot usage fetch failed", { error: String(error) });
 			}
 		}
 
-		if (!report) rethrowAuthRejection(failures);
 		return report;
 	},
 };

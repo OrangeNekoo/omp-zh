@@ -592,22 +592,18 @@ export async function discoverExtensionPaths(
 
 	const isDisabledName = (name: string): boolean => disabled.has(`extension-module:${name}`);
 
-	// Key on the real file so a symlink and its target load once, e.g. an
-	// extensions/ symlink plus the same file passed with --extension. Missing
-	// paths keep their lexical key so the loader still reports them.
-	const addPath = async (extPath: string): Promise<void> => {
+	const addPath = (extPath: string): void => {
 		const resolved = path.resolve(extPath);
-		const key = await fs.realpath(resolved).catch(() => resolved);
-		if (!seen.has(key)) {
-			seen.add(key);
+		if (!seen.has(resolved)) {
+			seen.add(resolved);
 			allPaths.push(extPath);
 		}
 	};
 
-	const addPaths = async (paths: string[]): Promise<void> => {
+	const addPaths = (paths: string[]) => {
 		for (const extPath of paths) {
 			if (isDisabledName(getExtensionNameFromPath(extPath))) continue;
-			await addPath(extPath);
+			addPath(extPath);
 		}
 	};
 
@@ -624,7 +620,7 @@ export async function discoverExtensionPaths(
 			providers: ["native"],
 		});
 		for (const ext of discovered.items) {
-			await addPath(ext.path);
+			addPath(ext.path);
 		}
 	}
 
@@ -638,18 +634,18 @@ export async function discoverExtensionPaths(
 			for (const hookPath of hooks.items
 				.map(hook => hook.path)
 				.filter(hookPath => isExtensionFile(path.basename(hookPath)))) {
-				await addPath(hookPath);
+				addPath(hookPath);
 			}
 		}
 	} else {
 		for (const configuredPath of configuredPaths) {
-			await addPaths(await discoverHooksInPackageRoot(resolvePath(configuredPath, cwd)));
+			addPaths(await discoverHooksInPackageRoot(resolvePath(configuredPath, cwd)));
 		}
 	}
 
 	// 3. Discover extension entry points from installed plugins.
 	if (ambient) {
-		await addPaths(await getAllPluginExtensionPaths(cwd));
+		addPaths(await getAllPluginExtensionPaths(cwd));
 	}
 
 	// 4. Explicitly configured paths
@@ -664,11 +660,11 @@ export async function discoverExtensionPaths(
 		}
 
 		if (stat?.isDirectory()) {
-			await addPaths(resolveExtensionDirectory(resolved, CONFIGURED_EXTENSION_DIRECTORY_OPTIONS).files);
+			addPaths(resolveExtensionDirectory(resolved, CONFIGURED_EXTENSION_DIRECTORY_OPTIONS).files);
 			continue;
 		}
 
-		await addPath(resolved);
+		addPath(resolved);
 	}
 
 	return allPaths;

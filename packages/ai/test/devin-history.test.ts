@@ -61,8 +61,8 @@ async function captureRequest(context: Context, onPayload?: StreamOptions["onPay
 		1,
 		false,
 	);
-	const message = requestPayload.subarray(5, 5 + length);
-	return fromBinary(GetChatMessageRequestSchema, requestPayload[0] & 0x01 ? gunzipSync(message) : message);
+	const compressed = requestPayload.subarray(5, 5 + length);
+	return fromBinary(GetChatMessageRequestSchema, gunzipSync(compressed));
 }
 
 describe("streamDevin history handoff", () => {

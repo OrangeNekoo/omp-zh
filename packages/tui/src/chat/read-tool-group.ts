@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import type { AssistantMessage, Usage } from "@oh-my-pi/pi-ai";
 import { type Component } from "../tui";
 import { Container } from "../tui";
@@ -875,7 +876,7 @@ export class ReadToolGroupComponent extends Container implements ToolExecutionHa
 		const linkPath = linkPathForTargets(row.targets);
 		const spans: TspSpan[] = [];
 		if (filePath) {
-			const href = linkPath ? fileHref(linkPath) : undefined;
+			const href = linkPath && path.isAbsolute(linkPath) ? pathToFileURL(linkPath).href : undefined;
 			spans.push(span(filePath, "path", href ? { href } : undefined));
 		} else {
 			spans.push(span("…", "toolOutput"));

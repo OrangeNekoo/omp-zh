@@ -12,11 +12,6 @@ import { clearSubmittedText } from "./helpers/draft";
 import type { SlashCommandSpec } from "./types";
 import type { InteractiveModeContext } from "../modes/types";
 
-function labelEq(actual: string | undefined, english: string, chinese: string): boolean {
-	// 选项标签经汉化后是中文，而上游测试与英文环境给出英文；比较方不站队。
-	return actual === english || actual === chinese;
-}
-
 type ParsedSeanceArgs = { source: string | undefined; model: string | undefined } | { error: string };
 
 function parseSeanceArgs(args: string): ParsedSeanceArgs {
@@ -139,9 +134,9 @@ async function chooseSeanceModel(
 						},
 						{ label: "选择其他模型", description: "为本次查看选择一次性模型" },
 					]);
-		if (labelEq(choice, "Use saved model", "使用已保存的模型")) {
+		if (choice === "Use saved model") {
 			void launchSeance(ctx, sourceSession);
-		} else if (labelEq(choice, "Choose another model", "选择其他模型")) {
+		} else if (choice === "Choose another model") {
 			ctx.showModelSelector({
 				selectOnly: {
 					onSelect: picked => launchSeance(ctx, sourceSession, picked),

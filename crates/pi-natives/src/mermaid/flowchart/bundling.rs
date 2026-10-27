@@ -46,28 +46,16 @@ pub fn analyze_edge_bundles(graph: &mut AsciiGraph) {
 		return;
 	}
 
-	// Edges already bundled or kept out of bundles. A repeat of an earlier
-	// `from → to` edge would share its twin's whole bundled route, so it is
-	// left to be routed beside the twin instead.
-	let mut claimed: Vec<bool> = graph
-		.edges
-		.iter()
-		.enumerate()
-		.map(|(id, edge)| {
-			graph.edges[..id]
-				.iter()
-				.any(|earlier| (earlier.from, earlier.to) == (edge.from, edge.to))
-		})
-		.collect();
+	let mut bundled = vec![false; graph.edges.len()];
 	let mut edges_by_target = Vec::new();
 	for (edge_id, edge) in graph.edges.iter().enumerate() {
-		if edge.from != edge.to && !claimed[edge_id] {
+		if edge.from != edge.to {
 			push_group(&mut edges_by_target, edge.to, edge_id);
 		}
 	}
 
 	for (target, edges) in edges_by_target {
-		if !can_bundle(&edges, graph) || edges.iter().any(|&edge| claimed[edge]) {
+		if !can_bundle(&edges, graph) || edges.iter().any(|&edge| bundled[edge]) {
 			continue;
 		}
 		let bundle_id = graph.bundles.len();
@@ -84,13 +72,13 @@ pub fn analyze_edge_bundles(graph: &mut AsciiGraph) {
 		});
 		for edge in edges {
 			graph.edges[edge].bundle = Some(bundle_id);
-			claimed[edge] = true;
+			bundled[edge] = true;
 		}
 	}
 
 	let mut edges_by_source = Vec::new();
 	for (edge_id, edge) in graph.edges.iter().enumerate() {
-		if edge.from != edge.to && !claimed[edge_id] {
+		if edge.from != edge.to && !bundled[edge_id] {
 			push_group(&mut edges_by_source, edge.from, edge_id);
 		}
 	}
@@ -113,7 +101,7 @@ pub fn analyze_edge_bundles(graph: &mut AsciiGraph) {
 		});
 		for edge in edges {
 			graph.edges[edge].bundle = Some(bundle_id);
-			claimed[edge] = true;
+			bundled[edge] = true;
 		}
 	}
 }

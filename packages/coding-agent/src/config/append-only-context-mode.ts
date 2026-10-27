@@ -1,4 +1,3 @@
-import { prefersAppendOnlyContext } from "@oh-my-pi/pi-catalog/compat/behavior";
 import { hostMatchesUrl } from "@oh-my-pi/pi-catalog/hosts";
 
 /** Provider metadata needed to resolve append-only context mode. */
@@ -9,10 +8,20 @@ export interface AppendOnlyContextModel {
 	compatConfig?: object;
 }
 
+/**
+ * Local model servers (Ollama, LM Studio, llama.cpp, vLLM, sglang, …) all
+ * rely on llama.cpp-style prefix KV-cache reuse: identical leading tokens
+ * skip re-prefill on the next request. Append-only mode is the only way to
+ * guarantee byte-stable bytes across turns, since the live system prompt,
+ * tool catalogue, and message log all flow through fresh allocations every
+ * step (see `agent-loop.ts` `streamAssistantResponse` fallback path).
+ */
+const LOCAL_INFERENCE_PROVIDERS = new Set(["ollama", "ollama-cloud", "lm-studio", "llama.cpp"]);
+
 /** True when `baseUrl` resolves to a loopback or RFC1918 host — covers
  * llama.cpp/vLLM/sglang servers registered under a user-defined provider id
  * via `models.yaml`. Built-in local provider ids (`ollama`, `lm-studio`,
- * `llama.cpp`) are already handled by the catalog provider policy.
+ * `llama.cpp`) are already handled by `LOCAL_INFERENCE_PROVIDERS`.
  * Substring match on the parsed hostname only; ports, paths, and unparseable
  * URLs return false.
  */
@@ -44,7 +53,8 @@ function hasLocalLoopbackBaseUrl(baseUrl: string | undefined): boolean {
 
 function shouldAutoEnableAppendOnlyContext(model: AppendOnlyContextModel | null | undefined): boolean {
 	if (!model) return false;
-	if (prefersAppendOnlyContext(model.provider)) return true;
+	if (model.provider === "deepseek") return true;
+	if (LOCAL_INFERENCE_PROVIDERS.has(model.provider)) return true;
 	if (hostMatchesUrl(model.baseUrl, "xiaomi")) return true;
 	if (hasLocalLoopbackBaseUrl(model.baseUrl)) return true;
 	return !!model.compatConfig && "supportsStore" in model.compatConfig && model.compatConfig.supportsStore === true;

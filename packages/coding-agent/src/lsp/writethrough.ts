@@ -9,7 +9,6 @@ import {
 	getActiveOrPendingClient,
 	getOrCreateClient,
 	notifyWorkspaceWatchedFiles,
-	reconcileOpenFilesFromDisk,
 	sendRequest,
 } from "./client";
 import { getConfig, getServersForFile } from "./config";
@@ -464,16 +463,6 @@ async function runLspWritethrough(
 		);
 		operationSignal = signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal;
 		await untilAborted(operationSignal, async () => {
-			if (enableDiagnostics) {
-				// The target overlay leads disk until commit; reconcile only other
-				// open documents before computing diagnostics for the new content.
-				await Promise.all(
-					lspServers.map(async ([, serverConfig]) => {
-						const client = await getActiveOrPendingClient(serverConfig, cwd, operationSignal);
-						if (client) await reconcileOpenFilesFromDisk(client, operationSignal);
-					}),
-				);
-			}
 			if (useCustomFormatter) {
 				// Custom linters operate on on-disk input; the shared pre-write also
 				// supports implementations that inspect the file before formatting.

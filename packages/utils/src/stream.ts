@@ -2,7 +2,6 @@ const trailingEvents = new WeakSet<ServerSentEvent>();
 
 import { abortableSource } from "./abortable";
 import { parseStreamingJson } from "./json-parse";
-import { isWhitespace } from "./json-lexer";
 
 const LF = 0x0a;
 const CR = 0x0d;
@@ -614,11 +613,9 @@ export async function* readSseEvents(
  */
 export function parseJsonlLenient<T>(buffer: string, options: { onMalformedRecord?: () => void } = {}): T[] {
 	let entries: T[] | undefined;
-	let cursor = 0;
-	const len = buffer.length;
 
-	while (cursor < len) {
-		const { values, error, read, done } = Bun.JSONL.parseChunk(buffer, cursor);
+	while (buffer.length > 0) {
+		const { values, error, read, done } = Bun.JSONL.parseChunk(buffer);
 		if (values.length > 0) {
 			const ext = values as T[];
 			if (!entries) {
@@ -628,22 +625,18 @@ export function parseJsonlLenient<T>(buffer: string, options: { onMalformedRecor
 			}
 		}
 		if (error) {
-			let malformedStart = read;
-			while (malformedStart < len && isWhitespace(buffer.charCodeAt(malformedStart))) {
-				malformedStart++;
-			}
-			const nextNewline = buffer.indexOf("\n", malformedStart);
-			const malformedEnd = nextNewline === -1 ? len : nextNewline;
-			if (buffer.substring(malformedStart, malformedEnd).trim().length > 0) options.onMalformedRecord?.();
+			const nextNewline = buffer.indexOf("\n", read);
+			const malformedEnd = nextNewline === -1 ? buffer.length : nextNewline;
+			if (buffer.substring(read, malformedEnd).trim().length > 0) options.onMalformedRecord?.();
 			if (nextNewline === -1) break;
-			cursor = nextNewline + 1;
+			buffer = buffer.substring(nextNewline + 1);
 			continue;
 		}
-		if (read === cursor) {
-			if (buffer.substring(cursor).trim().length > 0) options.onMalformedRecord?.();
+		if (read === 0) {
+			if (buffer.trim().length > 0) options.onMalformedRecord?.();
 			break;
 		}
-		cursor = read;
+		buffer = buffer.substring(read);
 		if (done) break;
 	}
 	return entries ?? [];

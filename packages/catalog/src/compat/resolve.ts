@@ -20,7 +20,6 @@ import { hostMatchesUrl, modelMatchesHost } from "../hosts";
 import { withoutUnverifiedThinking } from "../model-thinking";
 import type {
 	Api,
-	CatalogPolicyInputs,
 	CompatOf,
 	ModelSpec,
 	OpenAICompat,
@@ -127,14 +126,14 @@ class IdentityFacts {
  * pairing runs only its lead, so the lead's reviewed rules (cache-write rate,
  * long-context tier) apply to it at build time.
  */
-function policyModelId(spec: CatalogPolicyInputs): string {
+function policyModelId<TApi extends Api>(spec: ModelSpec<TApi>): string {
 	const wireId = spec.requestModelId;
 	if (wireId === undefined || wireId === spec.id) return spec.id;
 	if (classifyModel(spec.provider, spec.id).class !== "unknown") return spec.id;
 	return classifyModel(spec.provider, wireId).class === "unknown" ? spec.id : wireId;
 }
 
-function resolveIdentity(spec: CatalogPolicyInputs): ModelIdentity {
+function resolveIdentity<TApi extends Api>(spec: ModelSpec<TApi>): ModelIdentity {
 	// Strict on purpose: ambiguous identity is a rule-authoring defect surfaced
 	// at build/CI time, never silently degraded to `unknown`. Discovery
 	// normalization opts into leniency through `classifyModel` directly.
@@ -925,7 +924,6 @@ function resolveAnthropicPolicy(
 		supportsSamplingParams: true,
 		requiresToolResultId: false,
 		requiresThinkingEnabled,
-		requiresThinkingPresence: false,
 		replayUnsignedThinking:
 			!signingEndpoint && (compatReasoning(spec, axes) || modelMatchesHost(spec, "deepseekFamily")),
 		escapeBuiltinToolNames: false,
@@ -1307,8 +1305,8 @@ function fillExplicitThinking<TApi extends Api>(
 // Entry
 // ---------------------------------------------------------------------------
 
-function buildResolveTarget(
-	spec: CatalogPolicyInputs,
+function buildResolveTarget<TApi extends Api>(
+	spec: ModelSpec<TApi>,
 	identity: ModelIdentity,
 	providerType = spec.providerType ?? spec.provider,
 ): ResolveTarget {
@@ -1340,7 +1338,7 @@ export function resolveDiscoveryApi(spec: ModelSpec<Api>, providerType: string):
  * {@link resolveModelPolicy} without resolving the compat and thinking
  * policies, which dominate its cost on catalog-wide scans.
  */
-export function resolveCatalogAxes(spec: CatalogPolicyInputs): Record<string, unknown> {
+export function resolveCatalogAxes(spec: ModelSpec<Api>): Record<string, unknown> {
 	return resolveCascade(buildResolveTarget(spec, resolveIdentity(spec))).catalog;
 }
 

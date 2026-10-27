@@ -209,15 +209,14 @@ describe("per-profile MCP OAuth binding", () => {
 		// of this definition-only binding would be impossible. The fallback
 		// resource (synthesized from config.url) is intentionally not persisted —
 		// it is re-derived from the definition on the next refresh.
-		const stored = authStorage.credentials.get(URL_KEY_ID);
-		expect(stored).toMatchObject({
+		expect(authStorage.credentials.get(URL_KEY_ID)).toMatchObject({
 			type: "oauth",
 			access: "fresh-token",
 			refresh: "fresh-refresh",
 			tokenUrl: "https://mcp.example.com/token",
 			clientId: "embedded-client",
+			resource: undefined,
 		});
-		expect(stored).not.toHaveProperty("resource");
 	});
 
 	test("does not inject oauth for configs with explicit apikey auth", async () => {

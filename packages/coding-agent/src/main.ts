@@ -13,7 +13,6 @@ import { getModelPricingStatus } from "@oh-my-pi/pi-catalog/models";
 import { CLI_NAME, isEnoent, isEnotdir } from "@oh-my-pi/pi-utils";
 import {
 	directoryIsMissing,
-	getAgentDir,
 	getLogPath,
 	getProjectDir,
 	normalizePathForComparison,
@@ -81,7 +80,6 @@ import {
 import { registerDaemonProjectPresence } from "./launch/presence";
 import type { MCPManager } from "./mcp";
 import type { InteractiveMode } from "./modes/interactive-mode";
-import { formatSessionContinuationNotice } from "./modes/persistence-failure";
 import type { PrintModeOptions } from "./modes/print-mode";
 import type { RpcModeOptions } from "./modes/rpc/rpc-mode";
 import { claimRpcInput } from "./modes/rpc/rpc-input";
@@ -106,7 +104,6 @@ import {
 	discoverAuthStorage,
 	loadSessionExtensions,
 	resolvePrewalkTarget,
-	SessionModelRestoreError,
 } from "./sdk";
 import type { AgentSession } from "./session/agent-session";
 import { createAuthStorageSettingsSync, describeAuthBrokerStartupError } from "./session/auth-broker-config";
@@ -120,13 +117,7 @@ import {
 } from "./session/foreign-session-import";
 import type { ForeignSessionInfo, ForeignSessionSource, ForeignSessionStore } from "./session/foreign-session-store";
 import { loadRuntimeIdentity } from "./session/runtime-identity";
-import {
-	findSessionContinuation,
-	resolveResumeTarget,
-	resolveResumableSession,
-	type SessionContinuation,
-	type SessionInfo,
-} from "./session/session-listing";
+import { resolveResumableSession, type SessionInfo } from "./session/session-listing";
 import { ForkSourceNotFoundError, SessionManager, SessionMoveRefusedError } from "./session/session-manager";
 import { forkIfMovedAway } from "./session/session-transfer";
 import { shouldShowStartupSplash } from "./startup-splash";
@@ -153,13 +144,11 @@ import {
 import { EventBus } from "./utils/event-bus";
 import { resolveFirstLaunchPythonEvalWarning } from "./eval/startup-warning";
 import { CliUsageError } from "./cli/usage-error";
-import { scheduleGcAutoCompress } from "./cli/gc-auto-compress";
-import { cfgGcAutoCompress } from "./cli/gc-settings";
 import { cfgGoalEnabled } from "./goals/settings";
 import { cfgPlanDefaultOnStartup, cfgPlanEnabled } from "./plan-mode/settings";
 
 import { cfgAdvisorEnabled } from "./advisor/settings";
-import { cfgAsyncPrintWake, cfgToolsApprovalMode } from "./tools/settings";
+import { cfgToolsApprovalMode } from "./tools/settings";
 import {
 	cfgAutocompleteMaxVisible,
 	cfgAutoResume,
@@ -192,9 +181,6 @@ import {
 	cfgHideThinkingBlock,
 	cfgOmitThinking,
 	cfgPrewalkEnabled,
-	cfgSessionMaxCost,
-	cfgSessionWarnCost,
-	cfgSessionWorktreeScope,
 } from "./session/settings";
 import { cfgDisabledProviders, cfgEnabledModels } from "./config/model-settings";
 import { cfgTaskAgentIdleTtlMs } from "./task/settings";
@@ -418,7 +404,7 @@ export async function submitInteractiveInput(
 		| "optimisticSkillMessagePending"
 	> &
 		Partial<Pick<InteractiveMode, "loopPrompt" | "pauseLoop">>,
-	session: Pick<AgentSession, "buildUserSkillPrompt" | "prompt" | "promptCustomMessage" | "isStreaming">,
+	session: Pick<AgentSession, "prompt" | "promptCustomMessage" | "isStreaming">,
 	input: SubmittedUserInput,
 ): Promise<void> {
 	if (input.cancelled) {
@@ -462,7 +448,7 @@ export async function submitInteractiveInput(
 				display: input.display ?? false,
 				attribution: "agent" as const,
 			};
-			input.dispatched = await session.promptCustomMessage(message, { streamingBehavior });
+			await session.promptCustomMessage(message, { streamingBehavior });
 		} else if (input.synthetic) {
 			// Synthetic continue shortcuts are hidden developer prompts. The streaming
 			// queue (#queueUserMessage) only carries user-attributed messages, so we do
@@ -1240,18 +1226,13 @@ function validateSessionPersistenceArgs(parsed: Pick<Args, "continue" | "noSessi
  *
  * `nativeFlagOwnership: "preliminary"` is reserved for the startup parse,
  * before extensions establish whether a built-in-named flag belongs to them.
- * `onSessionContinuation` hears when `--resume`, `--continue` or auto-resume
- * opens a newer copy of the chosen session's conversation instead of its file.
  */
 export async function createSessionManager(
 	parsed: Args,
 	cwd: string,
 	activeSettings: Settings = settings,
 	askToMoveSession: SessionPrompt = promptMoveSession,
-	options: {
-		nativeFlagOwnership?: "preliminary" | "resolved";
-		onSessionContinuation?: (continuation: SessionContinuation) => void;
-	} = {},
+	options: { nativeFlagOwnership?: "preliminary" | "resolved" } = {},
 ): Promise<SessionManager | undefined> {
 	if (parsed.fork) {
 		if (parsed.noSession) {
@@ -1298,19 +1279,9 @@ export async function createSessionManager(
 	if (typeof parsed.resume === "string") {
 		const sessionArg = parsed.resume;
 		if (sessionArg.includes("/") || sessionArg.includes("\\") || sessionArg.endsWith(".jsonl")) {
-			// The conversation may have gone on in a sibling file while another process held this one.
-			const continuation = await findSessionContinuation(sessionArg);
-			if (continuation) options.onSessionContinuation?.(continuation);
 			let manager: SessionManager;
 			try {
-				manager = await SessionManager.open(
-					continuation?.session.path ?? sessionArg,
-					parsed.sessionDir,
-					undefined,
-					{
-						throwIfMissing: true,
-					},
-				);
+				manager = await SessionManager.open(sessionArg, parsed.sessionDir, undefined, { throwIfMissing: true });
 			} catch (err) {
 				if (isEnoent(err) || isEnotdir(err)) {
 					throw new SessionResolutionError(`Session "${sessionArg}" not found.`, SESSION_NOT_FOUND_HINT);
@@ -1320,34 +1291,44 @@ export async function createSessionManager(
 			// A copy whose conversation moved to another machine continues as a fork.
 			return await forkIfMovedAway(manager, parsed.sessionDir);
 		}
-		const target = await resolveResumeTarget(sessionArg, cwd, parsed.sessionDir);
-		if (!target) {
+		const match = await resolveResumableSession(sessionArg, cwd, parsed.sessionDir);
+		if (!match) {
 			throw new SessionResolutionError(`Session "${sessionArg}" not found.`, SESSION_NOT_FOUND_HINT);
 		}
-		const { session, continuation } = target;
-		if (continuation) options.onSessionContinuation?.(continuation);
-		const moveResult = await moveMissingCwdSessionIfNeeded(
-			sessionArg,
-			session,
-			cwd,
-			parsed.sessionDir,
-			askToMoveSession,
-		);
-		if (moveResult.status === "moved") {
-			return await forkIfMovedAway(moveResult.manager, parsed.sessionDir);
+		if (match.scope === "local") {
+			const moveResult = await moveMissingCwdSessionIfNeeded(
+				sessionArg,
+				match.session,
+				cwd,
+				parsed.sessionDir,
+				askToMoveSession,
+			);
+			if (moveResult.status === "moved") {
+				return await forkIfMovedAway(moveResult.manager, parsed.sessionDir);
+			}
+			if (moveResult.status === "declined") {
+				return undefined;
+			}
 		}
-		if (moveResult.status === "declined") {
-			return undefined;
+		if (match.scope === "global") {
+			const moveResult = await moveMissingCwdSessionIfNeeded(
+				sessionArg,
+				match.session,
+				cwd,
+				parsed.sessionDir,
+				askToMoveSession,
+			);
+			if (moveResult.status === "moved") {
+				return await forkIfMovedAway(moveResult.manager, parsed.sessionDir);
+			}
+			if (moveResult.status === "declined") {
+				return undefined;
+			}
 		}
-		return await forkIfMovedAway(await SessionManager.open(session.path, parsed.sessionDir), parsed.sessionDir);
+		return await forkIfMovedAway(await SessionManager.open(match.session.path, parsed.sessionDir), parsed.sessionDir);
 	}
 	if (parsed.continue) {
-		return await forkIfMovedAway(
-			await SessionManager.continueRecent(cwd, parsed.sessionDir, undefined, {
-				onSessionContinuation: options.onSessionContinuation,
-			}),
-			parsed.sessionDir,
-		);
+		return await forkIfMovedAway(await SessionManager.continueRecent(cwd, parsed.sessionDir), parsed.sessionDir);
 	}
 	// --resume without value is handled separately (needs picker UI)
 	// If --session-dir provided without --continue/--resume, create new session there
@@ -1361,9 +1342,7 @@ export async function createSessionManager(
 	// An explicit startup goal starts fresh even when implicit auto-resume is configured.
 	if (parsed.goal === undefined && cfgAutoResume.get(activeSettings)) {
 		const manager = await forkIfMovedAway(
-			await SessionManager.continueRecent(cwd, parsed.sessionDir, undefined, {
-				onSessionContinuation: options.onSessionContinuation,
-			}),
+			await SessionManager.continueRecent(cwd, parsed.sessionDir),
 			parsed.sessionDir,
 		);
 		if (manager.getEntries().length > 0) {
@@ -1742,11 +1721,6 @@ export async function buildSessionOptions(
 		options.rules = [];
 	}
 
-	// Context files
-	if (parsed.noContextFiles) {
-		options.noContextFiles = true;
-	}
-
 	// Trusted extension paths are an exact allowlist for extension modules.
 	if (parsed.trustedExtensions && parsed.trustedExtensions.length > 0) {
 		const trustedPaths = parsed.trustedExtensions.map(trustedPath => {
@@ -1963,9 +1937,6 @@ export async function runRootCommand(
 			// setup-time checks (e.g. #wrapToolForAcpPermission) also see the yolo intent.
 			cfgToolsApprovalMode.override(settingsInstance, "yolo");
 		}
-		// Runtime overrides (not persisted): the session's cost gate reads its thresholds from settings.
-		if (parsedArgs.warnCost !== undefined) cfgSessionWarnCost.override(settingsInstance, parsedArgs.warnCost);
-		if (parsedArgs.maxCost !== undefined) cfgSessionMaxCost.override(settingsInstance, parsedArgs.maxCost);
 		if (parsedArgs.mode === "rpc" || parsedArgs.mode === "rpc-ui") {
 			applyProtocolDefaults("rpc", settingsInstance);
 		} else if (parsedArgs.mode === "acp") {
@@ -2032,10 +2003,6 @@ export async function runRootCommand(
 		if (parsedArgs.advisor) {
 			cfgAdvisorEnabled.override(settingsInstance, true);
 		}
-		// Apply --wait-async CLI flag (ephemeral, not persisted); only print mode reads it
-		if (parsedArgs.waitAsync) {
-			cfgAsyncPrintWake.override(settingsInstance, true);
-		}
 		// Apply --external-thinking CLI flag (ephemeral, not persisted)
 		if (parsedArgs.externalThinking) {
 			cfgExternalThinking.override(settingsInstance, true);
@@ -2088,17 +2055,8 @@ export async function runRootCommand(
 
 		// Resolve native resume/fork flags or import one foreign transcript into a
 		// fresh persisted OMP session before constructing the AgentSession.
-		const explicitSessionSelection = Boolean(
-			parsedArgs.continue ||
-			parsedArgs.resume ||
-			parsedArgs.fork ||
-			parsedArgs.restore ||
-			isForeignSessionImport(parsedArgs),
-		);
 		let sessionManager: SessionManager | undefined;
 		let foreignSource: ForeignSessionSource | undefined;
-		// A resumed session whose conversation went on in another file resumes that file; say so.
-		const resumedContinuations: SessionContinuation[] = [];
 		try {
 			foreignSource = resolveForeignSessionSource(parsedArgs);
 			if (foreignSource) {
@@ -2166,10 +2124,7 @@ export async function runRootCommand(
 					cwd,
 					settingsInstance,
 					promptMoveSession,
-					{
-						nativeFlagOwnership: "preliminary",
-						onSessionContinuation: continuation => resumedContinuations.push(continuation),
-					},
+					{ nativeFlagOwnership: "preliminary" },
 				);
 			}
 		} catch (error: unknown) {
@@ -2178,8 +2133,6 @@ export async function runRootCommand(
 			}
 			throw error;
 		}
-		// Only createSessionManager's implicit auto-resume promotes continue here.
-		const autoResumed = !explicitSessionSelection && parsedArgs.continue === true;
 
 		if ((typeof parsedArgs.resume === "string" || foreignSource) && sessionManager && !parsedArgs.noSession) {
 			const previousCwd = cwd;
@@ -2221,8 +2174,6 @@ export async function runRootCommand(
 				SessionManager.listForPicker,
 				cwd,
 				parsedArgs.sessionDir,
-				undefined,
-				cfgSessionWorktreeScope.get(settingsInstance),
 			);
 			let preloadedAllSessions: SessionInfo[] | undefined;
 			if (folderSessions.length === 0) {
@@ -2259,14 +2210,11 @@ export async function runRootCommand(
 				stopStartupWatchdog();
 				process.exit(0);
 			}
-			const continuation = await findSessionContinuation(selected.path);
-			if (continuation) resumedContinuations.push(continuation);
-			const chosen = continuation?.session ?? selected;
 			try {
 				sessionManager = await forkIfMovedAway(
-					(await SessionManager.isFromRemovedWorktree(chosen, cwd, parsedArgs.sessionDir))
-						? await openRelocatedSession(chosen, cwd, parsedArgs.sessionDir)
-						: await SessionManager.open(chosen.path),
+					(await SessionManager.isFromRemovedWorktree(selected, cwd, parsedArgs.sessionDir))
+						? await openRelocatedSession(selected, cwd, parsedArgs.sessionDir)
+						: await SessionManager.open(selected.path),
 					parsedArgs.sessionDir,
 				);
 			} catch (error: unknown) {
@@ -2274,8 +2222,8 @@ export async function runRootCommand(
 				throw error;
 			}
 			const previousCwd = cwd;
-			// A relocated session's `chosen.cwd` is the removed worktree: missing, so the launch cwd stays.
-			const recordedCwd = chosen.cwd || sessionManager.getRecordedCwd() || sessionManager.getCwd();
+			// A relocated session's `selected.cwd` is the removed worktree: missing, so the launch cwd stays.
+			const recordedCwd = selected.cwd || sessionManager.getRecordedCwd() || sessionManager.getCwd();
 			const resumedProject = await switchToResumedProject(
 				recordedCwd,
 				settingsInstance,
@@ -2290,11 +2238,6 @@ export async function runRootCommand(
 			}
 		}
 
-		for (const continuation of resumedContinuations) {
-			const notice = formatSessionContinuationNotice(continuation);
-			if (isInteractive) notifs.push({ kind: "warn", message: notice });
-			else process.stderr.write(`${chalk.yellow(notice)}\n`);
-		}
 		if (sessionManager && (parsedArgs.continue || parsedArgs.resume || parsedArgs.fork || foreignSource)) {
 			const pendingToolWarning = describePendingToolCalls(sessionManager.getBranch());
 			if (pendingToolWarning) {
@@ -2318,39 +2261,31 @@ export async function runRootCommand(
 				: undefined;
 		daemonPresencePromise?.catch(() => {});
 
-		let startupTelemetry: CreateAgentSessionOptions["telemetry"];
-		let startupExtensions: CreateAgentSessionOptions["extensions"];
-		const buildStartupSessionOptions = async (manager: SessionManager | undefined) => {
-			const options = await logger.time(
-				"buildSessionOptions",
-				buildSessionOptions,
-				parsedArgs,
-				scopedModels,
-				manager,
-				modelRegistry,
-				settingsInstance,
-			);
-			options.authStorage = authStorage;
-			options.modelRegistry = modelRegistry;
-			options.hasUI = isInteractive || mode === "rpc-ui";
-			options.allowSessionModelFallback = isInteractive;
-			options.settingsApproval = isInteractive;
-			options.tuiTranscript = isInteractive;
-			options.autoTitle = isInteractive;
-			options.settings = settingsInstance;
-			options.telemetry = startupTelemetry;
-			options.extensions = startupExtensions;
-			options.onPrewalkWarning = warning => {
-				if (isInteractive) notifs.push({ kind: "warn", message: warning });
-				else process.stderr.write(`${chalk.yellow(`Warning: ${warning}`)}\n`);
-			};
-			return options;
-		};
-		let sessionOptions = await buildStartupSessionOptions(sessionManager);
+		const sessionOptions = await logger.time(
+			"buildSessionOptions",
+			buildSessionOptions,
+			parsedArgs,
+			scopedModels,
+			sessionManager,
+			modelRegistry,
+			settingsInstance,
+		);
 		const marketplaceAutoUpdateOptions: MarketplaceAutoUpdateOptions = {
 			autoUpdate: cfgMarketplaceAutoUpdate.get(settingsInstance),
 			resolveActiveProjectRegistryPath,
 			clearPluginRootsCache: clearPluginRootsAndCaches,
+		};
+		sessionOptions.authStorage = authStorage;
+		sessionOptions.modelRegistry = modelRegistry;
+		sessionOptions.hasUI = isInteractive || mode === "rpc-ui";
+		sessionOptions.allowSessionModelFallback = isInteractive;
+		sessionOptions.settingsApproval = isInteractive;
+		sessionOptions.tuiTranscript = isInteractive;
+		sessionOptions.autoTitle = isInteractive;
+		sessionOptions.settings = settingsInstance;
+		sessionOptions.onPrewalkWarning = warning => {
+			if (isInteractive) notifs.push({ kind: "warn", message: warning });
+			else process.stderr.write(`${chalk.yellow(`Warning: ${warning}`)}\n`);
 		};
 
 		// OTEL: unless `telemetry.otlpExportEnabled` is off, register global OTLP
@@ -2370,7 +2305,6 @@ export async function runRootCommand(
 				const model = modelRegistry.find(providerId, modelId);
 				return model !== undefined && getModelPricingStatus(model) !== "unknown";
 			});
-			startupTelemetry = sessionOptions.telemetry;
 		}
 		await daemonPresencePromise;
 
@@ -2439,10 +2373,7 @@ export async function runRootCommand(
 			// file — and the same result is handed to createAgentSession via
 			// `preloadedExtensions` so the discovery work is not repeated.
 			if (isInteractive && !parsedArgs.trustedExtensions?.length) {
-				startupExtensions = sessionOptions.extensions = [
-					...(sessionOptions.extensions ?? []),
-					createWarpEventBridgeExtension(),
-				];
+				sessionOptions.extensions = [...(sessionOptions.extensions ?? []), createWarpEventBridgeExtension()];
 			}
 
 			const eventBus = new EventBus();
@@ -2572,38 +2503,6 @@ export async function runRootCommand(
 					)
 				: undefined;
 
-			const preloadProviderRegistrations =
-				isInteractive && autoResumed ? extensionsResult.runtime.pendingProviderRegistrations.slice() : [];
-			const startupContext = {
-				eventBus,
-				subagentEventBus,
-				preloadedExtensions: extensionsResult,
-				deferredExtensionPaths: extensionsResult.deferredPaths,
-				// Validation waits for background refresh and the first interactive frame.
-				deferRetryFallbackValidation: true,
-			};
-			let createdSession: CreateAgentSessionResult;
-			try {
-				createdSession = await createSession({ ...sessionOptions, ...startupContext });
-			} catch (error) {
-				if (!isInteractive || !autoResumed || !sessionManager || !(error instanceof SessionModelRestoreError)) {
-					throw error;
-				}
-				await sessionManager.close();
-				sessionManager = undefined;
-				parsedArgs.continue = false;
-				// The failed SDK attempt consumed this queue; the fresh attempt clears
-				// source registrations again before applying it.
-				extensionsResult.runtime.pendingProviderRegistrations.unshift(...preloadProviderRegistrations);
-				const startupDeadline = sessionOptions.deadline;
-				sessionOptions = await buildStartupSessionOptions(undefined);
-				sessionOptions.deadline = startupDeadline;
-				createdSession = await createSession({ ...sessionOptions, ...startupContext });
-				notifs.push({
-					kind: "warn",
-					message: `Auto resume skipped: ${sanitizeDisplayWarnings([error.message])[0]}. Started a new session without the saved history.`,
-				});
-			}
 			const {
 				session,
 				setToolUIContext,
@@ -2611,7 +2510,17 @@ export async function runRootCommand(
 				lspServers,
 				mcpManager,
 				startBackgroundModelDiscovery,
-			} = createdSession;
+			} = await createSession({
+				...sessionOptions,
+				eventBus,
+				subagentEventBus,
+				preloadedExtensions: extensionsResult,
+				deferredExtensionPaths: extensionsResult.deferredPaths,
+				// Validated once the background refresh is in flight, so selectors it
+				// may still supply defer instead of warning; interactive mode also
+				// waits for the first frame (`startDeferredStartupWork`).
+				deferRetryFallbackValidation: true,
+			});
 			if (!isInteractive) session.validateRetryFallbackChains();
 
 			const sessionToolNames = session.getAllToolNames();
@@ -2689,11 +2598,6 @@ export async function runRootCommand(
 					);
 				}
 				void startBackgroundModelDiscovery?.();
-				if (cfgGcAutoCompress.get(settingsInstance)) {
-					void scheduleGcAutoCompress(getAgentDir()).catch(error =>
-						logger.warn("Background session compression failed to start", { error: String(error) }),
-					);
-				}
 			};
 			const refreshScopedModelsAfterLogin = async () => {
 				await rebuildScopedModels(session, parsedArgs, modelRegistry, settingsInstance);
@@ -2838,7 +2742,6 @@ export async function runRootCommand(
 					printThoughts: initialArgs.printThoughts,
 					planYolo: parsedArgs.planYolo,
 					mcpManager,
-					deadline: sessionOptions.deadline,
 				});
 				if ($env.PI_TIMING) {
 					logger.printTimings();

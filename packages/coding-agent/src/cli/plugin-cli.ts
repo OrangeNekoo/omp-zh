@@ -148,15 +148,6 @@ export { classifyInstallTarget } from "./classify-install-target";
 // =============================================================================
 
 /**
- * Stop a mutating command that has no preview mode before it applies its change under `--dry-run`.
- */
-function refuseDryRun(flags: { dryRun?: boolean }, command: string): void {
-	if (!flags.dryRun) return;
-	console.error(chalk.red(`--dry-run is not supported by '${CLI_NAME} plugin ${command}'. Nothing was changed.`));
-	process.exit(1);
-}
-
-/**
  * Run a plugin command.
  */
 export async function runPluginCommand(cmd: PluginCommandArgs): Promise<void> {
@@ -216,7 +207,7 @@ async function makeMarketplaceManager(): Promise<MarketplaceManager> {
 	});
 }
 
-async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags"]): Promise<void> {
+async function handleMarketplace(args: string[], _flags: PluginCommandArgs["flags"]): Promise<void> {
 	const subcommand = args[0] ?? "list";
 	const manager = await makeMarketplaceManager();
 
@@ -227,7 +218,6 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 				console.error(chalk.red(`Usage: ${CLI_NAME} plugin marketplace add <source>`));
 				process.exit(1);
 			}
-			refuseDryRun(flags, "marketplace add");
 			try {
 				await manager.addMarketplace(source);
 				console.log(chalk.green(`${theme.status.success} Added marketplace: ${source}`));
@@ -244,7 +234,6 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 				console.error(chalk.red(`Usage: ${CLI_NAME} plugin marketplace remove <name>`));
 				process.exit(1);
 			}
-			refuseDryRun(flags, "marketplace remove");
 			try {
 				await manager.removeMarketplace(name);
 				console.log(chalk.green(`${theme.status.success} Removed marketplace: ${name}`));
@@ -255,7 +244,6 @@ async function handleMarketplace(args: string[], flags: PluginCommandArgs["flags
 			break;
 		}
 		case "update": {
-			refuseDryRun(flags, "marketplace update");
 			try {
 				const name = args[1];
 				if (name) {
@@ -326,19 +314,50 @@ async function handleUpgrade(
 	args: string[],
 	flags: PluginCommandArgs["flags"],
 ): Promise<void> {
+	let pluginId = args[0];
 	const manager = await makeMarketplaceManager();
+	// Marketplace IDs are `name@marketplace`; anything else is either a bare
+	// marketplace plugin name or an npm/git-installed plugin (e.g. `ida-mcp`
+	// from `github:HexRaysSA/ida-mcp#latest`, or a scoped `@scope/pkg`).
+	if (pluginId && !parsePluginId(pluginId)) {
+		const bareName = pluginId;
+		const candidates = (await manager.listInstalledPlugins())
+			.map(p => p.id)
+			.filter(id => id.slice(0, id.lastIndexOf("@")) === bareName);
+		const uniqueCandidates = [...new Set(candidates)];
+		if (uniqueCandidates.length > 1) {
+			console.error(
+				chalk.red(
+					`${bareName} is installed from ${uniqueCandidates.length} marketplaces. Qualify it: ${uniqueCandidates.join(", ")}`,
+				),
+			);
+			process.exit(1);
+		}
+		if (uniqueCandidates.length === 1) {
+			pluginId = uniqueCandidates[0] as string;
+		} else {
+			await upgradePackagePlugin(pluginManager, bareName, flags);
+			return;
+		}
+	}
 	try {
-		if (args.length === 0) {
+		if (pluginId) {
+			if (flags.scope) {
+				const result = await manager.upgradePlugin(pluginId, flags.scope);
+				console.log(chalk.green(`Upgraded ${pluginId} (${flags.scope}) to ${result.version}`));
+			} else {
+				const entries = await manager.upgradePluginAcrossScopes(pluginId);
+				for (const entry of entries) {
+					console.log(chalk.green(`Upgraded ${pluginId} (${entry.scope}) to ${entry.version}`));
+				}
+			}
+		} else {
 			if (flags.scope) {
 				console.error(
 					chalk.yellow(
 						`Warning: --scope is ignored when upgrading all plugins. Use '${CLI_NAME} plugin upgrade <id> --scope ${flags.scope}' to target a specific plugin and scope.`,
 					),
 				);
-			}
-			if (flags.dryRun) {
-				await previewMarketplaceUpgradeAll(manager);
-				return;
 			}
 			const results = await manager.upgradeAllPlugins();
 			if (results.length === 0) {
@@ -348,83 +367,10 @@ async function handleUpgrade(
 					console.log(chalk.green(`  ${r.pluginId} (${r.scope}): ${r.from} -> ${r.to}`));
 				}
 			}
-			return;
-		}
-
-		for (let pluginId of args) {
-			// Marketplace IDs are `name@marketplace`; anything else is either a bare
-			// marketplace plugin name or an npm/git-installed plugin (e.g. `ida-mcp`
-			// from `github:HexRaysSA/ida-mcp#latest`, or a scoped `@scope/pkg`).
-			if (!parsePluginId(pluginId)) {
-				const bareName = pluginId;
-				const candidates = (await manager.listInstalledPlugins())
-					.map(p => p.id)
-					.filter(id => id.slice(0, id.lastIndexOf("@")) === bareName);
-				const uniqueCandidates = [...new Set(candidates)];
-				if (uniqueCandidates.length > 1) {
-					console.error(
-						chalk.red(
-							`${bareName} is installed from ${uniqueCandidates.length} marketplaces. Qualify it: ${uniqueCandidates.join(", ")}`,
-						),
-					);
-					process.exit(1);
-				}
-				if (uniqueCandidates.length === 1) {
-					pluginId = uniqueCandidates[0];
-				} else {
-					await upgradePackagePlugin(pluginManager, bareName, flags);
-					continue;
-				}
-			}
-			if (flags.dryRun) {
-				await previewMarketplaceReinstall(manager, pluginId, flags.scope);
-			} else if (flags.scope) {
-				const result = await manager.upgradePlugin(pluginId, flags.scope);
-				console.log(chalk.green(`Upgraded ${pluginId} (${flags.scope}) to ${result.version}`));
-			} else {
-				const entries = await manager.upgradePluginAcrossScopes(pluginId);
-				for (const entry of entries) {
-					console.log(chalk.green(`Upgraded ${pluginId} (${entry.scope}) to ${entry.version}`));
-				}
-			}
 		}
 	} catch (err) {
 		console.error(chalk.red(`Failed to upgrade: ${err}`));
 		process.exit(1);
-	}
-}
-
-/**
- * `upgrade --dry-run` with no id: the rows `upgradeAllPlugins` would reinstall, which are the
- * outdated rows of `checkForUpdates` without the ones whose install the current state refuses.
- */
-async function previewMarketplaceUpgradeAll(manager: MarketplaceManager): Promise<void> {
-	const updates = await manager.previewUpgradeAllPlugins();
-	if (updates.length === 0) {
-		console.log(chalk.dim("[dry-run] All marketplace plugins are up to date"));
-		return;
-	}
-	for (const u of updates) {
-		console.log(chalk.dim(`[dry-run] Would upgrade ${u.pluginId} (${u.scope}): ${u.from} -> ${u.to}`));
-	}
-}
-
-/**
- * `upgrade <id> --dry-run`: one row per scope the real command reinstalls. `upgradePlugin` and
- * `upgradePluginAcrossScopes` force a reinstall of the catalog's current version whatever it is,
- * so a same or older catalog version is reported as a reinstall or downgrade, not skipped.
- */
-async function previewMarketplaceReinstall(
-	manager: MarketplaceManager,
-	pluginId: string,
-	scope: "user" | "project" | undefined,
-): Promise<void> {
-	for (const row of await manager.previewUpgradePlugin(pluginId, scope)) {
-		const label = `${pluginId} (${row.scope})`;
-		const line = row.to
-			? `Would ${row.change} ${label}: ${row.from ?? "?"} -> ${row.to}`
-			: `Would reinstall ${label} from ${row.from ?? "?"}; the new version is known only after fetching its source`;
-		console.log(chalk.dim(`[dry-run] ${line}`));
 	}
 }
 
@@ -434,15 +380,6 @@ async function upgradePackagePlugin(
 	name: string,
 	flags: PluginCommandArgs["flags"],
 ): Promise<void> {
-	if (flags.dryRun) {
-		try {
-			await manager.validateUpgrade(name);
-		} catch (err) {
-			console.error(chalk.red(`Failed to upgrade ${name}: ${err instanceof Error ? err.message : err}`));
-			process.exit(1);
-		}
-		refuseDryRun(flags, `upgrade ${name}`);
-	}
 	if (flags.scope === "project") {
 		console.error(
 			chalk.yellow(
@@ -794,11 +731,7 @@ async function handleLink(
 	}
 }
 
-async function handleDoctor(
-	manager: PluginManager,
-	flags: { json?: boolean; fix?: boolean; dryRun?: boolean },
-): Promise<void> {
-	if (flags.fix) refuseDryRun(flags, "doctor --fix");
+async function handleDoctor(manager: PluginManager, flags: { json?: boolean; fix?: boolean }): Promise<void> {
 	const checks = await manager.doctor({ fix: flags.fix });
 
 	if (flags.json) {
@@ -840,7 +773,7 @@ async function handleDoctor(
 async function handleFeatures(
 	manager: PluginManager,
 	args: string[],
-	flags: { json?: boolean; enable?: string; disable?: string; set?: string; dryRun?: boolean },
+	flags: { json?: boolean; enable?: string; disable?: string; set?: string },
 ): Promise<void> {
 	if (args.length === 0) {
 		console.error(
@@ -888,7 +821,6 @@ async function handleFeatures(
 			}
 		}
 
-		refuseDryRun(flags, "features");
 		await manager.setEnabledFeatures(pluginName, [...currentFeatures]);
 		console.log(chalk.green(`${theme.status.success} Updated features for ${pluginName}`));
 	}
@@ -933,7 +865,7 @@ async function handleFeatures(
 async function handleConfig(
 	manager: PluginManager,
 	args: string[],
-	flags: { json?: boolean; local?: boolean; dryRun?: boolean },
+	flags: { json?: boolean; local?: boolean },
 ): Promise<void> {
 	if (args.length === 0) {
 		console.error(
@@ -1034,7 +966,6 @@ async function handleConfig(
 				}
 			}
 
-			refuseDryRun(flags, "config set");
 			await manager.setPluginSetting(pluginName, key, value);
 			console.log(chalk.green(`${theme.status.success} Set ${key}`));
 			break;
@@ -1046,7 +977,6 @@ async function handleConfig(
 				process.exit(1);
 			}
 
-			refuseDryRun(flags, "config delete");
 			await manager.deletePluginSetting(pluginName, key);
 			console.log(chalk.green(`${theme.status.success} Deleted ${key}`));
 			break;
@@ -1120,7 +1050,7 @@ async function handleConfigValidate(manager: PluginManager, flags: { json?: bool
 async function handleEnable(
 	manager: PluginManager,
 	plugins: string[],
-	flags: { json?: boolean; scope?: "user" | "project"; dryRun?: boolean },
+	flags: { json?: boolean; scope?: "user" | "project" },
 ): Promise<void> {
 	return handleSetEnabled(manager, plugins, flags, true);
 }
@@ -1128,7 +1058,7 @@ async function handleEnable(
 async function handleDisable(
 	manager: PluginManager,
 	plugins: string[],
-	flags: { json?: boolean; scope?: "user" | "project"; dryRun?: boolean },
+	flags: { json?: boolean; scope?: "user" | "project" },
 ): Promise<void> {
 	return handleSetEnabled(manager, plugins, flags, false);
 }
@@ -1136,7 +1066,7 @@ async function handleDisable(
 async function handleSetEnabled(
 	manager: PluginManager,
 	plugins: string[],
-	flags: { json?: boolean; scope?: "user" | "project"; dryRun?: boolean },
+	flags: { json?: boolean; scope?: "user" | "project" },
 	enabled: boolean,
 ): Promise<void> {
 	const action = enabled ? "enable" : "disable";
@@ -1147,8 +1077,6 @@ async function handleSetEnabled(
 		console.error(chalk.red(`Usage: ${CLI_NAME} plugin ${action} <plugin> ...`));
 		process.exit(1);
 	}
-
-	refuseDryRun(flags, action);
 
 	const mktMgr = await makeMarketplaceManager();
 	const installedPlugins = new Set((await mktMgr.listInstalledPlugins()).map(p => p.id));
@@ -1219,7 +1147,7 @@ ${chalk.bold("Options:")}
   --fix            Attempt automatic fixes (doctor)
   --force          Overwrite without prompting (install)
   --scope <scope>  Install scope: user (default) or project (install name@marketplace)
-  --dry-run        Preview changes without applying (install, uninstall, link, upgrade of marketplace plugins)
+  --dry-run        Preview changes without applying (install)
   -l, --local      Use project-local overrides
 
 ${chalk.bold("Examples:")}

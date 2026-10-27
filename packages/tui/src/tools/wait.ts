@@ -43,9 +43,9 @@ export function isWaitingPollDetails(details: unknown): boolean {
 	return d.jobs.every(job => job?.status === "running");
 }
 /** Coordination details retained by wait and background job operations. */
-export type CoordinationOp = "send" | "wait" | "cancel";
+export type CoordinationOp = "send" | "wait" | "jobs" | "cancel";
 
-/** Background-job row surfaced by `wait`/`cancel` results and `proc://` listings. */
+/** Background-job row surfaced by `wait`/`cancel`/`jobs` results. */
 export interface JobSnapshot {
 	id: string;
 	type: "bash" | "task" | "eval";
@@ -66,14 +66,6 @@ export interface JobSnapshot {
 	completionPercent?: number;
 	/** The task agent's latest stage in its own words; see `AgentProgress.stage`. */
 	stage?: string;
-	/** Running task only: assistant requests so far; see `AgentProgress.requests`. */
-	requests?: number;
-	/** Running task only: cumulative cost in USD; see `AgentProgress.cost`. */
-	cost?: number;
-	/** Running task only: latest per-turn context size; see `AgentProgress.contextTokens`. */
-	contextTokens?: number;
-	/** Running task only: the model's context window; see `AgentProgress.contextWindow`. */
-	contextWindow?: number;
 	/** The job's live widget, while one is being drawn; frozen at its last state once the job settles. */
 	widget?: JobWidgetView;
 	resultText?: string;
@@ -89,12 +81,6 @@ export interface JobSnapshot {
 	 * on collision, else the job id itself. See {@link AsyncJob.agentId}.
 	 */
 	agentUrlId?: string;
-	/**
-	 * Whether this job's turn published `<agentUrlId>.md`. False where the job
-	 * body reported that it wrote none, so `agent://` still holds an earlier
-	 * turn's output; undefined where the body does not report it.
-	 */
-	agentOutputPublished?: boolean;
 }
 
 /** Outcome of cancelling one background job. */

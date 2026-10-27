@@ -28,7 +28,6 @@ import { shouldSendServiceTier } from "../types";
 import { normalizeSystemPrompts, normalizeToolCallId } from "../utils";
 import { AssistantMessageEventStream } from "../utils/event-stream";
 import type { RawHttpRequestDump } from "../utils/http-inspector";
-import { armPreResponseTimeout, getStreamFirstEventTimeoutMs, getStreamIdleTimeoutMs } from "../utils/idle-iterator";
 import { normalizeSchemaForCCA, normalizeSchemaForGoogle, toolWireSchema } from "../utils/schema";
 import type {
 	Content,
@@ -759,15 +758,12 @@ export function googleStreamChunkError(error: NonNullable<GenerateContentRespons
 		error.message && error.status
 			? `${error.message} (${error.status})`
 			: error.message || error.status || "unknown error";
-	const residue =
-		Array.isArray(error.details) && error.details.length > 0
-			? ` ${JSON.stringify({ error: { status: error.status, details: error.details } })}`
-			: "";
-	const message = `Google API stream error: ${detail}${residue}`;
+	const message = `Google API stream error: ${detail}`;
 	return typeof error.code === "number" && error.code >= 400
 		? new AIError.GoogleApiError(message, error.code)
 		: new AIError.ProviderResponseError(message, { provider, kind: "output" });
 }
+
 /**
  * Drives the chunked `generateContentStream` iterator into an `AssistantMessage` and
  * the corresponding `AssistantMessageEventStream`. Shared between `streamGoogle` and
@@ -1064,40 +1060,20 @@ export function streamGoogleGenAI<T extends "google-generative-ai" | "google-ver
 
 			const bodyJson = JSON.stringify(paramsToWireBody(params));
 			const fetchImpl = plan.fetch ?? options?.fetch ?? (globalThis.fetch.bind(globalThis) as FetchImpl);
-			// Bun's native fetch ceiling is disabled (`timeout: false`) so configurable
-			// watchdogs govern slow-prefill streams (issues #2422, #16991). Direct callers
-			// that bypass `register-builtins` (which installs the iterator-level
-			// first-event watchdog) still need this pre-response timer, otherwise an
-			// endpoint that accepts the POST and never sends headers would hang forever.
-			const firstEventTimeoutMs =
-				options?.streamFirstEventTimeoutMs ??
-				getStreamFirstEventTimeoutMs(options?.streamIdleTimeoutMs ?? getStreamIdleTimeoutMs());
 			const openStreamAt = async (requestUrl: string): Promise<ReadableStream<Uint8Array>> => {
-				const watchdog = armPreResponseTimeout(options?.signal, firstEventTimeoutMs);
-				// `timeout` is a Bun fetch extension absent from the DOM `RequestInit`.
-				const init: RequestInit & { timeout: false } = {
+				const response = await fetchImpl(requestUrl, {
 					method: "POST",
 					headers: { ...plan.headers, "Content-Type": "application/json", Accept: "text/event-stream" },
 					body: bodyJson,
-					signal: watchdog.signal,
-					timeout: false,
-				};
-				let response: Response;
-				try {
-					response = await fetchImpl(requestUrl, init);
-					if (!response.ok) {
-						const errorText = await response.text().catch(() => "");
-						throw new AIError.GoogleApiError(
-							`Google API error (${response.status}): ${extractGoogleErrorMessage(errorText, response.status)}`,
-							response.status,
-							{ headers: response.headers },
-						);
-					}
-				} finally {
-					// Cleared once headers (or a finite error body) arrive: an absolute
-					// deadline would keep aborting an actively streaming body. Stream
-					// liveness belongs to the event iterator's idle watchdog.
-					watchdog.clear();
+					signal: options?.signal,
+				});
+				if (!response.ok) {
+					const errorText = await response.text().catch(() => "");
+					throw new AIError.GoogleApiError(
+						`Google API error (${response.status}): ${extractGoogleErrorMessage(errorText, response.status)}`,
+						response.status,
+						{ headers: response.headers },
+					);
 				}
 				if (!response.body) {
 					throw new AIError.ProviderResponseError("Google API returned an empty response body", {

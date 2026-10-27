@@ -40,7 +40,7 @@ export default class Bench extends Command {
 		}),
 		json: Flags.boolean({ description: "输出 JSON" }),
 		par: Flags.integer({
-			description: "执行阶段的并行查询/请求数（默认 4）；--detailed 的并行阶段宽度",
+			description: "Execute runs with N parallel queries/requests (default: 4); --detailed's parallel phase width",
 		}),
 		cache: Flags.boolean({
 			description: "运行独立的冷/热提示词缓存配对（openai-codex-responses 不支持）",

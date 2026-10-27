@@ -160,16 +160,3 @@ export const cfgExtensionHandlersToolCallTimeoutMs = register({
 			"扩展 tool_call 处理器的正数有限活跃工作时限；无效值使用 30000 毫秒，等待 OMP 自有对话框的时间不计入",
 	},
 });
-
-export const cfgExtensionHandlersModeControl = register({
-	id: "extensionHandlers.modeControl",
-	type: "boolean",
-	default: true,
-	ui: {
-		tab: "tools",
-		group: "扩展",
-		label: "扩展模式控制",
-		description:
-			"允许扩展通过 ctx.sessionModes.set() 进入与退出 plan、vibe、goal、loop 模式；读取模式状态始终可用",
-	},
-});

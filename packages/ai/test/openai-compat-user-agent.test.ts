@@ -97,8 +97,6 @@ describe("resolveOpenAIRequestSetup User-Agent", () => {
 			{
 				provider: "xai",
 				id: "grok-4.6",
-				api: "openai-responses",
-				reasoning: true,
 				baseUrl: "https://api.x.ai/v1",
 				headers: { "User-Agent": "custom-xai-client/1.0" },
 			},
@@ -112,8 +110,6 @@ describe("resolveOpenAIRequestSetup User-Agent", () => {
 			{
 				provider: "xai",
 				id: "grok-4.6",
-				api: "openai-responses",
-				reasoning: true,
 				baseUrl: "https://api.x.ai/v1",
 				headers: { "user-agent": "custom-xai-client/1.0" },
 			},

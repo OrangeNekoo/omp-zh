@@ -75,10 +75,6 @@ import {
 } from "./hub-frame";
 import { renderSegmentTrack } from "../chrome/segment-track";
 
-function labelStartsWith(actual: string | undefined, english: string, chinese: string): boolean {
-	return actual !== undefined && (actual.startsWith(english) || actual.startsWith(chinese));
-}
-
 const MODEL_HUB_BODY_MIN_WIDTH = 28;
 
 /**
@@ -3668,7 +3664,7 @@ export class ModelHubComponent implements Component {
 		let label: TspSpan[];
 		if (strip.kind === "role") {
 			// The second step of "New fallback chain…" reuses the role strip with key chips only.
-			const keyStrip = strip.chips.every(chip => labelStartsWith(chip.label, "for ", "适用于 "));
+			const keyStrip = strip.chips.every(chip => chip.label.startsWith("for "));
 			label = keyStrip
 				? [span("新建备用链", "muted")]
 				: [span("分配 ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];

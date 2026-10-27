@@ -349,28 +349,6 @@ export const cfgToolsApprovalMode = register({
 	},
 });
 
-// Folders where every action asks, in every approval mode and whatever was remembered.
-export const cfgToolsRestrictedFolders = register({
-	id: "tools.restrictedFolders",
-	type: "array",
-	default: EMPTY_STRING_ARRAY,
-	ui: {
-		tab: "interaction",
-		group: "批准",
-		label: "受限目录",
-		editor: "json",
-		description:
-			'这些目录里的每次读取、写入、编辑、搜索或命令都需要显式批准，无论批准模式如何、也无论是否已记住授权。目录本身及其全部内容都受限；命令按其运行所在的目录匹配。路径的 JSON 列表，例如 ["~/secrets"]。',
-		condition: "restrictedFoldersNotProject",
-	},
-	validate: raw => {
-		if (raw === undefined) return;
-		if (!Array.isArray(raw) || raw.some(entry => typeof entry !== "string" || entry.trim().length === 0)) {
-			throw new Error("tools.restrictedFolders must be a list of folder paths");
-		}
-	},
-});
-
 // Todo tool
 // Todo settings deliberately have no `protocolDefault`: protocol embedders need project-level opt-outs
 // for reminder/prelude prompt injection.
@@ -965,22 +943,6 @@ export const cfgAsyncMaxJobs = register({
 	protocolDefault: ["rpc"],
 	type: "number",
 	default: 100,
-});
-
-// Print mode is single-shot by default: it disposes after the last prompt, cancelling the
-// run's background jobs. Opting in keeps `-p` alive so each job's async-result wakes the same
-// session, as the TUI does, before exiting (issue #10363).
-export const cfgAsyncPrintWake = register({
-	id: "async.printWake",
-	type: "boolean",
-	default: false,
-	ui: {
-		tab: "tools",
-		group: "执行",
-		label: "有任务结果时唤醒打印模式",
-		description:
-			"在打印模式（-p、--mode json）下，最后一次提示后只要本次运行的后台任务仍在进行就继续运行，并用每个任务结果在同一会话中开启新回合；当没有待处理任务或结果时退出。关闭时：打印模式在提示处理完后退出并取消运行中的任务",
-	},
 });
 
 export const cfgAsyncWidgets = register({

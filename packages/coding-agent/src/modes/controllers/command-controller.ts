@@ -48,12 +48,11 @@ import { MoveOverlay, type MoveOverlayResult } from "@oh-my-pi/pi-tui/overlays/m
 import { moveDirectorySource } from "../move-directory-source";
 import { getMarkdownTheme, getSymbolTheme, theme, type Theme } from "@oh-my-pi/pi-tui/theme";
 import type { InteractiveModeContext } from "../../modes/types";
-import { ContextViewer } from "@oh-my-pi/pi-tui/overlays/context-viewer";
+import { ContextUsageView, contextUsageHead } from "@oh-my-pi/pi-tui/status-line/context-usage";
 import type { OverlayHandle } from "@oh-my-pi/pi-tui";
 import { ReportPanel } from "@oh-my-pi/pi-tui/overlays/report-panel";
 import type { TspText } from "@oh-my-pi/pi-wire";
 import { computeSessionContextBreakdown } from "../../session/context-usage-runtime";
-import { buildSessionContextView } from "../../session/context-view";
 import { buildHotkeysMarkdown, HotkeysSheetComponent } from "@oh-my-pi/pi-tui/hotkeys-markdown";
 import { isNativeRendering } from "@oh-my-pi/pi-tui/native/state";
 import { buildToolsMarkdown } from "@oh-my-pi/pi-tui/prompt/tools-markdown";
@@ -188,8 +187,8 @@ function hasForkApiKeyOverride(argv: string[]): boolean {
 }
 
 export class CommandController {
-	/** The open native report sheet and the component it shows. */
-	#reportSheet: { handle: OverlayHandle; component: Component } | undefined;
+	/** The open native report sheet. */
+	#reportSheet: OverlayHandle | undefined;
 	#forkTerminalDependencies: ForkTerminalDependencies;
 
 	constructor(
@@ -235,24 +234,9 @@ export class CommandController {
 		const sheet = this.#reportSheet;
 		if (!sheet) return;
 		this.#reportSheet = undefined;
-		sheet.handle.hide();
-		// Like the docked report, a closed sheet is never shown again.
-		sheet.component.dispose?.();
+		sheet.hide();
 		this.ctx.ui.setFocus(this.ctx.editorContainer.children[0] ?? this.ctx.editor);
 		this.ctx.ui.requestRender();
-	}
-
-	/** Open `component` as a focused full-screen page; callers close any previous sheet first. */
-	#showFullscreenSheet(component: Component): void {
-		const handle = this.ctx.ui.showOverlay(component, {
-			anchor: "bottom-center",
-			width: "100%",
-			maxHeight: "100%",
-			margin: 0,
-			fullscreen: true,
-		});
-		this.#reportSheet = { handle, component };
-		this.ctx.ui.setFocus(component);
 	}
 
 	/**
@@ -279,15 +263,19 @@ export class CommandController {
 		});
 		if (isNativeRendering()) {
 			report.holdFocus();
-			this.#reportSheet = {
-				handle: this.ctx.ui.showOverlay(report, { anchor: "center", width: "90%", maxHeight: "90%" }),
-				component: report,
-			};
+			this.#reportSheet = this.ctx.ui.showOverlay(report, { anchor: "center", width: "90%", maxHeight: "90%" });
 			this.ctx.ui.setFocus(report);
 		} else if (report.heightAt(terminal.columns) > inline) {
 			fullScreen = true;
 			report.holdFocus();
-			this.#showFullscreenSheet(report);
+			this.#reportSheet = this.ctx.ui.showOverlay(report, {
+				anchor: "bottom-center",
+				width: "100%",
+				maxHeight: "100%",
+				margin: 0,
+				fullscreen: true,
+			});
+			this.ctx.ui.setFocus(report);
 		} else {
 			this.ctx.reportContainer.addChild(report);
 		}
@@ -628,16 +616,6 @@ ${tmpPath}`);
 		info += `${theme.fg("dim", "助手：")} ${stats.assistantMessages}\n`;
 		info += `${theme.fg("dim", "工具调用：")} ${stats.toolCalls}\n`;
 		info += `${theme.fg("dim", "工具结果：")} ${stats.toolResults}\n`;
-		if (stats.editRejections !== undefined) {
-			const kinds = Object.entries(stats.editRejections).sort(
-				([aKind, aCount], [bKind, bCount]) => bCount - aCount || aKind.localeCompare(bKind),
-			);
-			const total = kinds.reduce((sum, [, count]) => sum + count, 0);
-			const breakdown = kinds
-				.map(([kind, count]) => `${replaceTabs(sanitizeText(kind.replaceAll("_", " ")))} ${count}`)
-				.join(", ");
-			info += `${theme.fg("dim", "编辑拒绝记录：")} ${total} ${theme.fg("dim", `(${breakdown})`)}\n`;
-		}
 		info += `${theme.fg("dim", "合计：")} ${stats.totalMessages}\n\n`;
 		// Append-only context
 		{
@@ -977,27 +955,17 @@ ${tmpPath}`);
 	}
 
 	handleContextCommand(): void {
-		const session = this.ctx.session;
-		if (!session.model) {
+		const breakdown = computeSessionContextBreakdown(this.ctx.session, { snapcompactSavings: true });
+		if (breakdown.contextWindow <= 0) {
 			this.ctx.showWarning("上下文用量不可用：本会话未选择模型。");
 			return;
 		}
-		// Validate capacity before tokenizing the whole history into a snapshot.
-		const breakdown = computeSessionContextBreakdown(session, { snapcompactSavings: true });
-		if (!(breakdown.contextWindow > 0) || !Number.isFinite(breakdown.contextWindow)) {
-			this.ctx.showWarning("上下文用量不可用：模型的上下文窗口未知或无效。");
-			return;
-		}
-		const data = buildSessionContextView(session, breakdown);
-		this.#clearReport();
-		this.#closeReportSheet();
-		const viewer = new ContextViewer(data, {
-			onClose: () => this.#closeReportSheet(),
-			requestRender: () => this.ctx.ui.requestRender(),
-			getRows: () => this.ctx.ui.terminal.rows,
+		// Natively the body is `/context`'s own card (meters, legend, compaction mark).
+		this.showCommandReport({
+			title: "上下文用量",
+			head: contextUsageHead(breakdown),
+			body: new ContextUsageView(breakdown, theme),
 		});
-		this.#showFullscreenSheet(viewer);
-		this.ctx.ui.requestRender();
 	}
 
 	async handleMemoryCommand(text: string): Promise<void> {
@@ -2621,14 +2589,7 @@ export function renderUsageReports(
 		for (const report of providerReports) {
 			for (const limit of report.limits) {
 				const windowId = limit.window?.id ?? limit.scope.windowId ?? "default";
-				// Distinct buckets can share a label and window (Antigravity's Gemini
-				// vs Gemini (Argon) weekly) and must stay separate rows instead of
-				// averaging into "50% free", so the id joins the key. Label and window
-				// stay in it too: some providers build ids positionally or per plan
-				// (kimi's `${index}`, copilot's allowance), where ids differ across
-				// accounts for the same quota. `sharedGroup` keeps the routing copies
-				// of one shared bucket together.
-				const key = limit.scope.sharedGroup ?? `${formatLimitTitle(limit)}|${windowId}|${limit.id}`;
+				const key = `${formatLimitTitle(limit)}|${windowId}`;
 				const windowLabel = limit.window?.label ?? windowId;
 				const entry = limitGroups.get(key) ?? {
 					label: formatLimitTitle(limit),

@@ -699,19 +699,12 @@ async function tryDelimitedPathSplit(
  * string. Existing paths are kept intact, so real filenames containing spaces,
  * commas, or semicolons win over delimiter recovery.
  */
-/** A `!glob` exclusion part of a path list, which search tools take beside URLs. */
-function isExclusionPart(part: string): boolean {
-	return part.length > 1 && part.startsWith("!") && !part.includes("://");
-}
-
 export async function splitDelimitedPathEntry(
 	entry: string,
 	cwd: string,
 	options: {
 		splitter?: PathEntrySplitter;
 		routedUrlPredicate?: (entry: string) => boolean;
-		/** Let `!glob` exclusion parts sit beside URLs in a `;` list (grep's path syntax). */
-		exclusionParts?: boolean;
 	} = {},
 ): Promise<string[] | null> {
 	const normalizedEntry = normalizePathLikeInput(entry);
@@ -719,24 +712,16 @@ export async function splitDelimitedPathEntry(
 	const splitter = options.splitter ?? parseSearchPath;
 	if (options.routedUrlPredicate?.(normalizedEntry)) {
 		const parts = await tryDelimitedPathSplit(normalizedEntry, cwd, splitter, "semicolon", "none");
-		const routed = options.routedUrlPredicate;
-		return parts?.every(part => routed(part) || (options.exclusionParts === true && isExclusionPart(part)))
-			? parts
-			: null;
+		return parts?.every(options.routedUrlPredicate) ? parts : null;
 	}
 	if (isInternalUrlPath(normalizedEntry)) {
 		// A `;` list of internal URLs (`artifact://44;artifact://43`) names
 		// several resources: the router resolves one URI per entry, so the list
 		// must split before dispatch (issue #14091). Split only when every part
-		// is itself an internal URL or a `!glob` exclusion (`local://notes;!*.test.ts`)
-		// — a URL whose own path contains `;` stays whole, and a single URL ending
-		// in `;` (`local://report;`) names one resource.
+		// is itself an internal URL — a URL whose own path contains `;` stays
+		// whole, and a single URL ending in `;` (`local://report;`) names one resource.
 		const parts = await tryDelimitedPathSplit(normalizedEntry, cwd, splitter, "semicolon", "none");
-		return parts &&
-			parts.length > 1 &&
-			parts.every(part => isInternalUrlPath(part) || (options.exclusionParts === true && isExclusionPart(part)))
-			? parts
-			: null;
+		return parts && parts.length > 1 && parts.every(part => isInternalUrlPath(part)) ? parts : null;
 	}
 	// A real POSIX file may contain a delimiter and a selector-shaped tail
 	// (`a;b:1-2`, `a b:1-2`). Preserve the raw entry whenever the full literal
@@ -801,7 +786,7 @@ export async function splitMixedUrlPathList(
 export async function expandDelimitedPathEntries(
 	entries: readonly string[],
 	cwd: string,
-	options: { splitter?: PathEntrySplitter; exclusionParts?: boolean } = {},
+	options: { splitter?: PathEntrySplitter } = {},
 ): Promise<string[]> {
 	const expanded: string[] = [];
 	for (const entry of entries) {
@@ -822,8 +807,6 @@ export interface ParsedFindPattern {
 	basePath: string;
 	globPattern: string;
 	hasGlob: boolean;
-	/** A trailing separator restricts glob matches to directories. */
-	directoryOnly?: boolean;
 }
 
 export interface ResolvedSearchTarget {
@@ -844,7 +827,6 @@ export interface ResolvedFindTarget {
 	basePath: string;
 	globPattern: string;
 	hasGlob: boolean;
-	directoryOnly?: boolean;
 }
 
 export interface ResolvedMultiFindPattern {
@@ -941,12 +923,6 @@ export async function parseSearchPathPreferringLiteral(filePath: string, cwd: st
 	}
 }
 
-function globFindPattern(basePath: string, globPattern: string): ParsedFindPattern {
-	return globPattern.endsWith("/")
-		? { basePath, globPattern: globPattern.replace(/\/+$/, ""), hasGlob: true, directoryOnly: true }
-		: { basePath, globPattern, hasGlob: true };
-}
-
 // Parse a find pattern into a base directory path and a glob pattern.
 // Examples:
 //   src/app/**/\*.tsx -> { basePath: "src/app", globPattern: "**/*.tsx", hasGlob: true }
@@ -961,7 +937,7 @@ export function parseFindPattern(pattern: string): ParsedFindPattern {
 		// A URL names its root explicitly, so its glob stays anchored there like `dir/*`.
 		return urlPath.glob === undefined
 			? { basePath: urlPath.basePath, globPattern: "**/*", hasGlob: false }
-			: globFindPattern(urlPath.basePath, urlPath.glob);
+			: { basePath: urlPath.basePath, globPattern: urlPath.glob, hasGlob: true };
 	}
 	const normalizedPattern = normalizePathSeparators(pattern);
 	const segments = normalizedPattern.split("/");
@@ -973,10 +949,18 @@ export function parseFindPattern(pattern: string): ParsedFindPattern {
 
 	if (firstGlobIndex === 0) {
 		const needsRecursive = !normalizedPattern.startsWith("**/");
-		return globFindPattern(".", needsRecursive ? `**/${normalizedPattern}` : normalizedPattern);
+		return {
+			basePath: ".",
+			globPattern: needsRecursive ? `**/${normalizedPattern}` : normalizedPattern,
+			hasGlob: true,
+		};
 	}
 
-	return globFindPattern(segments.slice(0, firstGlobIndex).join("/"), segments.slice(firstGlobIndex).join("/"));
+	return {
+		basePath: segments.slice(0, firstGlobIndex).join("/"),
+		globPattern: segments.slice(firstGlobIndex).join("/"),
+		hasGlob: true,
+	};
 }
 
 export function combineSearchGlobs(prefixGlob?: string, suffixGlob?: string): string | undefined {
@@ -1163,7 +1147,6 @@ async function resolveFindPatternItems(
 			basePath: resolveSearchBase(parsedPattern.basePath, cwd),
 			globPattern: parsedPattern.globPattern,
 			hasGlob: parsedPattern.hasGlob,
-			directoryOnly: parsedPattern.directoryOnly,
 		};
 	});
 

@@ -24,10 +24,8 @@ describe("Sakana AI request base URL override", () => {
 	const sakanaModel = {
 		provider: "sakana",
 		id: "fugu",
-		api: "openai-completions",
-		reasoning: false,
 		baseUrl: "https://api.sakana.ai/v1",
-	} as const;
+	};
 
 	test("uses SAKANA_BASE_URL and appends /v1 for bundled Sakana models", () => {
 		Bun.env.SAKANA_BASE_URL = "https://gateway.sakana.test/";
@@ -57,13 +55,7 @@ describe("Sakana AI request base URL override", () => {
 		Bun.env.SAKANA_BASE_URL = "https://gateway.sakana.test";
 
 		const setup = resolveOpenAIRequestSetup(
-			{
-				provider: "openai",
-				id: "gpt-5.5",
-				api: "openai-completions",
-				reasoning: false,
-				baseUrl: "https://api.openai.com/v1",
-			} as const,
+			{ provider: "openai", id: "gpt-5.5", baseUrl: "https://api.openai.com/v1" },
 			{ apiKey: "openai-key", messages: [] },
 		);
 

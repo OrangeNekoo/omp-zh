@@ -62,9 +62,7 @@ export interface ReadToolDetails {
 	 * screenshots, URL reads and other images not backed by a file. Display-only.
 	 */
 	mediaPath?: string;
-	suffixResolution?: { from: string; to: string; raw?: boolean };
-	/** Raw source output keeps descriptive diagnostics in details, not in the body. */
-	raw?: boolean;
+	suffixResolution?: { from: string; to: string };
 	url?: string;
 	finalUrl?: string;
 	contentType?: string;

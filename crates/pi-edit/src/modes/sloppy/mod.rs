@@ -157,7 +157,10 @@ impl ModeEngine for SloppyEngine {
 				// An unresolved internal URL stays typed so the host can
 				// resolve it and retry.
 				if multi_file && !matches!(error, EditError::UnresolvedUrl(_)) {
-					EditError::InFile { path: section.path.clone(), source: Box::new(error) }
+					EditError::matched(format!(
+						"[{}]: {error}\nNo files were modified — sections apply atomically.",
+						section.path
+					))
 				} else {
 					error
 				}
@@ -172,7 +175,10 @@ impl ModeEngine for SloppyEngine {
 			})
 			.map_err(|error| {
 				if multi_file {
-					EditError::InFile { path: read.resolved.display.clone(), source: Box::new(error) }
+					EditError::matched(format!(
+						"[{}]: {error}\nNo files were modified — sections apply atomically.",
+						read.resolved.display
+					))
 				} else {
 					error
 				}

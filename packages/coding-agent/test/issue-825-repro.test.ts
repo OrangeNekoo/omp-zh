@@ -63,13 +63,12 @@ function makeFakeSession() {
 		extensionRunner: undefined,
 		customCommands: [] as Array<{ command: { name: string } }>,
 		getQueuedMessages: () => ({ steering: steering.map(e => e.text), followUp: followUp.map(e => e.text) }),
-		// Faithful stub of AgentSession.dropQueuedMessages: removes exactly the given entries.
-		dropQueuedMessages: (messages: Iterable<object>) => {
-			const dropped = new Set(messages);
-			const s = steering.filter(entry => !dropped.has(entry));
-			const f = followUp.filter(entry => !dropped.has(entry));
-			steering.splice(0, steering.length, ...s);
-			followUp.splice(0, followUp.length, ...f);
+		clearQueue: () => {
+			const s = [...steering];
+			const f = [...followUp];
+			steering.length = 0;
+			followUp.length = 0;
+			return { steering: s, followUp: f };
 		},
 		prompt,
 		steer,

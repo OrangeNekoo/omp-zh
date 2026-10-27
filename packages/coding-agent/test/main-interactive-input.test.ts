@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "bun:test";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
-import { buildSkillPromptMessage, type Skill } from "@oh-my-pi/pi-coding-agent/extensibility/skills";
+import type { Skill } from "@oh-my-pi/pi-coding-agent/extensibility/skills";
 import { parseArgs } from "@oh-my-pi/pi-coding-agent/cli/args";
 import { ModelRegistry } from "@oh-my-pi/pi-coding-agent/config/model-registry";
 import { Settings } from "@oh-my-pi/pi-coding-agent/config/settings";
@@ -101,8 +101,6 @@ describe("system prompt template CLI resolution", () => {
 	});
 });
 
-const skillPromptBuilder = { buildUserSkillPrompt: buildSkillPromptMessage };
-
 function createMode(options?: { pendingStart?: boolean; skillCommands?: Map<string, Skill> }) {
 	return {
 		markPendingSubmissionStarted: vi.fn(() => options?.pendingStart ?? true),
@@ -120,7 +118,6 @@ describe("submitInteractiveInput", () => {
 	it("routes already-started synthetic continue submissions to a hidden developer prompt", async () => {
 		const mode = createMode({ pendingStart: false });
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -138,7 +135,6 @@ describe("submitInteractiveInput", () => {
 	it("skips prompting when optimistic submission was cancelled before start", async () => {
 		const mode = createMode({ pendingStart: false });
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -156,7 +152,6 @@ describe("submitInteractiveInput", () => {
 	it("routes hidden custom submissions through promptCustomMessage with followUp queueing", async () => {
 		const mode = createMode();
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -184,7 +179,6 @@ describe("submitInteractiveInput", () => {
 	it("passes followUp on a plain idle submission so a racing turn queues instead of erroring", async () => {
 		const mode = createMode();
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -200,7 +194,6 @@ describe("submitInteractiveInput", () => {
 	it("honors a steer intent on the submission (normal Enter) instead of forcing followUp", async () => {
 		const mode = createMode();
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: true,
@@ -223,7 +216,6 @@ describe("submitInteractiveInput", () => {
 			pauseLoop: vi.fn(),
 		};
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => false),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -244,7 +236,6 @@ describe("submitInteractiveInput", () => {
 			pauseLoop: vi.fn(),
 		};
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -264,7 +255,6 @@ describe("submitInteractiveInput", () => {
 			pauseLoop: vi.fn(),
 		};
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => false),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,
@@ -284,7 +274,6 @@ describe("submitInteractiveInput", () => {
 			pauseLoop: vi.fn(),
 		};
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => {
 				throw new Error("attachment too large");
 			}),
@@ -308,7 +297,6 @@ describe("submitInteractiveInput", () => {
 		const skill: Skill = { name: "recap", description: "", filePath: skillPath, baseDir: skillDir, source: "test" };
 		const mode = createMode({ skillCommands: new Map([["skill:recap", skill]]) });
 		const session = {
-			...skillPromptBuilder,
 			prompt: vi.fn(async () => true),
 			promptCustomMessage: vi.fn(async () => true),
 			isStreaming: false,

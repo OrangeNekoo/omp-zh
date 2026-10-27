@@ -25,10 +25,8 @@ describe("Moonshot China base URL override (issue #2883)", () => {
 	const moonshotModel = {
 		provider: "moonshot",
 		id: "kimi-k2.7-code",
-		api: "openai-completions",
-		reasoning: true,
 		baseUrl: "https://api.moonshot.ai/v1",
-	} as const;
+	};
 
 	test("redirects the moonshot provider to api.moonshot.cn when MOONSHOT_BASE_URL is set", () => {
 		Bun.env.MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1";
@@ -68,13 +66,7 @@ describe("Moonshot China base URL override (issue #2883)", () => {
 	test("does not redirect other openai-completions providers", () => {
 		Bun.env.MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1";
 		const setup = resolveOpenAIRequestSetup(
-			{
-				provider: "openai",
-				id: "gpt-5.5",
-				api: "openai-completions",
-				reasoning: false,
-				baseUrl: "https://api.openai.com/v1",
-			} as const,
+			{ provider: "openai", id: "gpt-5.5", baseUrl: "https://api.openai.com/v1" },
 			{ apiKey: "sk-openai", messages: [] },
 		);
 		expect(setup.baseUrl).toBe("https://api.openai.com/v1");

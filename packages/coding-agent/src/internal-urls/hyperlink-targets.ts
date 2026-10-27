@@ -47,9 +47,7 @@ export async function resolveMarkdownLinkHrefs(
 				}
 				const stat = await fs.stat(sourcePath);
 				if (!stat.isFile() && !stat.isDirectory()) return;
-				const target = fileUriForTerminal(sourcePath, undefined, TERMINAL.id);
-				if (!target) return;
-				targets.set(href, target + suffix);
+				targets.set(href, fileUriForTerminal(sourcePath, undefined, TERMINAL.id) + suffix);
 			} catch {
 				// A model-authored link may be incomplete, stale, or outside the resource root.
 			}

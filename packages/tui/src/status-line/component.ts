@@ -990,26 +990,24 @@ export class StatusLineComponent<TSession extends StatusLineSession = StatusLine
 		this.#invalidateStatusLineRenderCache();
 	}
 
-	setRunningSubagents(agentIds: readonly string[]): boolean {
+	setRunningSubagents(agentIds: readonly string[]): void {
 		if (
 			agentIds.length === this.#runningSubagentIds.size &&
 			agentIds.every(agentId => this.#runningSubagentIds.has(agentId))
 		) {
-			return false;
+			return;
 		}
 		this.#subagentCount = agentIds.length;
 		this.#runningSubagentIds = new Set(agentIds);
 		this.#invalidateStatusLineRenderCache();
-		return true;
 	}
 
 	/** Host-computed spend of the main session's whole subagent tree (Agent Hub projection). */
-	setSubagentTreeCost(cost: number): boolean {
+	setSubagentTreeCost(cost: number): void {
 		const next = Number.isFinite(cost) && cost > 0 ? cost : 0;
-		if (next === this.#subagentTreeCost) return false;
+		if (next === this.#subagentTreeCost) return;
 		this.#subagentTreeCost = next;
 		this.#invalidateStatusLineRenderCache();
-		return true;
 	}
 
 	/**

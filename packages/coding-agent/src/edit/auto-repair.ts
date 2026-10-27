@@ -372,7 +372,6 @@ export async function attemptEditAutoRepair(options: {
 	const timeout = AbortSignal.timeout(REPAIR_TIMEOUT_MS);
 	const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
 	const complete = async (builtPrompt: string): Promise<string> => {
-		session.costGate?.admit();
 		const response = await retryTransientCompletion(
 			() =>
 				completeSimple(
@@ -388,7 +387,6 @@ export async function attemptEditAutoRepair(options: {
 				),
 			{ signal, provider: model.provider },
 		);
-		session.costGate?.record(response.usage.cost.total);
 		if (response.stopReason === "error") {
 			throw new Error(response.errorMessage ?? "auto-repair completion failed");
 		}

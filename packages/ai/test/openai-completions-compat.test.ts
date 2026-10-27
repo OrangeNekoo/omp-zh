@@ -2470,7 +2470,7 @@ describe("anthropic cache control for OpenAI-compatible chat completions", () =>
 		expect(textPart?.cache_control).toEqual({ type: "ephemeral" });
 	});
 
-	it("anchors Anthropic cache_control on the trailing tool result during a tool loop", async () => {
+	it("does not attach Anthropic cache_control to empty assistant tool-call content", async () => {
 		const model = getBundledModel("openrouter", "anthropic/claude-sonnet-4") as Model<"openai-completions">;
 		const assistantMessage: AssistantMessage = {
 			role: "assistant",
@@ -2508,16 +2508,17 @@ describe("anthropic cache control for OpenAI-compatible chat completions", () =>
 			messages: [{ role: "user", content: "cache me", timestamp: 0 }, assistantMessage, toolResultMessage],
 		});
 		const messages = getPayloadMessages(payload);
-		const [user, assistant, tool] = messages;
+		const assistant = messages.find(message => {
+			const toolCalls = message.tool_calls;
+			return message.role === "assistant" && Array.isArray(toolCalls);
+		});
+		const firstUser = messages.find(message => message.role === "user");
+		const userContent = firstUser?.content;
+		const textPart = getLastTextPart(userContent);
 
-		// Empty tool-call replay content must stay a string: an empty text part
-		// with cache_control is rejected by Anthropic/OpenRouter.
 		expect(assistant?.content).toBe("");
-		expect(getLastTextPart(user?.content)?.cache_control).toBeUndefined();
-		expect(tool?.role).toBe("tool");
-		expect(tool?.content).toEqual([
-			{ type: "text", text: "Read image file [image/webp]", cache_control: { type: "ephemeral" } },
-		]);
+		expect(textPart?.text).toBe("cache me");
+		expect(textPart?.cache_control).toEqual({ type: "ephemeral" });
 	});
 
 	it("does not infer Anthropic cache_control for custom Claude ids without compat", async () => {

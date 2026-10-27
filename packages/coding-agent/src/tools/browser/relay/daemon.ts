@@ -20,8 +20,7 @@ import { resolveWorkerSpawnCmd } from "../../../subprocess/worker-client";
 import { throwIfAborted } from "../../tool-errors";
 import { probeCdpResponse, probeCdpStatus } from "../attach";
 import { DEFAULT_RELAY_URL } from "./kind";
-import { relayCdpClientsOf, relayVersionOf } from "./probe";
-import { isOlderOmpVersion } from "./protocol";
+import { isOlderRelayVersion, relayCdpClientsOf, relayVersionOf } from "./probe";
 
 const DEFAULT_RELAY_PORT = new URL(DEFAULT_RELAY_URL).port;
 
@@ -164,7 +163,7 @@ export async function restartRelayDaemon(opts: {
 	if (status?.version === VERSION) return true;
 	// A newer omp running alongside this one owns a newer relay; replacing it
 	// would only make the two versions take turns killing each other's relay.
-	if (status !== null && !isOlderOmpVersion(status.version, VERSION)) return false;
+	if (status !== null && !isOlderRelayVersion(status.version)) return false;
 	// The last read before the stop: a client that connected since the caller's
 	// probe keeps the relay. One connecting during the stop request itself loses
 	// its connection, as on any relay restart.

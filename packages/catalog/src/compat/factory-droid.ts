@@ -59,8 +59,6 @@ export interface FactoryDroidModelPolicy {
 	entitlement: FactoryDroidEntitlement;
 	/** Native default with no caller effort is thinking off. */
 	defaultReasoningOff: boolean;
-	/** A `generate_image` model: gated by the org's image-generation settings, served through Factory's image routes. */
-	image: boolean;
 }
 
 /** One registry model: its roster row and resolved policy. */
@@ -130,7 +128,6 @@ function readPolicy(spec: ModelSpec<"factory-droid-agent">): FactoryDroidModelPo
 			...(baseVariant !== undefined && { baseVariant }),
 		},
 		defaultReasoningOff: catalog.defaultReasoningOff === true,
-		image: catalog.kind === "image",
 	};
 }
 

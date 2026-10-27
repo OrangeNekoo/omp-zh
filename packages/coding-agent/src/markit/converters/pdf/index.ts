@@ -1,6 +1,4 @@
 import { pdfToMarkdown } from "@oh-my-pi/pi-natives";
-import { prompt } from "@oh-my-pi/pi-utils";
-import pdfTextIncompleteTemplate from "../../../prompts/tools/pdf-text-incomplete.md" with { type: "text" };
 import type { ConversionResult, Converter, StreamInfo } from "../../types";
 
 const EXTENSIONS = [".pdf"];
@@ -24,10 +22,7 @@ export class PdfConverter implements Converter {
 		const result = await pdfToMarkdown(input);
 		const notice =
 			result.pagesNeedingOcr.length > 0
-				? prompt.render(pdfTextIncompleteTemplate, {
-						pages: result.pagesNeedingOcr.join(", "),
-						firstPage: result.pagesNeedingOcr[0],
-					})
+				? `Text extraction is incomplete for PDF pages ${result.pagesNeedingOcr.join(", ")}. Use the browser prelude to render those pages or OCR them.`
 				: undefined;
 
 		const conversion: ConversionResult = {

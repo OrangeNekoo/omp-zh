@@ -51,9 +51,11 @@ describe("browser run output — stream text reaches the tool result", () => {
 // was a live failure.
 describe("browser handle enrichment — fill()", () => {
 	it("adds a fill() that clears the current value before typing", async () => {
+		const calls: string[] = [];
 		const node = { value: "old", focused: false };
 		const stub = {
 			evaluate: async (fn: (el: unknown) => unknown) => {
+				calls.push("evaluate");
 				fn({
 					get value() {
 						return node.value;
@@ -67,19 +69,15 @@ describe("browser handle enrichment — fill()", () => {
 					matches: () => false,
 				});
 			},
-			frame: {
-				page: () => ({
-					keyboard: {
-						type: async (text: string) => {
-							node.value += text;
-						},
-					},
-				}),
+			type: async (text: string) => {
+				calls.push("type");
+				node.value += text;
 			},
 		} as unknown as ElementHandle;
 
 		await toActionableHandle(stub).fill("fresh");
 
+		expect(calls).toEqual(["evaluate", "evaluate", "type"]);
 		expect(node.focused).toBe(true);
 		expect(node.value).toBe("fresh");
 	});

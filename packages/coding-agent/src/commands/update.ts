@@ -26,7 +26,7 @@ export default class Update extends Command {
 		await initTheme();
 		if (flags.canary && flags.stable) throw new CliUsageError("--canary and --stable are mutually exclusive");
 		if (flags.plugins) {
-			await pluginCli.runPluginCommand({ action: "upgrade", args: [], flags: flags.check ? { dryRun: true } : {} });
+			await pluginCli.runPluginCommand({ action: "upgrade", args: [], flags: {} });
 		} else {
 			await updateCli.runUpdateCommand({
 				force: flags.force,

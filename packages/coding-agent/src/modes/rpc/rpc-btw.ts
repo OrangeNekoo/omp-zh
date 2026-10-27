@@ -17,7 +17,7 @@ import {
 	getBtwLatestTurn,
 } from "../../session/btw-history";
 import { beginBtwTurn, patchLatestBtwTurn, runBtwTurn } from "../../session/btw-turn";
-import type { RpcBtwDeltaFrame, RpcBtwHistoryRecord, RpcBtwRecordFrame } from "./rpc-types";
+import type { RpcBtwDeltaFrame, RpcBtwRecordFrame } from "./rpc-types";
 
 type RpcBtwOutputFrame =
 	| RpcBtwDeltaFrame
@@ -31,11 +31,6 @@ interface RunningBtw {
 }
 
 const CANCELLED_WHILE_STARTING = "The /btw question was cancelled before it started";
-
-/** The TUI-only `title` heading stays off the wire; hosts head a topic by its question. */
-function toRpcRecord({ title: _title, ...record }: BtwHistoryRecord): RpcBtwHistoryRecord {
-	return record;
-}
 
 export class RpcBtwController {
 	readonly #session: Pick<AgentSession, "model" | "runEphemeralTurn" | "sessionManager">;
@@ -65,7 +60,7 @@ export class RpcBtwController {
 	 * Start a side question (or a follow-up in topic `recordId`); resolves once it is
 	 * checkpointed as running. The turn itself starts after the caller has answered.
 	 */
-	async ask(question: string, recordId?: string): Promise<RpcBtwHistoryRecord> {
+	async ask(question: string, recordId?: string): Promise<BtwHistoryRecord> {
 		const trimmed = typeof question === "string" ? question.trim() : "";
 		if (!trimmed) throw new Error("btw requires a non-empty question");
 		if (this.#startingTopic !== undefined || this.#running) {
@@ -91,7 +86,7 @@ export class RpcBtwController {
 			}
 			const running: RunningBtw = { record, store, abort: new AbortController() };
 			this.#running = running;
-			this.#output({ type: "btw_record", record: toRpcRecord(record) });
+			this.#output({ type: "btw_record", record });
 			if (epoch !== this.#epoch) {
 				// Cancelled or the session changed while the first checkpoint was written.
 				this.#finish(running, { status: "cancelled", updatedAt: Date.now() });
@@ -99,7 +94,7 @@ export class RpcBtwController {
 			}
 			// A macrotask: the `btw` response is written first, so it never trails this turn's frames.
 			setTimeout(() => void this.#run(running, trimmed, history, conversationKey), 0);
-			return toRpcRecord(record);
+			return record;
 		} finally {
 			this.#startingTopic = undefined;
 		}
@@ -122,7 +117,7 @@ export class RpcBtwController {
 	}
 
 	/** Newest first, re-read from disk when idle; a running topic carries its live partial answer. */
-	async history(): Promise<readonly RpcBtwHistoryRecord[]> {
+	async history(): Promise<readonly BtwHistoryRecord[]> {
 		const store = await this.#openStore(this.#running === undefined && this.#startingTopic === undefined);
 		const running = this.#running;
 		const records = new Map(store.getRecords().map(record => [record.id, record]));
@@ -130,9 +125,7 @@ export class RpcBtwController {
 			if (unsaved.store === store) records.set(unsaved.record.id, unsaved.record);
 		}
 		if (running?.store === store) records.set(running.record.id, running.record);
-		return [...records.values()]
-			.sort((a, b) => b.createdAt - a.createdAt || a.id.localeCompare(b.id))
-			.map(toRpcRecord);
+		return [...records.values()].sort((a, b) => b.createdAt - a.createdAt || a.id.localeCompare(b.id));
 	}
 
 	/**
@@ -241,7 +234,7 @@ export class RpcBtwController {
 		if (this.#running !== running) return;
 		this.#running = undefined;
 		running.record = patchLatestBtwTurn(running.record, patch);
-		this.#output({ type: "btw_record", record: toRpcRecord(running.record) });
+		this.#output({ type: "btw_record", record: running.record });
 		const write = running.store.upsert(running.record).then(
 			() => {
 				this.#unsaved.delete(running.record.id);

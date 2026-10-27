@@ -42,10 +42,7 @@ export default class Plugin extends Command {
 		json: Flags.boolean({ description: "输出 JSON" }),
 		fix: Flags.boolean({ description: "尝试修复问题（doctor）" }),
 		force: Flags.boolean({ description: "强制安装" }),
-		"dry-run": Flags.boolean({
-			description:
-				"只显示将要执行的操作而不实际应用（安装、卸载、链接、升级市场插件）",
-		}),
+		"dry-run": Flags.boolean({ description: "只显示操作，不实际执行" }),
 		local: Flags.boolean({ char: "l", description: "操作本地插件目录" }),
 		enable: Flags.string({ description: "启用某个功能" }),
 		disable: Flags.string({ description: "禁用某个功能" }),

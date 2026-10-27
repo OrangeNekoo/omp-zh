@@ -25,12 +25,6 @@ export interface MagicKeywordContext {
 	scoutAvailable: boolean;
 	/** `eval.tools.enabled`: whether `@tool`-defined kernel tools exist. */
 	evalTools: boolean;
-	/** `eval.py`: whether the Python eval backend is enabled. */
-	py: boolean;
-	/** `eval.js`: whether the JS eval backend is enabled. */
-	js: boolean;
-	/** `eval.workpool.freshAgents`: whether workpools spawn a new agent per item instead of reusing workers. */
-	freshAgents: boolean;
 }
 
 /** One magic keyword: trigger word, gradient, settings copy, and the notice it injects. */
@@ -67,11 +61,8 @@ export function renderWorkflowNotice({
 	taskBatch,
 	scoutAvailable,
 	evalTools,
-	py,
-	js,
-	freshAgents,
-}: Pick<MagicKeywordContext, "taskBatch" | "scoutAvailable" | "evalTools" | "py" | "js" | "freshAgents">): string {
-	return prompt.render(workflowNotice, { taskBatch, scoutAvailable, evalTools, py, js, freshAgents }).trim();
+}: Pick<MagicKeywordContext, "taskBatch" | "scoutAvailable" | "evalTools">): string {
+	return prompt.render(workflowNotice, { taskBatch, scoutAvailable, evalTools }).trim();
 }
 
 export const MAGIC_KEYWORDS = [

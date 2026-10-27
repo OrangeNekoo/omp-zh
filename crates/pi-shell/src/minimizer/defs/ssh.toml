@@ -22,6 +22,7 @@ strip_lines_matching = [
 	"^OpenSSH_",
 	"^Pseudo-terminal",
 ]
+max_lines = 200
 
 [[tests.ssh]]
 name = "strips banner keeps command output"

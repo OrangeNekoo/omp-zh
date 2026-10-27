@@ -8,7 +8,7 @@ import { formatScreenshot, resizeImage } from "../../utils/image-resize";
 import { throwIfAborted } from "../tool-errors";
 import { ToolError } from "@oh-my-pi/pi-tui/tools/tool-errors";
 import { type AriaSnapshotOptions, buildAriaSnapshotScript } from "./aria/aria-snapshot";
-import { clickElement, fillViaHandle, pressKey, typeIntoElement } from "./interactions";
+import { clickElement, fillViaHandle, focusTextEntryTarget, pressKey } from "./interactions";
 import { readPageViewport } from "./launch";
 import { RunOutput } from "./run-output";
 import { whileDrawing } from "./screenshot";
@@ -266,7 +266,8 @@ export function createFrameApi(frame: Frame, hooks: FrameApiHooks): BrowserFrame
 					const handle = await untilAborted(signal, () => frame.$(hooks.normalizeSelector(selector)));
 					if (!handle) throw new ToolError(`frame.type(${JSON.stringify(selector)}) matched no element`);
 					try {
-						await typeIntoElement(handle, text, signal);
+						await focusTextEntryTarget(handle, "type into", signal);
+						await untilAborted(signal, () => handle.type(text, { delay: 0 }));
 					} finally {
 						await handle.dispose().catch(() => undefined);
 					}

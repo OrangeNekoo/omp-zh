@@ -358,7 +358,9 @@ export async function runModelsListing(options: RunModelsListingOptions): Promis
 		// Mirror sdk.ts: drain pending provider registrations into the registry.
 		const activeSources = extensionsResult.extensions.map(extension => extension.path);
 		modelRegistry.syncExtensionSources(activeSources);
-		modelRegistry.clearSourceRegistrations(new Set(activeSources));
+		for (const sourceId of new Set(activeSources)) {
+			modelRegistry.clearSourceRegistrations(sourceId);
+		}
 		for (const { name, config, sourceId } of extensionsResult.runtime.pendingProviderRegistrations) {
 			modelRegistry.registerProvider(name, config, sourceId);
 		}

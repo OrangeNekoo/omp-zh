@@ -48,7 +48,6 @@ import {
 	shouldEnableSynchronizedOutputByDefault,
 	synchronizedOutputUserOverride,
 	TERMINAL,
-	withDirectPlacementLift,
 } from "./terminal-capabilities";
 import { onTerminalBackgroundFallbackChange } from "./theme/theme";
 import { compositeLineAt } from "./render/composite";
@@ -926,7 +925,6 @@ export class TUI extends Container {
 	/** True from the end of start() until stop(): the terminal modes start listeners enable are live. */
 	#started = false;
 	#paintListeners = new Set<PaintListener>();
-	#frameWriteListeners = new Set<(data: string) => void>();
 
 	/** Global callback for debug key (Shift+Ctrl+D). Called before input is forwarded to focused component. */
 	onDebug?: () => void;
@@ -1140,14 +1138,6 @@ export class TUI extends Container {
 		this.#paintListeners.add(listener);
 		return () => {
 			this.#paintListeners.delete(listener);
-		};
-	}
-
-	/** Observe actual ANSI frame writes, including transient resize paints; returns the unsubscribe. */
-	addFrameWriteListener(listener: (data: string) => void): () => void {
-		this.#frameWriteListeners.add(listener);
-		return () => {
-			this.#frameWriteListeners.delete(listener);
 		};
 	}
 
@@ -3302,40 +3292,29 @@ export class TUI extends Container {
 
 	/**
 	 * Clip direct placements to the visible source slice: Kitty tracks a live
-	 * placement owner, while SIXEL crops the encoded raster. An iTerm2 image
-	 * or a Kitty transmit-and-display image cannot be cropped, so a block
-	 * clipped at the top is omitted rather than painted over following text.
-	 * SIXEL and iTerm2 have no delete command and composite over existing
-	 * pixels, so erase the visible rows they paint above the line before repainting.
-	 *
-	 * `frameRow` is the line's row within the frame it was rendered in, so at
-	 * most that many rows above it belong to its image block. A viewport whose
-	 * top clips a block sits below history rows on screen; bounding the lift by
-	 * the physical row instead would erase and paint over those history rows
-	 * just before they scroll into native scrollback.
+	 * placement owner, while SIXEL crops the encoded raster (iTerm2 images are
+	 * not cropped). SIXEL and iTerm2 have no delete command and composite over
+	 * existing pixels, so erase the visible rows they paint above `screenRow`
+	 * before repainting.
 	 */
 	#imageLineSequence(
 		line: string,
-		frameRow: number,
+		screenRow: number,
 		placements: Map<number, LiveImagePlacement> | undefined,
 		placementRow: number,
 	): string {
-		if (frameRow < 0) return line;
+		if (screenRow < 0) return line;
 		const parsed = parseKittyDirectPlacementLine(line);
 		if (!parsed) {
 			const requestedLift = directPlacementLift(line);
-			const lift = Math.min(requestedLift, frameRow);
+			const lift = Math.min(requestedLift, screenRow);
 			if (requestedLift > lift) {
 				const cellHeight = getCellDimensions().heightPx;
 				const cropPixels = Math.round((requestedLift - lift) * cellHeight);
-				const maxHeightPixels = Math.floor((frameRow + 1) * cellHeight);
-				const clipped = line.replace(/\x1bP[0-9;]*q[\s\S]*?\x1b\\/g, sequence =>
+				const maxHeightPixels = Math.floor((screenRow + 1) * cellHeight);
+				line = line.replace(/\x1bP[0-9;]*q[\s\S]*?\x1b\\/g, sequence =>
 					this.#cropSixel(sequence, cropPixels, maxHeightPixels),
 				);
-				// Re-anchoring an uncropped OSC/APC image would paint its hidden
-				// rows below the reserved slice, over the following text.
-				if (clipped === line) return "";
-				line = withDirectPlacementLift(clipped, lift);
 			}
 			return lift > 0 ? `\x1b[${lift}A${`${ERASE_LINE}\x1b[B`.repeat(lift)}${line}` : line;
 		}
@@ -3350,7 +3329,7 @@ export class TUI extends Container {
 				placementId,
 				columns: parsed.columns,
 				rows: parsed.rows,
-				screenRow: frameRow,
+				screenRow,
 				imageHeightPx: this.#imageBudget.getPlacementGeometry(parsed.imageId)?.heightPx ?? 0,
 			})
 		);
@@ -3419,16 +3398,6 @@ export class TUI extends Container {
 				listener(paint);
 			} catch (err) {
 				logger.error("TUI paint listener failed", { err });
-			}
-		}
-	}
-
-	#notifyFrameWrite(data: string): void {
-		for (const listener of this.#frameWriteListeners) {
-			try {
-				listener(data);
-			} catch (err) {
-				logger.error("TUI frame write listener failed", { err });
 			}
 		}
 	}
@@ -3713,9 +3682,9 @@ export class TUI extends Container {
 				buffer += `\x1b[${newTop + index + 1};1H${this.#lineRewriteSequence(
 					current,
 					width,
-					index,
+					newTop + index,
 					this.#osc66SpacerGlyphWidth(prepared.lines, index),
-					{ imagePlacements: this.#screenImagePlacements, imageRow: newTop + index },
+					{ imagePlacements: this.#screenImagePlacements },
 				)}`;
 			}
 			if (this.#providerWindow.length > rows && newTop + rows < height) {
@@ -3748,18 +3717,15 @@ export class TUI extends Container {
 			}
 			for (let index = 0; index < rows; index++) {
 				if (screenRow > startTop) buffer += "\n";
-				// Replay-split rows continue the history ledger written above them;
-				// the provider's own rows reach no higher than its viewport top.
-				const moved = index < replayViewportRows;
 				append(
 					this.#lineRewriteSequence(
 						prepared.rows[index]!,
 						width,
-						moved ? Math.min(screenRow, height - 1) : index,
+						Math.min(screenRow, height - 1),
 						this.#osc66SpacerGlyphWidth(prepared.lines, index),
 						{
 							blankRow: compactReplay,
-							imagePlacements: moved ? undefined : this.#screenImagePlacements,
+							imagePlacements: index < replayViewportRows ? undefined : this.#screenImagePlacements,
 							imageRow: newTop + index,
 						},
 					),
@@ -3796,7 +3762,6 @@ export class TUI extends Container {
 			this.terminal.write(this.#rebuildNoticeSequence(width, height));
 		}
 		this.terminal.write(buffer);
-		this.#notifyFrameWrite(buffer);
 		this.#debugPaint = {
 			lines: prepared.lines,
 			windowTop: this.#debugNextWindowTop,
@@ -4379,15 +4344,10 @@ export class TUI extends Container {
 		);
 	}
 
-	/**
-	 * Terminal bytes that rewrite one row. `frameRow` is the row's index within
-	 * the frame it belongs to (see {@link #imageLineSequence}); `imageRow`, the
-	 * physical row keying live Kitty placements, defaults to it.
-	 */
 	#lineRewriteSequence(
 		line: PreparedLine,
 		width: number,
-		frameRow = -1,
+		screenRow = -1,
 		spacerGlyphWidth = -1,
 		options?: { blankRow?: boolean; imagePlacements?: Map<number, LiveImagePlacement>; imageRow?: number },
 	): string {
@@ -4408,7 +4368,7 @@ export class TUI extends Container {
 		} else if (line.isImage) {
 			rewrite =
 				ERASE_LINE +
-				this.#imageLineSequence(line.line, frameRow, options?.imagePlacements, options?.imageRow ?? frameRow);
+				this.#imageLineSequence(line.line, screenRow, options?.imagePlacements, options?.imageRow ?? screenRow);
 		} else {
 			const terminalLine = this.#terminalLine(line);
 			if (options?.blankRow) {
@@ -4600,9 +4560,9 @@ export class TUI extends Container {
 		} else if (hideCursor) {
 			cursorBuffer = "\x1b[?25l";
 		}
-		const frame = `${this.#paintBeginSequence}${prelude}${full ? "\x1b[H" : ""}${rowsBuffer}${cursorBuffer}${this.#paintEndSequence}`;
-		this.terminal.write(frame);
-		this.#notifyFrameWrite(frame);
+		this.terminal.write(
+			`${this.#paintBeginSequence}${prelude}${full ? "\x1b[H" : ""}${rowsBuffer}${cursorBuffer}${this.#paintEndSequence}`,
+		);
 		this.#debugPaint = {
 			lines: prepared.lines,
 			windowTop: 0,
