@@ -91,6 +91,10 @@ export const launchHelp = {
 		advisor: Flags.boolean({
 			description: "启用顾问运行时（被动审查每轮并注入备注）",
 		}),
+		"wait-async": Flags.boolean({
+			description:
+				"打印模式：退出前等待本次运行的后台任务，并用每个结果唤醒会话（async.printWake）；除非设置了 --max-time，否则不设时限",
+		}),
 		"external-thinking": Flags.boolean({
 			description:
 				"在禁用受支持的 GPT、Claude 与 Gemini 推理时使用私有暂存区（风险自负：服务商已将此类请求视为滥用）",
@@ -107,6 +111,7 @@ export const launchHelp = {
 		"no-skills": Flags.boolean({ description: "禁用技能发现与加载" }),
 		skills: Flags.string({ description: "用于筛选技能的逗号分隔 glob 模式（如 git-*,docker）" }),
 		"no-rules": Flags.boolean({ description: "禁用规则发现与加载" }),
+		"no-context-files": Flags.boolean({ description: "禁用上下文文件（AGENTS.md、CLAUDE.md 等）" }),
 		export: Flags.string({ description: "将会话文件导出为 HTML 后退出" }),
 		"no-title": Flags.boolean({ description: "禁用标题自动生成" }),
 		"no-ui": Flags.boolean({
@@ -114,6 +119,13 @@ export const launchHelp = {
 		}),
 		"print-thoughts": Flags.boolean({ description: "在 print 模式的文本输出中包含思考块" }),
 		"max-time": Flags.string({ description: "在此持续时间后停止会话（如 600、10m、1h）" }),
+		"warn-cost": Flags.string({
+			description: "当会话花费（含子代理）达到该美元金额时警告一次",
+		}),
+		"max-cost": Flags.string({
+			description:
+				"当会话花费达到该美元金额后不再发送模型请求；已在途中的请求可以超出该金额完成（打印模式以 3 退出）",
+		}),
 		"auto-approve": Flags.boolean({
 			aliases: ["yolo"],
 			description: "自动批准所有工具调用（跳过批准提示）",

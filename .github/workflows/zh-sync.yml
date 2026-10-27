@@ -13,11 +13,11 @@ name: Sync upstream and re-apply 汉化
 #
 # 校验闸门：重写后源码必须仍能解析、CLI 必须能启动、类型检查必须通过。
 # 任一步失败都不推送，避免把损坏的构建推到 main。
+#
+# **仅手动触发**：定时同步已关闭。上游提交频繁，自动重放会把未经
+# 人工复核的新文案推到主分支；同步改为按需手动触发。
 
 on:
-   schedule:
-      # 每天 UTC 03:17（避开整点，减少排队）
-      - cron: "17 3 * * *"
    workflow_dispatch:
       inputs:
          upstream_ref:
@@ -79,18 +79,30 @@ jobs:
                  echo "need_sync=true" >> "$GITHUB_OUTPUT"
               fi
 
-         # 本 fork 自有文件：相对上游提交多出来的路径。清单**动态计算**而不是
-         # 硬编码——写死的路径会让日后新增的 fork 文件在同步中被静默删除，
-         # 删除动作还会被一起提交。排除项由重写器负责重放，无须备份。
+         # 本 fork 自有文件，分两类：
+         #
+         # 1. **上游没有的路径**（`--diff-filter=A`）：本 fork 新增的文件，
+         #    例如 i18n/ 目录。清单动态计算而不是硬编码——写死的路径会让
+         #    日后新增的 fork 文件在同步中被静默删除，删除动作还会被一起提交。
+         # 2. **上游有、但本 fork 有意改写**的路径：显式列出（见 FORK_MODIFIED）。
+         #
+         # 早先的写法用 `--diff-filter=AM` 对比两个提交，把「上游有、我们版本
+         # 陈旧」的文件也算进自有清单，还原时用陈旧副本覆盖上游的新版本——
+         # 上游对 docs/、CI 配置等文件的更新因此被静默回退。只增不减。
          - name: Back up fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
               mkdir -p /tmp/fork-owned
-              git diff --name-only --diff-filter=AM "${{ steps.upstream.outputs.sha }}" main -- . \
-                 ':(exclude)packages' \
-                 ':(exclude)scripts/link-omp.sh' \
-                 ':(exclude).gitignore' > /tmp/fork-owned-list.txt
-              # 上面的差异里含「上游有、我们删掉」的路径，这里只备份仍然存在的。
+              # 上游没有、本 fork 新增的路径。
+              git diff --name-only --diff-filter=A "${{ steps.upstream.outputs.sha }}" main -- . \
+                 ':(exclude)packages' > /tmp/fork-added.txt
+              # 上游有、本 fork 有意改写的路径。
+              cat > /tmp/fork-modified.txt <<'MODIFIED'
+              README.md
+              .github/workflows/zh-sync.yml
+              MODIFIED
+              cat /tmp/fork-added.txt /tmp/fork-modified.txt | sort -u > /tmp/fork-owned-list.txt
+              # 只备份仍然存在的文件。
               while IFS= read -r file; do
                  [ -n "$file" ] || continue
                  [ -f "$file" ] || continue
@@ -160,6 +172,10 @@ jobs:
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/patch-report-keys.ts
 
+         - name: Sync label comparisons
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-label-compare.ts
+
          - name: Patch .gitignore
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/patch-gitignore.ts
@@ -184,6 +200,10 @@ jobs:
          - name: Gate — 分组名必须与设置定义一致
            if: steps.check.outputs.need_sync == 'true'
            run: bun i18n/check-groups.ts
+
+         - name: Gate — 标签比较必须中英双认
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/check-label-compare.ts
 
          - name: Gate — CLI 必须能启动
            if: steps.check.outputs.need_sync == 'true'

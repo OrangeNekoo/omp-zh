@@ -31,6 +31,25 @@ const EMPTY_NUMBER_RECORD: Record<string, number> = {};
 const EMPTY_STRING_ARRAYS_RECORD: Record<string, string[]> = {};
 const DEFAULT_TOOL_CALL_LOOP_EXEMPT_TOOLS: string[] = ["wait"];
 
+/** Scope of the resume picker's current-folder list. */
+export const cfgSessionWorktreeScope = register({
+	id: "session.worktreeScope",
+	type: "enum",
+	values: ["directory", "repo"] as const,
+	default: "repo",
+	ui: {
+		tab: "interaction",
+		group: "启动与更新",
+		label: "恢复会话的工作树范围",
+		description:
+			"选择恢复会话的选择器在当前文件夹下是否包含其他仓库工作树中的会话",
+		options: [
+			{ value: "directory", label: "当前目录", description: "仅包含保存在该目录的会话" },
+			{ value: "repo", label: "仓库工作树", description: "同时包含同级工作树中的会话" },
+		],
+	},
+});
+
 // Power assertions: macOS IOKit, Linux login1/ScreenSaver, Windows execution state.
 export const cfgPowerSleepPrevention = register({
 	id: "power.sleepPrevention",
@@ -42,7 +61,7 @@ export const cfgPowerSleepPrevention = register({
 		group: "电源",
 		label: "休眠阻止",
 		description:
-			"在有活动会话时阻止系统休眠。每一级都是累积的 — 会包含所有更低级别的标志。",
+			"Prevent the system sleeping while the agent is running a turn; an idle session, including one waiting on background jobs, does not hold it. Each level is cumulative — it adds the flags of all lower levels.",
 		options: [
 			{
 				value: "off",
@@ -52,7 +71,7 @@ export const cfgPowerSleepPrevention = register({
 			{
 				value: "idle",
 				label: "阻止空闲休眠",
-				description: "会话打开期间保持系统唤醒（macOS `caffeinate -i`）",
+				description: "在代理运行回合期间保持系统唤醒（macOS `caffeinate -i`）",
 			},
 			{
 				value: "display",
@@ -1481,4 +1500,28 @@ export const cfgThinkingBudgets = combine({
 	high: cfgThinkingBudgetsHigh,
 	xhigh: cfgThinkingBudgetsXhigh,
 	max: cfgThinkingBudgetsMax,
+});
+
+/** Rejects a cost threshold that is not a positive USD amount. */
+function validateCostThreshold(id: string): (raw: unknown) => void {
+	return raw => {
+		if (raw === undefined || raw === null || (typeof raw === "number" && Number.isFinite(raw) && raw > 0)) return;
+		throw new Error(`Invalid ${id}: expected a positive USD amount, got ${Bun.inspect(raw)}.`);
+	};
+}
+
+/** Session-tree spend (USD) at which omp warns once; `--warn-cost` overrides it for one run. */
+export const cfgSessionWarnCost = register({
+	id: "session.warnCost",
+	type: "number",
+	default: undefined,
+	validate: validateCostThreshold("session.warnCost"),
+});
+
+/** Session-tree spend (USD) at which omp stops sending model requests; `--max-cost` overrides it for one run. */
+export const cfgSessionMaxCost = register({
+	id: "session.maxCost",
+	type: "number",
+	default: undefined,
+	validate: validateCostThreshold("session.maxCost"),
 });
