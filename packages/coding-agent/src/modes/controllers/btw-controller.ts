@@ -158,7 +158,7 @@ export class BtwController {
 		const inlineRequest = options?.historyRecordId === undefined ? this.#activeRequest : undefined;
 		try {
 			await copyToClipboard(replaceTabs(answer).trim());
-			this.ctx.showStatus("Copied /btw answer to clipboard");
+			this.ctx.showStatus("已将 /btw 回答复制到剪贴板");
 			if (options?.historyRecordId !== undefined) this.#historyPanel?.markCopied(options.historyRecordId, answer);
 			else if (inlineRequest && this.#visible && this.#activeRequest === inlineRequest)
 				inlineRequest.component.markCopied();
@@ -303,7 +303,7 @@ export class BtwController {
 			this.#transitionCount > 0 ||
 			(this.#activeRequest && getBtwLatestTurn(this.#activeRequest.record).status === "running")
 		) {
-			this.ctx.showStatus("Wait for the current /btw answer to finish or cancel it before moving.", { dim: true });
+			this.ctx.showStatus("请等待当前 /btw 回答结束或先取消，再移动。", { dim: true });
 			return false;
 		}
 		this.#transitionCount++;
@@ -381,7 +381,7 @@ export class BtwController {
 		if (signal?.aborted) return false;
 		const trimmedQuestion = question.trim();
 		if (this.#starting || this.#branchInFlight || this.#transitionCount > 0) {
-			this.ctx.showStatus("A /btw action is in progress. Please wait.", { dim: true });
+			this.ctx.showStatus("已有 /btw 操作进行中，请稍候。", { dim: true });
 			return false;
 		}
 		const viewSession = this.ctx.focusedAgentId ? this.ctx.viewSession : this.ctx.session;
@@ -390,13 +390,13 @@ export class BtwController {
 			if (active.session !== viewSession) {
 				// Opening this view's store would dispose (cancel) the other view's live question.
 				this.ctx.showStatus(
-					"A /btw question is still running in another session view. Wait for it or cancel it first.",
+					"另一个会话视图中的 /btw 提问仍在运行。请等待或先取消。",
 					{ dim: true },
 				);
 				return false;
 			}
 			if (trimmedQuestion && active.sessionId === this.#sessionManager.getSessionId()) {
-				this.ctx.showStatus("A /btw question is still running. Open /btw to view it or cancel it first.", {
+				this.ctx.showStatus("/btw 提问仍在运行。用 /btw 打开查看，或先取消。", {
 					dim: true,
 				});
 				return false;
@@ -429,11 +429,11 @@ export class BtwController {
 				return false;
 			const previous = recordId ? store.getRecords().find(record => record.id === recordId) : undefined;
 			if (recordId && (!previous || getBtwLatestTurn(previous).status === "running")) {
-				this.ctx.showStatus("This side conversation is unavailable or still running.", { dim: true });
+				this.ctx.showStatus("该附带对话不可用或仍在运行。", { dim: true });
 				return false;
 			}
 			if (!viewSession.model) {
-				this.ctx.showError("No active model available for /btw.");
+				this.ctx.showError("/btw 没有可用的模型。");
 				return false;
 			}
 			await this.#sessionManager.ensureOnDisk();

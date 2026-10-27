@@ -776,8 +776,8 @@ function withCreditBadge(model: Model, price: string): string {
 const PRICING_STATUS_LABELS: Record<Exclude<ModelPricingStatus, "fixed">, { short: string; detail: string }> = {
 	free: { short: "free", detail: "free" },
 	included: { short: "included", detail: "included" },
-	variable: { short: "varies", detail: "price varies" },
-	unknown: { short: "unknown", detail: "pricing unknown" },
+	variable: { short: "varies", detail: "价格浮动" },
+	unknown: { short: "unknown", detail: "价格未知" },
 };
 
 /** `$in/out` per-million cost pair with any credit badge; `free` when nothing is charged; a declared pricing state otherwise. */
@@ -1623,7 +1623,7 @@ export class ModelBrowser implements Component {
 
 		const chips: string[] = [];
 		if (selected.selector === this.#currentSelector) {
-			chips.push(theme.fg("success", `${theme.status.enabled} current`));
+			chips.push(theme.fg("success", `${theme.status.enabled} 当前`));
 		}
 		const seen = new Set<string>();
 		const pushRole = (role: string) => {
@@ -1840,7 +1840,7 @@ export class ModelBrowser implements Component {
 				detail: overContext
 					? [
 							span(
-								`${theme.status.disabled} context>${formatNumber(item.model.contextWindow ?? 0).toLowerCase()}`,
+								`${theme.status.disabled} 上下文>${formatNumber(item.model.contextWindow ?? 0).toLowerCase()}`,
 								"warning",
 							),
 						]
@@ -1896,7 +1896,7 @@ export class ModelBrowser implements Component {
 			} else {
 				const chips: TspSpan[] = [];
 				if (selected.selector === this.#currentSelector) {
-					chips.push(span(`${theme.status.enabled} current`, "success"));
+					chips.push(span(`${theme.status.enabled} 当前`, "success"));
 				}
 				const seen = new Set<string>();
 				const pushRole = (role: string) => {
@@ -2005,7 +2005,7 @@ export class ModelBrowser implements Component {
 			badges.push({
 				text: `ctx>${formatNumber(model.contextWindow ?? 0).toLowerCase()}`,
 				tone: "warning",
-				title: `Context ${formatNumber(this.#currentContextTokens).toLowerCase()} exceeds this model's limit; picking it compacts first`,
+				title: `上下文 ${formatNumber(this.#currentContextTokens).toLowerCase()} 超出此模型的上限；选择它将先进行压缩`,
 			});
 		}
 		if (model.isNew) badges.push({ text: "new", tone: "accent" });
@@ -2032,7 +2032,7 @@ export class ModelBrowser implements Component {
 			facts,
 			...(badges.length > 0 ? { badges: badges.slice(0, 3) } : {}),
 			...(chips.length > 0 ? { chips } : {}),
-			...(int !== undefined ? { title: `Intelligence ${Math.round(int)}` } : {}),
+			...(int !== undefined ? { title: `智能度 ${Math.round(int)}` } : {}),
 		};
 		// Discovery re-mints Model objects for unchanged models; an equal row keeps its identity.
 		const kept = cached && Bun.deepEquals(cached.value, value) ? cached.value : value;
@@ -2086,7 +2086,7 @@ export class ModelBrowser implements Component {
 			pushRows(visible);
 		} else {
 			if (recent.length > 0) {
-				order.push({ group: "recent", label: "Recent", count: recent.length });
+				order.push({ group: "recent", label: "最近", count: recent.length });
 				pushRows(recent);
 			}
 			if (grouping.providers) this.#pushProviderGroups(order, rest, pushRows);
@@ -2186,7 +2186,7 @@ export class ModelBrowser implements Component {
 				...(assignment ? { tone: assignment.autoSelected ? "muted" : "accent" } : {}),
 				title: assignment
 					? `${info.name}${assignment.autoSelected ? " (auto-selected)" : ""}${level ? ` · thinking ${level}` : ""}`
-					: `${info.name}: not assigned`,
+					: `${info.name}：未分配`,
 			});
 		};
 
@@ -2207,7 +2207,7 @@ export class ModelBrowser implements Component {
 
 		const children: NativeChild[] = [
 			text(model.name, { role: "omp.picker.title" }),
-			text([span(selector, "mono")], { actions: { click: "copy" }, title: "Copy model id", truncate: "middle" }),
+			text([span(selector, "mono")], { actions: { click: "copy" }, title: "复制模型 ID", truncate: "middle" }),
 		];
 		const badges: NativeChild[] = [];
 		if (item.selector === current) badges.push(node("badge", { text: "current", tone: "success" }));
@@ -2240,7 +2240,7 @@ export class ModelBrowser implements Component {
 					? "off"
 					: `${compaction.tokens.toLocaleString("en-US")}${compaction.basis !== undefined ? ` · ${compaction.basis}` : ""}`;
 			facts.push({
-				k: [span("Compacts at", "muted")],
+				k: [span("压缩于", "muted")],
 				v: [span(value, "mono"), span(` · ${compaction.source}`, "dim")],
 			});
 		}
@@ -2261,7 +2261,7 @@ export class ModelBrowser implements Component {
 			roleBadges.push(roleBadge(role, heldBy.get(role)));
 		}
 		if (roleBadges.length > 0) {
-			children.push(node("section", { head: "Roles" }, [row(roleBadges, { gap: "xs", wrap: true })]));
+			children.push(node("section", { head: "角色" }, [row(roleBadges, { gap: "xs", wrap: true })]));
 		}
 		const description = model.description ? sanitizeText(model.description).trim() : "";
 		if (description) children.push(md(description));

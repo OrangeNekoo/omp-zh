@@ -2,7 +2,7 @@
  * CLI argument parsing and help display
  */
 import * as path from "node:path";
-import { $env, APP_NAME } from "@oh-my-pi/pi-utils";
+import { CLI_NAME, $env } from "@oh-my-pi/pi-utils";
 import chalk from "@oh-my-pi/pi-utils/chalk";
 import type { ServiceTierOpenAISettingValue } from "../config/service-tier";
 import type { ApprovalMode } from "../tools/approval";
@@ -497,8 +497,8 @@ export function reportUnrecognizedFlags(
 	if (args.unrecognizedFlags.length === 0) return false;
 	const flags = args.unrecognizedFlags;
 	const plural = flags.length === 1 ? "" : "s";
-	write(`${chalk.red(`Error: unknown flag${plural}: ${flags.join(", ")}`)}\n`);
-	write(`Run \`${APP_NAME} --help\` for available flags.\n`);
+	write(`${chalk.red(`错误：未知标志${plural}：${flags.join(", ")}`)}\n`);
+	write(`Run \`${CLI_NAME} --help\` for available flags.\n`);
 	return true;
 }
 
@@ -512,7 +512,7 @@ export function reportInvalidFlagValues(
 	args: Pick<Args, "invalidFlagValues">,
 	write: (text: string) => void = text => process.stderr.write(text),
 ): boolean {
-	for (const message of args.invalidFlagValues) write(`${chalk.red(`Error: ${message}`)}\n`);
+	for (const message of args.invalidFlagValues) write(`${chalk.red(`错误：${message}`)}\n`);
 	return args.invalidFlagValues.length > 0;
 }
 
@@ -522,16 +522,16 @@ export function reportCliUsageError(
 	write: (text: string) => void = text => process.stderr.write(text),
 ): boolean {
 	if (!(error instanceof CliUsageError)) return false;
-	write(`${chalk.red(`Error: ${error.message}`)}\n`);
-	write(`Run \`${APP_NAME} --help\` for available flags.\n`);
+	write(`${chalk.red(`错误：${error.message}`)}\n`);
+	write(`Run \`${CLI_NAME} --help\` for available flags.\n`);
 	return true;
 }
 
 export function printHelp(): void {
 	process.stdout.write(
-		`${chalk.bold(APP_NAME)} - AI coding assistant\n\n` +
-			`Run ${APP_NAME} --help for full command and option details.\n` +
-			`Run ${APP_NAME} <command> --help for command-specific help.\n\n` +
+		`${chalk.bold(CLI_NAME)} - AI coding assistant\n\n` +
+			`Run ${CLI_NAME} --help for full command and option details.\n` +
+			`Run ${CLI_NAME} <command> --help for command-specific help.\n\n` +
 			`${getExtraHelpText()}\n`,
 	);
 }

@@ -24,7 +24,7 @@ export const TINY_TITLE_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "LiquidAI/LFM2.5-230M-MLX-4bit",
 		label: "LFM2.5 230M",
-		description: "Recommended local model; fastest LFM2.5 option, about 214 MB cached.",
+		description: "推荐的本地模型；最快的 LFM2.5 选项，缓存约 214 MB。",
 		contextNote: "Best balance among the current compact title models.",
 	},
 	{
@@ -33,7 +33,7 @@ export const TINY_TITLE_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "LiquidAI/LFM2.5-350M-MLX-4bit",
 		label: "LFM2.5 350M",
-		description: "Larger LFM2.5 option, about 292 MB cached; tends toward terse titles.",
+		description: "较大的 LFM2.5 选项，缓存约 292 MB；倾向生成简洁标题。",
 		contextNote: "Use when compact labels are preferred over descriptive titles.",
 	},
 	{
@@ -42,7 +42,7 @@ export const TINY_TITLE_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "mlx-community/Falcon-H1-Tiny-90M-Instruct-4bit",
 		label: "Falcon H1 Tiny 90M",
-		description: "Smallest option, about 147 MB cached; lower fidelity on complex prompts.",
+		description: "最小的选项，缓存约 147 MB；在复杂提示词上保真度较低。",
 		contextNote: "Use on constrained machines where download size matters most.",
 	},
 ] as const satisfies readonly TinyTitleLocalModelSpec[];
@@ -76,7 +76,7 @@ export const TINY_MEMORY_LOCAL_MODELS = [
 		mlxRepo: "mlx-community/Qwen3-1.7B-4bit",
 		label: "Qwen3 1.7B",
 		description:
-			"MLX only (providers.tinyModelDevice=mlx): onnxruntime-node cannot run this ONNX export's RotaryEmbedding cache updates.",
+			"仅 MLX (providers.tinyModelDevice=mlx)：onnxruntime-node 无法运行此 ONNX 导出的 RotaryEmbedding 缓存更新。",
 		contextNote: "Blocked on the ONNX backend to avoid the unsupported RotaryEmbedding runtime path.",
 		reasoning: true,
 		onnxUnsupportedReason:
@@ -89,7 +89,7 @@ export const TINY_MEMORY_LOCAL_MODELS = [
 		mlxRepo: "mlx-community/Llama-3.2-3B-Instruct-4bit",
 		label: "Llama 3.2 3B",
 		description:
-			"Larger Llama 3.2 option for local memory/classifier tasks; higher quality potential at higher disk/RAM/latency cost.",
+			"用于本地记忆/分类器任务的较大 Llama 3.2 选项；以更高的磁盘/内存/延迟为代价换取更高潜在质量。",
 		contextNote: "Use when larger model capacity is preferred over faster load times.",
 	},
 	{
@@ -98,7 +98,7 @@ export const TINY_MEMORY_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "mlx-community/gemma-3-1b-it-4bit",
 		label: "Gemma 3 1B",
-		description: "Best consolidation/dedup; lighter footprint, but leaks small talk during extraction.",
+		description: "最好的整合/去重；占用更轻，但提取时会混入闲聊内容。",
 		contextNote: "Use when consolidation quality and size matter most.",
 	},
 	{
@@ -107,7 +107,7 @@ export const TINY_MEMORY_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
 		label: "Qwen2.5 1.5B",
-		description: "Best extraction granularity (atomic facts); weaker consolidation.",
+		description: "最好的提取粒度（原子事实）；整合较弱。",
 		contextNote: "Use when fine-grained, deduplicatable facts matter more than summaries.",
 	},
 	{
@@ -116,7 +116,7 @@ export const TINY_MEMORY_LOCAL_MODELS = [
 		dtype: "q4",
 		mlxRepo: "mlx-community/LFM2-1.2B-4bit",
 		label: "LFM2 1.2B",
-		description: "Fastest load; solid all-rounder, slightly noisier extraction labels.",
+		description: "加载最快；综合表现扎实，提取标签略有噪声。",
 		contextNote: "Use when local startup cost is the priority.",
 	},
 ] as const satisfies readonly TinyTitleLocalModelSpec[];

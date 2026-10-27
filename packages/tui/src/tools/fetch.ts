@@ -132,7 +132,7 @@ export function renderReadUrlCall(
 	const description = formatReadUrlDescription(url);
 	const meta: string[] = [];
 	if (args.raw) meta.push("raw");
-	const text = renderStatusLine({ icon: "pending", title: "Read", description, meta }, uiTheme);
+	const text = renderStatusLine({ icon: "pending", title: "读取", description, meta }, uiTheme);
 	return new Text(text, 0, 0);
 }
 
@@ -140,7 +140,7 @@ export function renderReadUrlCall(
 function readUrlHead(input: string, meta: readonly string[] = []): NativeToolHead {
 	const link = input ? readUrlLinkSpan(input) : undefined;
 	return {
-		title: "Read",
+		title: "读取",
 		target: link?.t || undefined,
 		targetKind: "text",
 		href: link?.href,
@@ -166,7 +166,7 @@ export function describeReadUrlResult(result: {
 		return {
 			tool: readUrlHead(urlText),
 			tone: "error",
-			body: [errorText(message.trim() || "Read failed")],
+			body: [errorText(message.trim() || "读取失败")],
 		};
 	}
 
@@ -197,7 +197,7 @@ export function describeReadUrlResult(result: {
 		body: compact([
 			shown.length > 0
 				? text([span(plainText(shown.map(line => line.trimEnd()).join("\n")), "dim")], { wrap: "word" })
-				: noteText("(no content)"),
+				: noteText("（无内容）"),
 			stats,
 			truncated
 				? text(
@@ -205,7 +205,7 @@ export function describeReadUrlResult(result: {
 							span(
 								truncation?.artifactId
 									? `Output truncated · ${formatFullOutputReference(truncation.artifactId)}`
-									: "Output truncated",
+									: "输出已截断",
 								"warning",
 							),
 						],
@@ -229,7 +229,7 @@ export function renderReadUrlResult(
 		const errorText = (rawErrorText || "No response data").replace(/^Error:\s*/, "");
 		const urlText = details?.finalUrl ?? details?.url ?? "";
 		const description = urlText ? formatReadUrlDescription(urlText) : undefined;
-		const header = renderStatusLine({ icon: "error", title: "Read", description }, uiTheme);
+		const header = renderStatusLine({ icon: "error", title: "读取", description }, uiTheme);
 		const errorLines = sanitizeDisplayLines(errorText).map(line => uiTheme.fg("error", line));
 		return framedToolCard(uiTheme, () => ({
 			header,
@@ -247,7 +247,7 @@ export function renderReadUrlResult(
 	const header = renderStatusLine(
 		{
 			icon: truncated ? "warning" : "success",
-			title: "Read",
+			title: "读取",
 			description,
 		},
 		uiTheme,
@@ -262,23 +262,23 @@ export function renderReadUrlResult(
 	const contentLines = contentBody.split("\n").filter(l => l.trim());
 
 	const metadataLines: string[] = [
-		`${uiTheme.fg("muted", "Content-Type:")} ${details.contentType || "unknown"}`,
-		`${uiTheme.fg("muted", "Method:")} ${details.method}`,
+		`${uiTheme.fg("muted", "Content-Type：")} ${details.contentType || "unknown"}`,
+		`${uiTheme.fg("muted", "方法：")} ${details.method}`,
 	];
 	if (hasRedirect) {
 		metadataLines.push(
-			`${uiTheme.fg("muted", "Final URL:")} ${formatReadUrlMetadataValue(details.finalUrl, uiTheme)}`,
+			`${uiTheme.fg("muted", "最终 URL：")} ${formatReadUrlMetadataValue(details.finalUrl, uiTheme)}`,
 		);
 	}
 	const lineLabel = `${lineCount} line${lineCount === 1 ? "" : "s"}`;
-	metadataLines.push(`${uiTheme.fg("muted", "Lines:")} ${lineLabel}`);
-	metadataLines.push(`${uiTheme.fg("muted", "Chars:")} ${charCount}`);
+	metadataLines.push(`${uiTheme.fg("muted", "行数：")} ${lineLabel}`);
+	metadataLines.push(`${uiTheme.fg("muted", "字符数：")} ${charCount}`);
 	if (truncated) {
-		metadataLines.push(uiTheme.fg("warning", `${uiTheme.status.warning} Output truncated`));
+		metadataLines.push(uiTheme.fg("warning", `${uiTheme.status.warning} 输出已截断`));
 		if (truncation?.artifactId) metadataLines.push(formatStyledArtifactReference(truncation.artifactId, uiTheme));
 	}
 	if (hasNotes) {
-		metadataLines.push(`${uiTheme.fg("muted", "Notes:")} ${details.notes.join("; ")}`);
+		metadataLines.push(`${uiTheme.fg("muted", "备注：")} ${details.notes.join("; ")}`);
 	}
 
 	let lastExpanded: boolean | undefined;
@@ -302,7 +302,7 @@ export function renderReadUrlResult(
 				contentPreviewLines =
 					previewLines.length > 0
 						? previewLines.map(line => uiTheme.fg("dim", line))
-						: [uiTheme.fg("dim", "(no content)")];
+						: [uiTheme.fg("dim", "（无内容）")];
 				if (remaining > 0) {
 					const hint = formatExpandHint(uiTheme, expanded, true);
 					contentPreviewLines.push(uiTheme.fg("muted", `… ${remaining} more lines${hint ? ` ${hint}` : ""}`));
@@ -314,8 +314,8 @@ export function renderReadUrlResult(
 				header,
 				phase: truncated ? "warning" : "success",
 				sections: [
-					{ label: uiTheme.fg("toolTitle", "Metadata"), content: metadataLines },
-					{ label: uiTheme.fg("toolTitle", "Content Preview"), content: contentPreviewLines },
+					{ label: uiTheme.fg("toolTitle", "元数据"), content: metadataLines },
+					{ label: uiTheme.fg("toolTitle", "内容预览"), content: contentPreviewLines },
 				],
 				applyBg: false,
 			};

@@ -168,25 +168,25 @@ export class BtwPanelComponent extends OverlayPanel {
 	}
 
 	#describeFooter(canFollowUp: boolean, canBranch: boolean): NativeNode {
-		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "to close" };
+		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "关闭" };
 		switch (this.#state) {
 			case "running":
-				return hintsRow([{ ...esc, label: "to cancel" }]);
+				return hintsRow([{ ...esc, label: "取消" }]);
 			case "complete": {
 				const hints: NativeHint[] = [];
-				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "to copy again" : "to copy" });
-				if (canFollowUp) hints.push({ keys: ["f"], label: "to follow up" });
-				if (canBranch) hints.push({ keys: ["b"], label: "to branch" });
+				if (this.isCopyable()) hints.push({ keys: ["c"], label: this.#copied ? "再次复制" : "复制" });
+				if (canFollowUp) hints.push({ keys: ["f"], label: "追问" });
+				if (canBranch) hints.push({ keys: ["b"], label: "分支" });
 				hints.push(esc);
 				if (!this.#copied) return hintsRow(hints);
-				return statusHintsRow([span("✓ Copied to clipboard", "success")], hints);
+				return statusHintsRow([span("✓ 已复制到剪贴板", "success")], hints);
 			}
 			case "branching":
 				return text([span(`${theme.status.pending} Branching to chat…`, "muted")]);
 			case "aborted":
-				return statusHintsRow([span(`${theme.status.warning} Cancelled`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 已取消`, "warning")], [esc]);
 			case "error":
-				return statusHintsRow([span(`${theme.status.error} Error`, "error")], [esc]);
+				return statusHintsRow([span(`${theme.status.error} 错误`, "error")], [esc]);
 		}
 	}
 
@@ -205,25 +205,25 @@ export class BtwPanelComponent extends OverlayPanel {
 		const esc = interruptKey();
 		switch (this.#state) {
 			case "running":
-				return theme.fg("muted", `${esc} to cancel`);
+				return theme.fg("muted", `${esc} 取消`);
 			case "complete": {
 				const actions: string[] = [];
 				const copyKey = formatKeyHint("c");
-				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} to copy again` : `${copyKey} to copy`);
-				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} to follow up`);
-				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} to branch`);
-				actions.push(`${esc} to close`);
+				if (this.isCopyable()) actions.push(this.#copied ? `${copyKey} 再次复制` : `${copyKey} 复制`);
+				if (this.#canFollowUp?.()) actions.push(`${formatKeyHint("f")} 追问`);
+				if (this.#canBranch?.() ?? this.isBranchable()) actions.push(`${formatKeyHint("b")} 分支`);
+				actions.push(`${esc} 关闭`);
 				if (this.#copied) {
-					return `${theme.fg("success", "✓ Copied to clipboard")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
+					return `${theme.fg("success", "✓ 已复制到剪贴板")}${theme.fg("muted", actions.length > 0 ? ` · ${actions.join(" · ")}` : "")}`;
 				}
 				return theme.fg("muted", actions.join(" · "));
 			}
 			case "branching":
 				return theme.fg("muted", `${theme.status.pending} Branching to chat…`);
 			case "aborted":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} to close`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 关闭`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} to close`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 关闭`);
 		}
 	}
 

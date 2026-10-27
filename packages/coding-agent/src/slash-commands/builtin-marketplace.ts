@@ -45,24 +45,24 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 	{
 		name: "marketplace",
 		icon: "cart",
-		description: "Manage marketplace plugin sources and installed plugins",
-		acpDescription: "Manage plugins from marketplaces",
+		description: "管理插件市场源和已安装插件",
+		acpDescription: "从插件市场管理插件",
 		acpInputHint: "<subcommand>",
 		subcommands: [
-			{ name: "add", description: "Add a marketplace source", usage: "<source>" },
-			{ name: "remove", description: "Remove a marketplace source", usage: "<name>" },
-			{ name: "update", description: "Update marketplace catalog(s)", usage: "[name]" },
-			{ name: "list", description: "List configured marketplaces" },
-			{ name: "discover", description: "Browse available plugins", usage: "[marketplace]" },
+			{ name: "add", description: "添加插件市场源", usage: "<source>" },
+			{ name: "remove", description: "移除插件市场源", usage: "<name>" },
+			{ name: "update", description: "更新插件市场目录", usage: "[name]" },
+			{ name: "list", description: "列出已配置的插件市场" },
+			{ name: "discover", description: "浏览可用插件", usage: "[marketplace]" },
 			{
 				name: "install",
-				description: "Install a plugin (interactive browser if no args)",
+				description: "安装插件（无参数时打开交互式浏览器）",
 				usage: "[--force] [name@marketplace]",
 			},
-			{ name: "uninstall", description: "Uninstall a plugin (selector if no args)", usage: "[name@marketplace]" },
-			{ name: "installed", description: "List installed marketplace plugins" },
-			{ name: "upgrade", description: "Upgrade outdated plugins", usage: "[name@marketplace]" },
-			{ name: "help", description: "Show usage guide" },
+			{ name: "uninstall", description: "卸载插件（无参数时显示选择器）", usage: "[name@marketplace]" },
+			{ name: "installed", description: "列出已安装的市场插件" },
+			{ name: "upgrade", description: "升级过时的插件", usage: "[name@marketplace]" },
+			{ name: "help", description: "显示使用指南" },
 		],
 		allowArgs: true,
 		handle: async (command, runtime) => {
@@ -73,23 +73,26 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					const marketplaces = await manager.listMarketplaces();
 					if (marketplaces.length === 0) {
 						await runtime.output(
-							"No marketplaces configured.\n\nGet started:\n  /marketplace add anthropics/claude-plugins-official\n\nThen browse with /marketplace discover",
+							"未配置插件市场。\n\n开始使用：\n  /marketplace add anthropics/claude-plugins-official\n\n然后用 /marketplace discover 浏览",
 						);
 					} else {
 						const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
 						await runtime.output(
-							`Marketplaces:\n${lines.join("\n")}\n\nUse /marketplace discover to browse plugins, or /marketplace help for all commands`,
+							`插件市场：
+${lines.join("\n")}
+
+使用 /marketplace discover 浏览插件，或使用 /marketplace help 查看全部命令`,
 						);
 					}
 					return commandConsumed();
 				} catch (err) {
-					return usage(`Marketplace error: ${errorMessage(err)}`, runtime);
+					return usage(`插件市场错误：${errorMessage(err)}`, runtime);
 				}
 			}
 			if (verb === "help") {
 				await runtime.output(
 					[
-						"Marketplace commands:",
+						"插件市场命令：",
 						"  /marketplace                              List configured marketplaces",
 						"  /marketplace add <source>                  Add a marketplace (e.g. owner/repo)",
 						"  /marketplace remove <name>                 Remove a marketplace",
@@ -101,7 +104,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						"  /marketplace installed                     List installed plugins",
 						"  /marketplace upgrade [name@marketplace]    Upgrade plugin(s)",
 						"",
-						"Quick start:",
+						"快速开始：",
 						"  /marketplace add anthropics/claude-plugins-official",
 					].join("\n"),
 				);
@@ -109,7 +112,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 			}
 			if ((verb === "install" || verb === "uninstall") && !rest) {
 				return usage(
-					"Interactive plugin pickers are TUI-only. Pass an explicit name@marketplace argument.",
+					"交互式插件选择器仅在 TUI 中可用。请显式传入 name@marketplace 参数。",
 					runtime,
 				);
 			}
@@ -117,35 +120,36 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				const manager = await createMarketplaceManager(runtime);
 				switch (verb) {
 					case "add": {
-						if (!rest) return usage("Usage: /marketplace add <source>", runtime);
+						if (!rest) return usage("用法：/marketplace add <source>", runtime);
 						const entry = await manager.addMarketplace(rest);
-						await runtime.output(`Added marketplace: ${entry.name}`);
+						await runtime.output(`已添加插件市场：${entry.name}`);
 						return commandConsumed();
 					}
 					case "remove":
 					case "rm": {
-						if (!rest) return usage("Usage: /marketplace remove <name>", runtime);
+						if (!rest) return usage("用法：/marketplace remove <name>", runtime);
 						await manager.removeMarketplace(rest);
-						await runtime.output(`Removed marketplace: ${rest}`);
+						await runtime.output(`已移除插件市场：${rest}`);
 						return commandConsumed();
 					}
 					case "update": {
 						if (rest) {
 							await manager.updateMarketplace(rest);
-							await runtime.output(`Updated marketplace: ${rest}`);
+							await runtime.output(`已更新插件市场：${rest}`);
 						} else {
 							const results = await manager.updateAllMarketplaces();
-							await runtime.output(`Updated ${results.length} marketplace(s)`);
+							await runtime.output(`已更新 ${results.length} 个插件市场`);
 						}
 						return commandConsumed();
 					}
 					case "list": {
 						const marketplaces = await manager.listMarketplaces();
 						if (marketplaces.length === 0) {
-							await runtime.output("No marketplaces configured.");
+							await runtime.output("未配置插件市场。");
 						} else {
 							const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
-							await runtime.output(`Marketplaces:\n${lines.join("\n")}`);
+							await runtime.output(`插件市场：
+${lines.join("\n")}`);
 						}
 						return commandConsumed();
 					}
@@ -155,8 +159,8 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							const marketplaces = await manager.listMarketplaces();
 							await runtime.output(
 								marketplaces.length === 0
-									? "No marketplaces configured. Try:\n  /marketplace add anthropics/claude-plugins-official"
-									: "No plugins available in configured marketplaces",
+									? "未配置插件市场。试试：\n  /marketplace add anthropics/claude-plugins-official"
+									: "已配置的市场中没有可用插件",
 							);
 							return commandConsumed();
 						}
@@ -176,7 +180,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						const marketplace = parsed.installSpec.slice(atIndex + 1);
 						await manager.installPlugin(pluginName, marketplace, { force: parsed.force, scope: parsed.scope });
 						await runtime.reloadPlugins();
-						await runtime.output(`Installed ${pluginName} from ${marketplace}`);
+						await runtime.output(`已从 ${pluginName} 安装 ${marketplace}`);
 						return commandConsumed();
 					}
 					case "uninstall": {
@@ -187,18 +191,19 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						if ("error" in parsed) return usage(parsed.error, runtime);
 						await manager.uninstallPlugin(parsed.pluginId, parsed.scope);
 						await runtime.reloadPlugins();
-						await runtime.output(`Uninstalled ${parsed.pluginId}`);
+						await runtime.output(`已卸载 ${parsed.pluginId}`);
 						return commandConsumed();
 					}
 					case "installed": {
 						const installed = await manager.listInstalledPlugins();
 						if (installed.length === 0) {
-							await runtime.output("No marketplace plugins installed");
+							await runtime.output("未安装市场插件");
 						} else {
 							const lines = installed.map(
 								p => `  ${p.id} [${p.scope}]${p.shadowedBy ? " [shadowed]" : ""} (${p.entries.length} entry)`,
 							);
-							await runtime.output(`Installed plugins:\n${lines.join("\n")}`);
+							await runtime.output(`已安装的插件：
+${lines.join("\n")}`);
 						}
 						return commandConsumed();
 					}
@@ -211,27 +216,28 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							if ("error" in parsed) return usage(parsed.error, runtime);
 							const result = await manager.upgradePlugin(parsed.pluginId, parsed.scope);
 							await runtime.reloadPlugins();
-							await runtime.output(`Upgraded ${parsed.pluginId} to ${result.version}`);
+							await runtime.output(`已将 ${parsed.pluginId} 升级到 ${result.version}`);
 							return commandConsumed();
 						}
 						const results = await manager.upgradeAllPlugins();
 						if (results.length === 0) {
-							await runtime.output("All marketplace plugins are up to date");
+							await runtime.output("所有市场插件均为最新");
 						} else {
 							await runtime.reloadPlugins();
 							const lines = results.map(r => `  ${r.pluginId}: ${r.from} -> ${r.to}`);
-							await runtime.output(`Upgraded ${results.length} plugin(s):\n${lines.join("\n")}`);
+							await runtime.output(`已升级 ${results.length} 个插件：
+${lines.join("\n")}`);
 						}
 						return commandConsumed();
 					}
 					default:
 						return usage(
-							`Unknown /marketplace subcommand: ${verb}. Use /marketplace help for available commands.`,
+							`未知的 /marketplace 子命令：${verb}。使用 /marketplace help 查看可用命令。`,
 							runtime,
 						);
 				}
 			} catch (err) {
-				return usage(`Marketplace error: ${errorMessage(err)}`, runtime);
+				return usage(`插件市场错误：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (command, runtime) => {
@@ -245,7 +251,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				try {
 					runtime.ctx.showPluginSelector("install");
 				} catch (err) {
-					runtime.ctx.showStatus(`Marketplace error: ${err}`);
+					runtime.ctx.showStatus(`插件市场错误：${err}`);
 				}
 				return;
 			}
@@ -265,30 +271,30 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				switch (sub) {
 					case "add": {
 						if (!rest) {
-							runtime.ctx.showStatus("Usage: /marketplace add <source>");
+							runtime.ctx.showStatus("用法：/marketplace add <source>");
 							return;
 						}
 						const entry = await mgr.addMarketplace(rest);
-						runtime.ctx.showStatus(`Added marketplace: ${entry.name}`);
+						runtime.ctx.showStatus(`已添加插件市场：${entry.name}`);
 						break;
 					}
 					case "remove":
 					case "rm": {
 						if (!rest) {
-							runtime.ctx.showStatus("Usage: /marketplace remove <name>");
+							runtime.ctx.showStatus("用法：/marketplace remove <name>");
 							return;
 						}
 						await mgr.removeMarketplace(rest);
-						runtime.ctx.showStatus(`Removed marketplace: ${rest}`);
+						runtime.ctx.showStatus(`已移除插件市场：${rest}`);
 						break;
 					}
 					case "update": {
 						if (rest) {
 							await mgr.updateMarketplace(rest);
-							runtime.ctx.showStatus(`Updated marketplace: ${rest}`);
+							runtime.ctx.showStatus(`已更新插件市场：${rest}`);
 						} else {
 							const results = await mgr.updateAllMarketplaces();
-							runtime.ctx.showStatus(`Updated ${results.length} marketplace(s)`);
+							runtime.ctx.showStatus(`已更新 ${results.length} 个插件市场`);
 						}
 						break;
 					}
@@ -298,17 +304,18 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							const marketplaces = await mgr.listMarketplaces();
 							if (marketplaces.length === 0) {
 								runtime.ctx.showStatus(
-									"No marketplaces configured. Try:\n  /marketplace add anthropics/claude-plugins-official",
+									"未配置插件市场。试试：\n  /marketplace add anthropics/claude-plugins-official",
 								);
 							} else {
-								runtime.ctx.showStatus("No plugins available in configured marketplaces");
+								runtime.ctx.showStatus("已配置的市场中没有可用插件");
 							}
 						} else {
 							const lines = plugins.map(
 								p =>
 									`  ${p.name}${p.version ? `@${p.version}` : ""}${p.description ? ` - ${p.description}` : ""}`,
 							);
-							runtime.ctx.showStatus(`Available plugins:\n${lines.join("\n")}`);
+							runtime.ctx.showStatus(`可用插件：
+${lines.join("\n")}`);
 						}
 						break;
 					}
@@ -323,7 +330,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						const name = parsed.installSpec.slice(0, atIdx);
 						const marketplace = parsed.installSpec.slice(atIdx + 1);
 						await mgr.installPlugin(name, marketplace, { force: parsed.force, scope: parsed.scope });
-						runtime.ctx.showStatus(`Installed ${name} from ${marketplace}`);
+						runtime.ctx.showStatus(`已从 ${name} 安装 ${marketplace}`);
 						break;
 					}
 					case "uninstall": {
@@ -341,18 +348,19 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 							return;
 						}
 						await mgr.uninstallPlugin(uninstArgs.pluginId, uninstArgs.scope);
-						runtime.ctx.showStatus(`Uninstalled ${uninstArgs.pluginId}`);
+						runtime.ctx.showStatus(`已卸载 ${uninstArgs.pluginId}`);
 						break;
 					}
 					case "installed": {
 						const installed = await mgr.listInstalledPlugins();
 						if (installed.length === 0) {
-							runtime.ctx.showStatus("No marketplace plugins installed");
+							runtime.ctx.showStatus("未安装市场插件");
 						} else {
 							const lines = installed.map(
 								p => `  ${p.id} [${p.scope}]${p.shadowedBy ? " [shadowed]" : ""} (${p.entries.length} entry)`,
 							);
-							runtime.ctx.showStatus(`Installed plugins:\n${lines.join("\n")}`);
+							runtime.ctx.showStatus(`已安装的插件：
+${lines.join("\n")}`);
 						}
 						break;
 					}
@@ -367,14 +375,15 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 								return;
 							}
 							const result = await mgr.upgradePlugin(upArgs.pluginId, upArgs.scope);
-							runtime.ctx.showStatus(`Upgraded ${upArgs.pluginId} to ${result.version}`);
+							runtime.ctx.showStatus(`已将 ${upArgs.pluginId} 升级到 ${result.version}`);
 						} else {
 							const results = await mgr.upgradeAllPlugins();
 							if (results.length === 0) {
-								runtime.ctx.showStatus("All marketplace plugins are up to date");
+								runtime.ctx.showStatus("所有市场插件均为最新");
 							} else {
 								const lines = results.map(r => `  ${r.pluginId}: ${r.from} -> ${r.to}`);
-								runtime.ctx.showStatus(`Upgraded ${results.length} plugin(s):\n${lines.join("\n")}`);
+								runtime.ctx.showStatus(`已升级 ${results.length} 个插件：
+${lines.join("\n")}`);
 							}
 						}
 						break;
@@ -382,7 +391,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					case "help": {
 						runtime.ctx.showStatus(
 							[
-								"Marketplace commands:",
+								"插件市场命令：",
 								"  /marketplace                              Browse and install plugins",
 								"  /marketplace add <source>                  Add a marketplace (e.g. owner/repo)",
 								"  /marketplace remove <name>                 Remove a marketplace",
@@ -394,7 +403,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 								"  /marketplace installed                     List installed plugins",
 								"  /marketplace upgrade [name@marketplace]    Upgrade plugin(s)",
 								"",
-								"Quick start:",
+								"快速开始：",
 								"  /marketplace add anthropics/claude-plugins-official",
 								"  /marketplace                               (opens interactive browser)",
 							].join("\n"),
@@ -405,12 +414,15 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 						const marketplaces = await mgr.listMarketplaces();
 						if (marketplaces.length === 0) {
 							runtime.ctx.showStatus(
-								"No marketplaces configured.\n\nGet started:\n  /marketplace add anthropics/claude-plugins-official\n\nThen browse plugins with /marketplace or /marketplace discover",
+								"未配置插件市场。\n\n开始使用：\n  /marketplace add anthropics/claude-plugins-official\n\n然后用 /marketplace 或 /marketplace discover 浏览插件",
 							);
 						} else {
 							const lines = marketplaces.map(m => `  ${m.name}  ${m.sourceUri}`);
 							runtime.ctx.showStatus(
-								`Marketplaces:\n${lines.join("\n")}\n\nUse /marketplace discover to browse plugins, or /marketplace help for all commands`,
+								`插件市场：
+${lines.join("\n")}
+
+使用 /marketplace discover 浏览插件，或使用 /marketplace help 查看全部命令`,
 							);
 						}
 						break;
@@ -418,7 +430,7 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 				}
 			} catch (err) {
 				const msg = err instanceof Error ? err.message : String(err);
-				runtime.ctx.showStatus(`Marketplace error: ${msg}`);
+				runtime.ctx.showStatus(`插件市场错误：${msg}`);
 			}
 		},
 	},
@@ -426,13 +438,13 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 		name: "plugins",
 		aliases: ["plugin"],
 		icon: "package",
-		description: "View and manage installed plugins",
-		acpDescription: "Manage plugins",
+		description: "查看并管理已安装插件",
+		acpDescription: "管理插件",
 		acpInputHint: "[list|enable|disable]",
 		subcommands: [
-			{ name: "list", description: "List all installed plugins (npm + marketplace)" },
-			{ name: "enable", description: "Enable an installed plugin", usage: "<plugin>" },
-			{ name: "disable", description: "Disable an installed plugin", usage: "<plugin>" },
+			{ name: "list", description: "列出所有已安装插件（npm + 市场）" },
+			{ name: "enable", description: "启用已安装的插件", usage: "<plugin>" },
+			{ name: "disable", description: "禁用已安装的插件", usage: "<plugin>" },
 		],
 		allowArgs: true,
 		handle: async (command, runtime) => {
@@ -479,26 +491,26 @@ export const BUILTIN_MARKETPLACE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec>
 					}
 				}
 
-				await runtime.output(lines.length === 0 ? "No plugins installed" : lines.join("\n"));
+				await runtime.output(lines.length === 0 ? "未安装插件" : lines.join("\n"));
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Plugin error: ${errorMessage(err)}`, runtime);
+				return usage(`插件错误：${errorMessage(err)}`, runtime);
 			}
 		},
 	},
 	{
 		name: "reload-plugins",
 		icon: "restart",
-		description: "Reload all plugins (skills, commands, hooks, tools, agents, MCP)",
-		acpDescription: "Reload all plugins",
+		description: "重新加载所有插件（技能、命令、Hook、工具、代理、MCP）",
+		acpDescription: "重新加载所有插件",
 		handle: async (_command, runtime) => {
 			await runtime.reloadPlugins();
-			await runtime.output("Plugins reloaded.");
+			await runtime.output("插件已重新加载。");
 			return commandConsumed();
 		},
 		handleTui: async (_command, runtime) => {
 			await reloadTuiPluginState(runtime.ctx);
-			runtime.ctx.showStatus("Plugins reloaded.");
+			runtime.ctx.showStatus("插件已重新加载。");
 			clearSubmittedText(runtime);
 		},
 	},

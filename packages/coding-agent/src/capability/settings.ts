@@ -23,7 +23,7 @@ export interface Settings {
 export const settingsCapability = defineCapability<Settings>({
 	id: "settings",
 	displayName: "Settings",
-	description: "Configuration settings from various sources",
+	description: "来自多种来源的配置设置",
 	// Settings are merged, not deduplicated by key
 	key: () => undefined,
 	validate: settings => {

@@ -231,7 +231,7 @@ export function buildProviderTabs(extensions: Extension[], providers: readonly E
 	// ALL tab first
 	tabs.push({
 		id: "all",
-		label: "ALL",
+		label: "全部",
 		enabled: true,
 		count: extensions.length,
 	});

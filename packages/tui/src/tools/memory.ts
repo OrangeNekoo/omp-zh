@@ -88,7 +88,7 @@ function retainComponent(contents: string[], header: string, getExpanded: () => 
 /** Retained memories as a list, clamped to the collapsed item budget. */
 function describeRetain(contents: string[], summary?: string): NativeToolView {
 	return {
-		head: toolHead("Retain", summary),
+		head: toolHead("保留", summary),
 		inline: true,
 		body:
 			contents.length > 0
@@ -109,7 +109,7 @@ export const retainToolRenderer = {
 	mergeCallAndResult: true,
 	renderCall(args: RetainRenderArgs, options: RenderResultOptions, theme: Theme): Component {
 		const contents = retainContents(args);
-		const header = renderStatusLine({ icon: "pending", title: "Retain" }, theme);
+		const header = renderStatusLine({ icon: "pending", title: "保留" }, theme);
 		return retainComponent(contents, header, () => options.expanded, theme);
 	},
 	renderResult(
@@ -119,7 +119,7 @@ export const retainToolRenderer = {
 		args?: RetainRenderArgs,
 	): Component {
 		if (result.isError) {
-			return new Text(formatErrorMessage(resultText(result).trim() || "Retain failed", theme), 0, 0);
+			return new Text(formatErrorMessage(resultText(result).trim() || "保存记忆失败", theme), 0, 0);
 		}
 		const contents = retainContents(args);
 		// `summary` is the tool's own "N memories stored/queued." line; drop the
@@ -128,7 +128,7 @@ export const retainToolRenderer = {
 		const header = renderStatusLine(
 			{
 				iconOverride: theme.styledSymbol("tool.memory", "accent"),
-				title: "Retain",
+				title: "保留",
 				meta: summary ? [summary] : undefined,
 			},
 			theme,
@@ -146,7 +146,7 @@ export const retainToolRenderer = {
 	): NativeToolView | undefined {
 		return retainResultMemo.get(result, [], () => {
 			if (result.isError)
-				return { ...errorView("Retain", resultText(result).trim() || "Retain failed"), inline: true };
+				return { ...errorView("Retain", resultText(result).trim() || "保存记忆失败"), inline: true };
 			return describeRetain(retainContents(args), resultText(result).trim().replace(/\.$/, ""));
 		});
 	},
@@ -166,7 +166,7 @@ export const recallToolRenderer = {
 		args?: QueryRenderArgs,
 	): Component {
 		if (result.isError) {
-			return new Text(formatErrorMessage(resultText(result).trim() || "Recall failed", theme), 0, 0);
+			return new Text(formatErrorMessage(resultText(result).trim() || "召回记忆失败", theme), 0, 0);
 		}
 		const text = resultText(result).trim();
 		const match = text.match(/^Found (\d+) relevant/);
@@ -209,7 +209,7 @@ export const recallToolRenderer = {
 		return recallResultMemo.get(result, [], () => {
 			const query = args?.query?.trim();
 			const output = resultText(result).trim();
-			if (result.isError) return { ...errorView("Recall", output || "Recall failed", query), inline: true };
+			if (result.isError) return { ...errorView("Recall", output || "召回记忆失败", query), inline: true };
 			const found = Number(output.match(/^Found (\d+) relevant/)?.[1] ?? 0);
 			if (found === 0) return { head: toolHead("Recall", query, "no matches"), tone: "warning", inline: true };
 			// Collapsed keeps to the header; expanding reveals the recalled memories.
@@ -242,7 +242,7 @@ export const reflectToolRenderer = {
 		args?: QueryRenderArgs,
 	): Component {
 		if (result.isError) {
-			return new Text(formatErrorMessage(resultText(result).trim() || "Reflect failed", theme), 0, 0);
+			return new Text(formatErrorMessage(resultText(result).trim() || "反思记忆失败", theme), 0, 0);
 		}
 		const header = queryHeader(
 			"Reflect",
@@ -274,7 +274,7 @@ export const reflectToolRenderer = {
 		);
 	},
 	describeCall(args: QueryRenderArgs): NativeToolView {
-		return { head: toolHead("Reflect", args.query?.trim()), inline: true };
+		return { head: toolHead("反思", args.query?.trim()), inline: true };
 	},
 	describeResult(
 		result: { content: Array<{ type: string; text?: string }>; isError?: boolean },
@@ -284,10 +284,10 @@ export const reflectToolRenderer = {
 		return reflectResultMemo.get(result, [], () => {
 			const query = args?.query?.trim();
 			const answer = resultText(result).trim();
-			if (result.isError) return { ...errorView("Reflect", answer || "Reflect failed", query), inline: true };
+			if (result.isError) return { ...errorView("Reflect", answer || "反思记忆失败", query), inline: true };
 			const shown = answer.split("\n").slice(0, PREVIEW_LIMITS.OUTPUT_EXPANDED).join("\n").trim();
 			return {
-				head: toolHead("Reflect", query),
+				head: toolHead("反思", query),
 				inline: true,
 				body: shown ? [md(shown, { role: "omp.memory.reflect" })] : [],
 				preview: { lines: PREVIEW_LIMITS.OUTPUT_COLLAPSED },

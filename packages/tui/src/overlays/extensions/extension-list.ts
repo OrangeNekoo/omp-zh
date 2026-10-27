@@ -234,20 +234,20 @@ export class ExtensionList implements Component {
 		this.#visibleCount = 0;
 
 		// Search bar
-		const searchPrefix = theme.fg("muted", "Search: ");
+		const searchPrefix = theme.fg("muted", "搜索：");
 		const query = this.#search.getValue();
 		if (this.#focused) {
 			const fieldWidth = Math.max(1, width - visibleWidth(searchPrefix));
 			const [field = ""] = this.#search.render(Math.min(fieldWidth, visibleWidth(query) + 1));
 			lines.push(searchPrefix + field);
 		} else {
-			lines.push(searchPrefix + (query || theme.fg("dim", "type to filter")));
+			lines.push(searchPrefix + (query || theme.fg("dim", "输入以筛选")));
 		}
 		lines.push("");
 
 		const items = this.#menu.visibleItems;
 		if (items.length === 0) {
-			lines.push(theme.fg("muted", "  No extensions found for this provider."));
+			lines.push(theme.fg("muted", "  此服务商没有可用扩展。"));
 			return lines;
 		}
 
@@ -377,7 +377,7 @@ export class ExtensionList implements Component {
 			"list",
 			{
 				selected: selected ? nativeItemId(selected) : null,
-				empty: "No extensions found for this provider.",
+				empty: "此服务商没有可用扩展。",
 				virtual: true,
 				grow: 1,
 				basis: 0,
@@ -449,7 +449,7 @@ export class ExtensionList implements Component {
 		if (entry.type === "master") {
 			return {
 				id,
-				label: `Enable ${sanitizeDisplayLine(entry.providerName)}`,
+				label: `启用 ${sanitizeDisplayLine(entry.providerName)}`,
 				icon: "power",
 				dot: entry.enabled ? "success" : "muted",
 				badges: [{ text: "Master Switch", tone: "warning" }],
@@ -460,9 +460,9 @@ export class ExtensionList implements Component {
 			const off = !entry.enabled || masterDisabled;
 			return {
 				id,
-				label: `Load ~/ ${sanitizeDisplayLine(entry.providerName)} config`,
+				label: `加载 ~/ ${sanitizeDisplayLine(entry.providerName)} 配置`,
 				icon: "folder",
-				detail: "opt-in; project config always loads",
+				detail: "需手动启用；项目配置始终加载",
 				dot: entry.enabled ? "success" : "muted",
 				tone: off ? "muted" : undefined,
 				disabled: masterDisabled ? "Provider disabled" : undefined,
@@ -493,7 +493,7 @@ export class ExtensionList implements Component {
 						{
 							text: "shadowed",
 							tone: "warning",
-							title: ext.shadowedBy ? `Shadowed by ${sanitizeDisplayLine(ext.shadowedBy)}` : undefined,
+							title: ext.shadowedBy ? `被 ${sanitizeDisplayLine(ext.shadowedBy)} 遮蔽` : undefined,
 						},
 					]
 				: undefined,
@@ -532,7 +532,7 @@ export class ExtensionList implements Component {
 			? theme.fg("success", theme.checkbox.checked)
 			: theme.fg("dim", theme.checkbox.unchecked);
 		const label = `Load ~/ ${item.providerName} config`;
-		const badge = theme.fg("muted", "(opt-in; project config always loads)");
+		const badge = theme.fg("muted", "（需手动启用；项目配置始终加载）");
 
 		let line = `${checkbox} ${theme.icon.folder} ${label}  ${badge}`;
 
@@ -552,7 +552,7 @@ export class ExtensionList implements Component {
 			: theme.fg("dim", theme.checkbox.unchecked);
 		const icon = theme.icon.package;
 		const label = `Enable ${item.providerName}`;
-		const badge = theme.fg("warning", "(Master Switch)");
+		const badge = theme.fg("warning", "（总开关）");
 
 		let line = `${checkbox} ${icon} ${label}  ${badge}`;
 

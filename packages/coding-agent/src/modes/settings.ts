@@ -33,10 +33,10 @@ export const cfgAutoResume = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Auto Resume",
+		group: "启动与更新",
+		label: "自动恢复",
 		description:
-			"Automatically resume the most recent session in the current directory. If its model cannot be restored and model fallback is disabled, interactive startup warns and starts a new session without the saved history",
+			"自动恢复当前目录中最近的会话。若其模型无法恢复且模型回退已关闭，交互式启动会给出警告并开启不带保存历史的新会话",
 	},
 });
 
@@ -47,8 +47,8 @@ export const cfgGitEnabled = register({
 	ui: {
 		tab: "interaction",
 		group: "Git",
-		label: "Enable Git Integration",
-		description: "Show git branch, status, and PR information in the TUI and watch repository metadata.",
+		label: "启用 Git 集成",
+		description: "在 TUI 中显示 git 分支、状态与 PR 信息，并监视仓库元数据。",
 	},
 });
 
@@ -63,9 +63,9 @@ export const cfgThemeDark = register({
 	default: "titanium",
 	ui: {
 		tab: "appearance",
-		group: "Theme",
-		label: "Dark Theme",
-		description: "Theme used when the terminal has a dark background",
+		group: "主题",
+		label: "深色主题",
+		description: "终端为深色背景时使用的主题",
 		options: "runtime",
 	},
 });
@@ -77,9 +77,9 @@ export const cfgThemeLight = register({
 	default: "light",
 	ui: {
 		tab: "appearance",
-		group: "Theme",
-		label: "Light Theme",
-		description: "Theme used when the terminal has a light background",
+		group: "主题",
+		label: "浅色主题",
+		description: "终端为浅色背景时使用的主题",
 		options: "runtime",
 	},
 });
@@ -92,17 +92,17 @@ export const cfgSymbolPreset = register({
 	default: "unicode",
 	ui: {
 		tab: "appearance",
-		group: "Theme",
-		label: "Symbol Preset",
-		description: "Glyph set for icons and symbols (Unicode, Nerd Font, or ASCII)",
+		group: "主题",
+		label: "符号预设",
+		description: "图标与符号使用的字形集（Unicode、Nerd Font 或 ASCII）",
 		options: [
-			{ value: "unicode", label: "Unicode", description: "Standard symbols (default)" },
+			{ value: "unicode", label: "Unicode", description: "标准符号（默认）" },
 			{
 				value: "nerd",
-				label: "Nerd Font",
-				description: "Requires a Nerd Font, or a Glyph Protocol terminal (icons ship in-band)",
+				label: "Nerd 字体",
+				description: "需要 Nerd 字体，或支持 Glyph 协议的终端（图标随带内数据下发）",
 			},
-			{ value: "ascii", label: "ASCII", description: "Maximum compatibility" },
+			{ value: "ascii", label: "ASCII", description: "最大兼容性" },
 		],
 	},
 });
@@ -114,9 +114,9 @@ export const cfgColorBlindMode = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Theme",
-		label: "Color-Blind Mode",
-		description: "Use blue instead of green for diff additions",
+		group: "主题",
+		label: "色盲模式",
+		description: "差异新增使用蓝色而非绿色",
 	},
 });
 effect(cfgColorBlindMode, setColorBlindMode);
@@ -128,9 +128,9 @@ export const cfgComposerShape = register({
 	default: "band",
 	ui: {
 		tab: "appearance",
-		group: "Composer",
-		label: "Composer Shape",
-		description: "Visual layout of the input editor and status line",
+		group: "输入框",
+		label: "输入框形状",
+		description: "输入编辑器与状态栏的视觉布局",
 		options: "runtime",
 	},
 });
@@ -142,10 +142,10 @@ export const cfgComposerTokenRate = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Composer",
-		label: "Generation Rate",
+		group: "输入框",
+		label: "生成速率",
 		description:
-			"Show a live generation tok/s readout: on the working row next to the session title, or in the native composer bar right after the thinking level, where the last reading stays between turns. Estimated from streamed deltas and corrected by the provider's billed output count as each message completes.",
+			"显示实时生成速度（tok/s）：在工作行的会话标题旁，或原生输入框栏中紧跟思考等级之后，最后一次读数会保留到下一回合。由流式增量估算，并在每条消息完成时用服务商计费的输出数校正。",
 	},
 });
 
@@ -157,17 +157,17 @@ export const cfgStatusLinePreset = register({
 	default: "default",
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Status Line Preset",
-		description: "Pre-built status line configurations",
+		group: "状态栏",
+		label: "状态栏预设",
+		description: "预构建的状态栏配置",
 		options: [
-			{ value: "default", label: "Default", description: "Model, path, git, context, tokens, cost" },
-			{ value: "minimal", label: "Minimal", description: "Path and git only" },
-			{ value: "compact", label: "Compact", description: "Model, git, cost, context" },
-			{ value: "full", label: "Full", description: "All segments including time" },
-			{ value: "nerd", label: "Nerd", description: "Maximum info with Nerd Font icons" },
-			{ value: "ascii", label: "ASCII", description: "No special characters" },
-			{ value: "custom", label: "Custom", description: "User-defined segments" },
+			{ value: "default", label: "默认", description: "模型、路径、git、上下文、令牌、成本" },
+			{ value: "minimal", label: "极简", description: "仅路径与 git" },
+			{ value: "compact", label: "压缩", description: "模型、git、成本、上下文" },
+			{ value: "full", label: "完整", description: "所有段（含时间）" },
+			{ value: "nerd", label: "Nerd", description: "Nerd 字体图标的最大信息量" },
+			{ value: "ascii", label: "ASCII", description: "无特殊字符" },
+			{ value: "custom", label: "自定义", description: "用户自定义段" },
 		],
 	},
 });
@@ -179,17 +179,17 @@ export const cfgStatusLineSeparator = register({
 	default: "powerline-thin",
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Status Line Separator",
-		description: "Style of separators between segments",
+		group: "状态栏",
+		label: "状态栏分隔符",
+		description: "各段之间分隔符的样式",
 		options: [
-			{ value: "powerline", label: "Powerline", description: "Solid arrows (Nerd Font)" },
-			{ value: "powerline-thin", label: "Thin chevron", description: "Thin arrows (Nerd Font)" },
-			{ value: "slash", label: "Slash", description: "Forward slashes" },
-			{ value: "pipe", label: "Pipe", description: "Vertical pipes" },
-			{ value: "block", label: "Block", description: "Solid blocks" },
-			{ value: "none", label: "None", description: "Space only" },
-			{ value: "ascii", label: "ASCII", description: "Greater-than signs" },
+			{ value: "powerline", label: "Powerline", description: "实心箭头（Nerd 字体）" },
+			{ value: "powerline-thin", label: "细箭头", description: "细箭头（Nerd 字体）" },
+			{ value: "slash", label: "斜杠", description: "正斜杠" },
+			{ value: "pipe", label: "竖线", description: "竖线" },
+			{ value: "block", label: "阻止", description: "实心方块" },
+			{ value: "none", label: "无", description: "仅空格" },
+			{ value: "ascii", label: "ASCII", description: "大于号" },
 		],
 	},
 });
@@ -201,25 +201,25 @@ export const cfgStatusLineContextLine = register({
 	default: "embedded",
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Context-Reactive Line",
-		description: "How the line between the left and right segments reflects context usage (box composer only)",
+		group: "状态栏",
+		label: "上下文响应行",
+		description: "左右段之间的线条如何反映上下文用量（仅限方框输入框）",
 		options: [
-			{ value: "off", label: "Off", description: "Solid accent line, no context feedback" },
+			{ value: "off", label: "关闭", description: "实心强调色线条，无上下文反馈" },
 			{
 				value: "percentage",
-				label: "Percentage",
-				description: "Used portion in accent color, remainder dimmed",
+				label: "百分比",
+				description: "已用部分用强调色，剩余部分弱化",
 			},
 			{
 				value: "annotated",
-				label: "Annotated",
-				description: "Percentage plus ticks at the speculative and auto-compaction boundaries",
+				label: "已标注",
+				description: "百分比，并在推测与自动压缩边界处显示刻度",
 			},
 			{
 				value: "embedded",
-				label: "Embedded",
-				description: "Annotated line with the context percentage and window embedded in the gauge",
+				label: "已嵌入",
+				description: "带注释的行，上下文百分比与窗口嵌入仪表中",
 			},
 		],
 	},
@@ -231,9 +231,9 @@ export const cfgStatusLineSessionAccent = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Session Accent",
-		description: "Use the session name color for the editor border and status line gap",
+		group: "状态栏",
+		label: "会话强调色",
+		description: "编辑框边框与状态栏间隙使用会话名称颜色",
 	},
 });
 
@@ -243,10 +243,10 @@ export const cfgStatusLineTransparent = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Transparent Status Line",
+		group: "状态栏",
+		label: "透明状态栏",
 		description:
-			"Use the terminal's default background for the status line instead of the theme's `statusLineBg`. Powerline end caps are dropped because they need a contrasting fill to bridge into the surrounding terminal.",
+			"状态栏使用终端默认背景色，而非主题的 `statusLineBg`。Powerline 端帽会被去掉，因为它们需要对比填充才能与周围的终端背景衔接。",
 	},
 });
 
@@ -256,10 +256,10 @@ export const cfgStatusLineCompactThinkingLevel = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Compact Thinking Level",
+		group: "状态栏",
+		label: "压缩思考等级",
 		description:
-			"Show the thinking level as a single icon on the model name instead of a separate ` · <level>` suffix; in Tern's composer, as the model chip's icon instead of a separate chip (click the icon to cycle it).",
+			"将思考等级以模型名上的单个图标显示，而非单独的 ` · <level>` 后缀；在 Tern 的输入框中，作为模型标签的图标而非独立标签（点击图标可循环切换）。",
 	},
 });
 
@@ -269,9 +269,9 @@ export const cfgStatusLineShowHookStatus = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Status Line",
-		label: "Show Hook Status",
-		description: "Display hook status messages below the status line",
+		group: "状态栏",
+		label: "显示 Hook 状态",
+		description: "在状态栏下方显示 Hook 状态消息",
 	},
 });
 
@@ -279,14 +279,14 @@ export const cfgStatusLineLeftSegments = register({
 	id: "statusLine.leftSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.left,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏片段" },
 });
 
 export const cfgStatusLineRightSegments = register({
 	id: "statusLine.rightSegments",
 	type: "array",
 	default: CUSTOM_STATUS_LINE_DEFAULTS.right,
-	items: { values: STATUS_LINE_SEGMENT_IDS, label: "status line segment" },
+	items: { values: STATUS_LINE_SEGMENT_IDS, label: "状态栏片段" },
 });
 
 export const cfgStatusLineSegmentOptions = register({
@@ -302,9 +302,9 @@ export const cfgTerminalShowImages = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Images",
-		label: "Show Inline Images",
-		description: "Render images inline in the terminal",
+		group: "图像",
+		label: "显示内联图像",
+		description: "在终端中内联渲染图像",
 		condition: "hasImageProtocol",
 	},
 });
@@ -315,9 +315,9 @@ export const cfgImagesAutoResize = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Images",
-		label: "Auto-Resize Images",
-		description: "Resize large images to 2000x2000 max for better model compatibility",
+		group: "图像",
+		label: "自动调整图像大小",
+		description: "将大图像缩小到最大 2000x2000，以获得更好的模型兼容性",
 	},
 });
 
@@ -327,9 +327,9 @@ export const cfgImagesBlockImages = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Images",
-		label: "Block Images",
-		description: "Prevent images from being sent to LLM providers",
+		group: "图像",
+		label: "阻止图像",
+		description: "阻止将图像发送给 LLM 服务商",
 	},
 });
 
@@ -338,7 +338,7 @@ export const cfgTuiMaxInlineImageColumns = register({
 	type: "number",
 	default: 100,
 	description:
-		"Maximum width in terminal columns for inline images (default 100). Set to 0 for unlimited (bounded only by terminal width).",
+		"内联图像的最大宽度（终端列，默认 100）。设为 0 表示不限制（仅受终端宽度约束）。",
 });
 effect(cfgTuiMaxInlineImageColumns, setInlineImageMaxColumns);
 
@@ -347,7 +347,7 @@ export const cfgTuiMaxInlineImageRows = register({
 	type: "number",
 	default: 20,
 	description:
-		"Maximum height in terminal rows for inline images (default 20). Set to 0 to use only the viewport-based limit (60% of terminal height).",
+		"内联图像的最大高度（终端行，默认 20）。设为 0 则只使用基于视口的限制（终端高度的 60%）。",
 });
 effect(cfgTuiMaxInlineImageRows, setInlineImageMaxRows);
 
@@ -356,7 +356,7 @@ export const cfgTuiMaxInlineImages = register({
 	type: "number",
 	default: 8,
 	description:
-		"Maximum number of inline images kept as live terminal graphics (default 8). Older images fall back to a text placeholder via a full redraw once the limit is exceeded. Set to 0 to keep every image (no limit).",
+		"保留为实时终端图形的内联图像最大数量（默认 8）。超过限制后，较旧的图像会在一次完整重绘后回退为文本占位符。设为 0 则保留所有图像（不限制）。",
 });
 
 export const cfgTuiResizeScrollback = register({
@@ -366,24 +366,24 @@ export const cfgTuiResizeScrollback = register({
 	default: "rebuild",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Resize Scrollback",
-		description: "How a settled terminal resize refreshes transcript rows retained in terminal scrollback",
+		group: "显示",
+		label: "调整回滚缓冲区",
+		description: "终端尺寸调整稳定后，如何刷新保留在终端回滚区中的记录行",
 		options: [
 			{
 				value: "append",
-				label: "Append",
-				description: "Replay the transcript at the new width below retained history",
+				label: "追加",
+				description: "在保留的历史下方以新宽度重放会话记录",
 			},
 			{
 				value: "rebuild",
-				label: "Rebuild",
-				description: "Erase all terminal scrollback, then replay one current-width transcript",
+				label: "重建",
+				description: "清除所有终端回滚内容，然后按当前宽度重放一份会话记录",
 			},
 			{
 				value: "preserve",
-				label: "Preserve",
-				description: "Repaint only the viewport and keep history wrapped at its old width",
+				label: "保留",
+				description: "仅重绘视口，历史内容保持按旧宽度换行",
 			},
 		],
 	},
@@ -395,10 +395,10 @@ export const cfgTuiCompleteScrollback = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Complete Scrollback",
+		group: "显示",
+		label: "完整回滚",
 		description:
-			"Send transcript rows pushed off screen by a growing HUD or dialog straight to scrollback; when it shrinks, blank rows sit between the transcript and the input until new output fills them",
+			"把因 HUD 或对话框变高而被挤出屏幕的记录行直接送入回滚区；当它变矮时，记录与输入框之间会留出空行，直到新输出填补",
 	},
 });
 
@@ -408,10 +408,10 @@ export const cfgTerminalShowProgress = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Native Terminal Progress",
+		group: "显示",
+		label: "原生终端进度",
 		description:
-			"Emit OSC 9;4 indeterminate progress while the agent or context maintenance is running (always on in Tern)",
+			"当代理或上下文维护运行时发送 OSC 9;4 不确定进度（Tern 中始终开启）",
 	},
 });
 
@@ -421,10 +421,10 @@ export const cfgTerminalProgramStatus = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Program Status (OSC 7501)",
+		group: "显示",
+		label: "程序状态 (OSC 7501)",
 		description:
-			"Report whether the agent is working, waiting on you, done, or failed over OSC 7501, for terminal tab indicators and agent inboxes",
+			"通过 OSC 7501 报告代理是工作中、等待你、已完成还是已失败，供终端标签页指示器和代理收件箱使用",
 	},
 });
 
@@ -434,10 +434,10 @@ export const cfgTuiTextSizing = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Large Headings (Kitty)",
+		group: "显示",
+		label: "大标题（Kitty）",
 		description:
-			"Render Markdown H1 headings at 2x scale using Kitty's OSC 66 text-sizing protocol. Only takes effect on Kitty terminals; ignored everywhere else. Off by default.",
+			"使用 Kitty 的 OSC 66 文本尺寸协议以 2 倍尺寸渲染 Markdown H1 标题。仅在 Kitty 终端生效，其它终端忽略。默认关闭。",
 	},
 });
 
@@ -447,9 +447,9 @@ export const cfgTuiRenderMermaid = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Render Mermaid Diagrams",
-		description: "Render Mermaid fenced code blocks as ASCII diagrams",
+		group: "显示",
+		label: "渲染 Mermaid 图表",
+		description: "将 Mermaid 围栏代码块渲染为 ASCII 图表",
 	},
 });
 
@@ -459,10 +459,10 @@ export const cfgTuiRenderSvg = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Render SVG Figures",
+		group: "显示",
+		label: "渲染 SVG 图形",
 		description:
-			"Invite the agent to draw diagrams and charts as SVG, rendered inline as images on terminals that show graphics",
+			"邀请代理以 SVG 绘制图表，在支持图形显示的终端上内联渲染为图像",
 	},
 });
 
@@ -473,23 +473,23 @@ export const cfgTuiAutoGraph = register({
 	default: "always",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Auto-Graph Tables",
+		group: "显示",
+		label: "自动图表",
 		description:
-			"Draw a chart under numeric tables in the agent's answers, in your theme's colors, on terminals that show graphics",
+			"在支持图形显示的终端上，用你的主题配色在代理回答的数值表格下方绘制图表",
 		options: [
 			{
 				value: "smart",
-				label: "Smart",
+				label: "智能",
 				description:
-					"The judge model refines each chart: kind, columns, row names and grouping, scales, which way is better, and its title",
+					"判定模型会细化每个图表：类型、列、行名与分组、刻度、哪个方向更好，以及标题",
 			},
 			{
 				value: "always",
-				label: "Always",
-				description: "Chart every table that reads as numeric, using the built-in best guess",
+				label: "总是",
+				description: "对所有读起来像数值的表格绘图，使用内置的最佳猜测",
 			},
-			{ value: "off", label: "Off", description: "Leave tables as tables" },
+			{ value: "off", label: "关闭", description: "保留表格形式" },
 		],
 	},
 });
@@ -500,9 +500,9 @@ export const cfgTuiReactions = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Agent Reactions",
-		description: "Invite the agent to react to your message with an emoji badge on its bubble",
+		group: "显示",
+		label: "代理反应",
+		description: "邀请代理用一个 Emoji 徽章在其气泡上回应你的消息",
 	},
 });
 
@@ -512,10 +512,10 @@ export const cfgTuiCodexResetFireworks = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Codex Reset Fireworks",
+		group: "显示",
+		label: "Codex 重置烟花",
 		get description() {
-			return `Celebrate unscheduled Codex weekly usage resets and newly banked saved resets with a top-third fireworks overlay that remains until ${formatKeyHint("escape")}`;
+			return `当 Codex 每周用量意外重置或有新的已存重置入账时，在屏幕上部三分之一处显示烟花浮层，直到 ${formatKeyHint("escape")}`;
 		},
 	},
 });
@@ -526,10 +526,10 @@ export const cfgTuiTitleState = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Terminal Title Run State",
+		group: "显示",
+		label: "终端标题运行状态",
 		description:
-			"Show the agent run state in the terminal title's separator — an animated spinner while working (a static ':' under WSL), '>' when it's your turn, '!' when the agent is waiting on you",
+			"在终端标题分隔符中显示代理运行状态 — 工作中为动画加载符（WSL 下为静态 ':'），轮到你时为 '>'，代理等待你时为 '!'",
 	},
 });
 
@@ -540,15 +540,15 @@ export const cfgTuiTitleSpinner = register({
 	default: "braille",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Terminal Title Spinner",
+		group: "显示",
+		label: "终端标题加载动画",
 		description:
-			"Glyph set for the working-state spinner in the terminal title — braille sweep, filling moon, single-dot cycle, or ASCII-safe line",
+			"终端标题中工作状态加载动画的字形集 — 盲文扫描、填充月亮、单点循环或 ASCII 安全线条",
 		options: [
-			{ value: "braille", label: "Braille", description: "Classic ⠋⠙⠹ sweep (default)" },
-			{ value: "pulse", label: "Pulse", description: "Moon filling ○◑● then emptying" },
-			{ value: "dots", label: "Dots", description: "Single braille dots cycling" },
-			{ value: "line", label: "Line", description: "ASCII - \\ | / for fonts without braille coverage" },
+			{ value: "braille", label: "盲文", description: "经典盲文扫描（默认）" },
+			{ value: "pulse", label: "脉冲", description: "月亮填充 ○◑● 然后清空" },
+			{ value: "dots", label: "圆点", description: "单盲文点循环" },
+			{ value: "line", label: "行", description: "ASCII 符号，用于不支持盲文的字体" },
 		],
 	},
 });
@@ -560,10 +560,10 @@ export const cfgTuiHyperlinks = register({
 	default: "auto",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Terminal Hyperlinks",
+		group: "显示",
+		label: "终端超链接",
 		description:
-			"Wrap paths and URLs in OSC 8 hyperlinks for terminal-native click-to-open (auto: detect support; off: never; always: unconditional)",
+			"将路径与 URL 包裹在 OSC 8 超链接中，以支持终端原生点击打开（auto：检测支持；off：从不；always：无条件）",
 	},
 });
 // Also re-applied when a project-scoped reload (`/move`, cross-project resume, rollback) changes the
@@ -576,11 +576,11 @@ export const cfgTuiMouse = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Mouse Click-to-Focus",
+		group: "显示",
+		label: "鼠标点击聚焦",
 		get description() {
 			const shift = formatKeyHint("shift");
-			return `Capture mouse clicks in the main session so live subagent cards and HUD rows focus on click, with a hover highlight on the target. Native text selection becomes ${shift}+drag and wheel scroll becomes ${shift}+wheel while on`;
+			return `在主会话中捕获鼠标点击，让运行中的子代理卡片与 HUD 行可点击聚焦，并高亮悬停目标。启用后原生文本选择变为 ${shift}+拖动，滚轮滚动变为 ${shift}+滚轮`;
 		},
 	},
 });
@@ -591,9 +591,9 @@ export const cfgTuiTight = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Tight Layout",
-		description: "Remove the 1-character horizontal padding from the left and right of the terminal output",
+		group: "显示",
+		label: "紧凑布局",
+		description: "移除终端输出左右两侧 1 个字符的水平内边距",
 	},
 });
 
@@ -604,13 +604,13 @@ export const cfgDisplayShimmer = register({
 	default: "classic",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Shimmer",
-		description: "Animation style for working/loading messages",
+		group: "显示",
+		label: "微光",
+		description: "工作/加载消息的动画样式",
 		options: [
-			{ value: "classic", label: "Classic", description: "Soft cosine wave sweeping across the text" },
-			{ value: "kitt", label: "KITT Scanner", description: "Knight Rider 1982 red light bouncing left-right" },
-			{ value: "disabled", label: "Disabled", description: "No animation; static muted text" },
+			{ value: "classic", label: "经典", description: "柔和的余弦波扫过文本" },
+			{ value: "kitt", label: "KITT 扫描", description: "霹雳游侠 1982 红灯左右弹跳" },
+			{ value: "disabled", label: "已禁用", description: "无动画；静态柔和文本" },
 		],
 	},
 });
@@ -623,14 +623,14 @@ export const cfgDisplayPinnedAgents = register({
 	default: "collapsed",
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Pinned Agents",
+		group: "显示",
+		label: "固定代理",
 		description:
-			"Pinned live-agent jump list above the editor (off hides it; collapsed shows a few rows with an expander; full lists all)",
+			"编辑器上方固定的活动代理跳转列表（off 隐藏；collapsed 显示几行并可展开；full 全部列出）",
 		options: [
-			{ value: "off", label: "Off", description: "Hide the pinned jump list" },
-			{ value: "collapsed", label: "Collapsed", description: "Show a few rows with an expander" },
-			{ value: "full", label: "Full", description: "Always list every live agent" },
+			{ value: "off", label: "关闭", description: "隐藏固定的跳转列表" },
+			{ value: "collapsed", label: "已折叠", description: "显示几行并提供展开器" },
+			{ value: "full", label: "完整", description: "始终列出所有活动代理" },
 		],
 	},
 });
@@ -641,9 +641,9 @@ export const cfgDisplaySubagentLivePreview = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Subagent Live Preview",
-		description: "Show each pinned subagent's current (or most recent) tool call beneath its row",
+		group: "显示",
+		label: "子代理实时预览",
+		description: "在每个固定子代理的行下方显示其当前（或最近一次）工具调用",
 	},
 });
 
@@ -653,9 +653,9 @@ export const cfgDisplaySmoothStreaming = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Smooth Streaming",
-		description: "Reveal assistant text and streamed tool input smoothly while chunks arrive",
+		group: "显示",
+		label: "平滑流式输出",
+		description: "在数据块到达时平滑地逐字显示助手文本与流式工具输入",
 	},
 });
 
@@ -665,9 +665,9 @@ export const cfgDisplayHideToolActivity = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Hide Tool Activity",
-		description: "Hide model-initiated tool calls and results from the transcript",
+		group: "显示",
+		label: "隐藏工具活动",
+		description: "在会话记录中隐藏模型发起的工具调用与结果",
 	},
 });
 
@@ -677,9 +677,9 @@ export const cfgDisplayShowTokenUsage = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Show Token Usage",
-		description: "Show per-turn token usage on assistant messages",
+		group: "显示",
+		label: "显示令牌用量",
+		description: "在助手消息上显示每轮令牌用量",
 	},
 });
 
@@ -689,9 +689,9 @@ export const cfgDisplayShowTurnTime = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Show Turn Time",
-		description: "Show the total prompt-to-yield time (including tool calls) on assistant message usage rows",
+		group: "显示",
+		label: "显示回合时间",
+		description: "在助手消息的用量行显示从提示到让出的总耗时（含工具调用）",
 	},
 });
 
@@ -701,9 +701,9 @@ export const cfgDisplayCacheMissMarker = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Cache Miss Marker",
-		description: "Show a divider after an assistant turn whose request lost (missed) the prompt cache",
+		group: "显示",
+		label: "缓存未命中标记",
+		description: "在提示词缓存未命中（丢失）的助手回合之后显示一条分隔线",
 	},
 });
 effect(
@@ -724,10 +724,10 @@ export const cfgDisplayCollapseCompacted = register({
 	default: true,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Collapse Compacted History",
+		group: "显示",
+		label: "折叠已压缩历史",
 		description:
-			"Collapse pre-compaction history behind the summary divider on the live transcript; disable to keep the full transcript inline with dividers at each compaction point",
+			"在实时会话记录中把压缩前的历史折叠到摘要分隔线之后；关闭则在每个压缩点用分隔线保留完整记录",
 	},
 });
 
@@ -737,9 +737,9 @@ export const cfgShowHardwareCursor = register({
 	default: true, // will be computed based on platform if undefined
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "Show Hardware Cursor",
-		description: "Show terminal cursor for IME support",
+		group: "显示",
+		label: "显示硬件光标",
+		description: "显示终端光标以支持输入法",
 	},
 });
 
@@ -749,9 +749,9 @@ export const cfgTuiImeSafeCursor = register({
 	default: false,
 	ui: {
 		tab: "appearance",
-		group: "Display",
-		label: "IME-Safe Prompt Layout",
-		description: "Move the prompt's bottom border to a separate row so macOS IME preedit cannot displace it",
+		group: "显示",
+		label: "输入法安全布局",
+		description: "把提示词的下边框移到单独一行，避免 macOS 输入法的预编辑内容将其顶开",
 	},
 });
 
@@ -767,9 +767,9 @@ export const cfgSteeringMode = register({
 	default: "one-at-a-time",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Steering Mode",
-		description: "How to process queued messages while agent is working",
+		group: "输入",
+		label: "引导模式",
+		description: "代理工作时如何处理排队消息",
 	},
 });
 
@@ -780,9 +780,9 @@ export const cfgFollowUpMode = register({
 	default: "one-at-a-time",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Follow-Up Mode",
-		description: "How to drain follow-up messages after a turn completes",
+		group: "输入",
+		label: "跟进模式",
+		description: "回合完成后如何排空跟进消息",
 	},
 });
 
@@ -793,9 +793,9 @@ export const cfgInterruptMode = register({
 	default: "immediate",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Interrupt Mode",
-		description: "When steering messages interrupt tool execution",
+		group: "输入",
+		label: "中断模式",
+		description: "当引导消息中断工具执行时的处理方式",
 	},
 });
 
@@ -805,10 +805,10 @@ export const cfgTuiVimMode = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Vim Editing Mode",
+		group: "输入",
+		label: "Vim 编辑模式",
 		get description() {
-			return `Modal prompt editing. ${formatKeyHint("escape")} leaves Insert mode; Normal mode has hjkl, 0, $, ^, w, b, e, gg, G, counts, x/D/C, dd/yy, p and u; operators take motions or text objects (diw, ca(, dap); v/V start a Visual selection that y copies and d deletes`;
+			return `模态提示词编辑。${formatKeyHint("escape")} 退出插入模式；普通模式支持 hjkl、0、$、^、w、b、e、gg、G、计数、x/D/C、dd/yy、p 与 u；操作符可搭配动作或文本对象（diw、ca(、dap）；v/V 进入可视选择，y 复制、d 删除`;
 		},
 	},
 });
@@ -820,14 +820,14 @@ export const cfgTuiVimModeDisplay = register({
 	default: "text",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Vim Mode Indicator",
-		description: "How the current Vim mode appears in the status line",
+		group: "输入",
+		label: "Vim 模式指示器",
+		description: "当前 Vim 模式在状态栏中的显示方式",
 		condition: "vimModeEnabled",
 		options: [
-			{ value: "text", label: "Text", description: "Full mode name — NORMAL, INSERT, VISUAL, V-LINE, REPLACE" },
-			{ value: "icon", label: "Icon", description: "Single compact glyph per mode" },
-			{ value: "none", label: "Hidden", description: "Do not show the mode in the status line" },
+			{ value: "text", label: "文本", description: "完整模式名称 — NORMAL、INSERT、VISUAL、V-LINE、REPLACE" },
+			{ value: "icon", label: "图标", description: "每种模式使用单个紧凑字形" },
+			{ value: "none", label: "隐藏", description: "不在状态栏显示该模式" },
 		],
 	},
 });
@@ -839,21 +839,21 @@ export const cfgLoopMode = register({
 	default: "prompt",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Loop Mode",
-		description: "What happens between /loop iterations before re-submitting the prompt",
+		group: "输入",
+		label: "循环模式",
+		description: "在重新提交提示词前，/loop 迭代之间发生的事情",
 		options: [
 			{
 				value: "prompt",
-				label: "Prompt",
-				description: "Re-submit the prompt as a follow-up message (current behavior)",
+				label: "提示词",
+				description: "将提示词作为跟进消息重新提交（当前行为）",
 			},
 			{
 				value: "compact",
-				label: "Compact",
-				description: "Compact the session context, then re-submit the prompt",
+				label: "压缩",
+				description: "压缩会话上下文，然后重新提交提示词",
 			},
-			{ value: "reset", label: "Reset", description: "Start a new session, then re-submit the prompt" },
+			{ value: "reset", label: "重置", description: "开始新会话，然后重新提交提示词" },
 		],
 	},
 });
@@ -864,15 +864,15 @@ export const cfgLoopConditionTimeoutMs = register({
 	default: 30_000,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Loop Condition Timeout (ms)",
+		group: "输入",
+		label: "循环条件超时（毫秒）",
 		description:
-			"Max wait for a `/loop --while` / `--until` condition command before treating it as broken and stopping the loop. Set to 0 to wait indefinitely",
+			"`/loop --while` / `--until` 条件命令的最长等待时间，超过则视为失效并停止循环。设为 0 表示无限等待",
 		options: [
-			{ value: "0", label: "Unlimited" },
-			{ value: "10000", label: "10 seconds" },
-			{ value: "30000", label: "30 seconds" },
-			{ value: "120000", label: "2 minutes" },
+			{ value: "0", label: "无限制" },
+			{ value: "10000", label: "10 秒" },
+			{ value: "30000", label: "30 秒" },
+			{ value: "120000", label: "2 分钟" },
 		],
 	},
 });
@@ -884,10 +884,10 @@ export const cfgComposerRecallClearedDrafts = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Recall Cleared Drafts",
+		group: "输入",
+		label: "恢复已清除的草稿",
 		get description() {
-			return `Keep drafts cleared with ${formatKeyHint("ctrl+c")} in local ${formatKeyHints(["up", "down"])} history until exit; disabling affects future clears`;
+			return `在本地 ${formatKeyHint("ctrl+c")} 历史中用 ${formatKeyHints(["up", "down"])} 清除的草稿会保留到退出；禁用后只影响后续清除`;
 		},
 	},
 });
@@ -899,10 +899,10 @@ export const cfgDoubleEscapeAction = register({
 	default: "rewind",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Double-Escape Action",
+		group: "输入",
+		label: "双击 Escape 操作",
 		get description() {
-			return `What pressing ${formatKeyHint("escape")} twice with an empty editor does: open the transcript rewind selector, open the session tree, or nothing`;
+			return `在空编辑器中连按两次 ${formatKeyHint("escape")} 的行为：打开会话回退选择器、打开会话树，或不做任何事`;
 		},
 	},
 });
@@ -913,10 +913,10 @@ export const cfgBareExitOnEmptySession = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Bare Exit on Empty Session",
+		group: "输入",
+		label: "空会话时直接退出",
 		description:
-			"Submitting exactly `exit`, `quit`, or `q` (any case) before the first message quits instead of prompting the model",
+			"在首条消息前仅输入 `exit`、`quit` 或 `q`（不区分大小写）即可退出，而不是发消息给模型",
 	},
 });
 
@@ -926,10 +926,10 @@ export const cfgBareSlashCommands = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Bare Slash Commands",
+		group: "输入",
+		label: "裸斜杠命令",
 		description:
-			"Submitting exactly a command name without the leading `/` (e.g. `model`, `compact`) runs that slash command; once the session has messages, press Enter twice to confirm",
+			"仅输入不带前导 `/` 的命令名（例如 `model`、`compact`）会执行对应的斜杠命令；会话已有消息后，需按两次回车确认",
 	},
 });
 
@@ -940,9 +940,9 @@ export const cfgTreeFilterMode = register({
 	default: "default",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Session Tree Filter",
-		description: "Default filter mode when opening the session tree",
+		group: "输入",
+		label: "会话树筛选",
+		description: "打开会话树时的默认筛选模式",
 	},
 });
 
@@ -952,16 +952,16 @@ export const cfgAutocompleteMaxVisible = register({
 	default: 10,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Autocomplete Items",
-		description: "Max visible items in autocomplete dropdown (3-20)",
+		group: "输入",
+		label: "自动补全项",
+		description: "自动补全下拉框最大可见项数 (3-20)",
 		options: [
-			{ value: "3", label: "3 items" },
-			{ value: "5", label: "5 items" },
-			{ value: "7", label: "7 items" },
-			{ value: "10", label: "10 items" },
-			{ value: "15", label: "15 items" },
-			{ value: "20", label: "20 items" },
+			{ value: "3", label: "3 项" },
+			{ value: "5", label: "5 项" },
+			{ value: "7", label: "7 项" },
+			{ value: "10", label: "10 项" },
+			{ value: "15", label: "15 项" },
+			{ value: "20", label: "20 项" },
 		],
 	},
 });
@@ -972,9 +972,9 @@ export const cfgSpellingTypoDetection = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Typo Detection (macOS)",
-		description: "Mark misspelled prompt words with the active macOS dictionaries",
+		group: "输入",
+		label: "拼写检测 (macOS)",
+		description: "用当前启用的 macOS 词典标记提示词中的拼写错误",
 		condition: "macOS",
 	},
 });
@@ -986,26 +986,26 @@ export const cfgSpellingAutocomplete = register({
 	default: "auto",
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Word Autocomplete",
+		group: "输入",
+		label: "单词自动补全",
 		get description() {
-			return `Show predicted word completions as inline hints: ${formatKeyHint("tab")} accepts with a space, ${formatKeyHint("right")} without`;
+			return `以内联提示显示预测的词补全：${formatKeyHint("tab")} 接受并加空格，${formatKeyHint("right")} 接受不加空格`;
 		},
 		options: [
-			{ value: "off", label: "Off", description: "No word completion" },
+			{ value: "off", label: "关闭", description: "无单词补全" },
 			{
 				value: "auto",
-				label: "Auto",
-				description: "N-gram (nothing to download)",
+				label: "自动",
+				description: "N-gram（无需下载）",
 			},
-			{ value: "ngram", label: "N-gram", description: "Learns your vocabulary from prompt history" },
+			{ value: "ngram", label: "N-gram", description: "从提示词历史学习你的词汇" },
 			{
 				value: "smollm",
 				label: "SmolLM",
-				description: "Small on-device language model blended with N-gram (downloads weights on first use)",
+				description: "小型的设备端语言模型，与 N-gram 混合（首次使用时下载权重）",
 			},
 			...(process.platform === "darwin"
-				? [{ value: "apple" as const, label: "Apple", description: "macOS dictionary completions" }]
+				? [{ value: "apple" as const, label: "Apple", description: "macOS 词典补全" }]
 				: []),
 		],
 	},
@@ -1017,10 +1017,10 @@ export const cfgComposerPredictions = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Composer Predictions",
+		group: "输入",
+		label: "输入框预测",
 		get description() {
-			return `After a completed turn, ask the active model to predict your next message and show it as ghost text in the empty composer; ${formatKeyHint("tab")} or ${formatKeyHint("right")} inserts it without sending. Extra usage: every completed turn sends one more billed request over the whole conversation (counted in /stats)`;
+			return `每轮完成后，让当前模型预测你的下一条消息，并以幽灵文本显示在空输入框中；${formatKeyHint("tab")} 或 ${formatKeyHint("right")} 可插入而不发送。额外消耗：每个完成的回合都会额外发送一次覆盖整段对话的计费请求（计入 /stats）`;
 		},
 	},
 });
@@ -1031,9 +1031,9 @@ export const cfgSpellingAutocorrect = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Autocorrect (macOS)",
-		description: "Apply confident macOS spelling corrections after completed words",
+		group: "输入",
+		label: "自动更正 (macOS)",
+		description: "在单词完成后应用高置信度的 macOS 拼写更正",
 		condition: "macOS",
 	},
 });
@@ -1044,9 +1044,9 @@ export const cfgEmojiAutocomplete = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Emoji Autocomplete",
-		description: "Suggest emojis from `:name:` shortcodes and expand text emoticons like `:D` or `:-)`",
+		group: "输入",
+		label: "Emoji 自动补全",
+		description: "从 `:name:` 短代码提示 Emoji，并展开 `:D`、`:-)` 这类文本表情",
 	},
 });
 effect(cfgEmojiAutocomplete, setEmojiAutocompleteEnabled);
@@ -1057,16 +1057,16 @@ export const cfgPasteLargeMenuThreshold = register({
 	default: 100,
 	ui: {
 		tab: "interaction",
-		group: "Input",
-		label: "Large Paste Menu",
+		group: "输入",
+		label: "大段粘贴菜单",
 		description:
-			"When a paste reaches this many lines, offer a menu to wrap it in a code block, wrap it in XML tags, or save it to a file. 0 disables the menu (large pastes still collapse to a [Paste] marker).",
+			"当粘贴内容达到这么多行时，提供菜单将其包裹为代码块、包裹为 XML 标签，或保存到文件。0 表示禁用该菜单（大段粘贴仍会折叠为 [Paste] 标记）。",
 		options: [
-			{ value: "0", label: "Off" },
-			{ value: "100", label: "100 lines" },
-			{ value: "250", label: "250 lines" },
-			{ value: "500", label: "500 lines" },
-			{ value: "1000", label: "1000 lines" },
+			{ value: "0", label: "关闭" },
+			{ value: "100", label: "100 行" },
+			{ value: "250", label: "250 行" },
+			{ value: "500", label: "500 行" },
+			{ value: "1000", label: "1000 行" },
 		],
 	},
 });
@@ -1077,9 +1077,9 @@ export const cfgStartupQuiet = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Quiet Startup",
-		description: "Skip welcome screen and startup status messages",
+		group: "启动与更新",
+		label: "静默启动",
+		description: "跳过欢迎界面与启动状态消息",
 	},
 });
 
@@ -1089,10 +1089,10 @@ export const cfgStartupShowSplash = register({
 	default: false,
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Show Startup Splash",
+		group: "启动与更新",
+		label: "显示启动画面",
 		description:
-			"Show the full animated setup splash on normal interactive startup without rerunning setup. Quiet Startup still suppresses it.",
+			"在正常交互式启动时显示完整的动画启动画面，但不重跑设置流程。静默启动仍会抑制它。",
 	},
 });
 
@@ -1102,9 +1102,9 @@ export const cfgStartupSetupWizard = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Setup Wizard",
-		description: "Show newly added onboarding steps once per setup version",
+		group: "启动与更新",
+		label: "设置向导",
+		description: "每个设置版本显示一次新增的引导步骤",
 	},
 });
 
@@ -1114,9 +1114,9 @@ export const cfgStartupCheckUpdate = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Check for Updates",
-		description: "Check for omp updates on startup",
+		group: "启动与更新",
+		label: "检查更新",
+		description: "启动时检查 omp 更新",
 	},
 });
 
@@ -1127,12 +1127,12 @@ export const cfgUpdateChannel = register({
 	default: "stable",
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Update Channel",
-		description: "Update channel used by omp update and the startup update check",
+		group: "启动与更新",
+		label: "更新通道",
+		description: "omp update 与启动时更新检查使用的更新通道",
 		options: [
-			{ value: "stable", label: "Stable" },
-			{ value: "canary", label: "Canary" },
+			{ value: "stable", label: "稳定" },
+			{ value: "canary", label: "金丝雀" },
 		],
 	},
 });
@@ -1144,13 +1144,13 @@ export const cfgMarketplaceAutoUpdate = register({
 	default: "notify",
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Marketplace Auto-Update",
-		description: "Check for plugin updates on startup",
+		group: "启动与更新",
+		label: "插件市场自动更新",
+		description: "启动时检查插件更新",
 		options: [
-			{ value: "off", label: "Off", description: "Don't check for plugin updates" },
-			{ value: "notify", label: "Notify", description: "Check on startup and notify when updates are available" },
-			{ value: "auto", label: "Auto", description: "Check on startup and auto-install updates" },
+			{ value: "off", label: "关闭", description: "不检查插件更新" },
+			{ value: "notify", label: "通知", description: "启动时检查并在有更新时通知" },
+			{ value: "auto", label: "自动", description: "启动时检查并自动安装更新" },
 		],
 	},
 });
@@ -1162,24 +1162,24 @@ export const cfgStartupChangelogMode = register({
 	default: "summary",
 	ui: {
 		tab: "interaction",
-		group: "Startup & Updates",
-		label: "Startup Changelog",
-		description: "Choose whether update notes start as a summary, full details, or stay hidden",
+		group: "启动与更新",
+		label: "启动更新日志",
+		description: "选择更新说明以摘要、完整详情还是隐藏的方式呈现",
 		options: [
 			{
 				value: "summary",
-				label: "Summary",
-				description: "Show release and change counts with a /changelog hint",
+				label: "摘要",
+				description: "显示版本发布与变更数量，并附带 /changelog 提示",
 			},
 			{
 				value: "expanded",
-				label: "Expanded",
-				description: "Show the recent release notes in full",
+				label: "已展开",
+				description: "完整显示最近的版本说明",
 			},
 			{
 				value: "hidden",
-				label: "Hidden",
-				description: "Do not show release notes on startup",
+				label: "隐藏",
+				description: "启动时不显示发行说明",
 			},
 		],
 	},
@@ -1191,9 +1191,9 @@ export const cfgMagicKeywordsEnabled = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Magic Keywords",
-		label: "Magic Keywords",
-		description: `Enable hidden notices for standalone ${MAGIC_KEYWORDS.map(keyword => keyword.word).join(", ")} keywords`,
+		group: "魔法关键词",
+		label: "魔法关键词",
+		description: `为独立的 ${MAGIC_KEYWORDS.map(keyword => keyword.word).join(", ")} 关键字启用隐藏通知`,
 	},
 });
 
@@ -1205,7 +1205,7 @@ export const cfgMagicKeyword = Object.fromEntries(
 			id: `magicKeywords.${keyword.id}`,
 			type: "boolean",
 			default: true,
-			ui: { tab: "interaction", group: "Magic Keywords", label: keyword.label, description: keyword.description },
+			ui: { tab: "interaction", group: "魔法关键词", label: keyword.label, description: keyword.description },
 		}),
 	]),
 ) as Record<MagicKeywordId, Setting<boolean>>;
@@ -1218,9 +1218,9 @@ export const cfgCompletionNotify = register({
 	default: "on",
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Completion Notification",
-		description: "Notify when the agent finishes a turn",
+		group: "通知",
+		label: "完成通知",
+		description: "代理完成一轮时通知",
 	},
 });
 
@@ -1231,9 +1231,9 @@ export const cfgErrorNotify = register({
 	default: "off",
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Error Notification",
-		description: "Notify when the agent stops with an error",
+		group: "通知",
+		label: "错误通知",
+		description: "代理因错误停止时通知",
 	},
 });
 
@@ -1243,16 +1243,16 @@ export const cfgAskTimeout = register({
 	default: 0,
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Ask Timeout",
+		group: "通知",
+		label: "询问超时",
 		description:
-			"Auto-select the recommended ask option after this many seconds (0 disables). Also bounds cfg:// approval prompts; an unanswered approval denies the write instead of auto-selecting",
+			"经过这么多秒后自动选择推荐的 ask 选项（0 表示禁用）。同时也限制 cfg:// 批准提示；未答复的批准会拒绝写入，而不是自动选择",
 		options: [
-			{ value: "0", label: "Disabled" },
-			{ value: "15", label: "15 seconds" },
-			{ value: "30", label: "30 seconds" },
-			{ value: "60", label: "60 seconds" },
-			{ value: "120", label: "120 seconds" },
+			{ value: "0", label: "已禁用" },
+			{ value: "15", label: "15 秒" },
+			{ value: "30", label: "30 秒" },
+			{ value: "60", label: "60 秒" },
+			{ value: "120", label: "120 秒" },
 		],
 	},
 });
@@ -1274,9 +1274,9 @@ export const cfgAskNotify = register({
 	default: "on",
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Ask Notification",
-		description: "Notify when the ask tool is waiting for input",
+		group: "通知",
+		label: "询问通知",
+		description: "当 ask 工具等待输入时通知",
 	},
 });
 
@@ -1286,9 +1286,9 @@ export const cfgRecapEnabled = register({
 	default: true,
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Idle Recap",
-		description: "Generate a brief LLM recap of where things stand after the terminal has been idle",
+		group: "通知",
+		label: "空闲回顾",
+		description: "终端空闲后生成一段简短的 LLM 现状回顾",
 	},
 });
 
@@ -1298,15 +1298,15 @@ export const cfgRecapIdleSeconds = register({
 	default: 240,
 	ui: {
 		tab: "interaction",
-		group: "Notifications",
-		label: "Idle Recap Delay",
-		description: "Seconds to wait while idle before showing the recap",
+		group: "通知",
+		label: "空闲回顾延迟",
+		description: "空闲多少秒后显示回顾",
 		options: [
-			{ value: "60", label: "1 minute" },
-			{ value: "120", label: "2 minutes" },
-			{ value: "240", label: "4 minutes" },
-			{ value: "300", label: "5 minutes" },
-			{ value: "600", label: "10 minutes" },
+			{ value: "60", label: "1 分钟" },
+			{ value: "120", label: "2 分钟" },
+			{ value: "240", label: "4 分钟" },
+			{ value: "300", label: "5 分钟" },
+			{ value: "600", label: "10 分钟" },
 		],
 	},
 });

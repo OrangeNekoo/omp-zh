@@ -53,7 +53,7 @@ const EARLIER_TURNS_KEY = "earlier";
 /** Leading item of a truncated transcript list; selecting it loads the older turns. */
 const earlierTurnsItem: NativeNode = node(
 	"item",
-	{ label: [span("Earlier turns…", "muted")], hint: ["a"] },
+	{ label: [span("更早的回合…", "muted")], hint: ["a"] },
 	undefined,
 	EARLIER_TURNS_KEY,
 );
@@ -81,15 +81,15 @@ function turnSummary(entry: TranscriptEntry): { label: string; role: string } {
 			return { label, role: "omp.assistant" };
 		}
 		case "toolResult":
-			return { label: `${message.toolName} result`, role: `omp.tool.${message.toolName}` };
+			return { label: `${message.toolName} 个结果`, role: `omp.tool.${message.toolName}` };
 		case "bashExecution":
 			return { label: `$ ${firstLine(message.command)}`, role: "omp.tool.bash" };
 		case "pythonExecution":
 			return { label: firstLine(message.code), role: "omp.tool.eval" };
 		case "compactionSummary":
-			return { label: "Compaction summary", role: "omp.summary" };
+			return { label: "压缩摘要", role: "omp.summary" };
 		case "branchSummary":
-			return { label: "Branch summary", role: "omp.summary" };
+			return { label: "分支摘要", role: "omp.summary" };
 		case "custom":
 		case "hookMessage": {
 			const draft = userTurnDraft(entry);
@@ -119,7 +119,7 @@ function turnItem(target: OutlineTarget, detail?: TspText): NativeNode {
 	return node(
 		"item",
 		{
-			label: label || "(empty)",
+			label: label || "（空）",
 			detail: detail ?? (time || undefined),
 			value: detail !== undefined && time ? [span(time, "dim")] : undefined,
 			role,
@@ -132,7 +132,7 @@ function turnItem(target: OutlineTarget, detail?: TspText): NativeNode {
 
 /** Preview of a turn's text: prose as markdown, command/tool output as a plain code block. */
 export function turnPreview(target: OutlineTarget, content: string): NativeNode {
-	if (!content.trim()) return text([span("(no text)", "muted")]);
+	if (!content.trim()) return text([span("（无文本）", "muted")]);
 	const message = transcriptEntryMessage(target.entries[0]!);
 	switch (message?.role) {
 		case "assistant":
@@ -706,8 +706,8 @@ export class CopySelectorComponent implements Component {
 		const focused = this.#blocks?.[this.#blockSelected];
 		const action = this.deps.actionLabel ?? "copy";
 		const props: TspPickerProps = {
-			title: this.deps.title ?? "Copy",
-			...(this.deps.title ? {} : { subtitle: "Pick what to put on the clipboard" }),
+			title: this.deps.title ?? "复制",
+			...(this.deps.title ? {} : { subtitle: "选择要放入剪贴板的内容" }),
 			icon: "clipboard",
 			noun: "turns",
 			size: "lg",
@@ -718,14 +718,14 @@ export class CopySelectorComponent implements Component {
 			items: this.#pickerItems.of(this.#targets),
 			selected: target?.turnId ?? null,
 			total: this.#targets.length,
-			empty: "Nothing to copy",
+			empty: "没有可复制的内容",
 			focus: descended ? "preview" : "list",
 			actions: compact([
 				pickerAction("pick", `${action[0]!.toUpperCase()}${action.slice(1)}`, "enter", { primary: true }),
 				!descended && blocks.length > 0 ? pickerAction("blocks", "Blocks", "right") : undefined,
-				focused?.href && this.deps.onOpen ? pickerAction("open-link", "Open link", "o") : undefined,
-				!descended && this.#truncated ? pickerAction("earlier", "Earlier turns", "a") : undefined,
-				descended ? { ...CLOSE_ACTION, label: "Back" } : CLOSE_ACTION,
+				focused?.href && this.deps.onOpen ? pickerAction("open-link", "打开链接", "o") : undefined,
+				!descended && this.#truncated ? pickerAction("earlier", "更早的回合", "a") : undefined,
+				descended ? { ...CLOSE_ACTION, label: "返回" } : CLOSE_ACTION,
 			]),
 		};
 		const preview: NativeNode[] = [];
@@ -763,16 +763,16 @@ export class CopySelectorComponent implements Component {
 		const target = this.#targets[this.#selected];
 		const action = this.deps.actionLabel ?? "copy";
 		const upDown = actionHint(["tui.select.up", "tui.select.down"], this.#blocks ? "block" : "step");
-		const cancel = actionHint("tui.select.cancel", this.#blocks ? "back" : "close");
+		const cancel = actionHint("tui.select.cancel", this.#blocks ? "back" : "关闭");
 		const children: NativeChild[] = [];
 		let hints: (NativeHint | undefined)[];
 		if (this.#blocks && target) {
 			const block = this.#blocks[this.#blockSelected];
 			children.push(
-				row([text([span("‹ back", "accent")], { actions: { click: "back" } })], { gap: "md" }),
+				row([text([span("‹ 返回", "accent")], { actions: { click: "back" } })], { gap: "md" }),
 				node(
 					"list",
-					{ selected: String(this.#blockSelected), empty: "No blocks" },
+					{ selected: String(this.#blockSelected), empty: "无内容块" },
 					this.#blocks.map((item, index) => {
 						const lines = item.content.split("\n").length;
 						return node(
@@ -797,7 +797,7 @@ export class CopySelectorComponent implements Component {
 			children.push(
 				node(
 					"list",
-					{ selected: target?.turnId ?? null, virtual: true, max: 0.5, empty: "Nothing to copy" },
+					{ selected: target?.turnId ?? null, virtual: true, max: 0.5, empty: "没有可复制的内容" },
 					this.#transcriptItems(),
 					"list",
 				),
@@ -807,7 +807,7 @@ export class CopySelectorComponent implements Component {
 				const body: NativeChild[] = [turnPreview(target, item.content)];
 				if (blocks.length > 0) {
 					body.push(
-						text([span(`${blocks.length} block${blocks.length === 1 ? "" : "s"} ›`, "accent")], {
+						text([span(`${blocks.length} 个块${blocks.length === 1 ? "" : "s"} ›`, "accent")], {
 							actions: { click: "blocks" },
 						}),
 					);
@@ -818,15 +818,15 @@ export class CopySelectorComponent implements Component {
 				upDown,
 				blocks.length > 0 ? { keys: ["right"], label: "blocks" } : undefined,
 				{ keys: ["enter"], label: action },
-				this.#truncated ? { keys: ["a"], label: "earlier turns" } : undefined,
+				this.#truncated ? { keys: ["a"], label: "更早的回合" } : undefined,
 				cancel,
 			];
 		}
 		children.push(hintsRow(hints));
 		const head: TspText = this.deps.title ?? [
 			span(`${theme.cmd.copy} `),
-			span("Copy", "strong"),
-			span(`${theme.sep.dot}pick what to put on the clipboard`, "dim"),
+			span("复制", "strong"),
+			span(`${theme.sep.dot}选择要放入剪贴板的内容`, "dim"),
 		];
 		const root = overlayCard("omp.overlay.copy", head, children);
 		this.#native = { memo, targets: this.#targets, blocks: this.#blocks, node: root };
@@ -852,7 +852,7 @@ export class CopySelectorComponent implements Component {
 			text([span(`${theme.cmd.copy} ${action}`, "accent")], { actions: { click: "copy" } }),
 		];
 		if (block.href && this.deps.onOpen) {
-			controls.push(text([span(`${theme.cmd.share} open`, "accent")], { actions: { click: "open" } }));
+			controls.push(text([span(`${theme.cmd.share} 打开`, "accent")], { actions: { click: "open" } }));
 		}
 		return node("section", { head: [span(block.label, "strong")] }, [body, row(controls, { gap: "md" })], "preview");
 	}
@@ -909,21 +909,21 @@ export class CopySelectorComponent implements Component {
 					color: OUTLINE_COLOR,
 					caption:
 						blocks.length > 0
-							? `${blocks.length} block${blocks.length === 1 ? "" : "s"} ${formatKeyHint("right")}`
+							? `${blocks.length} 个块${blocks.length === 1 ? "" : "s"} ${formatKeyHint("right")}`
 							: undefined,
 				},
 			}).column;
 		}
 
 		const selectedBlock = this.#blocks?.[this.#blockSelected];
-		const openHint = selectedBlock?.href && this.deps.onOpen ? `  ${formatKeyHint("o")} open` : "";
+		const openHint = selectedBlock?.href && this.deps.onOpen ? `  ${formatKeyHint("o")} 打开` : "";
 		const action = this.deps.actionLabel ?? "copy";
 		const upDown = editorKeys("tui.select.up", "tui.select.down");
 		const enter = formatKeyHint("enter");
 		const cancel = editorKey("tui.select.cancel");
 		const hint = this.#blocks
-			? `${this.#blockSelected + 1}/${this.#blocks.length}  ${upDown} block  ${formatKeyHint("left")}/${cancel} back  ${enter} ${action}${openHint}  click ${theme.cmd.copy}/${theme.cmd.share}`
-			: `${this.#targets.length > 0 ? `${this.#selected + 1}/${this.#targets.length}  ` : ""}${upDown} step  ${blocks.length > 0 ? `${formatKeyHint("right")} blocks  ` : ""}${enter} ${action}  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} expand  ${cancel} close`;
+			? `${this.#blockSelected + 1}/${this.#blocks.length}  ${upDown} block  ${formatKeyHint("left")}/${cancel} 返回  ${enter} ${action}${openHint}  click ${theme.cmd.copy}/${theme.cmd.share}`
+			: `${this.#targets.length > 0 ? `${this.#selected + 1}/${this.#targets.length}  ` : ""}${upDown} step  ${blocks.length > 0 ? `${formatKeyHint("right")} blocks  ` : ""}${enter} ${action}  ${this.#truncated ? `${formatKeyHint("a")} earlier turns  ` : ""}${expandKeyHint()} 展开  ${cancel} close`;
 		const anchorId = target
 			? this.#blocks
 				? `copy:${target.turnId}:block:${this.#blockSelected}`
@@ -933,7 +933,7 @@ export class CopySelectorComponent implements Component {
 			header: [
 				this.deps.title
 					? theme.bold(this.deps.title)
-					: `${theme.cmd.copy} ${theme.bold("Copy")}${theme.sep.dot}${theme.fg("dim", "pick what to put on the clipboard")}`,
+					: `${theme.cmd.copy} ${theme.bold("复制")}${theme.sep.dot}${theme.fg("dim", "选择要放入剪贴板的内容")}`,
 			],
 			body: {
 				lines: composed.lines,
@@ -966,7 +966,7 @@ export class CopySelectorComponent implements Component {
 			const controls: Array<{ action: ControlRegion["action"]; text: string }> = [
 				{ action: "copy", text: `${theme.cmd.copy} ${this.deps.actionLabel ?? "copy"}` },
 			];
-			if (block.href && this.deps.onOpen) controls.push({ action: "open", text: `${theme.cmd.share} open` });
+			if (block.href && this.deps.onOpen) controls.push({ action: "open", text: `${theme.cmd.share} 打开` });
 			const controlsWidth = controls.reduce((sum, control) => sum + visibleWidth(control.text) + 2, 0);
 			const summary = truncateToWidth(
 				`${index + 1}/${blocks.length}${theme.sep.dot}${block.label}${theme.sep.dot}${lineCount} line${lineCount === 1 ? "" : "s"}`,
@@ -1053,7 +1053,7 @@ function pushMarkdownBlocks(blocks: CopyBlock[], text: string, entry: Transcript
 	for (const block of extractBlocks(text)) {
 		if (block.kind === "code") {
 			blocks.push({
-				label: block.lang ? `${block.lang} code` : "code",
+				label: block.lang ? `${block.lang} 代码` : "code",
 				content: block.code,
 				entry,
 				kind: "code",
@@ -1067,7 +1067,7 @@ function pushMarkdownBlocks(blocks: CopyBlock[], text: string, entry: Transcript
 	// row, so a link the transcript wrapped is copied or opened intact.
 	for (const link of extractLinks(text)) {
 		blocks.push({
-			label: link.text !== link.href ? `link${theme.sep.dot}${link.text}` : "link",
+			label: link.text !== link.href ? `链接${theme.sep.dot}${link.text}` : "link",
 			content: link.href,
 			entry,
 			href: link.href,
@@ -1092,7 +1092,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 					const command = commandFromToolCall(content);
 					if (command) {
 						blocks.push({
-							label: command.kind === "bash" ? "bash command" : "eval code",
+							label: command.kind === "bash" ? "bash 命令" : "eval 代码",
 							content: command.code,
 							entry,
 							kind: "command",
@@ -1104,7 +1104,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 			}
 			case "toolResult": {
 				const text = toolResultText(message);
-				if (text) blocks.push({ label: `${message.toolName} result`, content: text, entry });
+				if (text) blocks.push({ label: `${message.toolName} 个结果`, content: text, entry });
 				break;
 			}
 			case "bashExecution":
@@ -1112,7 +1112,7 @@ export function collectBlocks(entries: readonly TranscriptEntry[]): CopyBlock[] 
 				if (message.output.trim()) blocks.push({ label: "output", content: message.output, entry });
 				break;
 			case "pythonExecution":
-				blocks.push({ label: "eval code", content: message.code, entry, language: "python" });
+				blocks.push({ label: "eval 代码", content: message.code, entry, language: "python" });
 				if (message.output.trim()) blocks.push({ label: "output", content: message.output, entry });
 				break;
 			default:
@@ -1128,26 +1128,26 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 	const message = transcriptEntryMessage(entry);
 	switch (message?.role) {
 		case "user":
-			return { content: rawUserText(message), label: "user message" };
+			return { content: rawUserText(message), label: "用户消息" };
 		case "assistant": {
 			const text = assistantVisibleText(message);
-			if (text) return { content: text, label: "assistant message" };
+			if (text) return { content: text, label: "助手消息" };
 			break;
 		}
 		case "toolResult": {
 			const text = toolResultText(message);
-			if (text) return { content: text, label: `${message.toolName} result` };
+			if (text) return { content: text, label: `${message.toolName} 个结果` };
 			break;
 		}
 		case "bashExecution":
 			return {
 				content: [message.command, message.output].filter(part => part.trim()).join("\n"),
-				label: "bash execution",
+				label: "bash 执行",
 			};
 		case "pythonExecution":
 			return {
 				content: [message.code, message.output].filter(part => part.trim()).join("\n"),
-				label: "eval execution",
+				label: "eval 执行",
 			};
 		case "compactionSummary":
 		case "branchSummary":
@@ -1156,7 +1156,7 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 		case "hookMessage": {
 			// A user-invoked skill/collab prompt copies as what the user typed, not the expanded body.
 			const draft = message.role === "custom" ? userTurnDraft(entry) : undefined;
-			if (draft?.trim()) return { content: draft, label: "user message" };
+			if (draft?.trim()) return { content: draft, label: "用户消息" };
 			const content =
 				typeof message.content === "string"
 					? message.content
@@ -1171,5 +1171,5 @@ export function targetCopy(target: OutlineTarget, blocks: readonly CopyBlock[]):
 			break;
 	}
 	// No direct prose (e.g. a pure tool turn): fall back to its blocks joined.
-	return { content: blocks.map(block => block.content).join("\n\n"), label: "turn content" };
+	return { content: blocks.map(block => block.content).join("\n\n"), label: "回合内容" };
 }

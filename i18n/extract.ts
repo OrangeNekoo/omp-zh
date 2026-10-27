@@ -1,0 +1,538 @@
+#!/usr/bin/env bun
+/**
+ * 从源码中提取「需要汉化的界面文案」。
+ *
+ * 产物：i18n/extracted.json
+ *   { "原文": { "files": [...], "kinds": [...], "count": n } }
+ *
+ * 提取是幂等的，且只读：不会修改任何源码。翻译脚本以该清单为输入，
+ * 与词典（i18n/dictionary.json）合并后执行 AST 重写。
+ *
+ * 用法：
+ *   bun i18n/extract.ts                # 提取并写出 extracted.json
+ *   bun i18n/extract.ts --check        # 只报告统计，不写文件
+ */
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { parse } from "@babel/parser";
+import traverseModule from "@babel/traverse";
+import {
+	PROTOCOL_CONSTANTS,
+	TRANSLATABLE_CALL_LABEL_INDEX,
+	TRANSLATABLE_CALLS,
+	TRANSLATABLE_CONSTRUCTORS,
+	TRANSLATABLE_PROPERTIES,
+	allowsWholeFileLiterals,
+	displayTextArgumentIndex,
+	isIncludedFile,
+	looksLikeProseValue,
+	PROSE_ONLY_PROPERTIES,
+} from "./rules";
+
+const traverse = (traverseModule as unknown as { default?: unknown }).default ?? traverseModule;
+
+export interface ExtractionEntry {
+	/** 源码中的英文原文。 */
+	readonly source: string;
+	/** 出现位置（相对仓库根目录）。 */
+	readonly files: readonly string[];
+	/** 命中的语法位置，例如 `prop:label`。 */
+	readonly kinds: readonly string[];
+}
+
+export interface ExtractionResult {
+	readonly entries: readonly ExtractionEntry[];
+	/** 按文件统计，便于观察覆盖面。 */
+	readonly perFile: ReadonlyMap<string, number>;
+}
+
+const ROOT = path.join(import.meta.dir, "..");
+
+/**
+ * 模板插值在词典键里的占位符（与 translate.ts 的 PLACEHOLDER 一致）。
+ * 有插值的模板字符串按「quasis 用占位符连接」的整句形态提取，
+ * 这样待译清单里的键与 translate.ts 查词典的键完全相同。
+ */
+const PLACEHOLDER = "\u0000";
+
+/** 递归收集 .ts/.tsx 源文件。 */
+function collectSources(dir: string, out: string[] = []): string[] {
+	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+		const full = path.join(dir, entry.name);
+		if (entry.isDirectory()) {
+			if (entry.name === "node_modules" || entry.name === "dist" || entry.name === "test") continue;
+			collectSources(full, out);
+		} else if (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) {
+			out.push(full);
+		}
+	}
+	return out;
+}
+
+/** 样式 token 词汇表：这些词的组合是渲染属性，不是界面文案。 */
+const STYLE_TOKENS: ReadonlySet<string> = new Set([
+	"accent",
+	"dim",
+	"muted",
+	"strong",
+	"mono",
+	"num",
+	"bold",
+	"italic",
+	"emphasis",
+	"warning",
+	"error",
+	"success",
+	"info",
+	"neutral",
+]);
+
+/** 是否是由样式词构成的 token 串（`accent strong`、`dim mono` 等）。 */
+function isStyleToken(value: string): boolean {
+	const words = value.trim().toLowerCase().split(/\s+/);
+	if (words.length < 2 || words.length > 3) return false;
+	return words.every(word => STYLE_TOKENS.has(word));
+}
+
+/**
+ * 是否是「像一句给人看的英文」。
+ *
+ * 故意保守：宁可漏掉少量文案，也不把标识符、路径、格式串、
+ * 协议字段误当成可翻译文本——那会破坏运行时行为。
+ */
+export function looksLikeUiProse(value: string, options: { allowSingleToken?: boolean } = {}): boolean {
+	if (value.length < 2 || value.length > 500) return false;
+	// 必须至少包含一个英文单词
+	if (!/[A-Za-z]{2}/.test(value)) return false;
+	// 纯标识符、camelCase、点分路径、常量、颜色 token 全部排除
+	if (/^[a-z][A-Za-z0-9]*$/.test(value)) return false;
+	if (/^[a-z0-9_.\-/\\]+$/.test(value)) return false;
+	// 全大写且超过 4 个字符的是常量名；LSP、Git、API 这类缩写是正常文案
+	if (/^[A-Z][A-Z0-9_]*$/.test(value) && (value.length > 4 || value.includes("_"))) return false;
+	if (/^(tui|app|editor|select|composer|model|session|tools|status)\./.test(value)) return false;
+	// 主题 token（如 accent strong、dim mono）。只排除已知样式词组合：
+	// `switch tabs`、`jump sections` 这类界面提示同样是小写短语，不能
+	// 用「两个小写单词」一概而论。
+	if (isStyleToken(value)) return false;
+	// 文件/模块/协议字符串
+	if (/\.(ts|tsx|js|json|md|yml|yaml|toml|rs|py|sh|css|node)$/.test(value)) return false;
+	if (/^(node:|https?:\/\/|\/|\.\/|\.\.\/|@[a-z])/.test(value)) return false;
+	if (/^[a-z][a-zA-Z0-9]*\.[a-z]/.test(value)) return false;
+	// 纯符号/格式串/键名
+	if (!/[A-Za-z]{2}/.test(value.replace(/\\[nrt]/g, ""))) return false;
+	// 至少要像自然语言：包含空格，或首字母大写的单词。枚举/分组数组里
+	// 的单个大写缩写（LSP、Git、AI）本身就是完整文案，允许通过。
+	if (!options.allowSingleToken && !/\s/.test(value.trim()) && !/^[A-Z][a-z]/.test(value)) return false;
+	// 以符号/竖线开头的片段是状态片段，不是独立文案
+	if (/^[|·—–\-→←]/.test(value.trim())) return false;
+	// 命令行用法串（占位符 + 选项）。含 `--flag` 且短的串按用法串排除；
+	// 长句是「描述里引用了 flag」的正常文案（如 --plan-yolo 的说明），
+	// 按词数放宽——用法串极少超过 5 个词。
+	if (/^[[<]/.test(value.trim())) return false;
+	if (/(?:^|\s)--[a-z][\w-]*/.test(value) && !/[.!?]\s/.test(value) && value.trim().split(/\s+/).length <= 5) return false;
+	// 纯代码/协议片段
+	if (/^(exit|git|npm|bun|omp)\s+\S+$/.test(value.trim())) return false;
+	if (/^[a-z][\w.-]+(?:\s*=\s*\S+)+$/.test(value.trim())) return false;
+	return true;
+}
+
+/** 从 AST 中提取候选文案。 */
+export function extractFromSource(
+	relativePath: string,
+	code: string,
+	onHit: (source: string, kind: string) => void,
+): void {
+	let ast: unknown;
+	try {
+		ast = parse(code, { sourceType: "module", plugins: ["typescript", "jsx"] });
+	} catch {
+		return;
+	}
+	const allowWholeFile = allowsWholeFileLiterals(relativePath);
+
+	const record = (value: string, kind: string) => {
+		if (
+			looksLikeUiProse(value, {
+				// 数组元素与界面属性（label/title/hint…）里的单词本身就是完整文案，
+				// 例如底部提示行的 `change`、`close`。
+				allowSingleToken: kind === "array-literal" || kind.startsWith("prop:") || kind.startsWith("call:"),
+			})
+		) {
+			onHit(value, kind);
+		}
+	};
+
+	/** 无插值模板字符串的字面内容。 */
+	const templateText = (node: any): string =>
+		node.quasis.map((quasi: any) => quasi.value.cooked ?? "").join("");
+
+	/**
+	 * 模板字符串的提取键（与 translate.ts 的 considerTemplate 对齐）：
+	 * 无插值时整串；有插值时按占位符连接整句——待译清单里的键就是
+	 * translate.ts 查词典用的键。`prop:examples` 例外：两边都按
+	 * quasi 逐段处理（注释 + 命令的拼接片段）。
+	 */
+	const recordTemplate = (node: any, kind: string): void => {
+		if (node.type !== "TemplateLiteral") return;
+		if (node.expressions.length === 0) {
+			record(templateText(node), kind);
+			return;
+		}
+		if (kind === "prop:examples") {
+			for (const quasi of node.quasis) record(quasi.value.cooked ?? "", kind);
+			return;
+		}
+		record(node.quasis.map((quasi: any) => quasi.value.cooked ?? "").join(PLACEHOLDER), kind);
+	};
+
+	traverse(ast, {
+		/**
+		 * 界面文案常量：`const SCOPE_LABELS = { user: "Every project", … }`。
+		 *
+		 * 这类对象是纯显示映射（键是内部枚举，值是展示文本），整体捕获；
+		 * 命名后缀作为白名单，避免把协议常量表误当文案。
+		 */
+		VariableDeclarator(p: any) {
+			const id = p.node.id;
+			if (id.type !== "Identifier") return;
+			// 会进入协议 enum 的常量不能译（与 translate.ts 的 PROTOCOL_CONSTANTS 一致）。
+			if (PROTOCOL_CONSTANTS[id.name] === true) return;
+			// 后缀白名单与 translate.ts 完全一致，否则两边提取/替换的范围会漂移。
+			if (!/^(?:helpText|.*_(?:LABELS?|TITLES?|CHOICES|TEXT|HINTS?|HEADERS?|DESCRIPTIONS?|MESSAGES?|NOTES?|STATUS|WAIT|PROMPT|PLACEHOLDER|OPTION))$/.test(id.name)) {
+				return;
+			}
+			const init = p.node.init;
+			if (!init) return;
+			// `const NATIVE_TITLE = "Plan review"`：单值的界面常量。
+			if (init.type === "StringLiteral") {
+				record(init.value, `const:${id.name}`);
+				return;
+			}
+			// `const helpText = ["Manage …", …].join("\n")`：帮助文本数组。
+			if (init.type === "ArrayExpression" || (init.type === "CallExpression" && init.callee?.property?.name === "join" && init.callee?.object?.type === "ArrayExpression")) {
+				const elements = init.type === "ArrayExpression" ? init.elements : init.callee.object.elements;
+				for (const element of elements) {
+					if (element?.type === "StringLiteral") record(element.value, `array:${id.name}`);
+					else if (element?.type === "TemplateLiteral") recordTemplate(element, `array:${id.name}`);
+				}
+				return;
+			}
+			const collectObject = (object: any): void => {
+				if (object.type !== "ObjectExpression") return;
+				for (const property of object.properties) {
+					if (property.type !== "ObjectProperty") continue;
+					const value = property.value;
+					if (value.type === "StringLiteral") record(value.value, `map:${id.name}`);
+					else if (value.type === "TemplateLiteral") recordTemplate(value, `map:${id.name}`);
+					else if (value.type === "ObjectExpression") {
+						// 形如 { icon, label, description } 的嵌套条目
+						collectObject(value);
+					}
+				}
+			};
+			collectObject(init);
+		},
+		ObjectProperty(p: any) {
+			const key = p.node.key;
+			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
+			if (!name) return;
+			const value = p.node.value;
+			const proseOnly = PROSE_ONLY_PROPERTIES[name] === true;
+			const accept = (text: string): boolean => !proseOnly || looksLikeProseValue(text);
+
+			/** 选项对象：只取 `label` 与 `description`。 */
+			const recordOptionObject = (object: any): void => {
+				for (const property of object.properties ?? []) {
+					if (property.type !== "ObjectProperty") continue;
+					const optionKey = property.key;
+					const optionName =
+						optionKey.type === "Identifier"
+							? optionKey.name
+							: optionKey.type === "StringLiteral"
+								? optionKey.value
+								: null;
+					if (optionName !== "label" && optionName !== "description") continue;
+					const optionValue = property.value;
+					if (optionValue.type === "StringLiteral") record(optionValue.value, `option:${optionName}`);
+					else if (optionValue.type === "TemplateLiteral") recordTemplate(optionValue, `option:${optionName}`);
+				}
+			};
+
+			// 子菜单选项：`options: [{ value, label, description }]`
+			if ((name === "options" || name === "choices") && value.type === "ArrayExpression") {
+				for (const element of value.elements) {
+					if (element?.type === "ObjectExpression") recordOptionObject(element);
+				}
+			}
+
+			if (!TRANSLATABLE_PROPERTIES.has(name)) return;
+			/** 属性值可能是三元/逻辑表达式，逐个分支处理。 */
+			const recordExpression = (expression: any, kind: string): void => {
+				if (expression.type === "StringLiteral") {
+					if (accept(expression.value)) record(expression.value, kind);
+				} else if (expression.type === "TemplateLiteral") {
+					// 与 translate.ts 一致：accept 检查照旧按整串，
+					// 有插值的模板以占位符整句形态提取。
+					const text = templateText(expression);
+					if (accept(text)) recordTemplate(expression, kind);
+				} else if (expression.type === "ConditionalExpression") {
+					recordExpression(expression.consequent, kind);
+					recordExpression(expression.alternate, kind);
+				} else if (expression.type === "LogicalExpression") {
+					recordExpression(expression.left, kind);
+					recordExpression(expression.right, kind);
+				} else if (expression.type === "ObjectMethod") {
+					for (const statement of expression.body.body ?? []) {
+						if (statement.type === "ReturnStatement" && statement.argument) {
+							recordExpression(statement.argument, kind);
+						}
+					}
+				}
+			};
+			if (value.type === "ArrayExpression" && /^(labels|hints|groups|examples)$/.test(name)) {
+				for (const element of value.elements) {
+					if (element?.type === "StringLiteral") record(element.value, `prop:${name}[]`);
+					else if (element?.type === "TemplateLiteral") recordTemplate(element, `prop:${name}`);
+				}
+			} else {
+				recordExpression(value, `prop:${name}`);
+			}
+		},
+		/** `get description() { return `…`; }`：getter 形式的界面文案。 */
+		ObjectMethod(p: any) {
+			const key = p.node.key;
+			const name = key.type === "Identifier" ? key.name : key.type === "StringLiteral" ? key.value : null;
+			if (!name || !TRANSLATABLE_PROPERTIES.has(name)) return;
+			for (const statement of p.node.body?.body ?? []) {
+				if (statement.type !== "ReturnStatement" || !statement.argument) continue;
+				const argument = statement.argument;
+				if (argument.type === "StringLiteral") record(argument.value, `prop:${name}`);
+				else if (argument.type === "TemplateLiteral") recordTemplate(argument, `prop:${name}`);
+			}
+		},
+		CallExpression(p: any) {
+			const callee = p.node.callee;
+			const name =
+				callee.type === "Identifier"
+					? callee.name
+					: callee.type === "MemberExpression" && callee.property.type === "Identifier"
+						? callee.property.name
+						: callee.type === "MemberExpression" && callee.property.type === "PrivateName"
+							? // `this.#showReport(…)`：私有方法同样只按函数名查白名单（与 translate.ts 一致）。
+								callee.property.id.name
+							: null;
+			if (!name) return;
+			if (TRANSLATABLE_CALLS.has(name)) {
+				// 与 translate.ts 的 walk 一致：沿逻辑/条件分支与数组下钻，
+				// `showStatus(cond ? "A" : "B")` 与 `#showReport(标题, […].join())`
+				// 的文案都要进待译清单。
+				const walk = (expression: any, depth: number): void => {
+					if (depth > 5 || !expression) return;
+					if (expression.type === "StringLiteral") record(expression.value, `call:${name}`);
+					else if (expression.type === "TemplateLiteral") recordTemplate(expression, `call:${name}`);
+					else if (expression.type === "LogicalExpression") {
+						walk(expression.left, depth + 1);
+						walk(expression.right, depth + 1);
+					} else if (expression.type === "ConditionalExpression") {
+						walk(expression.consequent, depth + 1);
+						walk(expression.alternate, depth + 1);
+					} else if (expression.type === "ArrayExpression") {
+						for (const element of expression.elements) walk(element, depth + 1);
+					} else if (
+						expression.type === "CallExpression" &&
+						expression.callee?.property?.name === "join" &&
+						expression.callee?.object?.type === "ArrayExpression"
+					) {
+						walk(expression.callee.object, depth + 1);
+					}
+				};
+				walk(p.node.arguments[TRANSLATABLE_CALL_LABEL_INDEX[name] ?? 0], 0);
+				// 与 translate.ts 一致：报告/确认/选择器的第二实参也是正文。
+				if (name === "showReport" || name === "showHookConfirm" || name === "showHookSelector") {
+					walk(p.node.arguments[1], 0);
+				}
+				return;
+			}
+			// 与 translate.ts 保持一致：样式包装函数与 console 的展示文案
+			const objectName =
+				callee.type === "MemberExpression" && callee.object.type === "Identifier"
+					? callee.object.name
+					: null;
+			const index = displayTextArgumentIndex(objectName, name);
+			if (index === undefined) return;
+			const argument = p.node.arguments[index];
+			if (argument?.type === "StringLiteral") record(argument.value, `display:${objectName}.${name}`);
+			else if (argument?.type === "TemplateLiteral") recordTemplate(argument, `display:${objectName}.${name}`);
+		},
+		NewExpression(p: any) {
+			const callee = p.node.callee;
+			if (callee.type !== "Identifier" || !TRANSLATABLE_CONSTRUCTORS.has(callee.name)) return;
+			const first = p.node.arguments[0];
+			if (first?.type === "StringLiteral") record(first.value, `new:${callee.name}`);
+			else if (first?.type === "TemplateLiteral") recordTemplate(first, `new:${callee.name}`);
+		},
+		StringLiteral(p: any) {
+			if (!allowWholeFile) return;
+			const parent = p.parent;
+			// 跳过导入语句、导出声明与对象键
+			if (
+				parent.type === "ImportDeclaration" ||
+				parent.type === "ExportNamedDeclaration" ||
+				parent.type === "ExportAllDeclaration" ||
+				(parent.type === "ObjectProperty" && parent.key === p.node) ||
+				parent.type === "TSLiteralType"
+			) {
+				return;
+			}
+			// 数组元素（如 TAB_GROUPS 的分组名）本身就是完整文案，不再要求多词；
+			// 其余位置要求至少两个单词，避免把单个标识符误当文案。
+			const isArrayElement = parent.type === "ArrayExpression";
+			if (!isArrayElement && p.node.value.trim().split(/\s+/).length < 2) return;
+			record(p.node.value, isArrayElement ? "array-literal" : "literal");
+		},
+	});
+}
+
+/** 扫描整个仓库，返回抽取结果。 */
+export function extractAll(root: string = ROOT): ExtractionResult {
+	const hits = new Map<string, { files: Set<string>; kinds: Set<string> }>();
+	const perFile = new Map<string, number>();
+
+	for (const directory of ["packages/tui/src", "packages/coding-agent/src"]) {
+		const absolute = path.join(root, directory);
+		if (!fs.existsSync(absolute)) continue;
+		for (const file of collectSources(absolute)) {
+			const relative = path.relative(root, file).split(path.sep).join("/");
+			if (!isIncludedFile(relative)) continue;
+			const code = fs.readFileSync(file, "utf8");
+			let fileHits = 0;
+			extractFromSource(relative, code, (source, kind) => {
+				fileHits++;
+				const existing = hits.get(source);
+				if (existing) {
+					existing.files.add(relative);
+					existing.kinds.add(kind);
+				} else {
+					hits.set(source, { files: new Set([relative]), kinds: new Set([kind]) });
+				}
+			});
+			if (fileHits > 0) perFile.set(relative, fileHits);
+		}
+	}
+
+	const entries = [...hits.entries()]
+		.map(([source, info]) => ({ source, files: [...info.files], kinds: [...info.kinds] }))
+		.sort((a, b) => b.files.length - a.files.length || a.source.localeCompare(b.source));
+
+	return { entries, perFile };
+}
+
+/** 判定一条文案是否仍是未翻译的英文。 */
+function isUntranslated(source: string): boolean {
+	// 含中文字符即视为已翻译；含全角标点也算——本 fork 的中文排版会把
+	// `Content-Type:` 写成 `Content-Type：`、`NVIDIA CUDA (Linux x64)` 写成
+	// `NVIDIA CUDA（Linux x64）`，这类译文不含汉字，否则会被误报成待译。
+	if (/[一-龥]/.test(source)) return false;
+	return !/[，。：；！？（）【】「」『』、…—～·￥]/.test(source);
+}
+
+/**
+ * 按项目边界**不翻译**的协议字段与专有标识。
+ *
+ * 这些即使长得像英文句子也不算待译项，否则每次扫描都会把
+ * `Authorization` 之类推给下一个人「翻译」，而翻译它反而会破坏功能
+ * （用户要在输入框里填写 HTTP 头名）。
+ */
+const PROTOCOL_TOKENS: Readonly<Record<string, true>> = {
+	Authorization: true,
+	"Cache-Control": true,
+	"Content-Type": true,
+	"Content-Type：": true,
+	"User-Agent": true,
+	Accept: true,
+	Location: true,
+	Cookie: true,
+	"Set-Cookie": true,
+	"WWW-Authenticate": true,
+	// oauth-reauth.ts 的 abort 原因与错误分类输入（.includes() 判据）：
+	// 翻译会破坏跨模块契约与运行时分类，保持英文。
+	"MCP OAuth flow aborted": true,
+	"MCP OAuth flow cancelled by user": true,
+	"MCP OAuth flow superseded by a new login": true,
+	"MCP OAuth flow timed out": true,
+	"OAuth flow cancelled": true,
+	"OAuth flow timed out after 5 minutes": true,
+	"HTTP 401": true,
+	"fetch failed": true,
+};
+
+/**
+ * 判断未译项是否值得人工翻译。
+ *
+ * 专有名词、参数名、数值标签、快捷键、内部键名即使保持英文也不影响
+ * 可读性，排除它们能让覆盖率数字反映真实工作量。
+ */
+function isTranslatable(source: string): boolean {
+	const text = source.trim();
+	if (text.length < 2) return false;
+	if (PROTOCOL_TOKENS[text] === true) return false;
+	// 数值/尺寸标签：`0 KB`、`~2.5K tokens`
+	if (/^[~\d]/.test(text)) return false;
+	// 配置后缀：`:exacto`、`:floor`
+	if (text.startsWith(":")) return false;
+	// 快捷键与路径
+	if (/^(alt|ctrl|shift|cmd|meta|fn|esc|tab)\+/i.test(text)) return false;
+	if (/^(~\/|\/|\.\/|https?:)/.test(text)) return false;
+	// 单个小写词与全大写缩写（Glob、Grep、XML）多为技术名称
+	if (/^[a-z][a-z0-9]*$/.test(text)) return false;
+	if (/^[A-Z][A-Za-z0-9]*$/.test(text) && text.length <= 6) return false;
+	return true;
+}
+
+function main(): void {
+	const checkOnly = process.argv.includes("--check");
+	const before = performance.now();
+	const result = extractAll();
+	const elapsed = Math.round(performance.now() - before);
+
+	const byKind = new Map<string, number>();
+	for (const entry of result.entries) {
+		for (const kind of entry.kinds) byKind.set(kind, (byKind.get(kind) ?? 0) + 1);
+	}
+
+	const untranslated = result.entries.filter(entry => isUntranslated(entry.source));
+	const pending = untranslated.filter(entry => isTranslatable(entry.source));
+
+	process.stdout.write(
+		`扫描完成：${result.entries.length} 条唯一界面文案，${result.perFile.size} 个文件，耗时 ${elapsed}ms\n`,
+	);
+	process.stdout.write("命中位置分布：\n");
+	for (const [kind, count] of [...byKind.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25)) {
+		process.stdout.write(`  ${String(count).padStart(5)}  ${kind}\n`);
+	}
+
+	process.stdout.write(
+		`\n翻译状态：已汉化 ${result.entries.length - untranslated.length} 条，` +
+			`未译 ${untranslated.length} 条（其中值得人工翻译的 ${pending.length} 条）\n`,
+	);
+	if (pending.length > 0) {
+		process.stdout.write("待译示例：\n");
+		for (const entry of pending.slice(0, 10)) {
+			process.stdout.write(`  [${entry.kinds[0]}] ${entry.source.slice(0, 90)}\n`);
+		}
+	}
+
+	if (!checkOnly) {
+		const output = path.join(import.meta.dir, "extracted.json");
+		fs.writeFileSync(output, `${JSON.stringify(result.entries, null, 2)}\n`);
+		process.stdout.write(`\n已写出 ${path.relative(ROOT, output)}\n`);
+
+		// 单独的待译清单：直接按词典格式组织，补译时可直接填写译文
+		const pendingFile = path.join(import.meta.dir, "pending.json");
+		const pendingObject = Object.fromEntries(pending.map(entry => [entry.source, ""]));
+		fs.writeFileSync(pendingFile, `${JSON.stringify(pendingObject, null, 2)}\n`);
+		process.stdout.write(`待译清单：${path.relative(ROOT, pendingFile)}（键为原文，填入译文即可）\n`);
+	}
+}
+
+if (import.meta.main) main();

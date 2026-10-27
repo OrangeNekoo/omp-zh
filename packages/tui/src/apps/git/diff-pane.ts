@@ -1251,7 +1251,7 @@ export class DiffPane {
 		const total = this.#total();
 		if (total === 0) {
 			return Array.from({ length: height }, (_, index) =>
-				index === Math.floor(height / 2) ? centerLine(theme.fg("dim", "Streaming file…"), width).trimEnd() : "",
+				index === Math.floor(height / 2) ? centerLine(theme.fg("dim", "正在流式读取文件…"), width).trimEnd() : "",
 			);
 		}
 		this.#clampScroll();

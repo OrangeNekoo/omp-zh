@@ -46,16 +46,16 @@ function accountPickerItem(account: ResetUsageAccount, id: string): TspPickerIte
 	if (reason) detail.push(span(` · ${oneLine(reason)}`, account.error ? "error" : "warning"));
 	let resets: TspSpan;
 	if (account.error) resets = span("unavailable", "error");
-	else if (!redeemable) resets = span(`${account.availableCount} saved`, "dim");
+	else if (!redeemable) resets = span(`${account.availableCount} 已保存`, "dim");
 	else if (account.redeemableCount === account.availableCount)
-		resets = span(`${account.redeemableCount} usable`, "success");
-	else resets = span(`${account.redeemableCount} of ${account.availableCount} usable`, "success");
+		resets = span(`${account.redeemableCount} 可用`, "success");
+	else resets = span(`${account.redeemableCount} / ${account.availableCount} 可用`, "success");
 	const facts: Record<string, TspSpan[]> = { resets: [resets] };
 	const expiryMs = account.expiresAt ? Date.parse(account.expiresAt) : Number.NaN;
 	if (!Number.isNaN(expiryMs)) {
 		facts.expires = [
 			expiryMs > Date.now()
-				? span(`expires in ${formatDuration(expiryMs - Date.now())}`, "dim")
+				? span(`${formatDuration(expiryMs - Date.now())} 后过期`, "dim")
 				: span("expired", "warning"),
 		];
 	}
@@ -154,7 +154,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				: redeemable
 					? theme.fg("success", countLabel)
 					: theme.fg("dim", countLabel);
-			const activeTag = account.active ? theme.fg("muted", " (active)") : "";
+			const activeTag = account.active ? theme.fg("muted", "（活动）") : "";
 			const safeLabel = oneLine(account.label);
 			const providerTag = theme.fg(
 				"muted",
@@ -182,7 +182,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 
 		if (total === 0) {
 			this.#listContainer.addChild(
-				new TruncatedText(theme.fg("muted", "No provider accounts with saved resets"), 0, 0),
+				new TruncatedText(theme.fg("muted", "没有保存了重置额度的服务商账户"), 0, 0),
 			);
 		}
 
@@ -191,7 +191,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 			? theme.fg("warning", oneLine(this.#confirmationMessage(pending)))
 			: theme.fg(
 					"muted",
-					`${editorKeys("tui.select.up", "tui.select.down")} select · ${formatKeyHint("enter")} spend a reset · ${editorKey("tui.select.cancel")} cancel`,
+					`${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${formatKeyHint("enter")} spend a reset · ${editorKey("tui.select.cancel")} 取消`,
 				);
 		this.#listContainer.addChild(new Text(hint, 0, 0));
 
@@ -288,7 +288,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 		this.#nativeItems ??= this.#menu.visibleItems.map(account => {
 			const redeemable = account.redeemableCount > 0;
 			const detail = [span(`${oneLine(account.providerLabel)} · #${account.target.credentialId}`, "muted")];
-			if (account.active) detail.push(span(" (active)", "muted"));
+			if (account.active) detail.push(span("（活动）", "muted"));
 			return node(
 				"item",
 				{
@@ -306,7 +306,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				"list",
 				{
 					selected: this.#menu.selectedKey ?? null,
-					empty: [span("No provider accounts with saved resets", "muted")],
+					empty: [span("没有保存了重置额度的服务商账户", "muted")],
 					max: { lines: RESET_SELECTOR_MAX_VISIBLE },
 				},
 				this.#nativeItems,
@@ -316,7 +316,7 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				? text([span(oneLine(this.#confirmationMessage(pending)), "warning")])
 				: (this.#nativeHints ??= hintsRow([
 						actionHint(["tui.select.up", "tui.select.down"], "select"),
-						{ keys: ["enter"], label: "spend a reset" },
+						{ keys: ["enter"], label: "消耗一次重置" },
 						actionHint("tui.select.cancel", "cancel"),
 					])),
 		];
@@ -341,12 +341,12 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 		let subtitle: TspPickerProps["subtitle"] = "Spend a saved reset to refresh an account's rate limit now";
 		if (pending) {
 			const { subject, notes } = this.#confirmationNotes(pending);
-			confirm = { text: `Spend ${subject} on ${oneLine(pending.label)}?`, act: "confirm", label: "Spend" };
+			confirm = { text: `Spend ${subject} on ${oneLine(pending.label)}?`, act: "confirm", label: "花费" };
 			if (notes.length > 0) subtitle = oneLine(notes.join(" "));
 		}
 		if (this.#statusMessage) subtitle = [span(oneLine(this.#statusMessage), "warning")];
 		this.#pickerRoot = dockedPicker({
-			title: "Rate-limit resets",
+			title: "速率限制重置",
 			subtitle,
 			icon: "refresh",
 			noun: "accounts",
@@ -363,8 +363,8 @@ export class ResetUsageSelectorComponent extends OverlayPanel {
 				.filter(account => account.active)
 				.map(account => this.#menu.adapter.getKey(account)),
 			selected: this.#menu.selectedKey ?? null,
-			empty: "No provider accounts with saved resets",
-			actions: [pickerAction("confirm", "Spend reset", "enter", { primary: true }), CLOSE_ACTION],
+			empty: "没有保存了重置额度的服务商账户",
+			actions: [pickerAction("confirm", "动用重置额度", "enter", { primary: true }), CLOSE_ACTION],
 			confirm,
 		});
 		return this.#pickerRoot;

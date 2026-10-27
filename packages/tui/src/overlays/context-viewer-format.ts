@@ -70,7 +70,7 @@ export function previewHint(selected: boolean): string {
 	const confirm = selected ? editorKey("tui.select.confirm") : "";
 	return (
 		theme.fg("dim", "  … more") +
-		(confirm ? theme.fg("dim", " · ") + theme.fg("accent", `${confirm} View Content`) : "")
+		(confirm ? theme.fg("dim", " · ") + theme.fg("accent", `${confirm} 查看内容`) : "")
 	);
 }
 

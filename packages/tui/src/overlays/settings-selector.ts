@@ -107,24 +107,24 @@ function settingsTabsNode(tabs: readonly Tab[], active: string | undefined): Nat
 /** Footer hints for `mode`, mirroring the ANSI footer line. */
 function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 	const confirmKeys: readonly KeyName[] = actionHint("tui.select.confirm", "")?.keys ?? [];
-	const close = actionHint("tui.select.cancel", "close");
-	const switchTabs: NativeHint = { keys: ["left", "right"], label: "switch tabs" };
+	const close = actionHint("tui.select.cancel", "关闭");
+	const switchTabs: NativeHint = { keys: ["left", "right"], label: "切换标签页" };
 	let hints: (NativeHint | undefined)[];
 	switch (mode) {
 		case "search":
 			hints = [
-				actionHint("tui.select.confirm", "change"),
-				{ keys: ["tab"], label: "jump tabs" },
-				actionHint("tui.select.cancel", "exit search"),
+				actionHint("tui.select.confirm", "更改"),
+				{ keys: ["tab"], label: "跳转标签页" },
+				actionHint("tui.select.cancel", "退出搜索"),
 			];
 			break;
 		case "plugins":
-			hints = [{ keys: ["tab"], label: "switch tabs" }, close];
+			hints = [{ keys: ["tab"], label: "切换标签页" }, close];
 			break;
 		case "sections":
 			hints = [
-				actionHint(["tui.select.up", "tui.select.down"], "jump sections"),
-				{ keys: ["tab", ...confirmKeys], label: "to settings" },
+				actionHint(["tui.select.up", "tui.select.down"], "跳转分节"),
+				{ keys: ["tab", ...confirmKeys], label: "到设置" },
 				switchTabs,
 				close,
 			];
@@ -132,11 +132,11 @@ function settingsHintsNode(mode: SettingsHintMode): NativeNode {
 		case "rows":
 		case "rows-sections":
 			hints = [
-				{ keys: [...confirmKeys, "space"], label: "change" },
+				{ keys: [...confirmKeys, "space"], label: "更改" },
 				...(mode === "rows-sections"
-					? [{ keys: ["tab"], label: "jump sections" } satisfies NativeHint, switchTabs]
-					: [{ keys: ["tab"], label: "switch tabs" } satisfies NativeHint]),
-				{ keys: [], label: "type to search" },
+					? [{ keys: ["tab"], label: "跳转分节" } satisfies NativeHint, switchTabs]
+					: [{ keys: ["tab"], label: "切换标签页" } satisfies NativeHint]),
+				{ keys: [], label: "输入以搜索" },
 				close,
 			];
 			break;
@@ -175,7 +175,7 @@ function createSettingsTextField(
 		secret,
 		initialValue: currentValue || undefined,
 		empty: "submit",
-		hint: `  ${editorKey("tui.input.submit")} to save · ${editorKey("tui.select.cancel")} to cancel · Clear field to unset`,
+		hint: `  ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消 · Clear field to unset`,
 		onSubmit,
 		onCancel,
 		requestRender,
@@ -212,7 +212,7 @@ function createSettingsSelectField(
 		onSelectionChange,
 		onSubmit: onSelect,
 		onCancel,
-		hint: `  ${editorKey("tui.select.confirm")} to select · ${editorKey("tui.select.cancel")} to go back`,
+		hint: `  ${editorKey("tui.select.confirm")} 选择 · ${editorKey("tui.select.cancel")} 返回`,
 		footer,
 		requestRender,
 		picker,
@@ -279,10 +279,10 @@ class MultiSelectSubmenu extends Container {
 			this.#cursor = this.#options.findIndex(option => option.value === item.value);
 		};
 		this.#selectList.onCancel = this.#onClose;
-		const back = `${editorKey("tui.select.cancel")} to go back`;
+		const back = `${editorKey("tui.select.cancel")} 返回`;
 		const hint = this.#ordered
-			? `  Click to toggle · drag selected items to reorder · ${formatKeyHints(["left", "right"])} move · 1-9 place · ${back}`
-			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to toggle · ${back}`;
+			? `  Click to toggle · drag selected items to reorder · ${formatKeyHints(["left", "right"])} 移动 · 1-9 place · ${back}`
+			: `  Click/${editorKey("tui.select.confirm")}/${formatKeyHint("space")} 切换 · ${back}`;
 		this.#field = new FormField(this.#selectList, {
 			theme: formTheme,
 			label: this.#title,
@@ -442,23 +442,23 @@ class ProviderLimitsSubmenu extends Container {
 			return {
 				value: provider,
 				label: provider,
-				description: limit === undefined ? "Unlimited" : `Limit: ${limit}`,
+				description: limit === undefined ? "无限制" : `上限：${limit}`,
 			};
 		});
 		const clearItem: SelectItem[] =
 			Object.keys(limits).length === 0
 				? []
-				: [{ value: "__clear_all", label: "Clear all limits", description: "Make every provider unlimited" }];
+				: [{ value: "__clear_all", label: "清除所有限制", description: "让所有服务商无限制" }];
 		const items = [...providerItems, ...clearItem];
 		this.#listField = new SelectFormField({
 			theme: formTheme,
-			label: "Max In-Flight Requests",
+			label: "最大并发请求数",
 			description:
-				"Select a provider, enter a positive number to cap concurrent LLM requests, or clear it for unlimited.",
+				"选择服务商，输入正数限制并发 LLM 请求数，清空则不受限制。",
 			items,
 			maxVisible: 12,
 			selectTheme: getSelectListTheme(),
-			hint: `  ${editorKey("tui.select.confirm")} to edit provider · ${editorKey("tui.select.cancel")} to go back`,
+			hint: `  ${editorKey("tui.select.confirm")} 编辑服务商 · ${editorKey("tui.select.cancel")} 返回`,
 			onSubmit: value => {
 				if (value === "__clear_all") {
 					this.#settings.set("providers.maxInFlightRequests", {});
@@ -482,12 +482,12 @@ class ProviderLimitsSubmenu extends Container {
 		this.addChild(
 			new TextFormField({
 				theme: formTheme,
-				label: `Max In-Flight Requests: ${provider}`,
+				label: `最大并发请求数：${provider}`,
 				description:
-					"Enter a positive number. Decimals round down. Clear the field to make this provider unlimited.",
+					"输入一个正数。小数向下取整。清空该字段可让此服务商不受限制。",
 				initialValue: limits[provider]?.toString() ?? undefined,
 				empty: "submit",
-				hint: `  ${editorKey("tui.input.submit")} to save · ${editorKey("tui.select.cancel")} to cancel · Clear field to unset`,
+				hint: `  ${editorKey("tui.input.submit")} 保存 · ${editorKey("tui.select.cancel")} 取消 · Clear field to unset`,
 				validate: value => {
 					if (value.trim() === "") return undefined;
 					const limit = Number(value.trim());
@@ -550,7 +550,7 @@ function getSettingsTabs(): Tab[] {
 			const icon = theme.symbol(meta.icon);
 			return { id, label: `${icon} ${meta.label}`, short: icon };
 		}),
-		{ id: "plugins", label: `${theme.icon.package} Plugins`, short: theme.icon.package },
+		{ id: "plugins", label: `${theme.icon.package} 插件`, short: theme.icon.package },
 	];
 }
 
@@ -703,18 +703,18 @@ export class SettingsSelectorComponent implements Component {
 		const confirm = editorKey("tui.select.confirm");
 		const cancel = editorKey("tui.select.cancel");
 		const tab = formatKeyHint("tab");
-		const switchTabs = `${formatKeyHints(["left", "right"])} to switch tabs`;
+		const switchTabs = `${formatKeyHints(["left", "right"])} 切换标签页`;
 		if (this.#searchList) {
-			return `${confirm} to change · ${tab} to jump tabs · ${cancel} to exit search`;
+			return `${confirm} 更改 · ${tab} 跳转标签页 · ${cancel} 退出搜索`;
 		}
 		if (this.#currentTabId === "plugins") {
-			return `${tab} to switch tabs · ${cancel} to close`;
+			return `${tab} 切换标签页 · ${cancel} 关闭`;
 		}
 		if (this.#currentList?.sectionFocused) {
-			return `${editorKeys("tui.select.up", "tui.select.down")} to jump sections · ${tab}/${confirm} to settings · ${switchTabs} · ${cancel} to close`;
+			return `${editorKeys("tui.select.up", "tui.select.down")} 跳转分节 · ${tab}/${confirm} 到设置 · ${switchTabs} · ${cancel} 关闭`;
 		}
-		const nav = this.#hasSectionJump ? `${tab} to jump sections · ${switchTabs}` : `${tab} to switch tabs`;
-		return `${confirm}/${formatKeyHint("space")} to change · ${nav} · Type to search · ${cancel} to close`;
+		const nav = this.#hasSectionJump ? `${tab} 跳转分节 · ${switchTabs}` : `${tab} 切换标签页`;
+		return `${confirm}/${formatKeyHint("space")} 更改 · ${nav} · 输入以搜索 · ${cancel} 关闭`;
 	}
 
 	/** Single-line search banner: accent icon, editable query with live cursor, right-aligned match count. */
@@ -742,7 +742,7 @@ export class SettingsSelectorComponent implements Component {
 		const tabLines = this.#tabBar.render(innerWidth);
 		const searching = this.#searchList !== null;
 		const showPreview = !searching && this.#currentTabId === "appearance";
-		const previewLines = showPreview ? ["", theme.fg("muted", "Preview:"), this.#getStatusPreviewString()] : [];
+		const previewLines = showPreview ? ["", theme.fg("muted", "预览："), this.#getStatusPreviewString()] : [];
 
 		// Fixed chrome: top border, tabs, divider, [search row], divider, hint, bottom border.
 		const fixedRows = 1 + tabLines.length + 1 + (searching ? 1 : 0) + 1 + 1 + 1;
@@ -761,7 +761,7 @@ export class SettingsSelectorComponent implements Component {
 		}
 
 		const out: string[] = [];
-		out.push(topBorder(width, "Settings"));
+		out.push(topBorder(width, "设置"));
 		this.#tabRowStart = out.length;
 		this.#tabRowCount = tabLines.length;
 		for (const line of tabLines) {
@@ -823,7 +823,7 @@ export class SettingsSelectorComponent implements Component {
 			const changed = this.#changedCount(id);
 			return { id, label: TAB_METADATA[id].label, icon: id, changed: changed > 0 ? changed : undefined };
 		});
-		pages.push({ id: PLUGINS_PAGE, label: "Installed", icon: "plugins", group: "Plugins" });
+		pages.push({ id: PLUGINS_PAGE, label: "已安装", icon: "plugins", group: "插件" });
 
 		let sections: TspPrefsProps["sections"] = [];
 		let focus: string | null = null;
@@ -955,7 +955,7 @@ export class SettingsSelectorComponent implements Component {
 					mono: !def.secret && MONO_TEXT_SETTING.test(def.path) ? true : undefined,
 				};
 			case "providerLimits":
-				return { k: "action", label: "Edit…", act: "edit" };
+				return { k: "action", label: "编辑…", act: "edit" };
 			case "multiselect":
 				return {
 					k: "multi",
@@ -1177,7 +1177,7 @@ export class SettingsSelectorComponent implements Component {
 						"col",
 						{ gap: "xs" },
 						[
-							text([span("Preview:", "muted")]),
+							text([span("预览：", "muted")]),
 							this.#callbacks.describeStatusLinePreview?.() ??
 								text(styledSpans(source), { wrap: "none", truncate: "end" }),
 						],
@@ -1201,7 +1201,7 @@ export class SettingsSelectorComponent implements Component {
 		children.push(memo.hints[mode]);
 
 		if (memo.root && sameItems(memo.root.children, children)) return memo.root.node;
-		const root = overlayCard("omp.overlay.settings", "Settings", children);
+		const root = overlayCard("omp.overlay.settings", "设置", children);
 		memo.root = { children, node: root };
 		return root;
 	}
@@ -1305,7 +1305,7 @@ export class SettingsSelectorComponent implements Component {
 			{
 				layout: "flat",
 				typeToSearch: false,
-				emptyText: "No matching settings",
+				emptyText: "无匹配的设置",
 				hint: "",
 			},
 		);
@@ -1427,7 +1427,7 @@ export class SettingsSelectorComponent implements Component {
 		// Plugins hosts its own UI; it is not part of the schema-backed search.
 		empty.push({
 			id: "plugins",
-			label: `${theme.icon.package} Plugins`,
+			label: `${theme.icon.package} 插件`,
 			short: theme.icon.package,
 			muted: true,
 		});
@@ -1884,7 +1884,7 @@ export class SettingsSelectorComponent implements Component {
 		if (this.#callbacks.getStatusLinePreview) {
 			return this.#callbacks.getStatusLinePreview();
 		}
-		return theme.fg("dim", "(preview not available)");
+		return theme.fg("dim", "（预览不可用）");
 	}
 
 	/**

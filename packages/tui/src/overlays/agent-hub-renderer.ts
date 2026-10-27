@@ -213,7 +213,7 @@ export function modelBadge(ref: AgentRecordLike, observed: ObservableSession | u
 	const badge = resolveModelBadge(ref, observed);
 	if (!badge) return undefined;
 	const text = formatModelBadge(badge.model, badge.level);
-	return badge.fallback ? `${theme.fg("warning", "fallback →")} ${text}` : text;
+	return badge.fallback ? `${theme.fg("warning", "回退 →")} ${text}` : text;
 }
 
 /** A picker chip for the model that produced a row's work: label plus thinking-level colour token. */
@@ -243,7 +243,7 @@ export function modelBadgeSpans(ref: AgentRecordLike, observed: ObservableSessio
 	const badge = resolveModelBadge(ref, observed);
 	if (!badge) return undefined;
 	const spans: TspSpan[] = [];
-	if (badge.fallback) spans.push(span("fallback → ", "warning"));
+	if (badge.fallback) spans.push(span("备用 → ", "warning"));
 	spans.push(span(sanitizeDisplaySingleLine(badge.model), "muted"));
 	if (showsThinkingLevel(badge.level)) {
 		spans.push(span(` ${theme.thinking[badge.level] ?? badge.level}`, thinkingToken(badge.level)));

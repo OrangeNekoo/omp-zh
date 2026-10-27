@@ -22,6 +22,18 @@ import { isBunTestRuntime } from "./test-runtime";
 /** App name (e.g. "omp") */
 export const APP_NAME: string = "omp";
 
+/**
+ * Command name users type, shown in help/usage text and `--version`.
+ *
+ * The 汉化 fork ships as `omp-zh` while keeping every internal identity on
+ * APP_NAME: the config directory stays `~/.omp`, log files stay
+ * `omp.<day>.<pid>.log`, XDG roots stay under the `omp` app root, and the
+ * inference User-Agent stays `omp/<version>` so other tools and gateways still
+ * recognise the installation.
+ */
+export const CLI_NAME: string = "omp-zh";
+
+
 /** Public homepage that inference gateways (OpenRouter, Vercel AI Gateway) credit omp traffic to. */
 export const APP_URL: string = "https://omp.sh/";
 

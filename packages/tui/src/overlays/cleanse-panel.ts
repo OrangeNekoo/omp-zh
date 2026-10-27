@@ -219,17 +219,17 @@ export class CleansePanelComponent extends OverlayPanel {
 		const esc: NativeHint = { keys: boundKeys("app.interrupt", ["escape"]).slice(0, 1), label: "dismiss" };
 		switch (this.#outcome) {
 			case undefined:
-				return hintsRow([{ ...esc, label: "cancel /cleanse" }]);
+				return hintsRow([{ ...esc, label: "取消 /cleanse" }]);
 			case "clean":
-				return statusHintsRow([span(`${theme.status.success} Clean`, "success")], [esc]);
+				return statusHintsRow([span(`${theme.status.success} 干净`, "success")], [esc]);
 			case "unresolved":
-				return statusHintsRow([span(`${theme.status.warning} Diagnostics remain`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 项诊断保留`, "warning")], [esc]);
 			case "unsupported":
-				return statusHintsRow([span(`${theme.status.warning} No runnable checker`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 没有可运行的检查器`, "warning")], [esc]);
 			case "cancelled":
-				return statusHintsRow([span(`${theme.status.warning} Cancelled`, "warning")], [esc]);
+				return statusHintsRow([span(`${theme.status.warning} 已取消`, "warning")], [esc]);
 			case "error":
-				return statusHintsRow([span(`${theme.status.error} Error`, "error")], [esc]);
+				return statusHintsRow([span(`${theme.status.error} 错误`, "error")], [esc]);
 		}
 	}
 
@@ -244,17 +244,17 @@ export class CleansePanelComponent extends OverlayPanel {
 		const esc = interruptKey();
 		switch (this.#outcome) {
 			case undefined:
-				return theme.fg("muted", `${esc} cancel /cleanse`);
+				return theme.fg("muted", `${esc} 取消 /cleanse`);
 			case "clean":
-				return theme.fg("success", `${theme.status.success} Clean · ${esc} dismiss`);
+				return theme.fg("success", `${theme.status.success} Clean · ${esc} 忽略`);
 			case "unresolved":
-				return theme.fg("warning", `${theme.status.warning} Diagnostics remain · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Diagnostics remain · ${esc} 忽略`);
 			case "unsupported":
-				return theme.fg("warning", `${theme.status.warning} No runnable checker · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} No runnable checker · ${esc} 忽略`);
 			case "cancelled":
-				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} dismiss`);
+				return theme.fg("warning", `${theme.status.warning} Cancelled · ${esc} 忽略`);
 			case "error":
-				return theme.fg("error", `${theme.status.error} Error · ${esc} dismiss`);
+				return theme.fg("error", `${theme.status.error} Error · ${esc} 忽略`);
 		}
 	}
 }

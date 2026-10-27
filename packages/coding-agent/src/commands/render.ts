@@ -11,17 +11,17 @@ import { CliUsageError } from "../cli/usage-error";
 export default class Render extends Command {
 	static description = commandHelp.description;
 	static args = {
-		session: Args.string({ description: "Session file path or id prefix (default: most recent for cwd)" }),
+		session: Args.string({ description: "会话文件路径或 id 前缀（默认：当前目录最新的会话）" }),
 	};
 	static flags = {
-		width: Flags.integer({ char: "w", description: "Render width in columns (default: terminal width)" }),
-		height: Flags.integer({ description: "Viewport height in rows (default: terminal height)" }),
-		timing: Flags.boolean({ char: "t", description: "Print phase timings and emitted byte counts to stderr" }),
+		width: Flags.integer({ char: "w", description: "渲染宽度（列，默认：终端宽度）" }),
+		height: Flags.integer({ description: "视口高度（行，默认：终端高度）" }),
+		timing: Flags.boolean({ char: "t", description: "将各阶段耗时与输出字节数打印到 stderr" }),
 		repaint: Flags.integer({
-			description: "Benchmark N extra full clear-scrollback repaints (the /tree navigation frame)",
+			description: "额外基准测试 N 次整屏清滚动重绘（/tree 导航帧）",
 		}),
-		plain: Flags.boolean({ description: "Strip ANSI styling from the output", default: false }),
-		quiet: Flags.boolean({ char: "q", description: "Suppress transcript output (benchmark runs)", default: false }),
+		plain: Flags.boolean({ description: "从输出中去除 ANSI 样式", default: false }),
+		quiet: Flags.boolean({ char: "q", description: "抑制会话记录输出（基准运行）", default: false }),
 	};
 
 	static examples = [

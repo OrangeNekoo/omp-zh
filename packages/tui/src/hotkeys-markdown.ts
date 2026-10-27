@@ -79,69 +79,69 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 	if (deletingExitKeys.length > 0) {
 		exitRows.push({
 			keys: [hints(deletingExitKeys)],
-			action: "Delete char forward (with draft) / exit (empty prompt)",
+			action: "向前删除字符（有草稿）/ 退出（提示词为空）",
 		});
 	}
 	// An unbound exit action still gets its row, mirroring the `Disabled` hint every other row uses.
 	if (quittingExitKeys.length > 0 || deletingExitKeys.length === 0) {
 		exitRows.push({
 			keys: [quittingExitKeys.length > 0 ? hints(quittingExitKeys) : { keys: ["Disabled"], ids: [] }],
-			action: "Exit",
+			action: "退出",
 		});
 	}
 	const groups: HotkeyGroup[] = [
 		{
-			title: "Navigation",
+			title: "导航",
 			rows: [
 				{
 					keys: [hints(["up", "down", "left", "right"])],
-					action: `Move cursor / browse history (${formatKeyHint("up")} when empty)`,
+					action: `移动光标 / 浏览历史（为空时按 ${formatKeyHint("up")}）`,
 				},
-				{ keys: [hints(["alt+left", "alt+right"])], action: "Move by word" },
+				{ keys: [hints(["alt+left", "alt+right"])], action: "按词移动" },
 				{
 					keys: [hints(isMac ? ["ctrl+a", "home", "super+left"] : ["ctrl+a", "home"])],
-					action: "Start of line",
+					action: "行首",
 				},
-				{ keys: [hints(isMac ? ["ctrl+e", "end", "super+right"] : ["ctrl+e", "end"])], action: "End of line" },
+				{ keys: [hints(isMac ? ["ctrl+e", "end", "super+right"] : ["ctrl+e", "end"])], action: "行尾" },
 			],
 		},
 		{
-			title: "Editing",
+			title: "编辑",
 			rows: [
-				{ keys: [hints(["enter"])], action: "Send message" },
-				{ keys: [hints(["shift+enter", "alt+enter"])], action: "New line" },
-				{ keys: [hints(["ctrl+w", "alt+backspace"])], action: "Delete word backwards" },
-				{ keys: [hints(["ctrl+u"])], action: "Delete to start of line" },
-				{ keys: [hints(["ctrl+k"])], action: "Delete to end of line" },
-				{ keys: [act("app.clipboard.copyLine")], action: "Copy current line" },
-				{ keys: [act("app.clipboard.copyPrompt")], action: "Copy whole prompt" },
+				{ keys: [hints(["enter"])], action: "发送消息" },
+				{ keys: [hints(["shift+enter", "alt+enter"])], action: "换行" },
+				{ keys: [hints(["ctrl+w", "alt+backspace"])], action: "向后删除单词" },
+				{ keys: [hints(["ctrl+u"])], action: "删除到行首" },
+				{ keys: [hints(["ctrl+k"])], action: "删除到行尾" },
+				{ keys: [act("app.clipboard.copyLine")], action: "复制当前行" },
+				{ keys: [act("app.clipboard.copyPrompt")], action: "复制整个提示词" },
 			],
 		},
 		{
-			title: "Other",
+			title: "其他",
 			rows: [
-				{ keys: [hints(["tab"])], action: "Path completion / accept autocomplete" },
-				{ keys: [act("app.interrupt")], action: "Cancel autocomplete / interrupt active work" },
-				{ keys: [act("app.clear")], action: "Clear editor (first) / exit (second)" },
+				{ keys: [hints(["tab"])], action: "路径补全 / 接受自动补全" },
+				{ keys: [act("app.interrupt")], action: "取消自动补全 / 中断当前工作" },
+				{ keys: [act("app.clear")], action: "清空编辑器（第一次）/ 退出（第二次）" },
 				...exitRows,
-				{ keys: [act("app.suspend")], action: "Suspend to background" },
-				{ keys: [act("app.display.reset")], action: "Reset terminal display" },
-				{ keys: [act("app.thinking.cycle")], action: "Cycle thinking level" },
-				{ keys: [act("app.model.cycleForward")], action: "Cycle role models (slow/default/smol)" },
-				{ keys: [act("app.model.cycleBackward")], action: "Cycle role models (backward)" },
-				{ keys: [act("app.model.selectTemporary")], action: "Select model (temporary)" },
-				{ keys: [act("app.model.select")], action: "Select model (set roles)" },
-				{ keys: [act("app.plan.toggle")], action: "Toggle plan mode" },
-				{ keys: [act("app.history.search")], action: "Search prompt history" },
-				{ keys: [act("app.tools.expand")], action: "Toggle tool output expansion" },
-				{ keys: [act("app.tools.toggleVisibility")], action: "Toggle tool activity visibility" },
-				{ keys: [act("app.ask.hide")], action: "Hide/show a pending ask question" },
-				{ keys: [act("app.approval.approve")], action: "Approve a pending tool call" },
-				{ keys: [act("app.thinking.toggle")], action: "Toggle thinking block visibility" },
-				{ keys: [act("app.editor.external")], action: "Edit message in external editor" },
-				{ keys: [act("app.local.open")], action: "Open a local:// file in external editor" },
-				{ keys: [act("app.retry")], action: "Retry last failed assistant turn" },
-				{ keys: [act("app.clipboard.pasteImage")], action: "Paste image or text from clipboard" },
+				{ keys: [act("app.suspend")], action: "挂起到后台" },
+				{ keys: [act("app.display.reset")], action: "重置终端显示" },
+				{ keys: [act("app.thinking.cycle")], action: "循环切换思考等级" },
+				{ keys: [act("app.model.cycleForward")], action: "循环切换角色模型（slow/default/smol）" },
+				{ keys: [act("app.model.cycleBackward")], action: "循环切换角色模型（反向）" },
+				{ keys: [act("app.model.selectTemporary")], action: "选择模型（临时）" },
+				{ keys: [act("app.model.select")], action: "选择模型（设置角色）" },
+				{ keys: [act("app.plan.toggle")], action: "切换计划模式" },
+				{ keys: [act("app.history.search")], action: "搜索提示词历史" },
+				{ keys: [act("app.tools.expand")], action: "切换工具输出展开状态" },
+				{ keys: [act("app.tools.toggleVisibility")], action: "切换工具活动可见性" },
+				{ keys: [act("app.ask.hide")], action: "隐藏/显示待回答的问题" },
+				{ keys: [act("app.approval.approve")], action: "批准待处理的工具调用" },
+				{ keys: [act("app.thinking.toggle")], action: "切换思考块可见性" },
+				{ keys: [act("app.editor.external")], action: "在外部编辑器中编辑消息" },
+				{ keys: [act("app.local.open")], action: "在外部编辑器中打开 local:// 文件" },
+				{ keys: [act("app.retry")], action: "重试上次失败的助手回合" },
+				{ keys: [act("app.clipboard.pasteImage")], action: "从剪贴板粘贴图像或文本" },
 				{
 					keys:
 						pushToTalkKeys.length > 0
@@ -149,10 +149,10 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 							: [act("app.stt.pushToTalk")],
 					action:
 						pushToTalkKeys.length > 0
-							? "Speech-to-text (push-to-talk): hold to record, release to transcribe"
-							: "Speech-to-text (push-to-talk) (disabled)",
+							? "语音转文字（按住说话）：按住录音，松开转写"
+							: "语音转文字（按住说话）（已禁用）",
 				},
-				{ keys: [act("app.live.toggle")], action: "Start/stop live voice mode (/live)" },
+				{ keys: [act("app.live.toggle")], action: "开始/停止实时语音模式（/live）" },
 				{
 					keys: [
 						act("app.agents.hub"),
@@ -162,18 +162,18 @@ function hotkeyGroups(bindings: HotkeysMarkdownBindings): HotkeyGroup[] {
 						hints(["left"]),
 						{ text: " (empty editor)" },
 					],
-					action: "Open the agent hub",
+					action: "打开代理中心",
 				},
-				{ keys: [{ token: "#<number>" }], action: "GitHub issue/PR reference (e.g. `#3164` → `pr://`/`issue://`)" },
+				{ keys: [{ token: "#<number>" }], action: "GitHub issue/PR 引用（如 `#3164` → `pr://`/`issue://`）" },
 				{
 					keys: [{ token: "#" }, { text: " / " }, { token: "#<text>" }],
-					action: "Prompt actions (copy / undo / move cursor)",
+					action: "提示词操作（复制 / 撤销 / 移动光标）",
 				},
-				{ keys: [{ token: "/" }], action: "Slash commands" },
-				{ keys: [{ token: "!" }], action: "Run bash command" },
-				{ keys: [{ token: "!!" }], action: "Run bash command (excluded from context)" },
-				{ keys: [{ token: "$" }], action: "Run Python in shared kernel" },
-				{ keys: [{ token: "$$" }], action: "Run Python (excluded from context)" },
+				{ keys: [{ token: "/" }], action: "斜杠命令" },
+				{ keys: [{ token: "!" }], action: "运行 bash 命令" },
+				{ keys: [{ token: "!!" }], action: "运行 bash 命令（不进入上下文）" },
+				{ keys: [{ token: "$" }], action: "在共享内核中运行 Python" },
+				{ keys: [{ token: "$$" }], action: "运行 Python（不进入上下文）" },
 			],
 		},
 	];
@@ -185,7 +185,7 @@ export function buildHotkeysMarkdown(bindings: HotkeysMarkdownBindings): string 
 	const lines: string[] = [];
 	for (const [index, group] of hotkeyGroups(bindings).entries()) {
 		if (index > 0) lines.push("");
-		lines.push(`**${group.title}**`, "| Key | Action |", "|-----|--------|");
+		lines.push(`**${group.title}**`, "| 键 | 操作 |", "|-----|--------|");
 		for (const row of group.rows) {
 			const keys = row.keys.map(part => markdownPart(bindings, part)).join("");
 			lines.push(`| ${keys} | ${row.action} |`);
@@ -229,7 +229,7 @@ function actionSpans(action: string): TspSpan[] {
  * without the native surface get the transcript markdown panel instead.
  */
 export class HotkeysSheetComponent implements Component {
-	readonly nativeOverlay = { role: "omp.overlay.hotkeys", size: "lg", head: "Keyboard shortcuts" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.hotkeys", size: "lg", head: "键盘快捷键" } as const;
 	readonly #bindings: HotkeysMarkdownBindings;
 	readonly #onClose: () => void;
 	#native: NativeNode | undefined;
@@ -250,8 +250,8 @@ export class HotkeysSheetComponent implements Component {
 					node("table", {
 						role: "omp.hotkeys.table",
 						cols: [
-							{ id: "keys", head: "Key" },
-							{ id: "action", head: "Action", grow: 1 },
+							{ id: "keys", head: "键" },
+							{ id: "action", head: "操作", grow: 1 },
 						],
 						rows: group.rows.map((row, rowIndex) => ({
 							id: String(rowIndex),
@@ -262,7 +262,7 @@ export class HotkeysSheetComponent implements Component {
 				`g${index}`,
 			),
 		);
-		const close = actionButton("Close", "close", { keys: "escape" });
+		const close = actionButton("关闭", "close", { keys: "escape" });
 		this.#native = col([...sections, actionBar([null, close])], { gap: "lg" });
 		return this.#native;
 	}

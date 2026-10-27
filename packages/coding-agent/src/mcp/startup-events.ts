@@ -44,15 +44,16 @@ function formatServerList(serverNames: readonly string[]): string {
 	return serverNames.map(sanitizeMcpServerName).join(", ");
 }
 
-function formatServerCount(count: number): string {
-	return count === 1 ? "server" : "servers";
+function formatServerCount(_count: number): string {
+	// 中文没有单复数，量词固定。
+	return "个服务器";
 }
 function sanitizeMcpStatusError(error: string): string {
 	return sanitizeMcpStatusText(error, TRUNCATE_LENGTHS.CONTENT);
 }
 
 export function formatMCPConnectingMessage(serverNames: readonly string[]): string {
-	return `Connecting to MCP servers: ${formatServerList(serverNames)}…`;
+	return `正在连接 MCP 服务器：${formatServerList(serverNames)}…`;
 }
 
 function formatFailedServer({ serverName, error, sourcePath }: McpConnectionFailure): string {
@@ -70,23 +71,23 @@ export function formatMCPConnectionStatusMessage(snapshot: McpConnectionStatusSn
 		}
 		const parts: string[] = [];
 		if (connectedServers.length > 0) {
-			parts.push(`Connected: ${formatServerList(connectedServers)}.`);
+			parts.push(`已连接：${formatServerList(connectedServers)}。`);
 		}
 		if (failedServers.length > 0) {
-			parts.push(`Failed: ${failedServers.map(formatFailedServer).join("; ")}.`);
+			parts.push(`失败：${failedServers.map(formatFailedServer).join("; ")}。`);
 		}
-		parts.push(`Still connecting: ${formatServerList(pendingServers)}…`);
+		parts.push(`仍在连接：${formatServerList(pendingServers)}…`);
 		return parts.join(" ");
 	}
 	if (failedServers.length > 0) {
 		const failureText = failedServers.map(formatFailedServer).join("; ");
 		if (connectedServers.length === 0) {
-			return `MCP ${formatServerCount(failedServers.length)} failed to connect: ${failureText}`;
+			return `MCP ${formatServerCount(failedServers.length)} 连接失败：${failureText}`;
 		}
-		return `MCP finished with failures. Connected: ${formatServerList(connectedServers)}. Failed: ${failureText}`;
+		return `MCP 连接结束，但有失败项。已连接：${formatServerList(connectedServers)}。失败：${failureText}`;
 	}
 	if (connectedServers.length > 0) {
-		return `Connected to MCP ${formatServerCount(connectedServers.length)}: ${formatServerList(connectedServers)}.`;
+		return `已连接到 MCP ${formatServerCount(connectedServers.length)}：${formatServerList(connectedServers)}。`;
 	}
 	return "";
 }

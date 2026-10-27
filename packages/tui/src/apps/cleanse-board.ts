@@ -129,7 +129,7 @@ export class CleanseBoardModel {
 			[
 				span(count === 0 ? "✓ " : "● ", tone),
 				span(`${check.label} `),
-				span(count === 0 ? "clean" : `${count} issue${count === 1 ? "" : "s"}`, tone),
+				span(count === 0 ? "clean" : `${count} 个问题${count === 1 ? "" : "s"}`, tone),
 				span(` · ${formatDuration(durationMs)}`, "dim"),
 			],
 			{ wrap: "word", role: "omp.cleanse.verdict" },
@@ -243,14 +243,14 @@ export class CleanseBoardModel {
 		const value = this.#repairDone / this.#repairTotal;
 		const label = `${this.#repairDone}/${this.#repairTotal}`;
 		const children: NativeNode[] = [
-			node("spinner", { label: "Repairing", tone: "accent" }),
+			node("spinner", { label: "修复中", tone: "accent" }),
 			meter
 				? node("meter", {
 						value,
 						style: "bar",
 						size: "md",
-						label: `${label} lanes`,
-						title: `${this.#repairDone} of ${this.#repairTotal} repair lanes finished`,
+						label: `${label} 条通道`,
+						title: `${this.#repairDone} / ${this.#repairTotal} 条修复通道已完成`,
 						role: "omp.cleanse.meter",
 					})
 				: node("progress", { value, label, tone: "accent" }),
@@ -399,7 +399,7 @@ function describeAgentRow(agentName: string, agent: RunningAgent): NativeNode {
 		text([span(compactFiles(agent.assignment), "path")], { truncate: "middle" }),
 		text(describeActivity(agent.progress), { truncate: "end", grow: 1 }),
 	];
-	if (toolCount > 0) children.push(text([span(`${toolCount} tool${toolCount === 1 ? "" : "s"}`, "dim")]));
+	if (toolCount > 0) children.push(text([span(`${toolCount} 个工具${toolCount === 1 ? "" : "s"}`, "dim")]));
 	children.push(elapsed(Date.now() - agent.startedAt));
 	return keyed(row(children, { gap: "sm" }), `agent-${stableKey(agentName)}`);
 }

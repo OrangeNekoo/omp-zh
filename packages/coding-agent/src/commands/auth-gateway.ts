@@ -16,30 +16,30 @@ export default class AuthGateway extends Command {
 	static description = commandHelp.description;
 	static args = {
 		action: Args.string({
-			description: "Sub-command",
+			description: "子命令",
 			required: false,
 			options: [...AUTH_GATEWAY_ACTIONS],
 		}),
 	};
 
 	static flags = {
-		json: Flags.boolean({ description: "Output JSON (token/status/check)" }),
-		bind: Flags.string({ description: "Bind address for `serve` (host:port)", char: "b" }),
-		regenerate: Flags.boolean({ description: "Regenerate the gateway bearer token (token)" }),
+		json: Flags.boolean({ description: "输出 JSON（token/status/check）" }),
+		bind: Flags.string({ description: "`serve` 的绑定地址（host:port）", char: "b" }),
+		regenerate: Flags.boolean({ description: "重新生成网关 bearer 令牌（token）" }),
 		"no-auth": Flags.boolean({
 			description:
-				"Disable inbound bearer-token auth (serve). Useful when bound to loopback — any caller is allowed.",
+				"禁用入站 bearer 令牌认证（serve）。绑定到回环地址时有用 — 允许任意调用方。",
 		}),
 		"trust-proxy-headers": Flags.boolean({
-			description: "Trust forwarded peer IP headers from a reverse proxy (serve); off by default.",
+			description: "信任反向代理转发来的对端 IP 头（serve）；默认关闭。",
 		}),
 		clients: Flags.string({
 			description:
-				"JSON file of scoped client tokens (serve), each limited to its own models and broker accounts; re-read while serving",
+				"作用域客户端令牌的 JSON 文件（serve），每个令牌仅限其模型与 broker 账户；服务期间会重新读取",
 		}),
 		strict: Flags.boolean({
 			description:
-				"For `check`: additionally probe each credential against its provider's chat-completion endpoint. Slower; consumes a tiny amount of quota per credential.",
+				"对 `check`：额外用每个凭据探测其服务商的对话补全端点。较慢，每个凭据会消耗少量配额。",
 		}),
 	};
 

@@ -130,8 +130,8 @@ export function buildOverviewRows(
 			});
 	}
 	rows.push(
-		{ key: "buffer", id: "buffer", label: "Auto-Compact Buffer", tokens: data.breakdown.autoCompactBufferTokens },
-		{ key: "free", id: "free", label: "Free Space", tokens: data.breakdown.freeTokens },
+		{ key: "buffer", id: "buffer", label: "自动压缩缓冲", tokens: data.breakdown.autoCompactBufferTokens },
+		{ key: "free", id: "free", label: "剩余空间", tokens: data.breakdown.freeTokens },
 	);
 	const tokenWidth = Math.max(...rows.map(row => (row.tokens === undefined ? 1 : formatNumber(row.tokens).length)));
 	const shareWidth = Math.max(
