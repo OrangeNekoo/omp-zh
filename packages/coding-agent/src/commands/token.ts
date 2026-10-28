@@ -50,27 +50,27 @@ export default class Token extends Command {
 	static description = commandHelp.description;
 	static args = {
 		provider: Args.string({
-			description: "Provider ID (e.g. anthropic, openai)",
+			description: "服务商 ID（如 anthropic、openai）",
 			required: true,
 		}),
 	};
 
 	static flags = {
 		raw: Flags.boolean({
-			description: "Output the raw credential value without parsing nested JSON structures",
+			description: "输出原始凭据值，不解析嵌套 JSON 结构",
 			default: false,
 		}),
 		"force-refresh": Flags.boolean({
-			description: "Force refresh the OAuth token even if it has not expired",
+			description: "即使 OAuth 令牌未过期也强制刷新",
 			default: false,
 		}),
 		account: Flags.integer({
 			char: "a",
-			description: "Select the Nth OAuth account (1-based) in stored order instead of the round-robin default",
+			description: "按存储顺序选择第 N 个 OAuth 账户（从 1 开始），而非默认轮询",
 		}),
 		list: Flags.boolean({
 			char: "l",
-			description: "List the provider's OAuth accounts (index + identity) and exit",
+			description: "列出服务商的 OAuth 账户（序号 + 身份）后退出",
 			default: false,
 		}),
 	};
@@ -96,7 +96,7 @@ export default class Token extends Command {
 			const scopedProfile = mcpOAuthCredentialProfile(provider);
 			if (scopedProfile !== undefined && scopedProfile !== (getActiveProfile() ?? "default")) {
 				process.stderr.write(
-					`${chalk.red(`Managed MCP credential "${providerName}" belongs to profile "${scopedProfile}", not the active profile.`)}\n`,
+					`${chalk.red(`受管 MCP 凭据 "${providerName}" 属于配置档案 "${scopedProfile}"，而非当前活动的档案。`)}\n`,
 				);
 				process.exitCode = 1;
 				return;
@@ -108,7 +108,7 @@ export default class Token extends Command {
 			if (flags.list || flags.account !== undefined) {
 				const accounts = authStorage.oauth.accounts(provider);
 				if (accounts.length === 0) {
-					process.stderr.write(`${chalk.red(`No OAuth accounts found for provider "${providerName}".`)}\n`);
+					process.stderr.write(`${chalk.red(`未找到服务商 "${providerName}" 的 OAuth 账户。`)}\n`);
 					process.stderr.write("--account/--list select among OAuth accounts; this provider has none stored.\n");
 					process.exitCode = 1;
 					return;
@@ -150,7 +150,7 @@ export default class Token extends Command {
 				if (!resolution?.ok) {
 					const reason = resolution && !resolution.ok ? resolution.error : "no OAuth credential available";
 					process.stderr.write(
-						`${chalk.red(`Could not get token for account ${n} of "${providerName}": ${reason}`)}\n`,
+						`${chalk.red(`无法获取账户 ${n}（"${providerName}"）的令牌：${reason}`)}\n`,
 					);
 					process.exitCode = 1;
 					return;

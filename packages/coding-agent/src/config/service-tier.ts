@@ -107,43 +107,43 @@ export function validateAgentServiceTierOverrides(value: unknown): Record<string
 }
 
 export const SERVICE_TIER_OPENAI_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierOpenAISettingValue>> = [
-	{ value: "none", label: "None", description: "Omit service_tier (standard processing)" },
-	{ value: "auto", label: "Auto", description: "Provider default tier selection" },
-	{ value: "default", label: "Default", description: "Standard priority processing" },
-	{ value: "flex", label: "Flex", description: "Lower cost, higher latency when available" },
-	{ value: "scale", label: "Scale", description: "Scale Tier credits when available" },
-	{ value: "priority", label: "Priority", description: "Faster, higher cost (premium request)" },
+	{ value: "none", label: "无", description: "省略 service_tier（标准处理）" },
+	{ value: "auto", label: "自动", description: "服务商默认层级选择" },
+	{ value: "default", label: "默认", description: "标准优先处理" },
+	{ value: "flex", label: "Flex", description: "可用时成本更低、延迟更高" },
+	{ value: "scale", label: "Scale", description: "可用时使用 Scale Tier 额度" },
+	{ value: "priority", label: "优先级", description: "更快、成本更高（溢价请求）" },
 	{
 		value: "ultrafast",
 		label: "Ultrafast",
-		description: "Lowest-latency serving; OpenAI API preview access, or Codex models that advertise it",
+		description: "最低延迟服务；需要 OpenAI API 预览访问权限，或支持该能力的 Codex 模型",
 	},
 ];
 
 export const SERVICE_TIER_ANTHROPIC_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierAnthropicSettingValue>> = [
-	{ value: "none", label: "None", description: "Standard processing" },
+	{ value: "none", label: "无", description: "标准处理" },
 	{
 		value: "priority",
-		label: "Priority",
-		description: 'Fast mode (`speed: "fast"`) on supported direct Claude models; ignored on Bedrock/Vertex',
+		label: "优先级",
+		description: '在受支持的 Claude 直连模型上使用快速模式（`speed: "fast"`）；在 Bedrock/Vertex 上忽略',
 	},
 ];
 
 export const SERVICE_TIER_GOOGLE_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierGoogleSettingValue>> = [
-	{ value: "none", label: "None", description: "Standard processing" },
-	{ value: "flex", label: "Flex", description: "Lower cost, higher latency (Gemini API + Vertex)" },
-	{ value: "priority", label: "Priority", description: "Faster, higher reliability (Gemini API + Vertex)" },
+	{ value: "none", label: "无", description: "标准处理" },
+	{ value: "flex", label: "Flex", description: "成本更低、延迟更高（Gemini API + Vertex）" },
+	{ value: "priority", label: "优先级", description: "更快、可靠性更高（Gemini API + Vertex）" },
 ];
 
 export const SERVICE_TIER_INHERIT_OPTIONS: ReadonlyArray<SubmenuOption<ServiceTierInheritSettingValue>> = [
-	{ value: "inherit", label: "Inherit", description: "Match the main agent's live per-family tiers" },
-	{ value: "none", label: "None", description: "Standard processing" },
-	{ value: "auto", label: "Auto", description: "Provider default tier selection (OpenAI family)" },
-	{ value: "default", label: "Default", description: "Standard priority processing (OpenAI family)" },
-	{ value: "flex", label: "Flex", description: "Flexible capacity tier (OpenAI/Google families)" },
-	{ value: "scale", label: "Scale", description: "Scale Tier credits (OpenAI family)" },
-	{ value: "priority", label: "Priority", description: "Priority on every supported family of the spawned model" },
-	{ value: "ultrafast", label: "Ultrafast", description: "Ultrafast serving (OpenAI family, where available)" },
+	{ value: "inherit", label: "继承", description: "跟随主代理实时的按系列层级" },
+	{ value: "none", label: "无", description: "标准处理" },
+	{ value: "auto", label: "自动", description: "服务商默认层级选择（OpenAI 系列）" },
+	{ value: "default", label: "默认", description: "标准优先处理（OpenAI 系列）" },
+	{ value: "flex", label: "Flex", description: "弹性容量层级（OpenAI/Google 系列）" },
+	{ value: "scale", label: "Scale", description: "Scale Tier 额度（OpenAI 系列）" },
+	{ value: "priority", label: "优先级", description: "对派生模型所属的每个受支持系列使用优先层级" },
+	{ value: "ultrafast", label: "Ultrafast", description: "Ultrafast 服务（OpenAI 系列，在可用时）" },
 ];
 
 /** Map a per-family setting value to a wire {@link ServiceTier}, or `undefined` to omit. */

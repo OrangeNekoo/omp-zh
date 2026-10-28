@@ -85,8 +85,8 @@ function readSubmission(
 		note:
 			settled && error === undefined && data === undefined
 				? incremental
-					? "Takes the last message as this section"
-					: "Ends with the sections submitted earlier, or the last message"
+					? "把最后一条消息作为本节内容"
+					: "以先前提交的各节结尾，或使用最后一条消息"
 				: undefined,
 	};
 }
@@ -100,7 +100,7 @@ function sizeMeta(data: unknown): string | undefined {
 
 function describeData(data: unknown, streaming: boolean): NativeChild | undefined {
 	if (data === undefined) return undefined;
-	if (typeof data === "string") return data.trim() ? md(data, { stream: streaming }) : noteText("(empty)");
+	if (typeof data === "string") return data.trim() ? md(data, { stream: streaming }) : noteText("（空）");
 	// Open to the depth cap: the data is the card's whole point, and the
 	// collapsed card's preview clamp already bounds what shows.
 	return describeJsonTree(data, { hiddenRootKeys: [], openDepth: JSON_TREE_MAX_DEPTH_EXPANDED });
@@ -165,7 +165,7 @@ function renderSubmission(s: Submission, options: RenderResultOptions, theme: Th
 				spinnerFrame: options.spinnerFrame,
 				title: TITLE,
 				description: s.target,
-				badge: s.overridden ? { label: "schema overridden", color: "warning" } : undefined,
+				badge: s.overridden ? { label: "schema 已覆盖", color: "warning" } : undefined,
 				meta: size ? [size] : undefined,
 			};
 			const phase: ToolCardPhase = !s.settled ? (running ? "running" : "partial") : failed ? "error" : "success";

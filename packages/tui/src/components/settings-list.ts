@@ -683,7 +683,7 @@ export class SettingsList implements Component {
 			selected: this.getSelectedItem()?.id ?? null,
 			filter: this.#filterQuery.trim() || undefined,
 			empty:
-				this.#items.length === 0 ? (this.#options.emptyText ?? "No settings available") : "No matching settings",
+				this.#items.length === 0 ? (this.#options.emptyText ?? "没有可用设置") : "无匹配的设置",
 			max:
 				typeof cachedMax === "object" && cachedMax.lines === this.#maxVisible
 					? cachedMax
@@ -738,11 +738,11 @@ export class SettingsList implements Component {
 	#hintText(): string {
 		const jumpHint =
 			this.#sections().length >= 2
-				? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} to jump sections · `
+				? `${editorKeys("tui.select.pageUp", "tui.select.pageDown")} 跳转分节 · `
 				: "";
 		return (
 			this.#options.hint ??
-			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} to change · ${jumpHint}Type to search · ${editorKey("tui.select.cancel")} to cancel`
+			`${editorKey("tui.select.confirm")}/${formatKeyHint("space")} 更改 · ${jumpHint}输入以搜索 · ${editorKey("tui.select.cancel")} 取消`
 		);
 	}
 
@@ -813,7 +813,7 @@ export class SettingsList implements Component {
 			lines.push("");
 			const editKey = editorKey("tui.editor.deleteCharBackward");
 			const cancelKey = editorKey("tui.select.cancel");
-			lines.push(truncateToWidth(this.#theme.hint(`  ${editKey} to edit search · ${cancelKey} to cancel`), width));
+			lines.push(truncateToWidth(this.#theme.hint(`  ${editKey} 编辑搜索 · ${cancelKey} 取消`), width));
 			return lines;
 		}
 

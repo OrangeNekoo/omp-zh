@@ -176,7 +176,7 @@ export function createDashboardController(): DashboardController {
 								],
 								() => {
 									const children = describeSheet(runtime, chart);
-									children.push(actionBar([null, actionButton("Close", "close", { keys: "escape" })]));
+									children.push(actionBar([null, actionButton("关闭", "close", { keys: "escape" })]));
 									return { ...col(children, { gap: "md", role: "omp.app.autoresearch" }), scroll };
 								},
 							);
@@ -248,7 +248,7 @@ export function createDashboardController(): DashboardController {
 /** Card/overlay title: the experiment name plus its mode status. */
 function describeTitle(runtime: AutoresearchDashboardRuntime): TspSpan[] {
 	const state = runtime.state;
-	const spans = [span(state.name ? `autoresearch: ${replaceTabs(state.name)}` : "autoresearch", "accent")];
+	const spans = [span(state.name ? `autoresearch：${replaceTabs(state.name)}` : "autoresearch", "accent")];
 	const status = renderModeStatus(runtime, state);
 	if (status) spans.push(span(` · ${status}`, "muted"));
 	return spans;
@@ -257,7 +257,7 @@ function describeTitle(runtime: AutoresearchDashboardRuntime): TspSpan[] {
 /** Widget shown while the very first run is in flight. */
 function describeRunningOnly(runtime: AutoresearchDashboardRuntime, state: ExperimentState): NativeNode {
 	const children: NativeNode[] = [
-		node("spinner", { label: [span("autoresearch", "accent"), span(" running", "warning")], tone: "warning" }),
+		node("spinner", { label: [span("autoresearch", "accent"), span(" 运行中", "warning")], tone: "warning" }),
 	];
 	if (runtime.runningExperiment) children.push(elapsed(Date.now() - runtime.runningExperiment.startedAt));
 	const details: TspSpan[] = [];
@@ -274,7 +274,7 @@ function describeCollapsed(runtime: AutoresearchDashboardRuntime, state: Experim
 	if (runtime.lastRunSummary) {
 		const spans = [
 			span("autoresearch", "accent"),
-			span(` pending run #${runtime.lastRunSummary.runNumber}`, "warning"),
+			span(` 待运行 #${runtime.lastRunSummary.runNumber}`, "warning"),
 			span(runtime.lastRunSummary.passed ? " pass" : " fail", "dim"),
 		];
 		if (runtime.lastRunSummary.parsedPrimary !== null) {
@@ -304,24 +304,24 @@ function describeCollapsed(runtime: AutoresearchDashboardRuntime, state: Experim
 	const archivedRuns = Math.max(0, state.results.length - current.length);
 	const spans = [
 		span("autoresearch", "accent"),
-		span(` ${current.length} runs`, "muted"),
-		span(` ${counts.keep} kept`, "success"),
+		span(` ${current.length} 次运行`, "muted"),
+		span(` ${counts.keep} 保留`, "success"),
 	];
-	if (archivedRuns > 0) spans.push(span(` +${archivedRuns} archived`, "dim"));
-	if (counts.crash > 0) spans.push(span(` ${counts.crash} crash`, "error"));
-	if (counts.checks_failed > 0) spans.push(span(` ${counts.checks_failed} checks_failed`, "error"));
+	if (archivedRuns > 0) spans.push(span(` 另有 ${archivedRuns} 条已归档`, "dim"));
+	if (counts.crash > 0) spans.push(span(` ${counts.crash} 崩溃`, "error"));
+	if (counts.checks_failed > 0) spans.push(span(` ${counts.checks_failed} 检查失败`, "error"));
 	spans.push(span(" | ", "dim"));
 	if (best && state.bestMetric !== null && best.result.metric !== state.bestMetric) {
-		spans.push(span(`best ${formatNum(best.result.metric, state.metricUnit)}`, "warning"));
-		spans.push(span(` baseline ${formatNum(state.bestMetric, state.metricUnit)}`, "dim"));
+		spans.push(span(`最优 ${formatNum(best.result.metric, state.metricUnit)}`, "warning"));
+		spans.push(span(` 基线 ${formatNum(state.bestMetric, state.metricUnit)}`, "dim"));
 	} else if (state.bestMetric !== null) {
-		spans.push(span(`baseline ${formatNum(state.bestMetric, state.metricUnit)}`, "warning"));
+		spans.push(span(`基线 ${formatNum(state.bestMetric, state.metricUnit)}`, "warning"));
 	} else {
-		spans.push(span("no kept runs yet", "warning"));
+		spans.push(span("暂无保留的运行", "warning"));
 	}
 	if (state.confidence !== null) {
 		spans.push(span(" | ", "dim"));
-		spans.push(span(`conf ${state.confidence.toFixed(1)}x`, confidenceToken(state.confidence)));
+		spans.push(span(`置信 ${state.confidence.toFixed(1)}x`, confidenceToken(state.confidence)));
 	}
 	const children: NativeNode[] = [text(spans, { truncate: "end" })];
 	if (runtime.runningExperiment) {
@@ -343,12 +343,12 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 		const pending = runtime.lastRunSummary;
 		if (pending) {
 			const items: { k: string; v: TspText }[] = [
-				{ k: "Pending run", v: `#${pending.runNumber}` },
+				{ k: "待运行", v: `#${pending.runNumber}` },
 				{
 					k: "Result",
 					v: `${pending.passed ? "passed" : "failed"}${pending.parsedPrimary !== null ? `  ${state.metricName} ${formatNum(pending.parsedPrimary, state.metricUnit)}` : ""}`,
 				},
-				{ k: "Next action", v: "finish log_experiment before starting another run." },
+				{ k: "下一步操作", v: "先完成 log_experiment 再开始下一次运行。" },
 			];
 			if (!runtime.autoresearchMode) items.push({ k: "Mode", v: "off" });
 			return [node("kv", { items, layout: "grid" }, undefined, "summary")];
@@ -359,9 +359,9 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 					"kv",
 					{
 						items: [
-							{ k: "Current segment", v: "0 runs" },
-							{ k: "Baseline", v: "pending" },
-							{ k: "Next action", v: "run and log the baseline experiment." },
+							{ k: "当前区段", v: "0 runs" },
+							{ k: "基线", v: "pending" },
+							{ k: "下一步操作", v: "运行并记录基线实验。" },
 						],
 						layout: "grid",
 					},
@@ -370,7 +370,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 				),
 			];
 		}
-		return [keyed(text([span("No experiments logged yet.", "dim")]), "summary")];
+		return [keyed(text([span("尚未记录实验。", "dim")]), "summary")];
 	}
 
 	const current = currentResults(state.results, state.currentSegment);
@@ -381,26 +381,26 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 	const best = findBestResult(state);
 	const items: { k: string; v: TspText }[] = [
 		{
-			k: "Current segment",
+			k: "当前区段",
 			v: [
-				span(`${current.length} runs  `),
-				span(`${counts.keep} kept`, "success"),
-				span(`  ${counts.discard} discarded`, "warning"),
-				span(`  ${counts.crash} crashed`, counts.crash > 0 ? "error" : undefined),
-				span(`  ${counts.checks_failed} checks_failed`, counts.checks_failed > 0 ? "error" : undefined),
+				span(`${current.length} 次运行  `),
+				span(`${counts.keep} 已保留`, "success"),
+				span(`  ${counts.discard} 次丢弃`, "warning"),
+				span(`  ${counts.crash} 次崩溃`, counts.crash > 0 ? "error" : undefined),
+				span(`  ${counts.checks_failed} 项检查失败`, counts.checks_failed > 0 ? "error" : undefined),
 			],
 		},
 		{
-			k: "Baseline",
+			k: "基线",
 			v: `${formatNum(baseline, state.metricUnit)}${baselineRunNumber ? ` (#${baselineRunNumber})` : ""}`,
 		},
 	];
 	if (state.results.length > current.length) {
-		items.push({ k: "Archived", v: `${state.results.length - current.length} runs from earlier segments` });
+		items.push({ k: "已归档", v: `${state.results.length - current.length} 次来自较早阶段的运行` });
 	}
 	if (runtime.lastRunSummary) {
 		items.push({
-			k: "Pending run",
+			k: "待运行",
 			v: [
 				span(`#${runtime.lastRunSummary.runNumber} (${runtime.lastRunSummary.passed ? "passed" : "failed"})`),
 				span(" — log_experiment required", "warning"),
@@ -418,7 +418,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 			value.push(span(` ${delta > 0 ? "+" : ""}${delta.toFixed(1)}%`, "num"));
 		}
 		if (state.confidence !== null) {
-			value.push(span(`  conf ${state.confidence.toFixed(1)}x`, confidenceToken(state.confidence)));
+			value.push(span(`  置信 ${state.confidence.toFixed(1)}x`, confidenceToken(state.confidence)));
 		}
 		items.push({ k: "Best", v: value });
 		const details = state.secondaryMetrics
@@ -431,7 +431,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 				),
 			)
 			.filter((detail): detail is string => Boolean(detail));
-		if (details.length > 0) items.push({ k: "Secondary", v: details.join("  ") });
+		if (details.length > 0) items.push({ k: "次要", v: details.join("  ") });
 	}
 
 	const cols: TspTableColumn[] = [
@@ -487,7 +487,7 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 					}),
 					token: "accent",
 					summary: [
-						span(`${state.metricName} per run`, "muted"),
+						span(`每次运行 ${state.metricName}`, "muted"),
 						...(best ? [span(` · best ${formatNum(best.result.metric, state.metricUnit)}`, "success")] : []),
 					],
 					size: "md",
@@ -510,14 +510,14 @@ function describeDashboard(runtime: AutoresearchDashboardRuntime, maxRows: numbe
 /** Sheet head: the experiment's name, then what the sheet is. */
 function describeSheetHead(runtime: AutoresearchDashboardRuntime): TspSpan[] {
 	const name = runtime.state.name?.trim();
-	return name ? [span(replaceTabs(name)), span(" · Autoresearch", "muted")] : [span("Autoresearch")];
+	return name ? [span(replaceTabs(name)), span(" · Autoresearch", "muted")] : [span("自动研究")];
 }
 
 const STATUS_LABEL: Record<ExperimentResult["status"], string> = {
 	keep: "kept",
 	discard: "discarded",
 	crash: "crashed",
-	checks_failed: "checks failed",
+	checks_failed: "检查失败",
 };
 
 const STATUS_TOKEN: Record<ExperimentResult["status"], string> = {
@@ -590,7 +590,7 @@ function describeSheet(runtime: AutoresearchDashboardRuntime, chart: boolean): N
 	if (archived > 0) {
 		children.push(
 			keyed(
-				text([span(`${archived} ${archived === 1 ? "run" : "runs"} archived from earlier segments`)], {
+				text([span(`${archived} ${archived === 1 ? "run" : "runs"} 条已从早前分段归档`)], {
 					role: "omp.autoresearch.note",
 				}),
 				"archived",
@@ -612,10 +612,10 @@ function describeIntro(runtime: AutoresearchDashboardRuntime, segmented: boolean
 		span(mode),
 		span("  ·  "),
 		span(state.metricName, "mono"),
-		span(`, ${state.bestDirection} is better`),
+		span(`，${state.bestDirection} 更优`),
 	];
-	if (segmented) meta.push(span("  ·  "), span(`Segment ${state.currentSegment + 1}`));
-	if (state.maxExperiments !== null) meta.push(span("  ·  "), span(`${state.maxExperiments} runs per segment`));
+	if (segmented) meta.push(span("  ·  "), span(`片段 ${state.currentSegment + 1}`));
+	if (state.maxExperiments !== null) meta.push(span("  ·  "), span(`每个阶段 ${state.maxExperiments} 次运行`));
 	if (state.branch) meta.push(span("  ·  "), span(replaceTabs(state.branch), "mono"));
 	children.push(keyed(text(meta, { truncate: "end", role: "omp.autoresearch.meta" }), "meta"));
 	return keyed(col(children, { gap: "xs", role: "omp.autoresearch.intro" }), "intro");
@@ -629,7 +629,7 @@ function describeNow(runtime: AutoresearchDashboardRuntime): NativeNode | undefi
 		return keyed(
 			row(
 				[
-					node("spinner", { label: [span("Running")], tone: "pending" }),
+					node("spinner", { label: [span("运行中")], tone: "pending" }),
 					elapsed(Date.now() - running.startedAt),
 					text([span(replaceTabs(running.command), "mono")], {
 						truncate: "end",
@@ -643,7 +643,7 @@ function describeNow(runtime: AutoresearchDashboardRuntime): NativeNode | undefi
 	}
 	const pending = runtime.lastRunSummary;
 	if (!pending) return undefined;
-	const result: TspSpan[] = [span(`Run #${pending.runNumber} ${pending.passed ? "passed" : "failed"}`, "strong")];
+	const result: TspSpan[] = [span(`运行 #${pending.runNumber} ${pending.passed ? "passed" : "failed"}`, "strong")];
 	if (pending.parsedPrimary !== null) {
 		result.push(
 			span(`  ·  ${state.metricName} `),
@@ -654,7 +654,7 @@ function describeNow(runtime: AutoresearchDashboardRuntime): NativeNode | undefi
 		row(
 			[
 				text(result, { truncate: "end" }),
-				text([span("Log it with "), span("log_experiment", "mono"), span(" before the next run")], {
+				text([span("记录方式："), span("log_experiment", "mono"), span(" 在下一次运行前")], {
 					truncate: "end",
 					role: "omp.autoresearch.next",
 				}),
@@ -683,7 +683,7 @@ function describeEmpty(runtime: AutoresearchDashboardRuntime, archived: number):
 	];
 	if (archived > 0) {
 		children.push(
-			text([span(`${archived} ${archived === 1 ? "run" : "runs"} archived from earlier segments`)], {
+			text([span(`${archived} ${archived === 1 ? "run" : "runs"} 条已从早前分段归档`)], {
 				role: "omp.autoresearch.note",
 			}),
 		);
@@ -738,15 +738,15 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 			]),
 		);
 	} else {
-		tiles.push(stat("best", "Best", [span("—", "muted")], [statDetail([span("No kept run yet")])]));
+		tiles.push(stat("best", "Best", [span("—", "muted")], [statDetail([span("暂无保留的运行")])]));
 	}
 
 	const baselineDetail: TspSpan[] = [];
-	if (baselineRun !== null) baselineDetail.push(span(`Run #${baselineRun}`));
+	if (baselineRun !== null) baselineDetail.push(span(`运行 #${baselineRun}`));
 	if (baselineResult?.commit) baselineDetail.push(span(" · "), span(baselineResult.commit.slice(0, 7), "mono"));
 	tiles.push(
 		stat("baseline", "Baseline", baseline === null ? [span("—", "muted")] : metricSpans(baseline, unit, digits), [
-			statDetail(baselineDetail.length > 0 ? baselineDetail : [span("Not logged yet")]),
+			statDetail(baselineDetail.length > 0 ? baselineDetail : [span("尚未记录")]),
 		]),
 	);
 
@@ -762,12 +762,12 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 				statDetail([
 					span(
 						confidence === null
-							? "Needs three runs and a gain"
+							? "需要三次运行且出现增益"
 							: confidence >= 2
-								? "Gain is clear of run noise"
+								? "增益明显高于运行噪声"
 								: confidence >= 1
-									? "Gain is near run noise"
-									: "Gain is within run noise",
+									? "增益接近运行噪声"
+									: "增益处于运行噪声范围内",
 					),
 				]),
 			],
@@ -777,7 +777,7 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 	const total = Math.max(state.maxExperiments ?? 0, current.length);
 	const failed = counts.crash + counts.checks_failed;
 	const tally: TspSpan[] = [span(`${counts.keep} kept · ${counts.discard} discarded`)];
-	if (failed > 0) tally.push(span(" · "), span(`${failed} failed`, "error"));
+	if (failed > 0) tally.push(span(" · "), span(`${failed} 失败`, "error"));
 	tiles.push(
 		stat(
 			"runs",
@@ -789,8 +789,8 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 				node("meter", {
 					value: current.length / total,
 					parts: [
-						{ value: counts.keep / total, token: "success", label: `${counts.keep} kept` },
-						{ value: counts.discard / total, token: "muted", label: `${counts.discard} discarded` },
+						{ value: counts.keep / total, token: "success", label: `${counts.keep} 已保留` },
+						{ value: counts.discard / total, token: "muted", label: `${counts.discard} 已丢弃` },
 						{
 							value: failed / total,
 							token: "error",
@@ -812,7 +812,7 @@ function describeStats(runtime: AutoresearchDashboardRuntime, current: readonly 
 		for (const metric of state.secondaryMetrics) {
 			const value = best.result.metrics[metric.name];
 			if (value === undefined) continue;
-			spans.push(span(spans.length === 0 ? "At best  " : "   ·   "));
+			spans.push(span(spans.length === 0 ? "最佳  " : "   ·   "));
 			spans.push(
 				span(`${metric.name} `, "mono muted"),
 				...metricSpans(value, metric.unit, fractionDigits([value]), "mono"),
@@ -846,7 +846,7 @@ function describeTrend(
 				};
 			}),
 			token: "accent",
-			summary: [span(`${state.metricName} per run, ${state.bestDirection} is better`)],
+			summary: [span(`每次运行 ${state.metricName}，${state.bestDirection} 更优`)],
 			size: "md",
 			role: "omp.autoresearch.trend",
 		},
@@ -877,16 +877,16 @@ function describeRuns(
 	);
 	const cols: TspTableColumn[] = [
 		{ id: "run", head: "#", align: "end", priority: 3 },
-		{ id: "status", head: "Outcome", priority: 4 },
+		{ id: "status", head: "结果", priority: 4 },
 		{ id: "metric", head: head(state.metricName, state.metricUnit), align: "end", priority: 5 },
-		{ id: "change", head: "vs baseline", align: "end", priority: 4 },
+		{ id: "change", head: "对比基线", align: "end", priority: 4 },
 		...state.secondaryMetrics.map((metric, index): TspTableColumn => ({
 			id: `secondary${index}`,
 			head: head(metric.name, metric.unit),
 			align: "end",
 			priority: 1,
 		})),
-		{ id: "commit", head: "Commit", priority: 2 },
+		{ id: "commit", head: "提交", priority: 2 },
 		{ id: "description", head: "Change", truncate: "end", grow: 1, priority: 3 },
 	];
 	const rows = indexed
@@ -964,7 +964,7 @@ function renderExpandedHeader(runtime: AutoresearchDashboardRuntime, width: numb
 	const label = state.name ? ` autoresearch: ${replaceTabs(state.name)} ` : " autoresearch ";
 	const hint = theme.fg(
 		"dim",
-		` ${formatKeyHint("ctrl+x")} collapse  ${formatKeyHint("ctrl+shift+x")} overlay${status ? `  ${status}` : ""} `,
+		` ${formatKeyHint("ctrl+x")} 折叠  ${formatKeyHint("ctrl+shift+x")} 浮层${status ? `  ${status}` : ""} `,
 	);
 	const fillWidth = Math.max(0, width - visibleWidth(label) - visibleWidth(hint));
 	return truncateToWidth(theme.fg("accent", label) + theme.fg("borderMuted", "-".repeat(fillWidth)) + hint, width);
@@ -974,7 +974,7 @@ function renderCollapsedLine(runtime: AutoresearchDashboardRuntime, state: Exper
 	if (runtime.lastRunSummary) {
 		const parts = [
 			theme.fg("accent", "autoresearch"),
-			theme.fg("warning", ` pending run #${runtime.lastRunSummary.runNumber}`),
+			theme.fg("warning", ` 待运行 #${runtime.lastRunSummary.runNumber}`),
 			theme.fg("dim", runtime.lastRunSummary.passed ? " pass" : " fail"),
 		];
 		if (runtime.lastRunSummary.parsedPrimary !== null) {
@@ -1010,32 +1010,32 @@ function renderCollapsedLine(runtime: AutoresearchDashboardRuntime, state: Exper
 	const archivedRuns = Math.max(0, state.results.length - current.length);
 	const parts = [
 		theme.fg("accent", "autoresearch"),
-		theme.fg("muted", ` ${current.length} runs`),
-		theme.fg("success", ` ${kept} kept`),
+		theme.fg("muted", ` ${current.length} 次运行`),
+		theme.fg("success", ` ${kept} 保留`),
 	];
-	if (archivedRuns > 0) parts.push(theme.fg("dim", ` +${archivedRuns} archived`));
-	if (crashed > 0) parts.push(theme.fg("error", ` ${crashed} crash`));
-	if (checksFailed > 0) parts.push(theme.fg("error", ` ${checksFailed} checks_failed`));
+	if (archivedRuns > 0) parts.push(theme.fg("dim", ` 另有 ${archivedRuns} 条已归档`));
+	if (crashed > 0) parts.push(theme.fg("error", ` ${crashed} 崩溃`));
+	if (checksFailed > 0) parts.push(theme.fg("error", ` ${checksFailed} 检查失败`));
 	parts.push(theme.fg("dim", " | "));
 	if (best && state.bestMetric !== null && best.result.metric !== state.bestMetric) {
-		parts.push(theme.fg("warning", `best ${formatNum(best.result.metric, state.metricUnit)}`));
-		parts.push(theme.fg("dim", ` baseline ${formatNum(state.bestMetric, state.metricUnit)}`));
+		parts.push(theme.fg("warning", `最优 ${formatNum(best.result.metric, state.metricUnit)}`));
+		parts.push(theme.fg("dim", ` 基线 ${formatNum(state.bestMetric, state.metricUnit)}`));
 	} else if (state.bestMetric !== null) {
-		parts.push(theme.fg("warning", `baseline ${formatNum(state.bestMetric, state.metricUnit)}`));
+		parts.push(theme.fg("warning", `基线 ${formatNum(state.bestMetric, state.metricUnit)}`));
 	} else {
-		parts.push(theme.fg("warning", `no kept runs yet`));
+		parts.push(theme.fg("warning", "暂无保留的运行"));
 	}
 	if (state.confidence !== null) {
 		const confidenceColor = state.confidence >= 2 ? "success" : state.confidence >= 1 ? "warning" : "error";
 		parts.push(theme.fg("dim", " | "));
-		parts.push(theme.fg(confidenceColor, `conf ${state.confidence.toFixed(1)}x`));
+		parts.push(theme.fg(confidenceColor, `置信 ${state.confidence.toFixed(1)}x`));
 	}
 	if (runtime.runningExperiment) {
 		parts.push(theme.fg("dim", ` | running ${formatElapsed(Date.now() - runtime.runningExperiment.startedAt)}`));
 	} else if (!runtime.autoresearchMode) {
 		parts.push(theme.fg("dim", ` | ${renderModeStatus(runtime, state)}`));
 	}
-	parts.push(theme.fg("dim", ` | ${formatKeyHint("ctrl+x")} expand`));
+	parts.push(theme.fg("dim", ` | ${formatKeyHint("ctrl+x")} 展开`));
 	return parts.join("");
 }
 
@@ -1069,7 +1069,7 @@ export function renderDashboardLines(
 				truncateToWidth("Next action: run and log the baseline experiment.", width),
 			];
 		}
-		return [theme.fg("dim", "No experiments logged yet.")];
+		return [theme.fg("dim", "尚未记录实验。")];
 	}
 
 	const current = currentResults(state.results, state.currentSegment);
@@ -1142,7 +1142,7 @@ export function renderDashboardLines(
 
 	const visible = maxRows > 0 ? current.slice(-maxRows) : current;
 	if (visible.length < current.length) {
-		lines.push(theme.fg("dim", `... ${current.length - visible.length} earlier runs hidden ...`));
+		lines.push(theme.fg("dim", `… 已隐藏 ${current.length - visible.length} 个较早的运行 …`));
 	}
 	for (const result of visible) {
 		lines.push(renderResultRow(result, state, baselineSecondary, columns, width, theme));
@@ -1241,7 +1241,7 @@ function renderOverlayRunningLine(
 	return truncateToWidth(
 		theme.fg(
 			"warning",
-			`${spinner} running ${formatElapsed(Date.now() - (runtime.runningExperiment?.startedAt ?? Date.now()))} ${replaceTabs(
+			`${spinner} 正在运行 ${formatElapsed(Date.now() - (runtime.runningExperiment?.startedAt ?? Date.now()))} ${replaceTabs(
 				runtime.runningExperiment?.command ?? "",
 			)}`,
 		),

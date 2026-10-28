@@ -12,9 +12,9 @@ export const cfgLiveVoice = register({
 	default: DEFAULT_LIVE_VOICE,
 	ui: {
 		tab: "providers",
-		group: "Services",
-		label: "Live Voice",
-		description: "Voice used by Codex-backed realtime voice sessions",
+		group: "服务",
+		label: "实时语音",
+		description: "Codex 支持的实时语音会话使用的音色",
 		options: LIVE_VOICE_OPTIONS,
 	},
 });

@@ -77,7 +77,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 		for (let i = startIndex; i < endIndex; i++) {
 			const account = items[i];
 			if (!account) continue;
-			const activeTag = account.active ? theme.fg("muted", " (active)") : "";
+			const activeTag = account.active ? theme.fg("muted", "（活动）") : "";
 			const detail = account.detail ? theme.fg("dim", `  ${account.detail}`) : "";
 			if (i === this.#menu.selectedIndex) {
 				rows.push(`${theme.fg("accent", `${theme.nav.cursor} ${account.label}`)}${activeTag}${detail}`);
@@ -98,14 +98,14 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 		}
 
 		if (total === 0) {
-			this.#listContainer.addChild(new TruncatedText(theme.fg("muted", "No stored accounts to log out"), 0, 0));
+			this.#listContainer.addChild(new TruncatedText(theme.fg("muted", "没有可登出的已存账户"), 0, 0));
 		}
 
 		this.#listContainer.addChild(
 			new TruncatedText(
 				theme.fg(
 					"muted",
-					`${editorKeys("tui.select.up", "tui.select.down")} select · ${formatKeyHint("enter")} log out account · ${editorKey("tui.select.cancel")} cancel`,
+					`${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${formatKeyHint("enter")} log out account · ${editorKey("tui.select.cancel")} 取消`,
 				),
 				0,
 				0,
@@ -145,8 +145,8 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 	override describe(cx: DescribeContext): NativeNode {
 		if (cx.supports("picker")) {
 			this.#pickerRoot ??= dockedPicker({
-				title: `${this.#providerName} accounts`,
-				subtitle: "Pick the account to sign out",
+				title: `${this.#providerName} 个账户`,
+				subtitle: "选择要退出登录的账户",
 				icon: "key-round",
 				noun: "accounts",
 				size: "md",
@@ -161,8 +161,8 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 				}))),
 				current: this.#accounts.filter(account => account.active).map(account => String(account.credentialId)),
 				selected: this.#menu.selectedKey ?? null,
-				empty: "No stored accounts to log out",
-				actions: [pickerAction("confirm", "Sign out", "enter", { primary: true, danger: true }), CLOSE_ACTION],
+				empty: "没有可登出的已存账户",
+				actions: [pickerAction("confirm", "登出", "enter", { primary: true, danger: true }), CLOSE_ACTION],
 			});
 			return this.#pickerRoot;
 		}
@@ -184,7 +184,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 				"list",
 				{
 					selected: this.#menu.selectedKey ?? null,
-					empty: "No stored accounts to log out",
+					empty: "没有可登出的已存账户",
 					max: { lines: LOGOUT_SELECTOR_MAX_VISIBLE },
 				},
 				this.#nativeItems,
@@ -192,7 +192,7 @@ export class LogoutAccountSelectorComponent extends OverlayPanel {
 			),
 			(this.#nativeHints ??= hintsRow([
 				actionHint(["tui.select.up", "tui.select.down"], "select"),
-				{ keys: ["enter"], label: "log out account" },
+				{ keys: ["enter"], label: "退出账户" },
 				actionHint("tui.select.cancel", "cancel"),
 			])),
 		]);

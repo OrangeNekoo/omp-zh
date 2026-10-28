@@ -13,14 +13,14 @@ export default class Search extends Command {
 	static aliases = ["q", "web-search"];
 
 	static args = {
-		query: Args.string({ description: "Search query text", required: false, multiple: true }),
+		query: Args.string({ description: "搜索查询文本", required: false, multiple: true }),
 	};
 
 	static flags = {
-		model: Flags.string({ description: "Catalog model selector" }),
-		recency: Flags.string({ description: "Recency filter", options: RECENCY }),
-		limit: Flags.integer({ char: "l", description: "Max results to return" }),
-		compact: Flags.boolean({ description: "Render condensed output" }),
+		model: Flags.string({ description: "目录模型选择器" }),
+		recency: Flags.string({ description: "时间范围筛选", options: RECENCY }),
+		limit: Flags.integer({ char: "l", description: "返回的最大结果数" }),
+		compact: Flags.boolean({ description: "渲染精简输出" }),
 	};
 
 	async run(): Promise<void> {

@@ -1,0 +1,265 @@
+name: Sync upstream and re-apply 汉化
+
+# 拉取上游 can1357/oh-my-pi 的 main，在最新源码上重放汉化，校验后推送。
+#
+# 为什么重放而不是合并：上游每天都在改界面文案和代码结构。把汉化当成
+# 一次性 diff，上游一动就冲突。这里把汉化拆成两部分——
+#   1. i18n/dictionary.json —— 人工维护的英中词典
+#   2. i18n/*.ts —— 确定性的 AST 重写器（作用于当前上游源码）
+# 同步时重新跑一次重写器，冲突面因此收敛到词典条目本身。
+#
+# 本工作流只覆盖上游拥有的文件；本 fork 自有的文件（README、本工作流、
+# i18n/、assets 等）在切换上游源码前先备份，切换后原样还原。
+#
+# 校验闸门：重写后源码必须仍能解析、CLI 必须能启动、类型检查必须通过。
+# 任一步失败都不推送，避免把损坏的构建推到 main。
+#
+# **仅手动触发**：定时同步已关闭。上游提交频繁，自动重放会把未经
+# 人工复核的新文案推到主分支；同步改为按需手动触发。
+
+on:
+   workflow_dispatch:
+      inputs:
+         upstream_ref:
+            description: "上游分支或 tag（默认 main）"
+            required: false
+            default: "main"
+
+permissions:
+   contents: write
+
+concurrency:
+   group: zh-sync
+   cancel-in-progress: false
+
+env:
+   UPSTREAM_REPO: can1357/oh-my-pi
+
+jobs:
+   sync:
+      name: Re-apply 汉化 onto upstream
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout fork
+           uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
+              ref: main
+              token: ${{ secrets.GITHUB_TOKEN }}
+
+         - name: Setup Bun
+           uses: oven-sh/setup-bun@v2
+           with:
+              # 固定版本：bun 的大版本变更可能改变 lockfile 兼容性或脚本行为，
+              # 到时人工改这一行，而不是让定时同步在某天突然失败。
+              bun-version: "1.4.3"
+
+         - name: Configure git
+           run: |
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+         - name: Fetch upstream
+           id: upstream
+           run: |
+              git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+              git fetch --no-tags --depth=1 upstream "${{ inputs.upstream_ref || 'main' }}"
+              sha=$(git rev-parse FETCH_HEAD)
+              echo "sha=$sha" >> "$GITHUB_OUTPUT"
+              echo "上游提交：$sha"
+
+         - name: Skip when already up to date
+           id: check
+           run: |
+              # 该提交已在 main 的历史里就不必重跑
+              if git merge-base --is-ancestor "${{ steps.upstream.outputs.sha }}" HEAD; then
+                 echo "need_sync=false" >> "$GITHUB_OUTPUT"
+                 echo "已包含最新上游提交，跳过。"
+              else
+                 echo "need_sync=true" >> "$GITHUB_OUTPUT"
+              fi
+
+         # 本 fork 自有文件，分两类：
+         #
+         # 1. **上游没有的路径**（`--diff-filter=A`）：本 fork 新增的文件，
+         #    例如 i18n/ 目录。清单动态计算而不是硬编码——写死的路径会让
+         #    日后新增的 fork 文件在同步中被静默删除，删除动作还会被一起提交。
+         # 2. **上游有、但本 fork 有意改写**的路径：显式列出（见 FORK_MODIFIED）。
+         #
+         # 早先的写法用 `--diff-filter=AM` 对比两个提交，把「上游有、我们版本
+         # 陈旧」的文件也算进自有清单，还原时用陈旧副本覆盖上游的新版本——
+         # 上游对 docs/、CI 配置等文件的更新因此被静默回退。只增不减。
+         - name: Back up fork-owned files
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              mkdir -p /tmp/fork-owned
+              # 上游没有、本 fork 新增的路径。
+              git diff --name-only --diff-filter=A "${{ steps.upstream.outputs.sha }}" main -- . \
+                 ':(exclude)packages' > /tmp/fork-added.txt
+              # 上游有、本 fork 有意改写的路径。
+              cat > /tmp/fork-modified.txt <<'MODIFIED'
+              README.md
+              .github/workflows/zh-sync.yml
+              MODIFIED
+              cat /tmp/fork-added.txt /tmp/fork-modified.txt | sort -u > /tmp/fork-owned-list.txt
+              # 只备份仍然存在的文件。
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 [ -f "$file" ] || continue
+                 mkdir -p "/tmp/fork-owned/$(dirname "$file")"
+                 cp "$file" "/tmp/fork-owned/$file"
+              done < /tmp/fork-owned-list.txt
+              echo "备份的 fork 自有文件："
+              cat /tmp/fork-owned-list.txt
+
+         - name: Switch tree to upstream source
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              git checkout --force --detach "${{ steps.upstream.outputs.sha }}"
+              # 清掉上游源码之外的一切（含旧翻译结果），但保留 .git
+              git clean -fdx -e node_modules
+
+         - name: Restore fork-owned files
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 if [ ! -f "/tmp/fork-owned/$file" ]; then
+                    echo "::error::备份缺失，无法还原：$file"
+                    exit 1
+                 fi
+                 mkdir -p "$(dirname "$file")"
+                 cp "/tmp/fork-owned/$file" "$file"
+              done < /tmp/fork-owned-list.txt
+
+         - name: Gate — fork 自有文件必须完整还原
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 还原漏一步都会让同步把文件删掉并提交，这里逐个校验存在性。
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 if [ ! -f "$file" ]; then
+                    echo "::error::fork 自有文件未还原：$file"
+                    exit 1
+                 fi
+              done < /tmp/fork-owned-list.txt
+              echo "fork 自有文件全部还原。"
+
+         - name: Install dependencies
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun install --frozen-lockfile
+
+         - name: Fetch native addon
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # workspace 包不会安装 npm 上的平台二进制；不加这一步，
+              # 下面的 CLI 启动与类型检查都会因为缺少 .node 而失败。
+              bun i18n/fetch-native.ts
+
+         - name: Apply 汉化
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/translate.ts
+
+         - name: Apply 提示片段汉化
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/translate-hints.ts
+
+         - name: Apply omp-zh command name
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/apply-cli-name.ts
+
+         - name: Sync report-key comparisons
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-report-keys.ts
+
+         - name: Sync label comparisons
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-label-compare.ts
+
+         - name: Localize startup update notice
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-runtime-text.ts
+
+         - name: Patch .gitignore
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/patch-gitignore.ts
+
+         - name: Gate — 汉化必须命中源码
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 默认 shell 是 bash -e，没有 pipefail；extract 崩在统计阶段会被
+              # tee 吞掉退出码，只要计数行已打印就误放行，所以显式开启。
+              set -o pipefail
+              # 若规则全部失效（上游重构了 UI 文案结构），提取器会命中 0 条。
+              # 这种情况下重放等于什么都没做，必须停下来让人看，而不是静默推送。
+              # 阈值取当前实际命中数（约 1290）的 3/4：规则半失效时也能拦住。
+              bun i18n/extract.ts --check | tee /tmp/extract.log
+              count=$(grep -oE '[0-9]+ 条唯一界面文案' /tmp/extract.log | grep -oE '^[0-9]+' || echo 0)
+              echo "提取命中：$count 条"
+              if [ "$count" -lt 1000 ]; then
+                 echo "::error::提取器仅命中 $count 条文案，汉化规则可能已失效，停止同步。"
+                 exit 1
+              fi
+
+         - name: Gate — 分组名必须与设置定义一致
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/check-groups.ts
+
+         - name: Gate — 标签比较必须中英双认
+           if: steps.check.outputs.need_sync == 'true'
+           run: bun i18n/check-label-compare.ts
+
+         - name: Gate — CLI 必须能启动
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              output=$(bun packages/coding-agent/src/cli.ts --version)
+              echo "$output"
+              case "$output" in
+                 omp-zh/*) ;;
+                 *) echo "::error::--version 未报告 omp-zh，停止同步。"; exit 1 ;;
+              esac
+
+         - name: Gate — 重写器必须幂等
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              # 重放本身应当收敛：第二次执行不能再改动任何源码，
+              # 否则说明规则之间存在互相覆盖（例如词典链式命中）。
+              bun i18n/translate.ts --dry-run | tee /tmp/translate.log
+              if ! grep -q '替换 0 处' /tmp/translate.log; then
+                 echo "::error::翻译器不幂等，第二次运行仍有替换，停止同步。"
+                 exit 1
+              fi
+              bun i18n/translate-hints.ts --dry-run | tee /tmp/hints.log
+              if ! grep -q '提示片段替换 0 处' /tmp/hints.log; then
+                 echo "::error::提示片段翻译器不幂等，停止同步。"
+                 exit 1
+              fi
+
+         - name: Gate — 类型检查
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              (cd packages/utils && bun run check:types)
+              (cd packages/tui && bun run check:types)
+              (cd packages/coding-agent && bun run check:types)
+
+         - name: Commit and push
+           if: steps.check.outputs.need_sync == 'true'
+           run: |
+              git add -A
+              if git diff --cached --quiet; then
+                 echo "没有需要提交的改动。"
+                 exit 0
+              fi
+              # 当前 HEAD 是上游提交（detached），但本地 `main` 仍指向 fork 的
+              # 旧提交。把结果作为「fork main + 上游」的合并提交：main 的历史
+              # 因此包含上游提交，下一次同步的「是否已包含」判断才有意义，
+              # 推送也始终是快进。
+              subject=$(git log -1 --format=%s "${{ steps.upstream.outputs.sha }}")
+              tree=$(git write-tree)
+              commit=$(git commit-tree "$tree" \
+                 -p main \
+                 -p "${{ steps.upstream.outputs.sha }}" \
+                 -m "chore(zh): 同步上游 ${{ steps.upstream.outputs.sha }} 并重放汉化" \
+                 -m "上游提交：$subject" \
+                 -m "上游父提交：${{ steps.upstream.outputs.sha }}")
+              git push origin "$commit:main"

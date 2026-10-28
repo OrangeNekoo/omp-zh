@@ -13,18 +13,18 @@ export default class Agents extends Command {
 	static description = commandHelp.description;
 	static args = {
 		action: Args.string({
-			description: "Agents action",
+			description: "代理操作",
 			required: false,
 			options: ACTIONS,
 		}),
 	};
 
 	static flags = {
-		force: Flags.boolean({ char: "f", description: "Overwrite existing agent files" }),
-		json: Flags.boolean({ description: "Output JSON" }),
+		force: Flags.boolean({ char: "f", description: "覆盖已有的代理文件" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
 		dir: Flags.string({ description: "Output directory (overrides --user/--project)" }),
-		user: Flags.boolean({ description: "Write to ~/.omp/agent/agents (default)" }),
-		project: Flags.boolean({ description: "Write to ./.omp/agents" }),
+		user: Flags.boolean({ description: "写入 ~/.omp/agent/agents（默认）" }),
+		project: Flags.boolean({ description: "写入 ./.omp/agents" }),
 	};
 
 	static examples = [

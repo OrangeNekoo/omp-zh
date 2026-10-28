@@ -217,7 +217,7 @@ function promptError(message: AssistantMessage): RpcPromptError {
 		errorStatus: message.errorStatus,
 	});
 	const error: RpcPromptError = {
-		message: message.errorMessage ? stripRawHttpRequestDiagnostics(message.errorMessage) : "Provider request failed",
+		message: message.errorMessage ? stripRawHttpRequestDiagnostics(message.errorMessage) : "服务商请求失败",
 		provider: message.provider,
 		model: message.model,
 		retryable: AIError.is(errorId, AIError.Flag.Transient),

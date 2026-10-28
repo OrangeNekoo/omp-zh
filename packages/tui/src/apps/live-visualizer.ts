@@ -194,7 +194,7 @@ export class LiveVisualizer implements Component {
 				actionBar([
 					null,
 					actionButton(phase === "muted" ? "Unmute" : "Mute", "mute", { keys: "space" }),
-					actionButton("End call", "end", { keys: "escape", tone: "error" }),
+					actionButton("结束通话", "end", { keys: "escape", tone: "error" }),
 				]),
 			]);
 		});

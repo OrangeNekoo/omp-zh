@@ -64,7 +64,7 @@ class AdvisorHeader implements Component {
 		width = Math.max(1, width);
 		if (this.#cache?.width === width) return this.#cache.lines;
 		const uiTheme = this.#uiTheme;
-		const tag = uiTheme.fg("customMessageLabel", uiTheme.bold(`${uiTheme.status.info} Advisor`));
+		const tag = uiTheme.fg("customMessageLabel", uiTheme.bold(`${uiTheme.status.info} 位顾问`));
 		const lines = [
 			truncateToWidth(`${tag} ${uiTheme.fg("dim", this.#meta.join(uiTheme.sep.dot))}`, width, Ellipsis.Unicode),
 		];
@@ -156,10 +156,10 @@ const RANKS: readonly AdvisorRank[] = ["blocker", "concern", "nit", "note"];
 
 /** Each rank's native look, GitHub-alert style: card/icon tone, Tern icon name, label and its span style. */
 const RANK_LOOK: Record<AdvisorRank, { tone: TspTone; icon: string; label: string; style: string }> = {
-	blocker: { tone: "error", icon: "octagon-alert", label: "Blocker", style: "error strong" },
-	concern: { tone: "warning", icon: "warn", label: "Concern", style: "warning strong" },
-	nit: { tone: "neutral", icon: "lightbulb", label: "Nit", style: "strong" },
-	note: { tone: "neutral", icon: "info", label: "Note", style: "strong" },
+	blocker: { tone: "error", icon: "octagon-alert", label: "阻塞项", style: "error strong" },
+	concern: { tone: "warning", icon: "warn", label: "关注点", style: "warning strong" },
+	nit: { tone: "neutral", icon: "lightbulb", label: "细节", style: "strong" },
+	note: { tone: "neutral", icon: "info", label: "备注", style: "strong" },
 };
 
 function rankOf(entry: AdvisorNote): AdvisorRank {
@@ -217,7 +217,7 @@ export function createAdvisorMessageCard(
 	const notes = details?.notes ?? [];
 	const blockers = notes.filter(note => note.severity === "blocker").length;
 	const meta: string[] = [`${notes.length} ${notes.length === 1 ? "note" : "notes"}`];
-	if (blockers > 0) meta.push(uiTheme.fg("error", `${blockers} blocker${blockers === 1 ? "" : "s"}`));
+	if (blockers > 0) meta.push(uiTheme.fg("error", `${blockers} 个阻塞项${blockers === 1 ? "" : "s"}`));
 	let override: boolean | undefined;
 	let lastGlobal = getExpanded();
 	const expanded = (): boolean => {
@@ -239,7 +239,7 @@ export function createAdvisorMessageCard(
 			[
 				node("icon", { name: look.icon, tone: look.tone }),
 				text(tallySpans(notes), { grow: 1 }),
-				text([span(sources.size === 1 && sole ? sole : "Advisor", "dim")], { role: "omp.advisor.source" }),
+				text([span(sources.size === 1 && sole ? sole : "顾问", "dim")], { role: "omp.advisor.source" }),
 			],
 			"head",
 		);

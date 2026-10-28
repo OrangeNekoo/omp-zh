@@ -305,8 +305,8 @@ export class SelectList implements Component, MouseRoutable {
 			filter: this.#nativeMark === undefined ? query.trim() || undefined : undefined,
 			empty:
 				query.trim().length > 0
-					? (this.layout.noMatchText ?? "No matching items")
-					: (this.layout.emptyText ?? "No items"),
+					? (this.layout.noMatchText ?? "无匹配条目")
+					: (this.layout.emptyText ?? "无条目"),
 			max:
 				typeof cachedMax === "object" && cachedMax.lines === this.#maxVisible
 					? cachedMax

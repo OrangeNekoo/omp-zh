@@ -8,43 +8,43 @@ export type ComposerShape = string;
 export const BUILTIN_COMPOSER_SHAPES = [
 	{
 		value: "band",
-		label: "Status Band (Default)",
-		description: "Flush soft-capped status band above a curved prompt, no frame",
+		label: "状态带（默认）",
+		description: "齐平的柔和状态带位于弧形提示符上方，无外框",
 	},
 	{
 		value: "box",
-		label: "Rounded Box",
-		description: "Status line embedded in top border, compact 2-line prompt",
+		label: "圆角框",
+		description: "状态栏嵌入顶部边框，紧凑的两行提示符",
 	},
 	{
 		value: "claude",
 		label: "Claude Code",
-		description: "Full-width horizontal rules above and below, status line at bottom",
+		description: "上下各有一条通栏水平线，状态栏在底部",
 	},
 	{
 		value: "pi",
 		label: "Pi",
-		description: "Framed horizontal rules with status line at bottom",
+		description: "带外框的水平分隔线，状态栏在底部",
 	},
 	{
 		value: "borderless",
-		label: "Borderless",
-		description: "Clean prompt glyph with status line at bottom, no box borders",
+		label: "无边框",
+		description: "简洁的提示符字形，状态栏在底部，无边框",
 	},
 	{
 		value: "rule",
-		label: "Top Rule Dock",
-		description: "Single top rule with status docked onto it and below",
+		label: "顶部规则坞",
+		description: "单条顶部横线，状态栏停靠在其上及其下方",
 	},
 	{
 		value: "field",
-		label: "Compact Field",
-		description: "Filled one-row field with accent end caps",
+		label: "压缩字段",
+		description: "填充的单行输入区，两端带强调色端帽",
 	},
 	{
 		value: "rail",
-		label: "Accent Rail",
-		description: "Filled one-row field anchored by a single accent rail",
+		label: "强调色边栏",
+		description: "填充的单行输入区，由单条强调色边栏固定",
 	},
 ] as const;
 

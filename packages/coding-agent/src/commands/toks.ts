@@ -61,13 +61,13 @@ export default class Toks extends Command {
 	static description = commandHelp.description;
 	static args = {
 		input: Args.string({
-			description: "File path, or literal text when it does not name a file",
+			description: "文件路径；若不是文件则按字面文本处理",
 			required: true,
 			multiple: true,
 		}),
 	};
 	static flags = {
-		json: Flags.boolean({ description: "Output JSON" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
 	};
 
 	static examples = [

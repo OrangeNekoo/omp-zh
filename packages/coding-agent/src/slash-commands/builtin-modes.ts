@@ -236,28 +236,28 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "security",
 		icon: "shield",
-		description: "Plan, run, inspect, import, and compare OMP-native security scans",
+		description: "规划、运行、检查、导入并比较 OMP 原生安全扫描",
 		allowArgs: true,
 		acpInputHint: "<plan|scan|status|cancel|scans|show|import|export|validate|compare|disposition>",
 		subcommands: [
-			{ name: "plan", description: "Create an immutable security scan plan" },
-			{ name: "scan", description: "Start a planned or newly planned native scan" },
-			{ name: "status", description: "Show native scan operation status" },
-			{ name: "cancel", description: "Cancel a running native scan" },
-			{ name: "scans", description: "List stored project security scans" },
-			{ name: "show", description: "Render a scan or security:// resource" },
-			{ name: "import", description: "Import SARIF or a Codex Security bundle" },
-			{ name: "export", description: "Export a canonical bundle, SARIF, or report" },
-			{ name: "validate", description: "Validate one finding with OMP-native tools" },
-			{ name: "compare", description: "Compare finding lineage across two scans" },
-			{ name: "disposition", description: "Set a finding disposition with rationale" },
+			{ name: "plan", description: "创建不可变的安全扫描计划" },
+			{ name: "scan", description: "启动已计划或新计划的原生扫描" },
+			{ name: "status", description: "显示原生扫描操作状态" },
+			{ name: "cancel", description: "取消正在运行的原生扫描" },
+			{ name: "scans", description: "列出已存储的项目安全扫描" },
+			{ name: "show", description: "渲染扫描或 security:// 资源" },
+			{ name: "import", description: "导入 SARIF 或 Codex 安全包" },
+			{ name: "export", description: "导出规范包、SARIF 或报告" },
+			{ name: "validate", description: "用 OMP 原生工具验证一个发现" },
+			{ name: "compare", description: "比较两次扫描的发现谱系" },
+			{ name: "disposition", description: "设置发现的处置方式及理由" },
 		],
 		handle: handleSecurityCommand,
 	},
 	{
 		name: "settings",
 		icon: "settings",
-		description: "Open settings menu",
+		description: "打开设置菜单",
 		handleTui: (_command, runtime) => {
 			runtime.ctx.showSettingsSelector();
 			clearSubmittedText(runtime);
@@ -267,16 +267,16 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "setup",
 		aliases: ["providers"],
 		icon: "gear",
-		description: "Open provider setup",
+		description: "打开服务商设置",
 		allowArgs: true,
-		subcommands: [{ name: "providers", description: "Configure sign-in and web search providers" }],
+		subcommands: [{ name: "providers", description: "配置登录和网络搜索服务商" }],
 		handleTui: async (command, runtime) => {
 			const args = command.args.trim().toLowerCase();
 			const opensProviders = args === "" || args === "providers";
 			if (opensProviders) {
 				await runtime.ctx.showProviderSetup();
 			} else {
-				runtime.ctx.showWarning(`Usage: /${command.name} [providers]`);
+				runtime.ctx.showWarning(`用法：/${command.name} [providers]`);
 			}
 			clearSubmittedText(runtime);
 		},
@@ -284,7 +284,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "plan",
 		icon: "plan",
-		description: "Toggle plan mode (agent plans before executing)",
+		description: "切换计划模式（代理先计划再执行）",
 		inlineHint: "[prompt]",
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -305,7 +305,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "plan-review",
 		icon: "plan",
-		description: "Re-open the plan review for the latest plan (plan mode only)",
+		description: "重新打开最新计划的计划审查（仅计划模式）",
 		getTuiAutocompleteDescription: runtime =>
 			runtime.ctx.planModeEnabled ? "Plan review: available" : "Plan review: plan mode inactive",
 		handleTui: async (_command, runtime) => {
@@ -316,7 +316,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "vibe",
 		icon: "wave",
-		description: "Toggle vibe mode (direct persistent fast/good worker sessions; read-only toolset)",
+		description: "切换 vibe 模式（直接持久快速/良好工作会话；只读工具集）",
 		inlineHint: "[prompt]",
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -334,14 +334,14 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "goal",
 		icon: "goal",
-		description: "Toggle goal mode (persistent autonomous objective for this session)",
+		description: "切换目标模式（本会话的持久自主目标）",
 		subcommands: [
-			{ name: "set", description: "Set or replace the goal", usage: "<objective>" },
-			{ name: "show", description: "Show current goal details" },
-			{ name: "pause", description: "Pause the current goal" },
-			{ name: "resume", description: "Resume a paused goal" },
-			{ name: "drop", description: "Drop the current goal" },
-			{ name: "budget", description: "Adjust the token budget", usage: "<N|off>" },
+			{ name: "set", description: "设置或替换目标", usage: "<objective>" },
+			{ name: "show", description: "显示当前目标详情" },
+			{ name: "pause", description: "暂停当前目标" },
+			{ name: "resume", description: "恢复已暂停的目标" },
+			{ name: "drop", description: "放弃当前目标" },
+			{ name: "budget", description: "调整令牌预算", usage: "<N|off>" },
 		],
 		inlineHint: "[objective]",
 		allowArgs: true,
@@ -360,7 +360,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "guided-goal",
 		icon: "compass",
-		description: "Have the agent interview you in chat, then set up goal mode",
+		description: "让代理在对话中采访你，然后设置目标模式",
 		inlineHint: "[rough objective]",
 		allowArgs: true,
 		handleTui: async (command, runtime) => {
@@ -373,7 +373,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "loop",
 		icon: "loop",
 		get description() {
-			return `Toggle loop mode. While enabled, the next prompt you send re-submits after every yield. Bound it with a count/duration, or gate it with \`--until '<cmd>'\` / \`--while '<cmd>'\` — the command's exit status decides whether the next iteration runs. ${formatKeyHint("escape")} suspends the ongoing loop; /loop again to disable.`;
+			return `切换循环模式。启用后，你发送的下一条提示词会在每次 yield 后重新提交。可用次数/时长限制，或用 \`--until '<cmd>'\` / \`--while '<cmd>'\` 设门控 — 命令的退出状态决定是否继续下一轮。${formatKeyHint("escape")} 暂停当前循环；再次输入 /loop 可关闭。`;
 		},
 		inlineHint: "[count|duration] [--while|--until '<cmd>'] [prompt]",
 		allowArgs: true,
@@ -399,7 +399,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "queue",
 		icon: "inbox",
-		description: "Queue a message for after the agent yields",
+		description: "将消息排队到代理让出后",
 		inlineHint: "<message>",
 		allowArgs: true,
 		handleTui: async (command, runtime) => {
@@ -413,8 +413,8 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "model",
 		aliases: ["models"],
 		icon: "model",
-		description: "Switch model for this session",
-		acpDescription: "Show current model selection",
+		description: "切换本会话的模型",
+		acpDescription: "显示当前模型选择",
 		getTuiAutocompleteDescription: runtime => {
 			const model = runtime.ctx.viewSession.model;
 			return model ? `Model: ${model.provider}/${model.id}` : "Model: none selected";
@@ -426,25 +426,25 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const match = resolved.model;
 				if (!match) {
 					return usage(
-						`Unknown model: ${selector}. Use ACP \`session/setModel\` for picker-driven selection or list available models with /model.`,
+						`未知模型：${selector}。使用 ACP \`session/setModel\` 进行选择器式选择，或使用 /model 列出可用模型。`,
 						runtime,
 					);
 				}
 				try {
 					await runtime.session.setModel(match);
 					if (resolved.thinkingLevel !== undefined) runtime.session.setThinkingLevel(resolved.thinkingLevel);
-					await runtime.output(`Model set to ${match.provider}/${match.id}.`);
+					await runtime.output(`模型已设为 ${match.provider}/${match.id}。`);
 					await runtime.notifyTitleChanged?.();
 					await runtime.notifyConfigChanged?.();
 					return commandConsumed();
 				} catch (err) {
-					return usage(`Failed to set model: ${errorMessage(err)}`, runtime);
+					return usage(`设置模型失败：${errorMessage(err)}`, runtime);
 				}
 			}
 
 			const model = runtime.session.model;
 			await runtime.output(
-				model ? `Current model: ${model.provider}/${model.id}` : "No model is currently selected.",
+				model ? `当前模型：${model.provider}/${model.id}` : "当前未选择任何模型。",
 			);
 			return commandConsumed();
 		},
@@ -457,9 +457,9 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "switch",
 		icon: "swap",
 		get description() {
-			return `Switch model for this session (same as ${formatKeyHint("alt+p")}); accepts fuzzy ids, provider/id, @role, :level`;
+			return `切换本次会话的模型（同 ${formatKeyHint("alt+p")}）；支持模糊 id、provider/id、@role、:level`;
 		},
-		acpDescription: "Switch model for this session only",
+		acpDescription: "仅切换本次会话的模型",
 		acpInputHint: "[model]",
 		inlineHint: "[model]",
 		allowArgs: true,
@@ -472,20 +472,20 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!selector) {
 				const model = runtime.session.model;
 				await runtime.output(
-					model ? `Current model: ${model.provider}/${model.id}` : "No model is currently selected.",
+					model ? `当前模型：${model.provider}/${model.id}` : "当前未选择任何模型。",
 				);
 				return commandConsumed();
 			}
 			const resolved = resolveSessionModelSelector(selector, runtime.session, runtime.settings);
-			if (!resolved.model) return usage(`Unknown model: ${selector}`, runtime);
+			if (!resolved.model) return usage(`未知模型：${selector}`, runtime);
 			try {
 				await runtime.session.setModelTemporary(resolved.model, resolved.thinkingLevel);
-				await runtime.output(`Session-only model: ${formatModelString(resolved.model)}.`);
+				await runtime.output(`仅本次会话的模型：${formatModelString(resolved.model)}。`);
 				await runtime.notifyTitleChanged?.();
 				await runtime.notifyConfigChanged?.();
 				return commandConsumed();
 			} catch (err) {
-				return usage(`Failed to switch model: ${errorMessage(err)}`, runtime);
+				return usage(`切换模型失败：${errorMessage(err)}`, runtime);
 			}
 		},
 		handleTui: async (command, runtime) => {
@@ -497,7 +497,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			}
 			const resolved = resolveSessionModelSelector(selector, runtime.ctx.session, runtime.ctx.settings);
 			if (!resolved.model) {
-				runtime.ctx.showError(`Unknown model: ${selector}`);
+				runtime.ctx.showError(`未知模型：${selector}`);
 				return;
 			}
 			if (resolved.warning) runtime.ctx.showStatus(resolved.warning);
@@ -508,14 +508,14 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "fast",
 		icon: "fast",
 		description:
-			"Toggle fast service (OpenAI service_tier=priority or ultrafast, Anthropic speed=fast, Google priority)",
-		acpDescription: "Toggle fast mode",
+			"切换快速服务（OpenAI service_tier=priority 或 ultrafast，Anthropic speed=fast，Google priority）",
+		acpDescription: "切换快速模式",
 		acpInputHint: "[on|ultra|off|status]",
 		subcommands: [
-			{ name: "on", description: "Enable fast mode (priority tier)" },
-			{ name: "ultra", description: "Enable Ultrafast (OpenAI API, or Codex models that offer it)" },
-			{ name: "off", description: "Disable fast mode" },
-			{ name: "status", description: "Show fast mode status" },
+			{ name: "on", description: "启用快速模式（优先层级）" },
+			{ name: "ultra", description: "启用 Ultrafast（OpenAI API，或支持它的 Codex 模型）" },
+			{ name: "off", description: "禁用快速模式" },
+			{ name: "status", description: "显示快速模式状态" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => `Fast: ${formatFastModeStatus(runtime.ctx.session)}`,
@@ -536,40 +536,40 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "slow",
 		icon: "fast",
 		description:
-			"Toggle slow mode: flex tier on OpenAI/Google; on Anthropic, continue at low priority after the Claude session limit",
-		acpDescription: "Toggle slow mode",
+			"切换慢速模式：OpenAI/Google 使用 flex 层级；Anthropic 在 Claude 会话上限后以低优先级继续",
+		acpDescription: "切换慢速模式",
 		acpInputHint: "[on|off|status]",
 		subcommands: [
-			{ name: "on", description: "Flex tier, or Anthropic low priority at the session limit (auto)" },
-			{ name: "off", description: "Standard service; stop Anthropic low priority" },
-			{ name: "status", description: "Show slow mode status" },
+			{ name: "on", description: "Flex 层级，或在会话上限时使用 Anthropic 低优先级（自动）" },
+			{ name: "off", description: "标准服务；停止 Anthropic 低优先级" },
+			{ name: "status", description: "显示慢速模式状态" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime =>
 			runtime.ctx.session.isSlowModeEnabled() ? "Slow mode: on" : "Slow mode: off",
 		handle: async (command, runtime) => {
 			const message = runSlowCommand(command.args.trim().toLowerCase(), runtime.session);
-			if (message === undefined) return usage("Usage: /slow [on|off|status]", runtime);
+			if (message === undefined) return usage("用法：/slow [on|off|status]", runtime);
 			await runtime.output(message);
 			return commandConsumed();
 		},
 		handleTui: (command, runtime) => {
 			const message = runSlowCommand(command.args.trim().toLowerCase(), runtime.ctx.session);
 			refreshStatusLine(runtime.ctx);
-			runtime.ctx.showStatus(message ?? "Usage: /slow [on|off|status]");
+			runtime.ctx.showStatus(message ?? "用法：/slow [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},
 	{
 		name: "skillful",
 		icon: "compass",
-		description: "Toggle listing available skills in the system prompt (session only)",
-		acpDescription: "Toggle skill listing",
+		description: "切换在系统提示词中列出可用技能（仅会话）",
+		acpDescription: "切换技能列表",
 		acpInputHint: "[on|off|status]",
 		subcommands: [
-			{ name: "on", description: "List skills in the prompt for this session" },
-			{ name: "off", description: "Omit the skills listing for this session" },
-			{ name: "status", description: "Show skill listing status" },
+			{ name: "on", description: "列出本会话提示词中的技能" },
+			{ name: "off", description: "本会话省略技能列表" },
+			{ name: "status", description: "显示技能列表状态" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime =>
@@ -578,7 +578,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const arg = command.args.trim().toLowerCase();
 			if (arg === "status") {
 				await runtime.output(
-					`Skill listing: ${cfgSkillful.get(runtime.session.settings) ? "on" : "off"} (session override; default from the skillful setting).`,
+					`技能列表：${cfgSkillful.get(runtime.session.settings) ? "on" : "off"}（会话覆盖；默认取自 skillful 设置）。`,
 				);
 				return commandConsumed();
 			}
@@ -589,15 +589,15 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						: arg === "off"
 							? await runtime.session.setSkillful(false)
 							: await runtime.session.toggleSkillful();
-				await runtime.output(`Skill listing ${enabled ? "enabled" : "disabled"} for this session.`);
+				await runtime.output(`本会话的技能列表：${enabled ? "enabled" : "disabled"}。`);
 				return commandConsumed();
 			}
-			return usage("Usage: /skillful [on|off|status]", runtime);
+			return usage("用法：/skillful [on|off|status]", runtime);
 		},
 		handleTui: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();
 			if (arg === "status") {
-				runtime.ctx.showStatus(`Skill listing: ${cfgSkillful.get(runtime.ctx.session.settings) ? "on" : "off"}.`);
+				runtime.ctx.showStatus(`技能列表：${cfgSkillful.get(runtime.ctx.session.settings) ? "on" : "off"}。`);
 				clearSubmittedText(runtime);
 				return;
 			}
@@ -608,51 +608,51 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 						: arg === "off"
 							? await runtime.ctx.session.setSkillful(false)
 							: await runtime.ctx.session.toggleSkillful();
-				runtime.ctx.showStatus(`Skill listing ${enabled ? "enabled" : "disabled"} for this session.`);
+				runtime.ctx.showStatus(`本会话的技能列表：${enabled ? "enabled" : "disabled"}。`);
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus("Usage: /skillful [on|off|status]");
+			runtime.ctx.showStatus("用法：/skillful [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},
 	{
 		name: "extended-context",
 		icon: "expand",
-		description: "Toggle extended context windows",
-		acpDescription: "Toggle extended context",
+		description: "切换扩展上下文窗口",
+		acpDescription: "切换扩展上下文",
 		acpInputHint: "[on|off|status]",
 		subcommands: [
-			{ name: "on", description: "Enable larger context windows" },
-			{ name: "off", description: "Use default or standard-pricing context windows" },
-			{ name: "status", description: "Show extended context status" },
+			{ name: "on", description: "启用更大的上下文窗口" },
+			{ name: "off", description: "使用默认或标准定价的上下文窗口" },
+			{ name: "status", description: "显示扩展上下文状态" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime =>
 			`Extended context: ${formatExtendedContextStatus(runtime.ctx.settings)}`,
 		handle: async (command, runtime) => {
 			const output = applyExtendedContextCommand(runtime.settings, command.args);
-			if (!output) return usage("Usage: /extended-context [on|off|status]", runtime);
+			if (!output) return usage("用法：/extended-context [on|off|status]", runtime);
 			await runtime.output(output);
 			return commandConsumed();
 		},
 		handleTui: (command, runtime) => {
 			const output = applyExtendedContextCommand(runtime.ctx.settings, command.args);
 			refreshStatusLine(runtime.ctx);
-			runtime.ctx.showStatus(output ?? "Usage: /extended-context [on|off|status]");
+			runtime.ctx.showStatus(output ?? "用法：/extended-context [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},
 	{
 		name: "computer",
 		icon: "computer",
-		description: "Toggle the native computer-use eval prelude for this session",
-		acpDescription: "Toggle computer use",
+		description: "切换本会话的原生计算机使用 eval 前奏",
+		acpDescription: "切换计算机操作",
 		acpInputHint: "[on|off|status]",
 		subcommands: [
-			{ name: "on", description: "Enable computer use for this session" },
-			{ name: "off", description: "Disable computer use for this session" },
-			{ name: "status", description: "Show computer use status" },
+			{ name: "on", description: "为本会话启用计算机使用" },
+			{ name: "off", description: "为本会话禁用计算机使用" },
+			{ name: "status", description: "显示计算机使用状态" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime =>
@@ -668,7 +668,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				await runtime.output(applyComputerUseToggle(runtime.session, enable));
 				return commandConsumed();
 			}
-			return usage("Usage: /computer [on|off|status]", runtime);
+			return usage("用法：/computer [on|off|status]", runtime);
 		},
 		handleTui: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();
@@ -684,14 +684,14 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				clearSubmittedText(runtime);
 				return;
 			}
-			runtime.ctx.showStatus("Usage: /computer [on|off|status]");
+			runtime.ctx.showStatus("用法：/computer [on|off|status]");
 			clearSubmittedText(runtime);
 		},
 	},
 	{
 		name: "ratchet",
 		icon: "loop",
-		description: "Build (or reuse) an eval for an LLM flow, then hillclimb it unattended",
+		description: "为 LLM 流程构建（或复用）评测，然后无人值守地爬山优化",
 		inlineHint: "[flow and goal]",
 		allowArgs: true,
 		handle: (command, runtime) => {
@@ -725,41 +725,41 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "prewalk",
 		icon: "prewalk",
-		description: "Arm, restart, or cancel a one-shot model handoff",
+		description: "启用、重启或取消一次性模型交接",
 		allowArgs: true,
-		acpDescription: "Arm, restart, or cancel prewalk",
+		acpDescription: "启用、重启或取消 prewalk",
 		acpInputHint: "[restart|off]",
 		subcommands: [
-			{ name: "restart", description: "Return to @default and re-arm the handoff to @smol" },
-			{ name: "off", description: "Cancel this session's handoff without changing the active model" },
+			{ name: "restart", description: "返回 @default 并重新启用向 @smol 的交接" },
+			{ name: "off", description: "取消本会话的交接而不更改当前模型" },
 		],
 		handle: async (command, runtime) => {
 			const arg = command.args.trim().toLowerCase();
-			if (arg && arg !== "restart" && arg !== "off") return usage("Usage: /prewalk [restart|off]", runtime);
+			if (arg && arg !== "restart" && arg !== "off") return usage("用法：/prewalk [restart|off]", runtime);
 			if (arg === "off") {
 				const armed = runtime.session.getPrewalkState() !== undefined;
 				runtime.session.disarmPrewalk();
 				await runtime.output(
 					armed
-						? "Prewalk off: canceled this session's pending handoff; keeping the active model."
-						: "Prewalk already off for this session; keeping the active model.",
+						? "预走已关闭：已取消本会话待处理的交接；保留当前模型。"
+						: "预走在本会话中已处于关闭状态；保留当前模型。",
 				);
 				return commandConsumed();
 			}
 			const target = resolveSessionModelSelector("@smol", runtime.session, runtime.settings);
 			if (target.error || !target.model) {
-				return usage(target.error ?? 'Model "@smol" not found', runtime);
+				return usage(target.error ?? '未找到模型 "@smol"', runtime);
 			}
 			if (!runtime.session.modelRegistry.hasConfiguredAuth(target.model)) {
-				return usage(`No API key for ${target.model.provider}/${target.model.id}`, runtime);
+				return usage(`没有 ${target.model.provider}/${target.model.id} 的 API 密钥`, runtime);
 			}
 			if (arg === "restart") {
 				const source = resolveSessionModelSelector("@default", runtime.session, runtime.settings);
 				if (source.error || !source.model) {
-					return usage(source.error ?? 'Model "@default" not found', runtime);
+					return usage(source.error ?? '未找到模型 "@default"', runtime);
 				}
 				if (!runtime.session.modelRegistry.hasConfiguredAuth(source.model)) {
-					return usage(`No API key for ${source.model.provider}/${source.model.id}`, runtime);
+					return usage(`没有 ${source.model.provider}/${source.model.id} 的 API 密钥`, runtime);
 				}
 				const result = await runtime.session.restartPrewalk(
 					source.model,
@@ -771,15 +771,15 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 				const restartSource = `${source.model.provider}/${source.model.id}`;
 				await runtime.output(
 					result === "armed"
-						? `Prewalk restarted: using @default (${restartSource}) for planning, then switching to @smol (${target.model.provider}/${target.model.id}) at the next edit/write (todo-gated).`
-						: `Prewalk reset: using @default (${restartSource}); @smol resolves to the same model and thinking level, so no handoff was armed.`,
+						? `预走已重启：使用 @default（${restartSource}）进行规划，随后在下一次编辑/写入时切换到 @smol（${target.model.provider}/${target.model.id}）（待办事项门控）。`
+						: `预走已重置：使用 @default（${restartSource}）；@smol 解析到相同的模型与思考等级，因此未启用交接。`,
 				);
 				return commandConsumed();
 			}
 			const armed = runtime.session.armPrewalk(target.model, target.thinkingLevel);
 			if (armed) {
 				await runtime.output(
-					`Prewalk on: switching to ${target.model.provider}/${target.model.id} at the next edit/write (todo-gated).`,
+					`预走已开启：将在下次编辑/写入时切换到 ${target.model.provider}/${target.model.id}（受待办事项门控）。`,
 				);
 			}
 			return commandConsumed();
@@ -788,15 +788,15 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 	{
 		name: "modelpreset",
 		icon: "model",
-		description: "Save and switch model presets (role models + thinking level)",
-		acpDescription: "Manage model presets",
+		description: "保存并切换模型预设（角色模型 + 思考等级）",
+		acpDescription: "管理模型预设",
 		acpInputHint: "[list|save|switch|delete] [name]",
 		inlineHint: "[save|switch|delete|list] [name]",
 		subcommands: [
-			{ name: "list", description: "List saved presets" },
-			{ name: "save", description: "Save the current role models and thinking level", usage: "<name>" },
-			{ name: "switch", description: "Apply a saved preset", usage: "<name>" },
-			{ name: "delete", description: "Delete a saved preset", usage: "<name>" },
+			{ name: "list", description: "列出已保存的预设" },
+			{ name: "save", description: "保存当前角色模型和思考等级", usage: "<name>" },
+			{ name: "switch", description: "应用已保存的预设", usage: "<name>" },
+			{ name: "delete", description: "删除已保存的预设", usage: "<name>" },
 		],
 		allowArgs: true,
 		getTuiAutocompleteDescription: runtime => {
@@ -821,7 +821,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 					ctx.showStatus(NO_PRESETS_MESSAGE);
 					return;
 				}
-				const picked = await ctx.showHookSelector("Switch to model preset", names);
+				const picked = await ctx.showHookSelector("切换到模型预设", names);
 				if (picked === undefined) return;
 				args = `switch ${picked}`;
 			}
@@ -839,9 +839,9 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 		name: "effort",
 		icon: "gauge",
 		get description() {
-			return `Set reasoning effort (thinking level, intelligence) for this session; ${formatKeyHint("shift+tab")} cycles levels`;
+			return `设置本次会话的推理强度（思考等级、智能度）；${formatKeyHint("shift+tab")} 循环切换等级`;
 		},
-		acpDescription: "Set or show reasoning effort (thinking level, intelligence)",
+		acpDescription: "设置或查看推理强度（思考等级、智能度）",
 		acpInputHint: "[level]",
 		inlineHint: "[level]",
 		allowArgs: true,
@@ -856,7 +856,8 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			if (!command.args.trim()) {
 				await runtime.output(
 					session.model?.reasoning
-						? `Thinking: ${session.configuredThinkingLevel() ?? "model default"}\nAvailable: ${session.getAvailableEffortSelectors().join(", ")}`
+						? `思考：${session.configuredThinkingLevel() ?? "model default"}
+可用：${session.getAvailableEffortSelectors().join(", ")}`
 						: noThinkingMessage(session),
 				);
 				return commandConsumed();
@@ -864,7 +865,7 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			const resolved = resolveThinkingArgument(session, command.args);
 			if ("error" in resolved) return usage(resolved.error, runtime);
 			session.setThinkingLevel(resolved.level);
-			await runtime.output(`Thinking set to ${resolved.level}.`);
+			await runtime.output(`思考已设置为 ${resolved.level}。`);
 			// `setThinkingLevel` emits `thinking_level_changed`, which hosts with a
 			// session-lifetime subscription (ACP) already turn into a config push.
 			await runtime.notifyConfigChanged?.({ handledBySessionEvent: true });
@@ -886,13 +887,13 @@ export const BUILTIN_MODE_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
 			}
 			// thinking_level_changed refreshes the status line and editor border.
 			session.setThinkingLevel(resolved.level);
-			ctx.showStatus(`Thinking set to ${resolved.level}.`);
+			ctx.showStatus(`思考已设置为 ${resolved.level}。`);
 		},
 	},
 ];
 
 const PRESETS_USAGE = "Usage: /modelpreset [list | save <name> | switch <name> | delete <name>]";
-const NO_PRESETS_MESSAGE = "No model presets saved. Use /modelpreset save <name> to create one.";
+const NO_PRESETS_MESSAGE = "尚未保存模型预设。使用 /modelpreset save <name> 创建一个。";
 
 interface PresetsCommandOutcome {
 	message: string;
@@ -913,13 +914,13 @@ async function runPresetsCommand(
 	switch (sub) {
 		case "list": {
 			const names = getModelPresetNames(settings);
-			return { message: names.length > 0 ? `Model presets: ${names.join(", ")}` : NO_PRESETS_MESSAGE };
+			return { message: names.length > 0 ? `模型预设：${names.join(", ")}` : NO_PRESETS_MESSAGE };
 		}
 		case "save": {
-			if (!name) return { message: "Usage: /modelpreset save <name>", usage: true };
+			if (!name) return { message: "用法：/modelpreset save <name>", usage: true };
 			if (!isValidModelPresetName(name)) {
 				return {
-					message: `Invalid preset name "${name}": use a letter, then letters, digits, - or _`,
+					message: `无效的预设名 "${name}"：首字符须为字母，其后只能是字母、数字、- 或 _`,
 					usage: true,
 				};
 			}
@@ -927,7 +928,7 @@ async function runPresetsCommand(
 			return { message: modelPresetSavedMessage(settings, name), changedConfig: true };
 		}
 		case "switch": {
-			if (!name) return { message: "Usage: /modelpreset switch <name>", usage: true };
+			if (!name) return { message: "用法：/modelpreset switch <name>", usage: true };
 			const result = await applyModelPreset(settings, session, name);
 			const message = formatModelPresetSwitch(name, result);
 			const wroteRoles = result.kind === "switched" || result.kind === "failed";
@@ -939,16 +940,16 @@ async function runPresetsCommand(
 			};
 		}
 		case "delete": {
-			if (!name) return { message: "Usage: /modelpreset delete <name>", usage: true };
+			if (!name) return { message: "用法：/modelpreset delete <name>", usage: true };
 			const result = deleteModelPreset(settings, name);
-			if (result === "deleted") return { message: `Deleted model preset "${name}"`, changedConfig: true };
+			if (result === "deleted") return { message: `已删除模型预设 "${name}"`, changedConfig: true };
 			if (result === "project") {
 				return {
-					message: `Preset "${name}" is defined by a project or --config file; remove it there`,
+					message: `预设 "${name}" 由项目或 --config 文件定义；请在那里移除`,
 					failed: true,
 				};
 			}
-			return { message: `Preset not found: ${name}`, failed: true };
+			return { message: `未找到预设：${name}`, failed: true };
 		}
 		default:
 			return { message: PRESETS_USAGE, usage: true };

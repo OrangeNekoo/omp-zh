@@ -63,11 +63,11 @@ export class PluginSelectorComponent extends OverlayPanel {
 		if (items.length === 0) {
 			items.push({
 				value: "__empty__",
-				label: "No plugins available",
+				label: "无可用插件",
 				description:
 					marketplaceCount === 0
-						? "Add a marketplace first: /marketplace add <source>"
-						: "Configured marketplaces have no plugins",
+						? "请先添加插件市场：/marketplace add <source>"
+						: "已配置的插件市场没有插件",
 				disabled: true,
 			});
 		}
@@ -87,10 +87,10 @@ export class PluginSelectorComponent extends OverlayPanel {
 
 		this.addChild(this.#selectList);
 		this.#sheet = new SelectListSheet(this.#selectList, {
-			title: "Plugins",
+			title: "插件",
 			icon: "plus",
 			noun: "plugins",
-			confirm: "Install",
+			confirm: "安装",
 			decorate: item => {
 				const [name] = splitPluginId(item.value);
 				if (!name) return undefined;

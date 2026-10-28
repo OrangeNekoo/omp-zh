@@ -387,8 +387,8 @@ export async function resolveMcpOAuthEndpointsFromServer(
 		const usesMcpRemote = [config.command, ...(config.args ?? [])].some(part => part?.includes("mcp-remote"));
 		throw new McpReauthRefusalError(
 			usesMcpRemote
-				? `this server proxies OAuth through mcp-remote, which caches tokens machine-wide in ~/.mcp-auth (shared across every OMP profile). Clear ~/.mcp-auth to force a fresh login, or replace the proxy with ${httpHint} so OMP manages OAuth per profile.`
-				: `stdio servers manage their own credentials, so OMP has no OAuth to reauthorize. If the service supports OAuth over HTTP, configure it as ${httpHint} instead.`,
+				? `此服务器经由 mcp-remote 代理 OAuth，其令牌缓存在整机的 ~/.mcp-auth（所有 OMP 配置档共用）。清除 ~/.mcp-auth 可强制重新登录，或将代理替换为 ${httpHint}，让 OMP 按配置档独立管理 OAuth。`
+				: `stdio 服务器自行管理凭据，OMP 没有可重新授权的 OAuth。若该服务支持基于 HTTP 的 OAuth，请改用 ${httpHint} 进行配置。`,
 		);
 	}
 	let connectionSucceeded = false;
@@ -411,7 +411,7 @@ export async function resolveMcpOAuthEndpointsFromServer(
 				? await discoverOAuthEndpoints(config.url, undefined, undefined, { signal: opts.signal })
 				: null;
 		if (!discovered) {
-			throw new McpReauthRefusalError("Server connection succeeded without OAuth; reauthorization is not required.");
+			throw new McpReauthRefusalError("服务器连接成功且无需 OAuth；无需重新授权。");
 		}
 		return discovered;
 	}
@@ -439,7 +439,7 @@ export async function resolveMcpOAuthEndpointsFromServer(
 	}
 
 	if (!oauth) {
-		throw new Error("Could not discover OAuth endpoints from server response.");
+		throw new Error("无法从服务器响应中发现 OAuth 端点。");
 	}
 
 	return oauth;
@@ -505,7 +505,9 @@ export async function runMcpOAuthFlow(opts: McpOAuthFlowRunOptions): Promise<OAu
 		new URL(opts.tokenUrl);
 	} catch {
 		throw new Error(
-			`Invalid OAuth URLs. Please check:\n  Authorization URL: ${opts.authUrl}\n  Token URL: ${opts.tokenUrl}`,
+			`OAuth URL 无效。请检查：
+  授权 URL：${opts.authUrl}
+  令牌 URL：${opts.tokenUrl}`,
 		);
 	}
 
@@ -539,7 +541,7 @@ export async function runMcpOAuthFlow(opts: McpOAuthFlowRunOptions): Promise<OAu
 		const pendingProvider = opts.pendingInput?.();
 		if (pendingProvider) {
 			throw new Error(
-				`OAuth login already in progress for ${pendingProvider}. Complete or cancel it before starting MCP OAuth.`,
+				`${pendingProvider} 的 OAuth 登录已在进行中。请先完成或取消它，再启动 MCP OAuth。`,
 			);
 		}
 		// Create OAuth flow
@@ -622,16 +624,16 @@ export async function runMcpOAuthFlow(opts: McpOAuthFlowRunOptions): Promise<OAu
 		const errorMsg = error instanceof Error ? error.message : String(error);
 
 		// Provide helpful error messages based on failure type
-		if (errorMsg.includes("timeout") || errorMsg.includes("timed out")) {
-			throw new Error("OAuth flow timed out. Please try again.");
+		if (errorMsg.includes("timeout") || errorMsg.includes("已超时")) {
+			throw new Error("OAuth 流程超时，请重试。");
 		} else if (errorMsg.includes("403") || errorMsg.includes("unauthorized")) {
-			throw new Error("OAuth authorization failed. Please check your client credentials.");
+			throw new Error("OAuth 授权失败，请检查你的客户端凭据。");
 		} else if (errorMsg.includes("invalid_grant")) {
-			throw new Error("OAuth authorization code is invalid or expired. Please try again.");
+			throw new Error("OAuth 授权码无效或已过期，请重试。");
 		} else if (errorMsg.includes("ECONNREFUSED") || errorMsg.includes("fetch failed")) {
-			throw new Error("Could not connect to OAuth server. Please check the URLs and your network connection.");
+			throw new Error("无法连接到 OAuth 服务器，请检查 URL 与网络连接。");
 		} else {
-			throw new Error(`OAuth authentication failed: ${errorMsg}`);
+			throw new Error(`OAuth 认证失败：${errorMsg}`);
 		}
 	} finally {
 		opts.releaseManualInput?.();
@@ -733,7 +735,7 @@ export async function reauthorizeMcpServer(
 ): Promise<McpReauthOutcome> {
 	const { authStorage } = opts;
 	if (found.config.enabled === false) {
-		throw new McpReauthRefusalError(`Server "${name}" is disabled. Run /mcp enable ${name} first.`);
+		throw new McpReauthRefusalError(`服务器 "${name}" 已停用。请先运行 /mcp enable ${name}。`);
 	}
 
 	const currentAuth = found.config.auth;

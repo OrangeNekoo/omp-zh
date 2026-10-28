@@ -320,7 +320,7 @@ export class HookSelectorComponent extends OverlayPanel {
 		this.addChild(new Spacer(1));
 		const controlsHint =
 			opts?.helpText ??
-			`${editorKeys("tui.select.up", "tui.select.down")} navigate  ${formatKeyHint("enter")} select  ${editorKey("tui.select.cancel")} cancel`;
+			`${editorKeys("tui.select.up", "tui.select.down")} 导航  ${formatKeyHint("enter")} select  ${editorKey("tui.select.cancel")} cancel`;
 		this.addChild(new Text(theme.fg("dim", controlsHint), 0, 0));
 		this.addChild(new Spacer(1));
 
@@ -522,7 +522,7 @@ export class HookSelectorComponent extends OverlayPanel {
 		}
 
 		if (total === 0) {
-			rows.push({ text: theme.fg("dim", "  No matching options"), highlight: false });
+			rows.push({ text: theme.fg("dim", "  无匹配选项"), highlight: false });
 		}
 
 		if (startIndex > 0 || endIndex < total || this.#shouldRenderSearchStatus(renderWidth, mdTheme)) {
@@ -588,9 +588,9 @@ export class HookSelectorComponent extends OverlayPanel {
 			this.#menu.query.trim() && total !== this.#options.length
 				? `${selectedCount}/${total} of ${this.#options.length}`
 				: `${selectedCount}/${total}`;
-		if (!this.#menu.query.trim()) return theme.fg("dim", `  (${count})  Type to search`);
+		if (!this.#menu.query.trim()) return theme.fg("dim", `  （${count}）输入以搜索`);
 		const field = this.#search.render(visibleWidth(this.#search.getValue()) + 1)[0] ?? "";
-		return `${theme.fg("dim", `  (${count})  Search: `)}${field}`;
+		return `${theme.fg("dim", `  （${count}）搜索：`)}${field}`;
 	}
 
 	/** Applies the search field's value to the filter. */
@@ -724,8 +724,8 @@ export class HookSelectorComponent extends OverlayPanel {
 			selected: selected ?? null,
 			...(checkbox ? { current: [...this.#checkedIndices].map(String) } : {}),
 			total: this.#options.length,
-			empty: "No matching options",
-			actions: [pickerAction("confirm", "Select", "enter", { primary: true }), CLOSE_ACTION],
+			empty: "无匹配选项",
+			actions: [pickerAction("confirm", "选择", "enter", { primary: true }), CLOSE_ACTION],
 		});
 		this.#pickerMemo = { items, selected, query, cursor, node: result };
 		return result;
@@ -778,7 +778,7 @@ export class HookSelectorComponent extends OverlayPanel {
 				{
 					selected: selectedItem && !this.#menu.isDisabled(selectedItem) ? (selected ?? null) : null,
 					filter: query.trim() || undefined,
-					empty: "No matching options",
+					empty: "无匹配选项",
 					max: { lines: this.#maxVisible },
 				},
 				rows,
@@ -787,7 +787,7 @@ export class HookSelectorComponent extends OverlayPanel {
 		);
 		if (query) {
 			children.push(
-				node("text", { spans: [span("Search: ", "dim"), span(query)], wrap: "none" }, undefined, "search"),
+				node("text", { spans: [span("搜索：", "dim"), span(query)], wrap: "none" }, undefined, "search"),
 			);
 		}
 		children.push(fixed.hints);

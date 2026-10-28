@@ -140,7 +140,7 @@ export class SessionFocusController {
 		this.#focusedAgentId = undefined;
 		this.#attachedSession = undefined;
 		const attached = await this.#attach(this.ctx.session);
-		if (attached && this.#focusedAgentId === undefined) this.ctx.showStatus("Returned to main session");
+		if (attached && this.#focusedAgentId === undefined) this.ctx.showStatus("已返回主会话");
 	}
 
 	dispose(): void {
@@ -167,7 +167,7 @@ export class SessionFocusController {
 		const dead = event.type === "status_changed" && (event.ref.status === "parked" || event.ref.status === "aborted");
 		if (!gone && !dead) return;
 		void this.#detachToMain().then(() => {
-			this.ctx.showStatus(`Agent ${event.ref.id} is ${gone ? "gone" : event.ref.status}; returned to main session`);
+			this.ctx.showStatus(`子代理 ${event.ref.id} 已 ${gone ? "gone" : event.ref.status}；已返回主会话`);
 		});
 	}
 

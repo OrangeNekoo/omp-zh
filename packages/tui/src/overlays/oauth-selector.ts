@@ -43,7 +43,7 @@ const ORIGIN_LABELS = {
 	runtime: "--api-key",
 	config: "config",
 	oauth: "login",
-	api_key: "api key",
+	api_key: "API 密钥",
 	env: "env",
 };
 /**
@@ -250,16 +250,16 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		if (state === "checking") {
 			const frameCount = theme.spinnerFrames.length;
 			const spinner = frameCount > 0 ? theme.spinnerFrames[this.#spinnerFrame % frameCount] : theme.status.pending;
-			return theme.fg("warning", ` ${spinner} checking`) + source;
+			return theme.fg("warning", ` ${spinner} 检查中`) + source;
 		}
 		if (state === "invalid") {
-			return theme.fg("error", ` ${theme.status.error} invalid`) + source;
+			return theme.fg("error", ` ${theme.status.error} 无效`) + source;
 		}
 		if (state === "valid") {
-			return theme.fg("success", ` ${theme.status.enabled} logged in`) + source;
+			return theme.fg("success", ` ${theme.status.enabled} 已登录`) + source;
 		}
 		return this.#hasSelectableAuth(providerId)
-			? theme.fg("success", ` ${theme.status.enabled} logged in`) + source
+			? theme.fg("success", ` ${theme.status.enabled} 已登录`) + source
 			: "";
 	}
 
@@ -273,9 +273,9 @@ export class OAuthSelectorComponent extends OverlayPanel {
 
 	#renderStatusLine(_total: number): string {
 		const query = this.#menu.query.trim();
-		if (!query) return theme.fg("muted", "Type to search");
+		if (!query) return theme.fg("muted", "输入以搜索");
 		const width = visibleWidth(this.#search.getValue()) + 1;
-		return theme.fg("muted", "Search: ") + (this.#search.render(width)[0] ?? "");
+		return theme.fg("muted", "搜索：") + (this.#search.render(width)[0] ?? "");
 	}
 
 	#getProviderSearchText(provider: OAuthProviderInfo): string {
@@ -445,7 +445,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		const detail = origin
 			? [
 					span(
-						origin.kind === "env" && origin.envVar ? `env: ${origin.envVar}` : ORIGIN_LABELS[origin.kind],
+						origin.kind === "env" && origin.envVar ? `环境变量：${origin.envVar}` : ORIGIN_LABELS[origin.kind],
 						"muted",
 					),
 				]
@@ -454,7 +454,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		if (state === "checking") return { value: [span("checking", "warning", { fx: "pulse" })], detail };
 		if (state === "invalid") return { value: [span("invalid", "error")], detail };
 		if (state === "valid" || this.#hasSelectableAuth(providerId)) {
-			return { value: [span("logged in", "success")], detail };
+			return { value: [span("已登录", "success")], detail };
 		}
 		return { detail };
 	}
@@ -505,25 +505,25 @@ export class OAuthSelectorComponent extends OverlayPanel {
 		const login = this.#mode === "login";
 		const search = this.#shouldRenderSearchStatus() ? pickerQuery(this.#search) : pickerQuery(null);
 		this.#pickerRoot = dockedPicker({
-			title: login ? "Sign in" : "Sign out",
-			subtitle: login ? "Pick a provider" : "Remove stored credentials",
+			title: login ? "登录" : "登出",
+			subtitle: login ? "选择服务商" : "移除已存凭据",
 			icon: "key-round",
 			noun: "providers",
 			size: "md",
 			layout: "cards",
 			preview: "none",
 			...search,
-			placeholder: "Search providers…",
+			placeholder: "搜索服务商…",
 			items: this.#pickerItems,
 			...(query.length > 0 ? { order: this.#menu.visibleItems.map(provider => provider.id) } : {}),
 			selected: this.#menu.selectedKey ?? null,
 			total: all.length,
-			empty: login ? "No OAuth providers available" : "No stored provider credentials to log out",
+			empty: login ? "没有可用的 OAuth 服务商" : "没有可登出的已存服务商凭据",
 			...(this.#statusMessage ? { message: this.#statusMessage } : {}),
 			actions: [
 				pickerAction(
 					"confirm",
-					login ? "Sign in" : "Sign out",
+					login ? "登录" : "登出",
 					"enter",
 					login ? { primary: true } : { primary: true, danger: true },
 				),
@@ -558,7 +558,7 @@ export class OAuthSelectorComponent extends OverlayPanel {
 			children.push(
 				node(
 					"input",
-					{ text: this.#search.getValue(), cursor: this.#search.getCursor(), placeholder: "Type to search" },
+					{ text: this.#search.getValue(), cursor: this.#search.getCursor(), placeholder: "输入以搜索" },
 					undefined,
 					"search",
 				),

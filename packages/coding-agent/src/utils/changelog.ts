@@ -78,6 +78,18 @@ const CHANGELOG_CATEGORY_ORDER = [
 	"Security",
 ] as const;
 
+/** 分类标题的显示名（中文）。未列出的分类原样显示。 */
+const CHANGELOG_CATEGORY_LABELS: Readonly<Record<string, string>> = {
+	"Breaking Changes": "破坏性变更",
+	Added: "新增",
+	Changed: "变更",
+	Deprecated: "弃用",
+	Removed: "移除",
+	Fixed: "修复",
+	Security: "安全",
+	Other: "其他",
+};
+
 function emptyStartupSelection(persistCurrentVersion: boolean): StartupChangelogSelection {
 	return {
 		markdown: undefined,
@@ -124,28 +136,24 @@ function summarizeChangelogEntries(entries: readonly ChangelogEntry[]): {
 	return { changeCount, categoryCounts };
 }
 
-function categoryLabel(category: string, count: number): string {
-	if (category === "Breaking Changes") {
-		return count === 1 ? "breaking change" : "breaking changes";
-	}
-	return category.toLowerCase();
+function categoryLabel(category: string, _count: number): string {
+	// 分类名来自 CHANGELOG.md 的 `###` 标题；未列出的自定义分类原样保留。
+	return CHANGELOG_CATEGORY_LABELS[category] ?? category;
 }
 
 /** Format the compact, deterministic startup update notice. */
 export function formatStartupChangelogSummary(selection: StartupChangelogSelection): string {
 	const latestVersion = selection.latestVersion;
 	if (!latestVersion || selection.selectedEntries === 0) {
-		return "Updated omp. Use /changelog for recent changes.";
+		return "omp 已更新。使用 /changelog 查看最近的改动。";
 	}
 
 	const releaseCount = selection.selectedEntries;
 	const changeCount = selection.changeCount;
-	const releaseWord = releaseCount === 1 ? "release" : "releases";
-	const changeWord = changeCount === 1 ? "change" : "changes";
 	const firstLine =
 		releaseCount === 1
-			? `Updated to v${latestVersion} · ${changeCount} ${changeWord} in 1 release`
-			: `Updated to v${latestVersion} · ${changeCount} ${changeWord} across ${releaseCount} ${releaseWord}`;
+			? `已更新到 v${latestVersion} · ${changeCount} 项改动，共 1 个版本`
+			: `已更新到 v${latestVersion} · ${changeCount} 项改动，跨 ${releaseCount} 个版本`;
 
 	const orderedCategories = [
 		...CHANGELOG_CATEGORY_ORDER.filter(category => selection.categoryCounts[category]),
@@ -156,14 +164,14 @@ export function formatStartupChangelogSummary(selection: StartupChangelogSelecti
 	const breakdown = orderedCategories
 		.map(
 			category =>
-				`${selection.categoryCounts[category]} ${categoryLabel(category, selection.categoryCounts[category])}`,
+				`${selection.categoryCounts[category]} 项${categoryLabel(category, selection.categoryCounts[category])}`,
 		)
 		.join(" · ");
 	const omittedReleases = selection.totalUnseenEntries - selection.selectedEntries;
 	const detailHint =
 		omittedReleases > 0
-			? `+${omittedReleases} earlier ${omittedReleases === 1 ? "release" : "releases"} · Use /changelog full for history.`
-			: "Use /changelog for details.";
+			? `另有 ${omittedReleases} 个更早版本 · 使用 /changelog full 查看完整历史。`
+			: "使用 /changelog 查看详情。";
 
 	return breakdown ? `${firstLine}\n${breakdown} · ${detailHint}` : `${firstLine}\n${detailHint}`;
 }

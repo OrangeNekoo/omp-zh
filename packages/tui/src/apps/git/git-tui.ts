@@ -104,13 +104,13 @@ export function gitFooterHints(clean: boolean, focus: Focus): string {
 	const edit = clean
 		? ""
 		: focus === "diff"
-			? ` · ${formatKeyHints(["s", "u"])} stage · ${formatKeyHints(["x", "delete"])} discard`
-			: ` · ${formatKeyHint("space")} stage · ${formatKeyHint("delete")} discard`;
+			? ` · ${formatKeyHints(["s", "u"])} stage · ${formatKeyHints(["x", "delete"])} 放弃`
+			: ` · ${formatKeyHint("space")} stage · ${formatKeyHint("delete")} 放弃`;
 	const commit = clean ? "" : ` · ${formatKeyHint("c")} commit`;
-	const select = clean || focus !== "diff" ? "" : ` · ${formatKeyHints(["shift+up", "shift+down"])} select`;
+	const select = clean || focus !== "diff" ? "" : ` · ${formatKeyHints(["shift+up", "shift+down"])} 选择`;
 	return focus === "diff"
-		? `${formatKeyHints(["alt+down", "alt+up"])} hunk · ${formatKeyHints(["]", "["])} file${select}${edit} · ${formatKeyHint("v")} view${commit} · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} quit`
-		: `${formatKeyHints(["up", "down"])} move · ${formatKeyHints(["left", "right"])} fold${edit} · ${formatKeyHint("enter")} open · ${formatKeyHints(["alt+down", "alt+up"])} hunk${commit} · ${formatKeyHint("t")} tree · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} quit`;
+		? `${formatKeyHints(["alt+down", "alt+up"])} hunk · ${formatKeyHints(["]", "["])} file${select}${edit} · ${formatKeyHint("v")} 查看${commit} · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} 退出`
+		: `${formatKeyHints(["up", "down"])} 移动 · ${formatKeyHints(["left", "right"])} fold${edit} · ${formatKeyHint("enter")} 打开 · ${formatKeyHints(["alt+down", "alt+up"])} hunk${commit} · ${formatKeyHint("t")} tree · ${formatKeyHint("?")} keys · ${formatKeyHint("q")} 退出`;
 }
 
 /** Tone of a status message: its colour in the header and its span token natively. */
@@ -121,10 +121,10 @@ const NARROW_COLS = 100;
 
 /** The views of the native segmented control, in omp's `1`–`4` order. */
 const VIEW_TABS: readonly { id: ViewMode; label: string }[] = [
-	{ id: "file", label: "File" },
-	{ id: "split", label: "Split" },
-	{ id: "inline", label: "Inline" },
-	{ id: "hunk", label: "Hunks" },
+	{ id: "file", label: "文件" },
+	{ id: "split", label: "拆分" },
+	{ id: "inline", label: "内联" },
+	{ id: "hunk", label: "差异块" },
 ];
 
 interface UiHit {
@@ -801,7 +801,7 @@ class GitTuiComponent implements Component {
 			const doc = this.#pane.doc;
 			if (doc) row.add(`  ${theme.fg("success", `+${doc.additions}`)} ${theme.fg("error", `−${doc.deletions}`)}`);
 		} else {
-			row.add(theme.fg("dim", "no file selected"));
+			row.add(theme.fg("dim", "未选择文件"));
 		}
 
 		const right = new HitRow();
@@ -1082,7 +1082,7 @@ class GitTuiComponent implements Component {
 		}
 		if (file?.area === "unstaged" || file?.area === "staged") {
 			right.push(
-				actionButton(file.area === "unstaged" ? "Stage file" : "Unstage file", "stage-file", {
+				actionButton(file.area === "unstaged" ? "暂存文件" : "取消暂存文件", "stage-file", {
 					keys: "s",
 					title: `${file.area === "unstaged" ? "Stage" : "Unstage"} ${file.path}`,
 				}),
@@ -1138,7 +1138,7 @@ class GitTuiComponent implements Component {
 			return keyed(
 				col(
 					[
-						text([span("Binary or media file", "strong")]),
+						text([span("二进制或媒体文件", "strong")]),
 						node("kv", {
 							items: [
 								{ k: "before", v: assetText(contents.old) },
@@ -1168,7 +1168,7 @@ class GitTuiComponent implements Component {
 					text([span(this.#pane.emptyMessage, "strong")]),
 					text([
 						span(
-							this.#model.clean ? "The working tree is clean." : "Pick a file on the right to see its changes.",
+							this.#model.clean ? "工作树是干净的。" : "在右侧选择文件以查看其更改。",
 							"muted",
 						),
 					]),
@@ -1247,7 +1247,7 @@ function mediaColumn(side: "before" | "after", asset: FileAssetSide, ref: MediaR
 		: keyed(
 				text(
 					asset.kind === "empty"
-						? [span(side === "before" ? "Did not exist" : "Deleted", "muted")]
+						? [span(side === "before" ? "原本不存在" : "已删除", "muted")]
 						: assetText(asset).map(fact => span(fact.t, "muted")),
 					{ role: "omp.app.git.media-none" },
 				),
@@ -1264,15 +1264,15 @@ function assetText(asset: AssetFileContents["old"]): TspSpan[] {
 		case "empty":
 			return [span("none", "dim")];
 		case "text":
-			return [span(`text${size(asset.byteLength)}`)];
+			return [span(`文本${size(asset.byteLength)}`)];
 		case "image":
-			return [span(`image ${asset.image.widthPx}×${asset.image.heightPx}${size(asset.image.byteLength)}`)];
+			return [span(`图片 ${asset.image.widthPx}×${asset.image.heightPx}${size(asset.image.byteLength)}`)];
 		case "binary":
-			return [span(`binary${size(asset.byteLength)}`)];
+			return [span(`二进制${size(asset.byteLength)}`)];
 		case "tooLarge":
-			return [span(`too large to diff${size(asset.byteLength)}`)];
+			return [span(`过大，无法生成差异${size(asset.byteLength)}`)];
 		case "lfsMissing":
-			return [span(`LFS object ${asset.oid.slice(0, 12)} not fetched${size(asset.byteLength)}`)];
+			return [span(`LFS 对象 ${asset.oid.slice(0, 12)} 未拉取${size(asset.byteLength)}`)];
 	}
 }
 

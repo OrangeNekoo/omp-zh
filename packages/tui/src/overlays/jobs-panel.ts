@@ -78,10 +78,10 @@ export interface JobsSheetSource {
 
 /** A job's status as the sheet names it. */
 const STATUS_LABEL: Record<JobsPanelJob["status"], string> = {
-	running: "Running",
-	completed: "Done",
-	failed: "Failed",
-	cancelled: "Cancelled",
+	running: "运行中",
+	completed: "完成",
+	failed: "失败",
+	cancelled: "已取消",
 };
 
 /** A job's status color: the list row's icon and the detail's status pill. */
@@ -123,7 +123,7 @@ export class JobsSheet implements Component {
 		role: "omp.overlay.jobs",
 		size: "lg",
 		anchor: "center",
-		head: "Background jobs",
+		head: "后台任务",
 	} as const;
 	readonly #source: JobsSheetSource;
 	#selectedId: string | undefined;
@@ -158,7 +158,7 @@ export class JobsSheet implements Component {
 		].join("|");
 		const output = detail?.output;
 		if (this.#native?.key === key && this.#native.output === output) return this.#native.node;
-		const close = actionButton("Close", "close", { keys: "escape" });
+		const close = actionButton("关闭", "close", { keys: "escape" });
 		const described = selected
 			? col([
 					node(
@@ -376,8 +376,8 @@ function describeEmpty(): NativeNode {
 		{ role: "omp.jobs.empty", align: "center" },
 		[
 			node("icon", { name: "jobs" }),
-			text("No background jobs", { role: "omp.jobs.empty.title" }),
-			text("Commands and subagent tasks started in the background show up here while they run.", {
+			text("无后台任务", { role: "omp.jobs.empty.title" }),
+			text("在后台启动的命令与子代理任务会在运行时显示在这里。", {
 				role: "omp.jobs.empty.note",
 				wrap: "word",
 			}),
@@ -403,11 +403,11 @@ function describeDetail(
 	const command = detail?.command ?? (job.type === "task" ? undefined : job.label);
 	const pids = detail?.pids ?? [];
 	const facts = compact([
-		job.agentId ? { k: "Agent", v: [span(job.agentId, "mono")] } : undefined,
-		detail?.cwd ? { k: "Directory", v: [span(detail.cwd, "path")] } : undefined,
+		job.agentId ? { k: "代理", v: [span(job.agentId, "mono")] } : undefined,
+		detail?.cwd ? { k: "目录", v: [span(detail.cwd, "path")] } : undefined,
 		pids.length > 0 && { k: pids.length > 1 ? "PIDs" : "PID", v: [span(pids.join(", "), "num")] },
-		exit !== undefined && { k: "Exit code", v: [span(String(exit), exit === 0 ? "success" : "error")] },
-		detail?.artifactId ? { k: "Full output", v: [span(`artifact://${detail.artifactId}`, "mono")] } : undefined,
+		exit !== undefined && { k: "退出码", v: [span(String(exit), exit === 0 ? "success" : "error")] },
+		detail?.artifactId ? { k: "完整输出", v: [span(`artifact://${detail.artifactId}`, "mono")] } : undefined,
 	]);
 	const children = compact<NativeChild>([
 		row(
@@ -422,11 +422,11 @@ function describeDetail(
 					...(settled ? { stopped: age } : {}),
 					format: "short",
 					role: "omp.jobs.age",
-					title: settled ? "Ran for" : "Running for",
+					title: settled ? "运行时长" : "已运行",
 				}),
 				text([span(`${job.type} · ${job.id}`, "mono")], { role: "omp.jobs.id", wrap: "none", truncate: "end" }),
 				node("spacer", { grow: 1 }),
-				cancellable && !settled && actionButton("Cancel job", "cancel", { keys: "x", tone: "error" }),
+				cancellable && !settled && actionButton("取消任务", "cancel", { keys: "x", tone: "error" }),
 			]),
 			{ role: "omp.jobs.status", gap: "sm", align: "center" },
 		),
@@ -439,10 +439,10 @@ function describeDetail(
 			"col",
 			{ role: "omp.jobs.out", gap: "sm" },
 			[
-				text("Output", { role: "omp.jobs.label" }),
+				text("输出", { role: "omp.jobs.label" }),
 				detail?.output
 					? ansi(detail.output, { follow: !settled, role: "omp.jobs.output", max: { h: "16lines" } })
-					: text(settled ? "No output" : "No output yet", { role: "omp.jobs.nooutput" }),
+					: text(settled ? "无输出" : "暂无输出", { role: "omp.jobs.nooutput" }),
 			],
 			"out",
 		),

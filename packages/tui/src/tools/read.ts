@@ -292,14 +292,14 @@ interface ReadUrlCard {
 /** Read cards keyed by URL scheme. */
 const READ_URL_CARDS: Record<string, ReadUrlCard> = {
 	proc: {
-		label: "Process",
+		label: "进程",
 		rootDetail: "jobs & services",
 		detailsKey: "proc",
 		render: (_url, target, result, details, options, uiTheme) =>
 			renderProcRead(target, result, details?.proc, options, uiTheme),
 	},
 	cfg: {
-		label: "Config",
+		label: "配置",
 		rootDetail: "all settings",
 		detailsKey: "cfg",
 		render: (url, _target, result, details, options, uiTheme) =>
@@ -446,7 +446,7 @@ function readNativeHead(
 	}
 	const conflicts = details?.conflictCount ?? 0;
 	return {
-		title: "Read",
+		title: "读取",
 		target: sanitizeText(target) || "…",
 		targetKind: "path",
 		href: fileHref(linkPath ?? details?.resolvedPath ?? details?.displayTarget ?? readSourceFsPath(details)),
@@ -524,7 +524,7 @@ export const readToolRenderer = {
 			typeof input?.file_path === "string" ? input.file_path : typeof input?.path === "string" ? input.path : "";
 		const routed = readUrlCard(rawPath);
 		if (routed) return { label: routed.card.label, detail: routed.target || routed.card.rootDetail };
-		return { label: "Read", detail: sanitizeText(shortenPath(rawPath)) };
+		return { label: "读取", detail: sanitizeText(shortenPath(rawPath)) };
 	},
 	renderCall(args: ReadRenderArgs, _options: RenderResultOptions, uiTheme: Theme): Component {
 		const rawPath =
@@ -545,7 +545,7 @@ export const readToolRenderer = {
 			pathDisplay += `:${startLine}${endLine ? `-${endLine}` : ""}`;
 		}
 
-		const text = renderStatusLine({ icon: "pending", title: "Read", description: pathDisplay }, uiTheme);
+		const text = renderStatusLine({ icon: "pending", title: "读取", description: pathDisplay }, uiTheme);
 		return new Text(text, 0, 0);
 	},
 
@@ -584,7 +584,7 @@ export const readToolRenderer = {
 					offset: args?.offset,
 					sourcePath: linkPath ?? result.details?.displayTarget ?? readSourceFsPath(result.details),
 				}) || sanitizeText(shortenPath(rawPath));
-			let title = filePath ? `Read ${filePath}` : "Read";
+			let title = filePath ? `Read ${filePath}` : "读取";
 			if (args?.offset !== undefined || args?.limit !== undefined) {
 				const startLine = args.offset ?? 1;
 				const endLine = args.limit !== undefined ? startLine + args.limit - 1 : "";
@@ -640,9 +640,9 @@ export const readToolRenderer = {
 				suffixResolution: suffix,
 				fallbackLabel: "image",
 			});
-			const correction = suffix ? ` ${uiTheme.fg("dim", `(corrected from ${shortenPath(suffix.from)})`)}` : "";
+			const correction = suffix ? ` ${uiTheme.fg("dim", `（已根据 ${shortenPath(suffix.from)} 更正）`)}` : "";
 			const header = renderStatusLine(
-				{ icon: suffix ? "warning" : "success", title: "Read", description: `${displayPath}${correction}` },
+				{ icon: suffix ? "warning" : "success", title: "读取", description: `${displayPath}${correction}` },
 				uiTheme,
 			);
 			const detailLines = contentText
@@ -654,7 +654,7 @@ export const readToolRenderer = {
 				phase: "success",
 				sections: [
 					{
-						label: uiTheme.fg("toolTitle", "Details"),
+						label: uiTheme.fg("toolTitle", "详情"),
 						content: lines.length > 0 ? lines : [uiTheme.fg("dim", "(image)")],
 					},
 				],
@@ -672,8 +672,8 @@ export const readToolRenderer = {
 			suffixResolution: suffix,
 			offset: args?.offset,
 		});
-		const correction = suffix ? ` ${uiTheme.fg("dim", `(corrected from ${shortenPath(suffix.from)})`)}` : "";
-		let title = displayPath ? `Read ${displayPath}${correction}` : "Read";
+		const correction = suffix ? ` ${uiTheme.fg("dim", `（已根据 ${shortenPath(suffix.from)} 更正）`)}` : "";
+		let title = displayPath ? `Read ${displayPath}${correction}` : "读取";
 		if (args?.offset !== undefined || args?.limit !== undefined) {
 			const startLine = args.offset ?? 1;
 			const endLine = args.limit !== undefined ? startLine + args.limit - 1 : "";
@@ -684,7 +684,7 @@ export const readToolRenderer = {
 		}
 		if (details?.conflictCount && details.conflictCount > 0) {
 			const n = details.conflictCount;
-			title += ` ${uiTheme.fg("warning", `(⚠ ${n} conflict${n === 1 ? "" : "s"})`)}`;
+			title += ` ${uiTheme.fg("warning", `（⚠ ${n} 处冲突${n === 1 ? "" : "s"}）`)}`;
 		}
 		const isMarkdown = readResultIsMarkdown(details, args);
 		let cachedWidth: number | undefined;

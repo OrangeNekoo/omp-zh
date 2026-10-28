@@ -886,7 +886,7 @@ export class InputController {
 		// what the click displayed.
 		const nextId = pickRecentFocusableAgentId(scoped, this.ctx.focusedAgentId);
 		if (nextId === undefined) {
-			this.ctx.showStatus("That subagent is gone — open the hub for live agents");
+			this.ctx.showStatus("该子代理已不存在 — 请打开代理中心查看活跃代理");
 			return;
 		}
 		this.#focusResolvedAgent(nextId);
@@ -1100,7 +1100,7 @@ export class InputController {
 				this.#armedBareCommand = { text, sessionId: this.ctx.sessionManager.getSessionId() };
 				this.ctx.editor.setText(text);
 				this.ctx.showStatus(
-					`Press Enter again to run ${bareSlashCommand.command}; add a leading space to send "${text}" as a message`,
+					`再次按 Enter 运行 ${bareSlashCommand.command}；在开头加空格可将 "${text}" 作为消息发送`,
 				);
 				return;
 			}
@@ -1144,18 +1144,18 @@ export class InputController {
 			// executeBuiltinSlashCommand, which already consumed allowed ones).
 			if (this.ctx.collabGuest) {
 				if (text.startsWith("/")) {
-					this.ctx.showStatus(`${text.split(/\s+/, 1)[0]} is host-only during a collab session`);
+					this.ctx.showStatus(`协作会话期间 ${text.split(/\s+/, 1)[0]} 仅限主机使用`);
 					this.ctx.editor.setText("");
 					return;
 				}
 				if (text.startsWith("!") || parsePythonCommandInput(text)) {
-					this.ctx.showStatus("Local execution is host-only during a collab session");
+					this.ctx.showStatus("协作会话中，本地执行仅在主机端可用");
 					this.ctx.editor.setText("");
 					return;
 				}
 				if (this.ctx.collabGuest.readOnly) {
 					// Keep the typed text: the prompt was not consumed.
-					this.ctx.showStatus("This collab link is read-only — prompting is disabled");
+					this.ctx.showStatus("此协作链接为只读 — 已禁用提示输入");
 					return;
 				}
 				const images = inputImages && inputImages.length > 0 ? [...inputImages] : undefined;
@@ -1211,7 +1211,7 @@ export class InputController {
 				if (command) {
 					if (this.ctx.session.isBashRunning) {
 						this.ctx.showWarning(
-							`A bash command is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to cancel it first.`,
+							`已有 bash 命令在运行。按 ${appKey(this.ctx.keybindings, "app.interrupt")} 先中断。`,
 						);
 						this.ctx.editor.setText(text);
 						return;
@@ -1232,7 +1232,7 @@ export class InputController {
 				if (code) {
 					if (this.ctx.session.isEvalRunning) {
 						this.ctx.showWarning(
-							`A Python execution is already running. Press ${appKey(this.ctx.keybindings, "app.interrupt")} to cancel it first.`,
+							`已有 Python 执行在运行。按 ${appKey(this.ctx.keybindings, "app.interrupt")} 先中断。`,
 						);
 						this.ctx.editor.setText(text);
 						return;
@@ -1672,7 +1672,7 @@ export class InputController {
 		// shape for SIGSTOP). No-op on platforms that cannot suspend.
 		if (process.platform === "win32") {
 			this.ctx.showStatus(
-				`Suspend (${appKey(this.ctx.keybindings, "app.suspend")}) is not supported on this platform`,
+				`此平台不支持挂起（${appKey(this.ctx.keybindings, "app.suspend")}）`,
 			);
 			return;
 		}
@@ -1741,14 +1741,14 @@ export class InputController {
 			this.ctx.ui.start();
 			this.ctx.ui.requestRender(true);
 			const reason = err instanceof Error ? err.message : String(err);
-			this.ctx.showError(`Failed to suspend: ${reason}`);
+			this.ctx.showError(`暂停失败：${reason}`);
 		}
 	}
 
 	handleDequeue(): void {
 		const popped = this.#popLastQueuedMessage();
 		if (!popped) {
-			this.ctx.showStatus("No queued messages to restore");
+			this.ctx.showStatus("没有可恢复的排队消息");
 			return;
 		}
 		// Drop only the popped message's local-submission signature; the messages
@@ -1756,7 +1756,7 @@ export class InputController {
 		// as local and does not blank the editor the dequeue just restored to.
 		this.ctx.locallySubmittedUserSignatures.delete(`${popped.text}\u0000${popped.images?.length ?? 0}`);
 		this.#restoreEntriesToEditor([popped]);
-		this.ctx.showStatus("Restored last queued message to editor");
+		this.ctx.showStatus("已将最后一条排队消息恢复到编辑器");
 	}
 
 	/**
@@ -1841,7 +1841,7 @@ export class InputController {
 		if (didRetry) {
 			this.ctx.editor.clearDraft();
 		} else {
-			this.ctx.showStatus("Nothing to retry");
+			this.ctx.showStatus("没有可重试的内容");
 		}
 	}
 
@@ -1885,7 +1885,7 @@ export class InputController {
 		const splitMessages = splitQueuedMessages(text);
 		if (splitMessages.length === 0 && !options.images?.length) {
 			if (options.detachedText === undefined) this.ctx.editor.clearDraft();
-			this.ctx.showWarning("Usage: /queue <message> (or start a prompt with -> / =>)");
+			this.ctx.showWarning("用法：/queue <message>（或以 -> / => 开头输入提示词）");
 			return;
 		}
 
@@ -1910,8 +1910,8 @@ export class InputController {
 			this.ctx.updatePendingMessagesDisplay();
 			this.ctx.showStatus(
 				messages.length === 1
-					? "Queued message for after compaction"
-					: `Queued ${messages.length} messages for after compaction`,
+					? "已排队消息，将在压缩后发送"
+					: `已将 ${messages.length} 条消息排队到压缩后`,
 			);
 			this.ctx.ui.requestRender();
 			return;
@@ -1981,11 +1981,11 @@ export class InputController {
 			this.ctx.showStatus(
 				startImmediately
 					? queuedCount === 1
-						? "Sent queued message"
-						: `Sent first message; queued ${queuedCount - 1} for later yields`
+						? "已发送排队消息"
+						: `已发送首条消息；已排队 ${queuedCount - 1} 条，待后续让出时发送`
 					: queuedCount === 1
-						? "Queued message for when the agent yields"
-						: `Queued ${queuedCount} messages for when the agent yields`,
+						? "已排队消息，将在代理交还控制权时发送"
+						: `已将 ${queuedCount} 条消息排队，待代理让出后发送`,
 			);
 		}
 		this.ctx.ui.requestRender();
@@ -2370,7 +2370,7 @@ export class InputController {
 			return;
 		}
 		if (!focused.acceptsImages) {
-			this.ctx.showStatus("Image paste is not supported in this prompt");
+			this.ctx.showStatus("此提示输入不支持粘贴图片");
 			return;
 		}
 		const promptPaste = this.#beginPromptImagePaste(focused);
@@ -2445,7 +2445,7 @@ export class InputController {
 				}
 				// Image-only prompts keep the path as text, like other unattachable pastes.
 				sink.pasteText(path);
-				this.ctx.showStatus("Video paste is not supported in this prompt");
+				this.ctx.showStatus("此提示输入不支持粘贴视频");
 				return;
 			}
 			const image = await loadImageInput({
@@ -2458,7 +2458,7 @@ export class InputController {
 				// locked transient screenshot file). Prefer the clipboard bytes.
 				if (await this.#tryPasteClipboardImage(sink)) return;
 				sink.pasteText(path);
-				this.ctx.showStatus("Pasted path is not a supported image");
+				this.ctx.showStatus("粘贴的路径不是受支持的图片");
 				return;
 			}
 			await sink.attach(
@@ -2496,13 +2496,13 @@ export class InputController {
 				this.ctx.showStatus(
 					overSsh
 						? `Image not found at ${displayPath}. Over SSH this path is local to your terminal — paste the image directly (clipboard image-paste shortcut) to send its bytes.`
-						: `Image not found at ${displayPath}`,
+						: `未找到位于 ${displayPath} 的图片`,
 				);
 				return;
 			}
 			if (await this.#tryPasteClipboardImage(sink)) return;
 			sink.pasteText(path);
-			this.ctx.showStatus("Failed to read pasted image path");
+			this.ctx.showStatus("读取粘贴的图片路径失败");
 		}
 	}
 
@@ -2573,7 +2573,7 @@ export class InputController {
 			const image = await this.clipboard.readImage();
 			if (image) {
 				if (textOnlyPrompt) {
-					this.ctx.showStatus("Image paste is not supported in this prompt");
+					this.ctx.showStatus("此提示输入不支持粘贴图片");
 					return false;
 				}
 				return await sink.attach(
@@ -2592,7 +2592,7 @@ export class InputController {
 			// this keypress, so a miss here must not dead-end.
 			const text = await textPromise;
 			if (!text) {
-				this.ctx.showStatus("Clipboard is empty");
+				this.ctx.showStatus("剪贴板为空");
 				return false;
 			}
 			// #3506: when the clipboard text is an explicit image file path,
@@ -2620,7 +2620,7 @@ export class InputController {
 			this.ctx.ui.requestRender();
 			return true;
 		} catch {
-			this.ctx.showStatus("Failed to read clipboard");
+			this.ctx.showStatus("读取剪贴板失败");
 			return false;
 		} finally {
 			promptPaste?.finish();
@@ -2639,10 +2639,10 @@ export class InputController {
 				this.ctx.editor.insertText(text);
 				this.ctx.ui.requestRender();
 			} else {
-				this.ctx.showStatus("No text in clipboard to paste raw");
+				this.ctx.showStatus("剪贴板中没有可粘贴的原始文本");
 			}
 		} catch {
-			this.ctx.showStatus("Failed to paste raw text from clipboard");
+			this.ctx.showStatus("从剪贴板粘贴原始文本失败");
 		}
 	}
 
@@ -2680,13 +2680,13 @@ export class InputController {
 		let choice: string | undefined;
 		try {
 			choice = await this.ctx.showHookSelector(
-				`Pasted ${lineCount} lines`,
+				`已粘贴 ${lineCount} 行`,
 				[
-					{ label: WRAPPED_BLOCK, description: "Wrap the text in <attachment> tags, collapsed to a marker" },
-					{ label: LOCAL_FILE, description: "Save the text to a local://paste file" },
-					{ label: INLINE, description: "Collapse the text to an inline paste marker" },
+					{ label: WRAPPED_BLOCK, description: "将文本包裹在 <attachment> 标签中，并折叠为标记" },
+					{ label: LOCAL_FILE, description: "将文本保存到 local://paste 文件" },
+					{ label: INLINE, description: "将文本折叠为内联粘贴标记" },
 				],
-				{ helpText: `${editorKey("tui.select.cancel")} to paste inline` },
+				{ helpText: `${editorKey("tui.select.cancel")} 粘贴为内联` },
 			);
 		} catch (error) {
 			logger.warn("large-paste menu failed", { error: error instanceof Error ? error.message : String(error) });
@@ -2734,13 +2734,13 @@ export class InputController {
 			} while (await Bun.file(filePath).exists());
 			await Bun.write(filePath, text);
 			this.ctx.editor.insertText(`local://${name} `);
-			this.ctx.showStatus(`Saved ${lineCount} pasted lines to local://${name}`);
+			this.ctx.showStatus(`已将 ${lineCount} 行粘贴内容保存到 local://${name}`);
 		} catch (error) {
 			logger.warn("failed to save large paste to file", {
 				error: error instanceof Error ? error.message : String(error),
 			});
 			this.ctx.editor.insertTextAttachment(text);
-			this.ctx.showError("Failed to save paste to a file — attached as a text chip instead");
+			this.ctx.showError("粘贴内容保存为文件失败 — 已作为文本片段附加");
 		}
 	}
 
@@ -2800,16 +2800,16 @@ export class InputController {
 		const { line } = this.ctx.editor.getCursor();
 		const text = this.ctx.editor.getLines()[line] || "";
 		if (!text) {
-			this.ctx.showStatus("Nothing to copy");
+			this.ctx.showStatus("没有可复制的内容");
 			return;
 		}
 		try {
 			copyToClipboard(text);
 			const sanitized = sanitizeText(text);
 			const preview = sanitized.length > 30 ? `${sanitized.slice(0, 30)}...` : sanitized;
-			this.ctx.showStatus(`Copied line: ${preview}`);
+			this.ctx.showStatus(`已复制行：${preview}`);
 		} catch {
-			this.ctx.showWarning("Failed to copy to clipboard");
+			this.ctx.showWarning("复制到剪贴板失败");
 		}
 	}
 
@@ -2817,23 +2817,23 @@ export class InputController {
 	handleCopyPrompt(): void {
 		const text = this.ctx.editor.getText();
 		if (!text) {
-			this.ctx.showStatus("Nothing to copy");
+			this.ctx.showStatus("没有可复制的内容");
 			return;
 		}
 		try {
 			copyToClipboard(text);
 			const sanitized = sanitizeText(text);
 			const preview = sanitized.length > 30 ? `${sanitized.slice(0, 30)}...` : sanitized;
-			this.ctx.showStatus(`Copied: ${preview}`);
+			this.ctx.showStatus(`已复制：${preview}`);
 		} catch {
-			this.ctx.showWarning("Failed to copy to clipboard");
+			this.ctx.showWarning("复制到剪贴板失败");
 		}
 	}
 
 	cycleThinkingLevel(): void {
 		const newLevel = this.ctx.viewSession.cycleThinkingLevel();
 		if (newLevel === undefined) {
-			this.ctx.showStatus("Current model does not support thinking");
+			this.ctx.showStatus("当前模型不支持思考");
 		} else {
 			this.ctx.statusLine.invalidate();
 			this.ctx.updateEditorBorderColor();
@@ -2845,7 +2845,7 @@ export class InputController {
 			const cycleOrder = cfgCycleOrder.get(settings);
 			const result = await this.ctx.viewSession.cycleRoleModels(cycleOrder, direction);
 			if (!result) {
-				this.ctx.showStatus("Only one role model available");
+				this.ctx.showStatus("只有一个角色模型可用");
 				return;
 			}
 
@@ -2873,7 +2873,7 @@ export class InputController {
 			return;
 		}
 		this.setToolsExpanded(!this.ctx.toolOutputExpanded);
-		this.ctx.showStatus(`Tool output expansion: ${this.ctx.toolOutputExpanded ? "enabled" : "disabled"}`);
+		this.ctx.showStatus(`工具输出展开：${this.ctx.toolOutputExpanded ? "enabled" : "disabled"}`);
 	}
 
 	toggleToolActivityVisibility(): void {
@@ -2899,7 +2899,7 @@ export class InputController {
 		if (this.ctx.hideToolActivity) this.ctx.ui.clearInlineImages();
 		// A viewport-only repaint leaves tool rows already retired to terminal history unchanged.
 		this.ctx.ui.resetDisplay();
-		this.ctx.showStatus(`Tool activity: ${this.ctx.hideToolActivity ? "hidden" : "visible"}`);
+		this.ctx.showStatus(`工具活动：${this.ctx.hideToolActivity ? "hidden" : "visible"}`);
 	}
 
 	setToolsExpanded(expanded: boolean): void {
@@ -2923,7 +2923,7 @@ export class InputController {
 		const thinkingOff =
 			((this.ctx.viewSession ?? this.ctx.session)?.thinkingLevel ?? ThinkingLevel.Off) === ThinkingLevel.Off;
 		if (thinkingOff && !this.ctx.hasDisplayableThinkingContent) {
-			this.ctx.showStatus("Thinking is off — enable thinking to show blocks");
+			this.ctx.showStatus("思考已关闭 — 启用思考后才能显示思考块");
 			return;
 		}
 		this.ctx.hideThinkingBlock = !this.ctx.hideThinkingBlock;
@@ -2949,13 +2949,13 @@ export class InputController {
 		this.ctx.chatContainer.resetStableEmission();
 		this.ctx.ui.resetDisplay();
 
-		this.ctx.showStatus(`Thinking blocks: ${this.ctx.hideThinkingBlock ? "hidden" : "visible"}`);
+		this.ctx.showStatus(`思考块：${this.ctx.hideThinkingBlock ? "hidden" : "visible"}`);
 	}
 
 	async openExternalEditor(): Promise<void> {
 		const editorCmd = getEditorCommand();
 		if (!editorCmd) {
-			this.ctx.showWarning("No editor configured. Set $VISUAL or $EDITOR environment variable.");
+			this.ctx.showWarning("未配置编辑器。请设置 $VISUAL 或 $EDITOR 环境变量。");
 			return;
 		}
 
@@ -2969,7 +2969,7 @@ export class InputController {
 			}
 		} catch (error) {
 			this.ctx.showWarning(
-				`Failed to open external editor: ${error instanceof Error ? error.message : String(error)}`,
+				`打开外部编辑器失败：${error instanceof Error ? error.message : String(error)}`,
 			);
 		} finally {
 			this.ctx.ui.start();

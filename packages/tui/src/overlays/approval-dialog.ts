@@ -44,7 +44,7 @@ const MAX_DETAIL_ROWS: number = PREVIEW_LIMITS.COLLAPSED_ITEMS;
 /** Enter and the approve key are ignored this long after mount, so a key sent as the prompt appears cannot answer it. */
 export const APPROVE_ARM_MS = 500;
 /** The Deny row while a composer draft holds Enter: sending it denies the call and steers the turn. */
-const DENY_AND_SEND_LABEL = "Deny and send message";
+const DENY_AND_SEND_LABEL = "拒绝并发送消息";
 
 /** `grant<N>` takes the Nth of {@link ApprovalDialogOptions.grants}; `remember` toggles their lifetime. */
 type ApprovalAnswer = "once" | "session" | "deny" | "remember" | `grant${number}`;
@@ -168,14 +168,14 @@ export class ApprovalDialogComponent implements Component {
 		const grants = this.options.grants ?? [];
 		const glyph = this.#rememberAlways ? theme.checkbox.checked : theme.checkbox.unchecked;
 		return [
-			...(grants.length > 0 ? [{ label: `${glyph} Remember across sessions`, answer: "remember" as const }] : []),
+			...(grants.length > 0 ? [{ label: `${glyph} 跨会话记住`, answer: "remember" as const }] : []),
 			...grants.map((grant, index) => ({
 				label: this.#rememberAlways ? grant.alwaysLabel : grant.label,
 				answer: `grant${index}` as const,
 			})),
-			{ label: grants.length > 0 ? "Approve Once" : "Approve", answer: "once" },
+			{ label: grants.length > 0 ? "批准一次" : "批准", answer: "once" },
 			...(this.options.session ? [{ label: this.options.session.label, answer: "session" as const }] : []),
-			{ label: "Deny", answer: "deny" },
+			{ label: "拒绝", answer: "deny" },
 		];
 	}
 
@@ -332,22 +332,22 @@ export class ApprovalDialogComponent implements Component {
 		if (this.#native && this.#nativeDrafting === drafting) return this.#native;
 		const cancelKey = getKeybindings().getKeys("tui.select.cancel")[0];
 		const approveKey = appApproveKeys()[0];
-		const deny = actionButton("Deny", "deny", {
+		const deny = actionButton("拒绝", "deny", {
 			...(cancelKey ? { keys: cancelKey } : {}),
 			tone: "error",
-			title: `Deny this call${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
+			title: `拒绝此调用${cancelKey ? `  ${formatTooltipKey(cancelKey)}` : ""}`,
 		});
-		const approve = actionButton(this.options.grants?.length ? "Approve Once" : "Approve", "approve", {
+		const approve = actionButton(this.options.grants?.length ? "批准一次" : "批准", "approve", {
 			...(approveKey ? { keys: approveKey } : {}),
 			tone: "accent",
-			title: `Approve this call${approveKey ? `  ${formatTooltipKey(approveKey)}` : ""}`,
+			title: `批准此调用${approveKey ? `  ${formatTooltipKey(approveKey)}` : ""}`,
 		});
 		const expandKey = appToolsExpandKey();
 		const expand = this.#full
 			? [
-					actionButton(this.#expanded ? "Less" : "Details", "expand", {
+					actionButton(this.#expanded ? "更少" : "详情", "expand", {
 						keys: expandKey,
-						title: `${this.#expanded ? "Summarize" : "Show every detail of"} this call  ${formatTooltipKey(expandKey)}`,
+						title: `${this.#expanded ? "Summarize" : "Show every detail of"} 此调用  ${formatTooltipKey(expandKey)}`,
 					}),
 				]
 			: [];
@@ -410,8 +410,8 @@ export class ApprovalDialogComponent implements Component {
 			: "";
 		const keys = `${approve} approve · ${editorKey("tui.select.cancel")} deny${expand}`;
 		if (drafting) return `${editorKey("tui.input.submit")} deny and send · ${keys}`;
-		const choose = `${editorKeys("tui.select.up", "tui.select.down")} choose · ${editorKey("tui.select.confirm")} select`;
-		const scroll = overflows ? ` · ${editorKeys("tui.select.pageUp", "tui.select.pageDown")} scroll` : "";
+		const choose = `${editorKeys("tui.select.up", "tui.select.down")} 选择 · ${editorKey("tui.select.confirm")} 选择`;
+		const scroll = overflows ? ` · ${editorKeys("tui.select.pageUp", "tui.select.pageDown")} 滚动` : "";
 		return `${choose} · ${keys}${scroll}${this.options.draft ? " · type to deny and steer" : ""}`;
 	}
 

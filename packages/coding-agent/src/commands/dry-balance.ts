@@ -6,19 +6,19 @@ export default class DryBalance extends Command {
 	static description = commandHelp.description;
 	static args = {
 		model: Args.string({
-			description: "Model selector (provider/model or fuzzy id). Defaults to the configured default model.",
+			description: "模型选择器（provider/model 或模糊 id）。默认使用已配置的默认模型。",
 			required: false,
 		}),
 	};
 
 	static flags = {
-		model: Flags.string({ description: "Model selector (same syntax as --model on omp)" }),
-		count: Flags.integer({ description: "Number of random session ids to try", default: 100 }),
-		concurrency: Flags.integer({ description: "Maximum concurrent credential resolutions", default: 32 }),
-		json: Flags.boolean({ description: "Output JSON" }),
-		bench: Flags.boolean({ description: "Send one live benchmark request per OAuth account" }),
+		model: Flags.string({ description: "模型选择器（语法与 omp 的 --model 相同）" }),
+		count: Flags.integer({ description: "尝试的随机会话 id 数量", default: 100 }),
+		concurrency: Flags.integer({ description: "并发解析凭据的上限", default: 32 }),
+		json: Flags.boolean({ description: "输出 JSON" }),
+		bench: Flags.boolean({ description: "对每个 OAuth 账户发送一次实时基准请求" }),
 		config: Flags.string({
-			description: "Load an extra config.yml-style overlay for this run (repeatable)",
+			description: "为本次运行加载额外的 config.yml 风格配置层（可重复）",
 			multiple: true,
 		}),
 	};

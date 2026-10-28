@@ -15,17 +15,17 @@ export default class Worktree extends Command {
 	static args = {
 		// A positional action keeps `omp worktree` (the no-arg form) useful.
 		action: Args.string({
-			description: "list (default), clear, or add",
+			description: "list（默认）、clear 或 add",
 			required: false,
 			options: ["list", "clear", "add"],
 			default: "list",
 		}),
 		path: Args.string({
-			description: "Worktree path (add)",
+			description: "工作树路径（add）",
 			required: false,
 		}),
 		commit: Args.string({
-			description: "Commit-ish to check out (add)",
+			description: "要检出的 commit-ish（add）",
 			required: false,
 		}),
 	};
@@ -33,38 +33,38 @@ export default class Worktree extends Command {
 	static flags = {
 		cwd: Flags.string({
 			char: "C",
-			description: "Repository/base directory (add)",
+			description: "仓库/基础目录（add）",
 		}),
 		branch: Flags.string({
 			char: "b",
-			description: "Create a new branch (add)",
+			description: "创建新分支（add）",
 			exclusive: ["force-branch"],
 		}),
 		"force-branch": Flags.string({
 			char: "B",
-			description: "Create or reset a branch (add)",
+			description: "创建或重置分支（add）",
 			exclusive: ["branch"],
 		}),
 		detach: Flags.boolean({
 			char: "d",
-			description: "Detach HEAD (add)",
+			description: "分离 HEAD（add）",
 			default: false,
 		}),
 		quiet: Flags.boolean({
 			char: "q",
-			description: "Suppress add output",
+			description: "抑制 add 的输出",
 			default: false,
 		}),
 		all: Flags.boolean({
-			description: "Clear every entry, including live PR-checkout worktrees (clear)",
+			description: "清除所有条目，包括正在使用的 PR 检出工作树（clear）",
 			default: false,
 		}),
 		"dry-run": Flags.boolean({
 			char: "n",
-			description: "Print what would be removed without touching the filesystem (clear)",
+			description: "只打印将要删除的内容，不改动文件系统（clear）",
 			default: false,
 		}),
-		json: Flags.boolean({ char: "j", description: "Emit machine-readable JSON", default: false }),
+		json: Flags.boolean({ char: "j", description: "输出机器可读的 JSON", default: false }),
 	};
 
 	static examples = [
@@ -85,7 +85,7 @@ export default class Worktree extends Command {
 		// its worktrees under the configured base.
 		if (args.action === "add") {
 			if (!args.path) {
-				console.error("Error: Missing required argument: path");
+				console.error("错误：缺少必需参数：path");
 				process.exitCode = 1;
 				return;
 			}

@@ -30,9 +30,9 @@ const USAGE: Record<SessionAction, string> = {
 };
 
 const UNPACK_NOTE: Record<UnpackMode, string> = {
-	created: "Unpacked session",
-	replaced: "Replaced the local copy of this session",
-	forked: "The local copy of this session diverged; unpacked as a fork",
+	created: "已解包会话",
+	replaced: "已替换此会话的本地副本",
+	forked: "此会话的本地副本已分叉；已作为分叉解包",
 };
 
 function isSessionAction(value: string): value is SessionAction {
@@ -44,23 +44,23 @@ export default class Session extends Command {
 
 	static args = {
 		action: Args.string({
-			description: "pack, unpack, or moved",
+			description: "pack、unpack 或 moved",
 			required: true,
 			options: ACTIONS,
 		}),
 		source: Args.string({
-			description: "Session .jsonl path or id (pack, moved); archive path (unpack)",
+			description: "会话 .jsonl 路径或 id（pack、moved）；归档路径（unpack）",
 			required: false,
 		}),
 		output: Args.string({
-			description: "Archive file to write (pack)",
+			description: "要写入的归档文件（pack）",
 			required: false,
 		}),
 	};
 
 	static flags = {
-		cwd: Flags.string({ description: "Directory the session continues in on this machine (unpack)" }),
-		to: Flags.string({ description: "Where the session went, e.g. a machine name (moved)" }),
+		cwd: Flags.string({ description: "会话在本机继续时所在的目录（unpack）" }),
+		to: Flags.string({ description: "会话去往何处，如机器名（moved）" }),
 	};
 
 	static examples = [
@@ -93,7 +93,7 @@ export default class Session extends Command {
 					const result = await packSession(await this.#resolveSession(source), args.output);
 					if (result.missingBlobs.length > 0) {
 						process.stderr.write(
-							`${chalk.yellow(`warning: ${result.missingBlobs.length} referenced blob(s) are missing from the local blob store and were not packed; those images will not load after unpacking.`)}\n`,
+							`${chalk.yellow(`警告：有 ${result.missingBlobs.length} 个引用的二进制对象在本地二进制对象存储中缺失，未被打包；解包后这些图像将无法加载。`)}\n`,
 						);
 					}
 					process.stdout.write(`${result.archivePath}\n`);
@@ -114,7 +114,7 @@ export default class Session extends Command {
 			}
 		} catch (error) {
 			if (error instanceof SessionTransferError || error instanceof SessionMoveRefusedError) {
-				process.stderr.write(`${chalk.red(`error: ${error.message}`)}\n`);
+				process.stderr.write(`${chalk.red(`错误：${error.message}`)}\n`);
 				process.exitCode = 1;
 				return;
 			}

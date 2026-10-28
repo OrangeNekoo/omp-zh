@@ -21,30 +21,30 @@ const THINKING_LEVEL_METADATA: Record<ThinkingLevel, ThinkingLevelMetadata> = {
 	[ThinkingLevel.Inherit]: {
 		value: ThinkingLevel.Inherit,
 		label: "inherit",
-		description: "Inherit session default",
+		description: "沿用会话默认值",
 	},
-	[ThinkingLevel.Off]: { value: ThinkingLevel.Off, label: "off", description: "No reasoning" },
+	[ThinkingLevel.Off]: { value: ThinkingLevel.Off, label: "off", description: "无推理" },
 	[ThinkingLevel.Minimal]: {
 		value: ThinkingLevel.Minimal,
 		label: "min",
-		description: "Very brief reasoning (~1k tokens)",
+		description: "极简推理（约 1k 令牌）",
 	},
-	[ThinkingLevel.Low]: { value: ThinkingLevel.Low, label: "low", description: "Light reasoning (~2k tokens)" },
+	[ThinkingLevel.Low]: { value: ThinkingLevel.Low, label: "low", description: "轻度推理（约 2k 令牌）" },
 	[ThinkingLevel.Medium]: {
 		value: ThinkingLevel.Medium,
 		label: "medium",
-		description: "Moderate reasoning (~8k tokens)",
+		description: "中等推理（约 8k 令牌）",
 	},
-	[ThinkingLevel.High]: { value: ThinkingLevel.High, label: "high", description: "Deep reasoning (~16k tokens)" },
+	[ThinkingLevel.High]: { value: ThinkingLevel.High, label: "high", description: "深度推理（约 16k 令牌）" },
 	[ThinkingLevel.XHigh]: {
 		value: ThinkingLevel.XHigh,
 		label: "xhigh",
-		description: "Extended reasoning (~32k tokens)",
+		description: "扩展推理（约 32k 令牌）",
 	},
 	[ThinkingLevel.Max]: {
 		value: ThinkingLevel.Max,
 		label: "max",
-		description: "Maximum reasoning the model supports",
+		description: "模型支持的最高推理等级",
 	},
 };
 
@@ -204,7 +204,7 @@ export interface ConfiguredThinkingLevelMetadata {
 const AUTO_THINKING_METADATA: ConfiguredThinkingLevelMetadata = {
 	value: AUTO_THINKING,
 	label: "auto",
-	description: "Auto-detect per prompt",
+	description: "按提示词自动检测",
 };
 
 /**

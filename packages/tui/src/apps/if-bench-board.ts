@@ -64,11 +64,11 @@ const DETAIL_WIDTH = 120;
 
 /** Human-readable verdict for each scored failure mode. */
 const FAILURE_TEXT: Record<IfBenchFailure, string> = {
-	result: "wrong array",
-	cat: "no cat sound",
-	"result+cat": "wrong array + no cat sound",
-	format: "no <result> block",
-	provider: "provider error",
+	result: "数组错误",
+	cat: "无猫叫声",
+	"result+cat": "数组错误 + 无猫叫声",
+	format: "无 <result> 块",
+	provider: "服务商错误",
 };
 
 /** Rendering surface for one `omp if-bench` run. */
@@ -287,11 +287,11 @@ export function formatIfBenchScoreboard(summary: IfBenchSummary): string {
 		{ header: "turns", value: report => `${report.turnsPassed}/${summary.maxTurns}`, align: "right" },
 		{ header: "actions", value: report => String(report.actionsPassed), align: "right" },
 		{
-			header: "broke on",
+			header: "中断于",
 			value: report =>
 				report.failure ? `turn ${report.failure.turn} · ${FAILURE_TEXT[report.failure.kind]}` : "survived",
 		},
-		{ header: "per turn", value: report => formatDuration(Math.round(meanTurnMs(report))), align: "right" },
+		{ header: "每回合", value: report => formatDuration(Math.round(meanTurnMs(report))), align: "right" },
 		{
 			header: "tokens",
 			value: report => (report.outputTokens > 0 ? formatNumber(report.outputTokens) : "-"),

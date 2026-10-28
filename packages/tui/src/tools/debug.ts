@@ -144,7 +144,7 @@ function describeDebugResult(
 ): NativeToolView {
 	const [action, target] = debugCallParts(args, result.details?.action ?? "debug");
 	const output = resultText(result);
-	if (result.isError) return errorView("Debug", output || "Debug failed", action, target);
+	if (result.isError) return errorView("Debug", output || "调试失败", action, target);
 	const snapshot = result.details?.snapshot;
 	const body: NativeChild[] = [];
 	let sessionRows = 0;
@@ -172,9 +172,9 @@ function describeDebugResult(
 			sessionRows = rows.filter(([, value]) => value).length;
 		}
 	}
-	body.push(output ? ansi(output) : noteText("No output"));
+	body.push(output ? ansi(output) : noteText("无输出"));
 	return {
-		head: toolHead("Debug", action, target),
+		head: toolHead("调试", action, target),
 		body,
 		preview: { lines: sessionRows + PREVIEW_LIMITS.COLLAPSED_LINES },
 	};
@@ -186,7 +186,7 @@ const debugResultMemo = new OwnerMemo<NativeToolView | undefined>();
 export const debugToolRenderer = {
 	animatedPartialResult: true,
 	renderCall(args: DebugRenderArgs, _options: RenderResultOptions, theme: Theme): Component {
-		const text = renderStatusLine({ icon: "pending", title: "Debug", description: summarizeDebugCall(args) }, theme);
+		const text = renderStatusLine({ icon: "pending", title: "调试", description: summarizeDebugCall(args) }, theme);
 		return new Text(text, 0, 0);
 	},
 
@@ -222,8 +222,8 @@ export const debugToolRenderer = {
 				header,
 				phase: options.isPartial ? "partial" : result.isError ? "error" : "success",
 				sections: [
-					...(summaryLines.length > 0 ? [{ label: theme.fg("toolTitle", "Session"), content: summaryLines }] : []),
-					{ label: theme.fg("toolTitle", "Output"), content: displayedLines },
+					...(summaryLines.length > 0 ? [{ label: theme.fg("toolTitle", "会话"), content: summaryLines }] : []),
+					{ label: theme.fg("toolTitle", "输出"), content: displayedLines },
 				],
 				applyBg: false,
 			};
@@ -231,7 +231,7 @@ export const debugToolRenderer = {
 	},
 	describeCall(args: DebugRenderArgs): NativeToolView {
 		const [action, target] = debugCallParts(args, "request");
-		return { head: toolHead("Debug", action, target) };
+		return { head: toolHead("调试", action, target) };
 	},
 	describeResult(
 		result: ToolRenderResult<DebugToolDetails>,

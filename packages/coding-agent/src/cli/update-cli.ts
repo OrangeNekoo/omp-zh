@@ -11,6 +11,7 @@ import { Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { applyBinaryPatch } from "@oh-my-pi/pi-natives";
 import {
+	CLI_NAME,
 	$which,
 	APP_NAME,
 	compareVersions,
@@ -692,7 +693,7 @@ async function resolveUpdateTarget(options: { allowPackageManagers: boolean }): 
 
 	if (bunBinDir) return { method: "bun" };
 
-	throw new Error(`Could not resolve ${APP_NAME} binary path in PATH`);
+	throw new Error(`Could not resolve ${CLI_NAME} binary path in PATH`);
 }
 
 /** Bound on `omp.rename` hops so a broken pointer chain cannot loop forever. */
@@ -723,7 +724,7 @@ async function fetchLatestManifest(
 		}
 	};
 	const noCanary = () =>
-		new Error(`No canary release has been published for ${pkg} yet. Try \`${APP_NAME} update --stable\`.`);
+		new Error(`No canary release has been published for ${pkg} yet. Try \`${CLI_NAME} update --stable\`.`);
 
 	const fromPackument = (packument: unknown): Record<string, unknown> => {
 		const distTags = isRecord(packument) ? packument["dist-tags"] : undefined;
@@ -1060,7 +1061,7 @@ async function pruneBunCacheAfterGlobalInstall(): Promise<BunInstallCachePruneRe
  * Resolve the path that `omp` maps to in the user's PATH.
  */
 function resolveOmpPath(): string | undefined {
-	return $which(APP_NAME) ?? undefined;
+	return $which(CLI_NAME) ?? undefined;
 }
 
 /**
@@ -1072,8 +1073,8 @@ function resolveOmpPath(): string | undefined {
  * being mistaken for an unreplaced launcher.
  */
 export function parseReportedVersion(output: string): string | undefined {
-	if (!output.startsWith(`${APP_NAME}/`)) return undefined;
-	return output.slice(APP_NAME.length + 1).match(/^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/)?.[1];
+	if (!output.startsWith(`${CLI_NAME}/`)) return undefined;
+	return output.slice(CLI_NAME.length + 1).match(/^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/)?.[1];
 }
 
 async function reportedVersionAtPath(binaryPath: string): Promise<string | undefined> {
@@ -1159,7 +1160,7 @@ function printVerifiedVersion(expectedVersion: string, binaryPath?: string): voi
 
 function formatVerificationFailure(result: InstalledVersionVerification, expectedVersion: string): string {
 	if (result.actual) {
-		return `${APP_NAME} at ${result.path} still reports ${result.actual} (expected ${expectedVersion})`;
+		return `${CLI_NAME} at ${result.path} still reports ${result.actual} (expected ${expectedVersion})`;
 	}
 	return `could not verify updated version${result.path ? ` at ${result.path}` : ""}`;
 }
@@ -1314,7 +1315,7 @@ export async function replaceBinaryForUpdate(options: BinaryReplacementOptions):
 		const verification = await options.verifyInstalledVersion(options.expectedVersion);
 		if (!verification.ok) {
 			throw new Error(
-				`${formatVerificationFailure(verification, options.expectedVersion)}; restored previous ${APP_NAME} binary`,
+				`${formatVerificationFailure(verification, options.expectedVersion)}; restored previous ${CLI_NAME} binary`,
 			);
 		}
 
@@ -1742,7 +1743,7 @@ export async function updateViaManager(
 	}
 	console.log(
 		chalk.yellow(
-			`\n${steps.manager} did not install a working ${APP_NAME} ${release.version} launcher (${formatVerificationFailure(result, release.version)}); installing the standalone binary at ${launcherPath}.`,
+			`\n${steps.manager} did not install a working ${CLI_NAME} ${release.version} launcher (${formatVerificationFailure(result, release.version)}); installing the standalone binary at ${launcherPath}.`,
 		),
 	);
 	try {
@@ -1959,7 +1960,7 @@ export async function updateViaBinaryAt(
 		return result;
 	});
 	printVerifiedVersion(build.version, verification.path ?? targetPath);
-	console.log(chalk.dim(`Restart ${APP_NAME} to use the new version`));
+	console.log(chalk.dim(`Restart ${CLI_NAME} to use the new version`));
 }
 
 /**
@@ -1971,10 +1972,10 @@ export async function updateViaBinaryAt(
  * launching the replaced install.
  */
 const SHIM_FORWARDERS: Record<string, string> = {
-	"": `#!/bin/sh\nexec "$(dirname "$0")/${APP_NAME}.exe" "$@"\n`,
-	".cmd": `@"%~dp0${APP_NAME}.exe" %*\r\n`,
-	".bat": `@"%~dp0${APP_NAME}.exe" %*\r\n`,
-	".ps1": `& "$PSScriptRoot\\${APP_NAME}.exe" @args\nexit $LASTEXITCODE\n`,
+	"": `#!/bin/sh\nexec "$(dirname "$0")/${CLI_NAME}.exe" "$@"\n`,
+	".cmd": `@"%~dp0${CLI_NAME}.exe" %*\r\n`,
+	".bat": `@"%~dp0${CLI_NAME}.exe" %*\r\n`,
+	".ps1": `& "$PSScriptRoot\\${CLI_NAME}.exe" @args\nexit $LASTEXITCODE\n`,
 };
 
 /**
@@ -1997,7 +1998,7 @@ export async function updateViaShimTakeover(
 	options: BuildDownloadOptions & { verifyBinary?: typeof verifyBinaryAtPath } = {},
 ): Promise<void> {
 	const launcherDir = path.dirname(shimPath);
-	const exePath = path.join(launcherDir, `${APP_NAME}.exe`);
+	const exePath = path.join(launcherDir, `${CLI_NAME}.exe`);
 	const attempt = `${Date.now()}.${process.pid}.${updateAttemptSeq++}`;
 	const tempPath = `${exePath}.${attempt}.new`;
 	await downloadBuild(build, { basePath: exePath, patchPath: `${exePath}.${attempt}.patch`, tempPath }, options);
@@ -2007,7 +2008,7 @@ export async function updateViaShimTakeover(
 	// never retire the same shims or reclaim a live run's backup before its
 	// verification can roll it back.
 	await withFileLock(exePath, async () => {
-		console.log(chalk.dim(`Installing ${APP_NAME}.exe beside the script launcher...`));
+		console.log(chalk.dim(`Installing ${CLI_NAME}.exe beside the script launcher...`));
 		await fs.promises.rename(tempPath, exePath);
 		// Retire the shims so PATH resolution lands on the new exe. Renamed, not
 		// deleted: restorable on verification failure, and Windows permits
@@ -2018,7 +2019,7 @@ export async function updateViaShimTakeover(
 		const backupSuffix = `${attempt}.bak`;
 		const retired: Array<{ launcher: string; backup: string }> = [];
 		for (const ext of ["", ".cmd", ".ps1", ".bat"]) {
-			const launcher = path.join(launcherDir, `${APP_NAME}${ext}`);
+			const launcher = path.join(launcherDir, `${CLI_NAME}${ext}`);
 			const backup = `${launcher}.${backupSuffix}`;
 			try {
 				await fs.promises.rename(launcher, backup);
@@ -2053,7 +2054,7 @@ export async function updateViaShimTakeover(
 			}
 			await unlinkIfExists(exePath);
 			throw new Error(
-				`${formatVerificationFailure(verification, build.version)}; restored previous ${APP_NAME} launcher`,
+				`${formatVerificationFailure(verification, build.version)}; restored previous ${CLI_NAME} launcher`,
 			);
 		}
 		for (const { backup } of retired) {
@@ -2061,7 +2062,7 @@ export async function updateViaShimTakeover(
 		}
 		// Reclaim exe backups and retired-shim leftovers from earlier attempts.
 		for (const ext of [".exe", "", ".cmd", ".ps1", ".bat"]) {
-			await sweepStaleUpdateArtifacts(path.join(launcherDir, `${APP_NAME}${ext}`));
+			await sweepStaleUpdateArtifacts(path.join(launcherDir, `${CLI_NAME}${ext}`));
 		}
 	});
 	for (const { launcher } of forwarded) {
@@ -2075,7 +2076,7 @@ export async function updateViaShimTakeover(
 		);
 	}
 	printVerifiedVersion(build.version);
-	console.log(chalk.dim(`Restart ${APP_NAME} to use the new version`));
+	console.log(chalk.dim(`Restart ${CLI_NAME} to use the new version`));
 }
 
 /**
@@ -2217,7 +2218,7 @@ async function updateToStandaloneBinary(
 	}
 	// Without package-manager routing only a Windows script launcher resolves
 	// to a manager (the bun/npm bin-dir probes are skipped), so its path is known.
-	if (target.method !== "npm" || !target.path) throw new Error(`Could not resolve ${APP_NAME} launcher path in PATH`);
+	if (target.method !== "npm" || !target.path) throw new Error(`Could not resolve ${CLI_NAME} launcher path in PATH`);
 	console.log(chalk.dim("This release ships as a standalone binary; replacing the script launcher."));
 	await updateViaShimTakeover(target.path, build);
 	console.log(chalk.yellow(unmanaged));
@@ -2330,10 +2331,10 @@ export async function runUpdateCommand(opts: {
  * Print update command help.
  */
 export function printUpdateHelp(): void {
-	console.log(`${chalk.bold(`${APP_NAME} update`)} - Check for and install updates
+	console.log(`${chalk.bold(`${CLI_NAME} update`)} - Check for and install updates
 
 ${chalk.bold("Usage:")}
-  ${APP_NAME} update [options]
+  ${CLI_NAME} update [options]
 
 ${chalk.bold("Options:")}
   -c, --check     Check for updates without installing
@@ -2343,10 +2344,10 @@ ${chalk.bold("Options:")}
   --stable        Switch back to the stable channel
 
 ${chalk.bold("Examples:")}
-  ${APP_NAME} update              Update to latest version
-  ${APP_NAME} update --check      Check if updates are available
-  ${APP_NAME} update --force      Force reinstall
-  ${APP_NAME} update -l           Update installed plugins
-  ${APP_NAME} update --canary    Switch to the canary channel and update
+  ${CLI_NAME} update              Update to latest version
+  ${CLI_NAME} update --check      Check if updates are available
+  ${CLI_NAME} update --force      Force reinstall
+  ${CLI_NAME} update -l           Update installed plugins
+  ${CLI_NAME} update --canary    Switch to the canary channel and update
 `);
 }

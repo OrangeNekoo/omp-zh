@@ -27,7 +27,7 @@ interface ParsedCleanseArgs {
 }
 
 const CLEANSE_USAGE = "Usage: /cleanse [request] [--all] [--tests] [-n <agents>] [-m <model>]";
-const CUSTOM_REQUEST_OPTION = "Describe what to fix…";
+const CUSTOM_REQUEST_OPTION = "描述要修复的内容…";
 
 export class CleanseCommandController {
 	#active: CleanseRun | undefined;
@@ -119,7 +119,7 @@ export class CleanseCommandController {
 	async #pickTarget(checkers: readonly CleanseCheckerDescriptor[]): Promise<CleanseTargetChoice> {
 		const allOption = `Run all ${checkers.length} discovered checker${checkers.length === 1 ? "" : "s"}`;
 		const labels = checkers.map(checker => `${checker.label} — ${checker.command}`);
-		const choice = await this.ctx.showHookSelector("Select what to cleanse", [
+		const choice = await this.ctx.showHookSelector("选择要清理的内容", [
 			allOption,
 			...labels,
 			CUSTOM_REQUEST_OPTION,

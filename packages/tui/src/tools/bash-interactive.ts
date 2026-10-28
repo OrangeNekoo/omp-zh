@@ -88,7 +88,7 @@ function normalizeInputForPty(data: string, applicationCursorKeysMode: boolean):
 /** Interactive terminal overlay driven by an external PTY controller. */
 export class BashInteractiveOverlayComponent implements Component {
 	/** Native sheet: a full-pane glass overlay titled Console. */
-	readonly nativeOverlay = { role: "omp.overlay.console", size: "full", head: "Console" } as const;
+	readonly nativeOverlay = { role: "omp.overlay.console", size: "full", head: "控制台" } as const;
 	#terminal: XtermTerminalType;
 	#state: "running" | "complete" | "timed_out" | "killed" = "running";
 	#exitCode: number | undefined;
@@ -261,7 +261,7 @@ export class BashInteractiveOverlayComponent implements Component {
 
 	#stateSpan(): TspSpan {
 		if (this.#state === "running") return span("running", "warning");
-		if (this.#state === "timed_out") return span("timed out", "warning");
+		if (this.#state === "timed_out") return span("已超时", "warning");
 		if (this.#state === "killed") return span("killed", "warning");
 		if (this.#exitCode === 0) return span("exit 0", "success");
 		if (this.#exitCode === undefined) return span("exited", "warning");
@@ -292,11 +292,11 @@ export class BashInteractiveOverlayComponent implements Component {
 			const footer =
 				this.#state === "running"
 					? actionBar([
-							text([span("Input forwarded to PTY", "dim")]),
+							text([span("转发到 PTY 的输入", "dim")]),
 							null,
-							actionButton("Force kill", KILL_ACTION, { keys: "escape", tone: "error" }),
+							actionButton("强制终止", KILL_ACTION, { keys: "escape", tone: "error" }),
 						])
-					: actionBar([text([span("Session finished", "dim")])]);
+					: actionBar([text([span("会话已结束", "dim")])]);
 			return col([head, ansi(screen.join("\n"), { cols }), footer], { gap: "sm" });
 		});
 	}

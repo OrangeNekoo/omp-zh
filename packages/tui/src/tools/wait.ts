@@ -249,7 +249,7 @@ const TILES_SHOWN = 9;
 
 /** Pending wait frame. */
 function waitRenderCall(_args: object, _options: RenderResultOptions, uiTheme: Theme): Component {
-	return new Text(renderStatusLine({ icon: "pending", title: "Wait" }, uiTheme), 0, 0);
+	return new Text(renderStatusLine({ icon: "pending", title: "等待" }, uiTheme), 0, 0);
 }
 
 /** Result frame for wait snapshots and the agents roster. */
@@ -267,7 +267,7 @@ function jobsRenderResult(
 
 	if (jobs.length === 0 && agents.length === 0) {
 		const fallback = result.content?.find(c => c.type === "text")?.text || "No jobs to process";
-		const header = renderStatusLine({ icon: "warning", title: "Wait" }, uiTheme);
+		const header = renderStatusLine({ icon: "warning", title: "等待" }, uiTheme);
 		return new Text([header, formatEmptyMessage(fallback, uiTheme)].join("\n"), 0, 0);
 	}
 
@@ -279,11 +279,11 @@ function jobsRenderResult(
 	// The title already carries the running count, so meta lists only the
 	// settled categories — "waiting on 19 of 19 · 19 running" read awkward.
 	const meta: string[] = [];
-	if (counts.completed > 0) meta.push(uiTheme.fg("success", `${counts.completed} done`));
-	if (counts.failed > 0) meta.push(uiTheme.fg("error", `${counts.failed} failed`));
-	if (counts.cancelled > 0) meta.push(uiTheme.fg("warning", `${counts.cancelled} cancelled`));
+	if (counts.completed > 0) meta.push(uiTheme.fg("success", `${counts.completed} 完成`));
+	if (counts.failed > 0) meta.push(uiTheme.fg("error", `${counts.failed} 失败`));
+	if (counts.cancelled > 0) meta.push(uiTheme.fg("warning", `${counts.cancelled} 已取消`));
 	if (agents.length > 0 && jobs.length > 0) {
-		meta.push(uiTheme.fg("accent", `${agents.length} agent${agents.length === 1 ? "" : "s"}`));
+		meta.push(uiTheme.fg("accent", `${agents.length} 个代理${agents.length === 1 ? "" : "s"}`));
 	}
 
 	const headerIcon: ToolUIStatus =
@@ -442,7 +442,7 @@ function jobsRenderResult(
 		// into one count; the header already carries it while nothing settled.
 		const quietRunning = counts.running - shownWidgetJobs.length;
 		if (quietRunning > 0 && (settledJobs.length > 0 || shownWidgetJobs.length < widgetJobs.length)) {
-			lines.push(`${indent}${uiTheme.fg("dim", `${quietRunning} still running`)}`);
+			lines.push(`${indent}${uiTheme.fg("dim", `${quietRunning} 仍在运行`)}`);
 		}
 		return lines;
 	};
@@ -769,7 +769,7 @@ function describeJobsResult(
 	const agents = result.details?.agents ?? [];
 	if (jobs.length === 0 && agents.length === 0) {
 		return {
-			head: toolHead("Wait"),
+			head: toolHead("等待"),
 			tone: "warning",
 			body: [text([span(plainText(resultText(result) || "No jobs to process"), "dim")])],
 		};
@@ -786,9 +786,9 @@ function describeJobsResult(
 					: `waiting on ${counts.running} of ${jobs.length} ${noun}`
 				: `${jobs.length} ${noun} settled`;
 	const head: TspSpan[] = [span(title, "toolTitle strong")];
-	if (counts.completed > 0) head.push(span(` ${counts.completed} done`, "success"));
-	if (counts.failed > 0) head.push(span(` ${counts.failed} failed`, "error"));
-	if (counts.cancelled > 0) head.push(span(` ${counts.cancelled} cancelled`, "warning"));
+	if (counts.completed > 0) head.push(span(` ${counts.completed} 完成`, "success"));
+	if (counts.failed > 0) head.push(span(` ${counts.failed} 失败`, "error"));
+	if (counts.cancelled > 0) head.push(span(` ${counts.cancelled} 已取消`, "warning"));
 	const order: Record<JobSnapshot["status"], number> = {
 		running: 0,
 		failed: 1,
@@ -866,11 +866,11 @@ export const waitToolRenderer = {
 	inline: true,
 	mergeCallAndResult: true,
 	activitySummary(): ToolActivitySummary {
-		return { label: "Wait", detail: "Background work or peer message" };
+		return { label: "等待", detail: "后台工作或对等消息" };
 	},
 	renderCall: waitRenderCall,
 	describeCall(): NativeToolView {
-		return { head: toolHead("Wait"), inline: true };
+		return { head: toolHead("等待"), inline: true };
 	},
 	describeResult(
 		result: ToolRenderResult<CoordinationDetails>,
@@ -881,7 +881,7 @@ export const waitToolRenderer = {
 			const details = result.details;
 			if (details?.interrupted) {
 				return {
-					head: toolHead("Wait", "interrupted by message"),
+					head: toolHead("等待", "interrupted by message"),
 					tone: "info",
 					inline: true,
 				};
@@ -902,7 +902,7 @@ export const waitToolRenderer = {
 	): Component {
 		if (result.details?.interrupted && !result.isError) {
 			return new Text(
-				renderStatusLine({ icon: "info", title: "Wait", meta: ["interrupted by message"] }, uiTheme),
+				renderStatusLine({ icon: "info", title: "等待", meta: ["interrupted by message"] }, uiTheme),
 				0,
 				0,
 			);

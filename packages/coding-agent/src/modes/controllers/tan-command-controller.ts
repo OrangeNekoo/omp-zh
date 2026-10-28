@@ -48,7 +48,7 @@ export class TanCommandController {
 	async start(work: string, images?: ImageContent[]): Promise<boolean> {
 		const trimmedWork = work.trim();
 		if (!trimmedWork) {
-			this.ctx.showStatus("Usage: /tan <work>");
+			this.ctx.showStatus("用法：/tan <work>");
 			return false;
 		}
 
@@ -56,13 +56,13 @@ export class TanCommandController {
 
 		const model = session.model;
 		if (!model) {
-			this.ctx.showError("No active model available for /tan.");
+			this.ctx.showError("/tan 没有可用的模型。");
 			return false;
 		}
 
 		const manager = session.asyncJobManager;
 		if (!manager) {
-			this.ctx.showError("Background jobs are disabled; enable async jobs to use /tan.");
+			this.ctx.showError("后台任务已禁用；请启用异步任务后再使用 /tan。");
 			return false;
 		}
 
@@ -353,7 +353,7 @@ export class TanCommandController {
 			{ triggerTurn: false, deliverAs: "nextTurn" },
 		);
 		if (!wasStreaming) this.ctx.rebuildChatFromMessages();
-		this.ctx.showStatus(`Dispatched background tan ${jobId}`);
+		this.ctx.showStatus(`已派发后台任务 ${jobId}`);
 		return true;
 	}
 }

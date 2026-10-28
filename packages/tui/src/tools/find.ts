@@ -195,7 +195,7 @@ function describeHit(hit: FindHit, rangeLimit: number, cwd: string | undefined, 
 	const score = hit.contentScore.toFixed(2);
 	const isUrlHit = splitUrlScheme(hit.rel) !== undefined;
 	const head = fileRow(hit.rel, {
-		lead: node("progress", { value: hit.contentScore, tone, title: `score ${score}`, max: { w: 40 } }),
+		lead: node("progress", { value: hit.contentScore, tone, title: `得分 ${score}`, max: { w: 40 } }),
 		detail: [
 			span(score, tone),
 			span(
@@ -225,7 +225,7 @@ function findNativeHead(
 	query: string | undefined,
 	meta: readonly NonNullable<NativeToolHead["meta"]>[number][],
 ): NativeToolHead {
-	return { title: "Find", target: query ?? "", targetKind: "query", meta };
+	return { title: "查找", target: query ?? "", targetKind: "query", meta };
 }
 
 function quoteQuery(query: string | undefined): string | undefined {
@@ -242,7 +242,7 @@ export const findToolRenderer = {
 			{
 				icon: "pending",
 				spinnerFrame: options.spinnerFrame,
-				title: "Find",
+				title: "查找",
 				titleColor: "toolTitle",
 				description: quoteQuery(args.query),
 				meta,
@@ -262,7 +262,7 @@ export const findToolRenderer = {
 		const text = result.content?.find(c => c.type === "text")?.text ?? "";
 
 		if (result.isError) {
-			return new Text(formatErrorMessage(text || "Unknown error", uiTheme), 0, 0);
+			return new Text(formatErrorMessage(text || "未知错误", uiTheme), 0, 0);
 		}
 
 		// Streaming progress: the tool reports the phase it is in.
@@ -271,7 +271,7 @@ export const findToolRenderer = {
 				{
 					icon: "pending",
 					spinnerFrame: options.spinnerFrame,
-					title: "Find",
+					title: "查找",
 					titleColor: "toolTitle",
 					description: quoteQuery(args?.query ?? details?.query),
 					meta: text ? [text] : [],
@@ -301,7 +301,7 @@ export const findToolRenderer = {
 			const emptyMeta = ["0 hits", ...scope, `$${stats.cost.toFixed(4)}`, formatDuration(details.elapsedMs)];
 			if (failed) emptyMeta.push(uiTheme.fg("warning", failed));
 			const header = renderStatusLine(
-				{ icon: "warning", title: "Find", titleColor: "toolTitle", description, meta: emptyMeta },
+				{ icon: "warning", title: "查找", titleColor: "toolTitle", description, meta: emptyMeta },
 				uiTheme,
 			);
 			const empty =
@@ -316,7 +316,7 @@ export const findToolRenderer = {
 		const header = renderStatusLine(
 			{
 				iconOverride: uiTheme.fg("toolTitle", uiTheme.symbol("icon.search")),
-				title: "Find",
+				title: "查找",
 				titleColor: "toolTitle",
 				description,
 				meta,
@@ -347,7 +347,7 @@ export const findToolRenderer = {
 				);
 				const extra: string[] = [];
 				if (expanded) {
-					extra.push(uiTheme.fg("dim", `keywords: ${details.keywords.join(", ")}`));
+					extra.push(uiTheme.fg("dim", `关键词：${details.keywords.join(", ")}`));
 					for (const failure of stats.failures) extra.push(uiTheme.fg("warning", failure));
 				}
 				return fitHeaderedRows(header, [...hitLines, ...extra], width);
@@ -389,7 +389,7 @@ export const findToolRenderer = {
 		const linkTargets = findLinkTargets(details, options.renderContext?.rawDetails);
 		const scope = details.scopePath === undefined ? undefined : `in ${details.scopePath}`;
 		const failed =
-			stats.failed > 0 ? [span(`${stats.failed}/${stats.requests} requests failed`, "warning")] : undefined;
+			stats.failed > 0 ? [span(`${stats.failed}/${stats.requests} 个请求失败`, "warning")] : undefined;
 		const accounting = [
 			`${stats.filesRead} files read`,
 			`τ ${threshold.toFixed(2)}`,

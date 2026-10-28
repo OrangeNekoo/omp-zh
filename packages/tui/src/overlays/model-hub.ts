@@ -75,6 +75,10 @@ import {
 } from "./hub-frame";
 import { renderSegmentTrack } from "../chrome/segment-track";
 
+function labelStartsWith(actual: string | undefined, english: string, chinese: string): boolean {
+	return actual !== undefined && (actual.startsWith(english) || actual.startsWith(chinese));
+}
+
 const MODEL_HUB_BODY_MIN_WIDTH = 28;
 
 /**
@@ -296,29 +300,29 @@ const ROLES_ACTION_KEYS: Record<string, RolesAction> = {
 
 /** Picker fact columns of the Roles view. */
 const ROLE_PICKER_COLUMNS: readonly TspPickerColumn[] = [
-	{ id: "model", head: "Model", format: "text", priority: 2 },
-	{ id: "thinking", head: "Thinking", format: "dim", priority: 1 },
+	{ id: "model", head: "模型", format: "text", priority: 2 },
+	{ id: "thinking", head: "思考", format: "dim", priority: 1 },
 ];
 
 /** Kind tab labels (sentence case; acronyms stay upper). */
 const MODEL_KIND_LABELS: Record<"all" | ModelKind, string> = {
-	all: "All",
-	chat: "Chat",
-	tiny: "Tiny",
-	image: "Image",
+	all: "全部",
+	chat: "对话",
+	tiny: "微型",
+	image: "图像",
 	tts: "TTS",
 	stt: "STT",
-	search: "Search",
-	judge: "Judge",
-	embedding: "Embedding",
-	rerank: "Rerank",
-	video: "Video",
+	search: "搜索",
+	judge: "判定",
+	embedding: "嵌入",
+	rerank: "重排",
+	video: "视频",
 };
 
 const PROVIDER_REFRESH_DEBOUNCE_MS = 120;
 const RECENT_LIMIT = 15;
 /** Accepted compaction limit input, shown beside the field: a scaled base, a fixed trigger, or a percentage. */
-const COMPACTION_INPUT_HINT = "400k base · f400k fixed · 80% · empty resets";
+const COMPACTION_INPUT_HINT = "400k 基准 · f400k 固定 · 80% · 空值重置";
 
 type CompactionStrip = Extract<StripState, { purpose: "compaction" }>;
 
@@ -734,10 +738,10 @@ export class ModelHubComponent implements Component {
 			{
 				id: "roles",
 				kind: "roles",
-				label: "Roles",
+				label: "角色",
 				annotation: `${assignedCount}/${visibleRoles.length}`,
 			},
-			{ id: "all", kind: "all", label: "All models", annotation: String(availableModels.length) },
+			{ id: "all", kind: "all", label: "所有模型", annotation: String(availableModels.length) },
 		];
 
 		this.#fixedEntries = fixed;
@@ -1387,13 +1391,13 @@ export class ModelHubComponent implements Component {
 			}
 		}
 		chips.push({
-			label: `fallbacks:${item.model.id}`,
-			styled: theme.fg("muted", `fallbacks:${item.model.id}`),
+			label: `回退：${item.model.id}`,
+			styled: theme.fg("muted", `回退：${item.model.id}`),
 			action: "fallbackModel",
 		});
 		chips.push({
-			label: `fallbacks:${item.model.provider}/*`,
-			styled: theme.fg("muted", `fallbacks:${item.model.provider}/*`),
+			label: `回退：${item.model.provider}/*`,
+			styled: theme.fg("muted", `回退：${item.model.provider}/*`),
 			action: "fallbackProvider",
 		});
 		// `retry-fallback` appends to the default chain, so only chat-capable models qualify.
@@ -1702,13 +1706,13 @@ export class ModelHubComponent implements Component {
 	#openFallbackKeyStrip(item: ModelBrowserItem): void {
 		const chips: StripChip[] = [
 			{
-				label: `for ${item.selector}`,
-				styled: theme.fg("muted", `for ${item.selector}`),
+				label: `适用于 ${item.selector}`,
+				styled: theme.fg("muted", `适用于 ${item.selector}`),
 				action: "fallbackModel",
 			},
 			{
-				label: `for ${item.model.provider}/*`,
-				styled: theme.fg("muted", `for ${item.model.provider}/*`),
+				label: `适用于 ${item.model.provider}/*`,
+				styled: theme.fg("muted", `适用于 ${item.model.provider}/*`),
 				action: "fallbackProvider",
 			},
 		];
@@ -2477,7 +2481,7 @@ export class ModelHubComponent implements Component {
 			Math.max(0, active),
 		);
 		return truncateToWidth(
-			` ${theme.fg("dim", "Kind:")} ${track}  ${theme.fg("dim", formatKeyHints(["alt+left", "alt+right"]))}`,
+			` ${theme.fg("dim", "类型：")} ${track}  ${theme.fg("dim", formatKeyHints(["alt+left", "alt+right"]))}`,
 			width,
 		);
 	}
@@ -2496,17 +2500,17 @@ export class ModelHubComponent implements Component {
 				: `${formatKeyHints(["ctrl+left", "ctrl+right"])} · ${formatKeyHints(["p", "shift+p"])}`;
 		const preset =
 			names.length > 0
-				? `   ${theme.fg("dim", "Preset:")} ${activePreset ? theme.fg("accent", activePreset) : theme.fg("muted", "custom")}  ${theme.fg("dim", presetKeys)}`
+				? `   ${theme.fg("dim", "预设：")} ${activePreset ? theme.fg("accent", activePreset) : theme.fg("muted", "custom")}  ${theme.fg("dim", presetKeys)}`
 				: "";
 		return truncateToWidth(
-			` ${theme.fg("dim", "Roles:")} ${track}  ${theme.fg("dim", formatKeyHints(["alt+left", "alt+right"]))}${preset}`,
+			` ${theme.fg("dim", "角色：")} ${track}  ${theme.fg("dim", formatKeyHints(["alt+left", "alt+right"]))}${preset}`,
 			width,
 		);
 	}
 
 	#statusRow(width: number): string {
 		if (this.#assignmentPending) {
-			return truncateToWidth(theme.fg("accent", " Applying model…"), width);
+			return truncateToWidth(theme.fg("accent", " 正在应用模型…"), width);
 		}
 		if (this.#assigning !== null) {
 			const enter = formatKeyHint("enter");
@@ -2550,7 +2554,7 @@ export class ModelHubComponent implements Component {
 				} else if (entry.providerId && this.#refreshingProviders.has(entry.providerId)) {
 					text = `${entry.label} · refreshing model list…`;
 				} else {
-					text = `${entry.label} · ${entry.annotation ?? "0"} models${scopedSuffix}`;
+					text = `${entry.label} · ${entry.annotation ?? "0"} 模型${scopedSuffix}`;
 				}
 				break;
 			default:
@@ -2662,7 +2666,7 @@ export class ModelHubComponent implements Component {
 			} else if (assignment) {
 				dot = theme.fg("dim", theme.status.shadowed);
 				tagStyled = theme.fg("dim", tag);
-				value = theme.fg("dim", `auto → ${assignment.model.provider}/${assignment.model.id}`);
+				value = theme.fg("dim", `自动 → ${assignment.model.provider}/${assignment.model.id}`);
 			} else {
 				dot = theme.fg("dim", theme.status.shadowed);
 				tagStyled = theme.fg("dim", tag);
@@ -2707,7 +2711,7 @@ export class ModelHubComponent implements Component {
 					cycleOrder.map(role => ({ label: role })),
 					activeIndex,
 				);
-				lines[rows - 1] = truncateToWidth(`  ${theme.fg("dim", `${cycleKey} cycle:`)} ${track}`, width);
+				lines[rows - 1] = truncateToWidth(`  ${theme.fg("dim", `${cycleKey} 循环：`)} ${track}`, width);
 			} else {
 				lines[rows - 1] = truncateToWidth(
 					theme.fg("dim", `  ${cycleKey} cycle is empty — press ${formatKeyHint("c")} on a role to add it`),
@@ -2722,24 +2726,24 @@ export class ModelHubComponent implements Component {
 		const lines: string[] = [];
 		this.#lockedLoginLine = null;
 		lines.push("");
-		lines.push(truncateToWidth(theme.fg("warning", `  ${entry.label} has no credentials configured`), width));
+		lines.push(truncateToWidth(theme.fg("warning", `  ${entry.label} 未配置凭据`), width));
 		lines.push("");
 		const envVars = entry.providerId ? (providerEntry(entry.providerId)?.envVars ?? []) : [];
 		if (envVars.length > 0) {
 			lines.push(
 				truncateToWidth(
-					theme.fg("muted", `  Set ${envVars.join(" or ")} in your environment, or add a key in config.`),
+					theme.fg("muted", `  在环境中设置 ${envVars.join(" or ")}，或在配置中添加密钥。`),
 					width,
 				),
 			);
 		} else {
-			lines.push(truncateToWidth(theme.fg("muted", "  Add an API key for this provider in config."), width));
+			lines.push(truncateToWidth(theme.fg("muted", "  请在配置中为此服务商添加 API 密钥。"), width));
 		}
 		if (entry.oauth) {
 			this.#lockedLoginLine = lines.length + 1; // +1 for the status row offset handled by caller
 			lines.push(
 				truncateToWidth(
-					theme.fg("accent", `  ${theme.nav.cursor} Log in with OAuth (${formatKeyHint("enter")})`),
+					theme.fg("accent", `  ${theme.nav.cursor} 使用 OAuth 登录（${formatKeyHint("enter")}）`),
 					width,
 				),
 			);
@@ -2747,7 +2751,7 @@ export class ModelHubComponent implements Component {
 		lines.push("");
 		const catalogCount = entry.catalogCount ?? 0;
 		if (catalogCount > 0) {
-			lines.push(truncateToWidth(theme.fg("dim", `  ${catalogCount} models in catalog:`), width));
+			lines.push(truncateToWidth(theme.fg("dim", `  ${catalogCount} 目录中的模型：`), width));
 			const preview = this.#scopedModels.length > 0 ? [] : this.#registry.getAll("all");
 			for (const model of preview) {
 				if (model.provider !== entry.providerId) continue;
@@ -2771,29 +2775,29 @@ export class ModelHubComponent implements Component {
 		if (strip) {
 			if (strip.kind === "name") {
 				if (strip.purpose === "compaction") {
-					return `${enter} ${compactionConfirmPending(strip) ? "accept" : "set"} compaction point · ${cancel} cancel`;
+					return `${enter} ${compactionConfirmPending(strip) ? "accept" : "set"} compaction point · ${cancel} 取消`;
 				}
 				if (strip.purpose === "preset") {
-					return `${enter} save preset · ${cancel} cancel`;
+					return `${enter} save preset · ${cancel} 取消`;
 				}
-				return `${enter} create + pick model · ${cancel} cancel`;
+				return `${enter} create + pick model · ${cancel} 取消`;
 			}
-			if (strip.kind === "role") return `${leftRight} choose · ${enter} assign/clear · ${cancel} cancel`;
-			if (strip.kind === "scope") return `${leftRight} save scope · ${enter} choose · ${cancel} cancel`;
-			return `${leftRight} thinking level · ${enter} apply · ${cancel} keep`;
+			if (strip.kind === "role") return `${leftRight} 选择 · ${enter} assign/clear · ${cancel} 取消`;
+			if (strip.kind === "scope") return `${leftRight} save scope · ${enter} 选择 · ${cancel} 取消`;
+			return `${leftRight} thinking level · ${enter} 应用 · ${cancel} keep`;
 		}
 		if (this.#assigning !== null) {
 			if (this.#focus === "scope") {
-				return `${enterRight} models · ${upDown} providers · type to search · ${altLeftRight} kind · ${cancel} cancel`;
+				return `${enterRight} 模型 · ${upDown} 服务商 · 输入以搜索 · ${altLeftRight} 类型 · ${cancel} 取消`;
 			}
-			const browse = `${upDown} models · ${left} providers · type to search · ${altLeftRight} kind · ${cancel} cancel`;
+			const browse = `${upDown} 模型 · ${left} 服务商 · 输入以搜索 · ${altLeftRight} 类型 · ${cancel} 取消`;
 			switch (this.#assigning.kind) {
 				case "fallback":
 					return `${enter} pick fallback · ${browse}`;
 				case "fallbackKey":
 					return `${enter} pick the protected model · ${browse}`;
 				default:
-					return `${enter} assign · ${browse}`;
+					return `${enter} 赋值 · ${browse}`;
 			}
 		}
 		const entry = this.#activeEntry();
@@ -2801,11 +2805,11 @@ export class ModelHubComponent implements Component {
 			if (this.#focus !== "list") {
 				const presets =
 					this.#presets().names.length > 0 ? ` · ${formatKeyHints(["ctrl+left", "ctrl+right"])} preset` : "";
-				return `${upDown} providers · ${enterRight} roles · ${altLeftRight} tabs${presets} · ${cancel} close`;
+				return `${upDown} 服务商 · ${enterRight} 角色 · ${altLeftRight} tabs${presets} · ${cancel} 关闭`;
 			}
 			// A live query takes printable keys and backspace, so the letter commands rest.
 			if (this.#browser.query.length > 0) {
-				return `${upDown} rows · ${enter} pick · type to search · ${left} providers · ${cancel} close`;
+				return `${upDown} 行 · ${enter} 选择 · 输入以搜索 · ${left} 服务商 · ${cancel} 关闭`;
 			}
 			const row = this.#rolesRows[this.#roleIndex];
 			const compaction =
@@ -2818,13 +2822,13 @@ export class ModelHubComponent implements Component {
 				// action would be inert there.
 				const editable = this.#resolveFallbackEntry(row.role, row.chainIndex) !== undefined;
 				const thinking = editable ? ` · ${formatKeyHint("t")} thinking` : "";
-				return `${upDown} rows · ${enter} replace · ${formatKeyHint("f")} add another · ${formatKeyHint("x")} remove${thinking}${compaction} · [/] reorder · ${left} providers`;
+				return `${upDown} 行 · ${enter} replace · ${formatKeyHint("f")} add another · ${formatKeyHint("x")} 移除${thinking}${compaction} · [/] reorder · ${left} 服务商`;
 			}
 			if (row?.kind === "chainKey") {
-				return `${upDown} rows · ${formatKeyHints(["enter", "f"])} add fallback · ${formatKeyHint("x")} clear chain · ${left} providers`;
+				return `${upDown} 行 · ${formatKeyHints(["enter", "f"])} add fallback · ${formatKeyHint("x")} clear chain · ${left} 服务商`;
 			}
 			if (row?.kind === "newFallback") {
-				return `${upDown} rows · ${enter} new model/provider fallback chain · ${left} providers`;
+				return `${upDown} 行 · ${enter} new model/provider fallback chain · ${left} 服务商`;
 			}
 			// Same rule as fallback rows: advertise `t` only where a strip would
 			// open — an assigned role whose model has thinking levels to offer.
@@ -2832,18 +2836,18 @@ export class ModelHubComponent implements Component {
 			const thinking = editable ? ` · ${formatKeyHint("t")} thinking` : "";
 			const savePreset = this.#callbacks.onSavePreset ? ` · ${formatKeyHint("s")} save preset` : "";
 			const switchPreset = this.#presets().names.length > 0 ? ` · ${formatKeyHints(["p", "shift+p"])} preset` : "";
-			return `${upDown} rows · ${enter} pick · ${formatKeyHint("f")} fallback · ${formatKeyHint("x")} clear${thinking}${compaction} · ${formatKeyHint("c")} cycle · [/] reorder · ${formatKeyHint("n")} new${savePreset}${switchPreset}`;
+			return `${upDown} 行 · ${enter} 选择 · ${formatKeyHint("f")} fallback · ${formatKeyHint("x")} 清除${thinking}${compaction} · ${formatKeyHint("c")} 循环 · [/] reorder · ${formatKeyHint("n")} new${savePreset}${switchPreset}`;
 		}
 		if (entry.kind === "provider" && entry.locked) {
 			return entry.oauth
-				? `${enter} log in · ${upDown} providers · ${cancel} close`
-				: `${upDown} providers · ${cancel} close`;
+				? `${enter} log in · ${upDown} 服务商 · ${cancel} 关闭`
+				: `${upDown} 服务商 · ${cancel} 关闭`;
 		}
-		const refresh = entry.kind === "provider" ? ` · ${formatKeyHint("f5")} refresh` : "";
+		const refresh = entry.kind === "provider" ? ` · ${formatKeyHint("f5")} 刷新` : "";
 		if (this.#focus === "scope") {
-			return `${enterRight} models · ${upDown} providers · type to search · ${altLeftRight} kind${refresh} · ${cancel} close`;
+			return `${enterRight} 模型 · ${upDown} 服务商 · 输入以搜索 · ${altLeftRight} 类型${refresh} · ${cancel} 关闭`;
 		}
-		return `${enter} assign roles · ${upDown} models · ${left} providers · type to search · ${altLeftRight} kind${refresh} · ${cancel} close`;
+		return `${enter} assign roles · ${upDown} 模型 · ${left} 服务商 · 输入以搜索 · ${altLeftRight} 类型${refresh} · ${cancel} 关闭`;
 	}
 
 	#renderFooter(width: number): string {
@@ -2874,7 +2878,7 @@ export class ModelHubComponent implements Component {
 				const notice = compactionNotice(strip, this.#callbacks.previewCompactionPoint);
 				hint = theme.fg(notice.style, notice.text);
 			} else {
-				hint = theme.fg("dim", "(letters, digits, - and _)");
+				hint = theme.fg("dim", "（字母、数字、- 和 _）");
 			}
 			return truncateToWidth(`${label} ${inputLine} ${hint}`, width);
 		}
@@ -3033,7 +3037,7 @@ export class ModelHubComponent implements Component {
 					"row",
 					{ gap: "sm", align: "center" },
 					[
-						text([span("Kind:", "dim")]),
+						text([span("类型：", "dim")]),
 						node(
 							"tabs",
 							{ items: MODEL_KIND_TABS.map(kind => ({ id: kind, label: kind })), active: this.#modelKindTab },
@@ -3052,13 +3056,13 @@ export class ModelHubComponent implements Component {
 
 	#describeStatus(): NativeNode {
 		if (this.#assignmentPending) {
-			return node("spinner", { label: [span("Applying model…", "accent")] }, undefined, "status");
+			return node("spinner", { label: [span("正在应用模型…", "accent")] }, undefined, "status");
 		}
 		let spans: TspSpan[];
 		const assigning = this.#assigning;
 		if (assigning !== null) {
 			if (assigning.kind === "fallbackKey") {
-				spans = [span("New fallback chain — pick the model it protects", "accent")];
+				spans = [span("新建备用链 — 选择它保护的模型", "accent")];
 			} else {
 				const info = this.#settings.getRoleInfo(assigning.role);
 				const label = info.tag ?? info.name ?? assigning.role;
@@ -3079,13 +3083,13 @@ export class ModelHubComponent implements Component {
 		const scopedSuffix = this.#scopedModels.length > 0 ? " · --models scope" : "";
 		switch (entry.kind) {
 			case "recent":
-				spans = [span(`Recently used models${scopedSuffix}`, "muted")];
+				spans = [span(`最近使用的模型${scopedSuffix}`, "muted")];
 				break;
 			case "roles":
 				spans = [
-					span("Model roles — ", "muted"),
+					span("模型角色 — ", "muted"),
 					span("f", "key"),
-					span(" adds a retry fallback, cleared roles fall back to auto-selection", "muted"),
+					span(" 添加一个重试备用，清除的角色回退到自动选择", "muted"),
 				];
 				break;
 			case "provider":
@@ -3099,11 +3103,11 @@ export class ModelHubComponent implements Component {
 						"status",
 					);
 				} else {
-					spans = [span(`${entry.label} · ${entry.annotation ?? "0"} models${scopedSuffix}`, "muted")];
+					spans = [span(`${entry.label} · ${entry.annotation ?? "0"} 模型${scopedSuffix}`, "muted")];
 				}
 				break;
 			default:
-				spans = [span(`All available models${scopedSuffix}`, "muted")];
+				spans = [span(`所有可用模型${scopedSuffix}`, "muted")];
 				break;
 		}
 		return node("text", { spans, truncate: "end" }, undefined, "status");
@@ -3114,7 +3118,7 @@ export class ModelHubComponent implements Component {
 			"row",
 			{ gap: "sm", align: "center" },
 			[
-				text([span("Roles:", "dim")]),
+				text([span("角色：", "dim")]),
 				node(
 					"tabs",
 					{
@@ -3151,9 +3155,9 @@ export class ModelHubComponent implements Component {
 			case "separator":
 				return node("rule", undefined, undefined, key);
 			case "newRole":
-				return node("item", { label: [span("+ New role…", "dim")] }, undefined, key);
+				return node("item", { label: [span("+ 新建角色…", "dim")] }, undefined, key);
 			case "newFallback":
-				return node("item", { label: [span("+ New fallback…", "dim")] }, undefined, key);
+				return node("item", { label: [span("+ 新建备用…", "dim")] }, undefined, key);
 			case "chainKey": {
 				const slash = rowDef.role.lastIndexOf("/");
 				return node(
@@ -3193,7 +3197,7 @@ export class ModelHubComponent implements Component {
 		} else {
 			label = [span(`${theme.status.shadowed} `, "dim"), span(tag, "dim")];
 			detail = assignment
-				? [span(`auto → ${assignment.model.provider}/${assignment.model.id}`, "dim")]
+				? [span(`自动 → ${assignment.model.provider}/${assignment.model.id}`, "dim")]
 				: [span("—", "dim")];
 		}
 		// Quick-cycle membership badge (`⟳ 2` = second stop of the ctrl+p cycle).
@@ -3215,7 +3219,7 @@ export class ModelHubComponent implements Component {
 				{ gap: "xs", align: "center", wrap: true },
 				[
 					...keycap,
-					text([span("cycle is empty — press ", "dim"), span("c", "key"), span(" on a role to add it", "dim")]),
+					text([span("循环为空 — 按 ", "dim"), span("c", "key"), span(" 选择角色以添加", "dim")]),
 				],
 				"cycle",
 			);
@@ -3231,14 +3235,14 @@ export class ModelHubComponent implements Component {
 		return node(
 			"row",
 			{ gap: "xs", align: "center", wrap: true },
-			[...keycap, text([span("cycle:", "dim")]), text(track, { wrap: "word" })],
+			[...keycap, text([span("循环：", "dim")]), text(track, { wrap: "word" })],
 			"cycle",
 		);
 	}
 
 	#describeLockedView(entry: SidebarEntry): NativeNode {
 		const children: NativeChild[] = [
-			text([span(`${entry.label} has no credentials configured`, "warning")], { wrap: "word" }),
+			text([span(`${entry.label} 未配置凭据`, "warning")], { wrap: "word" }),
 		];
 		const envVars = entry.providerId ? (providerEntry(entry.providerId)?.envVars ?? []) : [];
 		children.push(
@@ -3246,8 +3250,8 @@ export class ModelHubComponent implements Component {
 				[
 					span(
 						envVars.length > 0
-							? `Set ${envVars.join(" or ")} in your environment, or add a key in config.`
-							: "Add an API key for this provider in config.",
+							? `在环境中设置 ${envVars.join(" or ")}，或在配置中添加密钥。`
+							: "请在配置中为此服务商添加 API 密钥。",
 						"muted",
 					),
 				],
@@ -3259,7 +3263,7 @@ export class ModelHubComponent implements Component {
 				node(
 					"row",
 					{ gap: "sm", align: "center", actions: { click: "login" } },
-					[text([span("Log in with OAuth", "accent")]), node("kbd", { keys: ["enter"] })],
+					[text([span("使用 OAuth 登录", "accent")]), node("kbd", { keys: ["enter"] })],
 					"login",
 				),
 			);
@@ -3275,7 +3279,7 @@ export class ModelHubComponent implements Component {
 			children.push(
 				node(
 					"section",
-					{ head: [span(`${catalogCount} models in catalog`, "dim")] },
+					{ head: [span(`${catalogCount} 个目录模型`, "dim")] },
 					[node("list", { selected: null, virtual: true }, items, "catalog")],
 					"catalog",
 				),
@@ -3292,7 +3296,7 @@ export class ModelHubComponent implements Component {
 		const lockedView = entry.kind === "provider" && entry.locked === true && this.#assigning === null;
 		const strip = this.#strip;
 		const props: TspPickerProps = {
-			title: "Models",
+			title: "模型",
 			subtitle: this.#pickerSubtitle(entry, rolesView),
 			icon: "cpu",
 			noun: rolesView ? "roles" : "models",
@@ -3303,7 +3307,7 @@ export class ModelHubComponent implements Component {
 			// is live, so the sheet offers no search field to type into.
 			query: rolesView && this.#browser.query.length === 0 ? null : this.#browser.query,
 			cursor: this.#browser.cursor,
-			placeholder: "Search models…",
+			placeholder: "搜索模型…",
 			scopes: this.#pickerScopes(),
 			scope: entry.id,
 			actions: this.#pickerActions(entry, rolesView, lockedView),
@@ -3317,7 +3321,7 @@ export class ModelHubComponent implements Component {
 					...props,
 					tabs: ROLE_TABS.map(tab => ({
 						id: tab,
-						label: tab === "all" ? "All" : tab === "chat" ? "Chat" : "Kinds",
+						label: tab === "all" ? "全部" : tab === "chat" ? "对话" : "Kinds",
 						count: this.#visibleRoleIds().filter(
 							role => tab === "all" || this.#settings.getRoleInfo(role).section === tab,
 						).length,
@@ -3381,7 +3385,7 @@ export class ModelHubComponent implements Component {
 				...(state === "error" && this.#configError ? { message: this.#configError } : {}),
 				empty:
 					this.#emptyStateMessage()?.trim() ??
-					(entry.kind === "provider" ? `No models from ${entry.label} yet` : "No models available in this scope"),
+					(entry.kind === "provider" ? `尚无来自 ${entry.label} 的模型` : "此范围内无可用模型"),
 			},
 			this.#browser.pickerPreview("full", this.#currentSelector),
 		);
@@ -3410,7 +3414,7 @@ export class ModelHubComponent implements Component {
 		const presets = rolesView ? this.#presets() : undefined;
 		if (presets && presets.names.length > 0) {
 			return [
-				span("Preset ", "muted"),
+				span("预设 ", "muted"),
 				presets.active ? span(presets.active, "strong") : span("custom", "muted"),
 				span(
 					this.#scopedModels.length > 0 ? " · --models scope" : " · Cleared roles fall back to auto-selection",
@@ -3433,12 +3437,12 @@ export class ModelHubComponent implements Component {
 				case "separator":
 					break;
 				case "roles":
-					scopes.push({ id: entry.id, label: "Roles", icon: "sparkles", count: this.#visibleRoleIds().length });
+					scopes.push({ id: entry.id, label: "角色", icon: "sparkles", count: this.#visibleRoleIds().length });
 					break;
 				case "all":
 					scopes.push({
 						id: entry.id,
-						label: "All models",
+						label: "所有模型",
 						icon: "list",
 						count: counts ? this.#searchTotal : this.#availableItems.length,
 					});
@@ -3446,7 +3450,7 @@ export class ModelHubComponent implements Component {
 				case "recent":
 					scopes.push({
 						id: entry.id,
-						label: "Recent",
+						label: "最近",
 						icon: "clock",
 						count: counts ? this.#recentSearchCount : this.#recentItems.length,
 					});
@@ -3460,7 +3464,7 @@ export class ModelHubComponent implements Component {
 							id: entry.id,
 							label: entry.label,
 							mark,
-							group: "Not signed in",
+							group: "未登录",
 							disabled: oauthIds.has(providerId)
 								? "Sign in with /login"
 								: envVars.length > 0
@@ -3475,7 +3479,7 @@ export class ModelHubComponent implements Component {
 						id: entry.id,
 						label: entry.label,
 						mark,
-						group: "Providers",
+						group: "服务商",
 						count: counts ? (counts.get(providerId) ?? 0) : Number(entry.annotation ?? 0),
 						...(dot ? { dot } : {}),
 					});
@@ -3533,26 +3537,26 @@ export class ModelHubComponent implements Component {
 					? strip.purpose === "compaction"
 						? pickerAction(
 								"compactionPoint",
-								compactionConfirmPending(strip) ? "Accept compaction point" : "Set compaction point",
+								compactionConfirmPending(strip) ? "接受压缩点" : "设置压缩点",
 								"enter",
 								{ primary: true },
 							)
 						: pickerAction(
 								strip.purpose === "preset" ? "presetName" : "roleName",
-								strip.purpose === "preset" ? "Save preset" : "Create role",
+								strip.purpose === "preset" ? "保存预设" : "创建角色",
 								"enter",
 								{ primary: true },
 							)
 					: pickerAction(
 							"stripApply",
-							strip.kind === "thinking" ? "Apply" : strip.kind === "scope" ? "Save to scope" : "Assign / clear",
+							strip.kind === "thinking" ? "Apply" : strip.kind === "scope" ? "保存到作用域" : "指派 / 清除",
 							"enter",
 							{ primary: true },
 						);
 			return [apply, cancel(strip.kind === "thinking" ? "Keep" : "Cancel")];
 		}
 		const refresh =
-			entry.kind === "provider" && !entry.locked ? pickerAction("refresh", "Refresh provider", "f5") : undefined;
+			entry.kind === "provider" && !entry.locked ? pickerAction("refresh", "刷新服务商", "f5") : undefined;
 		if (this.#assigning !== null) {
 			const label =
 				this.#assigning.kind === "fallback"
@@ -3621,13 +3625,13 @@ export class ModelHubComponent implements Component {
 		}
 		if (lockedView) {
 			return entry.oauth
-				? [pickerAction("login", "Log in", "enter", { primary: true }), CLOSE_ACTION]
+				? [pickerAction("login", "登录", "enter", { primary: true }), CLOSE_ACTION]
 				: [CLOSE_ACTION];
 		}
 		return compact([
 			pickerAction(
 				"assign",
-				"Assign role",
+				"指派角色",
 				"enter",
 				this.#browser.pickerSelected ? { primary: true } : { primary: true, disabled: "No model selected" },
 			),
@@ -3644,7 +3648,7 @@ export class ModelHubComponent implements Component {
 				return {
 					label: [
 						span(strip.model.id, "mono"),
-						span(" limit ", "muted"),
+						span(" 限制 ", "muted"),
 						span(strip.input.getValue(), "mono"),
 						span("▏", "accent"),
 						span(`  ${notice.text}`, notice.style),
@@ -3654,7 +3658,7 @@ export class ModelHubComponent implements Component {
 			}
 			return {
 				label: [
-					span(strip.purpose === "preset" ? "Preset name " : "New role name ", "muted"),
+					span(strip.purpose === "preset" ? "预设名称 " : "新角色名称 ", "muted"),
 					span(strip.input.getValue(), "mono"),
 					span("▏", "accent"),
 				],
@@ -3664,15 +3668,15 @@ export class ModelHubComponent implements Component {
 		let label: TspSpan[];
 		if (strip.kind === "role") {
 			// The second step of "New fallback chain…" reuses the role strip with key chips only.
-			const keyStrip = strip.chips.every(chip => chip.label.startsWith("for "));
+			const keyStrip = strip.chips.every(chip => labelStartsWith(chip.label, "for ", "适用于 "));
 			label = keyStrip
-				? [span("New fallback chain", "muted")]
-				: [span("Assign ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];
+				? [span("新建备用链", "muted")]
+				: [span("分配 ", "muted"), span(strip.item.id, "mono"), span(" to", "muted")];
 		} else {
 			const info = this.#settings.getRoleInfo(strip.role ?? "");
 			const roleLabel = (info.tag ?? strip.role ?? "").toLowerCase();
 			label = [
-				span(strip.kind === "thinking" ? "Thinking for " : "Save ", "muted"),
+				span(strip.kind === "thinking" ? "思考中 " : "Save ", "muted"),
 				span(roleLabel, "strong"),
 				span(" · ", "muted"),
 				span(strip.item.id, "mono"),
@@ -3714,13 +3718,13 @@ export class ModelHubComponent implements Component {
 				case "separator":
 					return;
 				case "newRole":
-					items.push({ id, label: "New role…", icon: "plus", tone: "muted" });
+					items.push({ id, label: "新建角色…", icon: "plus", tone: "muted" });
 					return;
 				case "newFallback":
-					items.push({ id, label: "New fallback chain…", icon: "plus", tone: "muted" });
+					items.push({ id, label: "新建备用链…", icon: "plus", tone: "muted" });
 					return;
 				case "chainKey":
-					items.push({ id, label: row.role, mono: true, icon: "git-branch", detail: "fallback chain" });
+					items.push({ id, label: row.role, mono: true, icon: "git-branch", detail: "回退链" });
 					return;
 				case "fallback":
 					items.push({ id, label: row.selector, mono: true, depth: 1, detail: `fallback ${row.chainIndex + 1}` });
@@ -3754,7 +3758,7 @@ export class ModelHubComponent implements Component {
 								{
 									text: `cycle ${cycleIndex + 1}`,
 									tone: "accent" as const,
-									title: `Stop ${cycleIndex + 1} of the quick-switch cycle`,
+									title: `停止快速切换循环中的 ${cycleIndex + 1}`,
 								},
 							],
 						}
@@ -3805,7 +3809,7 @@ export class ModelHubComponent implements Component {
 		const chainList = (key: string): NativeChild | undefined => {
 			const chain = this.#fallbackChains()[key] ?? [];
 			if (chain.length === 0) return undefined;
-			return node("section", { head: "Fallback chain" }, [
+			return node("section", { head: "回退链" }, [
 				md(chain.map((selector, index) => `${index + 1}. \`${selector}\``).join("\n")),
 			]);
 		};
@@ -3824,19 +3828,19 @@ export class ModelHubComponent implements Component {
 					children.push(
 						node("kv", {
 							items: [
-								{ k: [span("Role", "muted")], v: info.name },
+								{ k: [span("角色", "muted")], v: info.name },
 								{
-									k: [span("Thinking", "muted")],
+									k: [span("思考", "muted")],
 									v: getConfiguredThinkingLevelMetadata(assignment.thinkingLevel).label,
 								},
-								{ k: [span("Source", "muted")], v: assignment.autoSelected ? "auto-selected" : "configured" },
+								{ k: [span("来源", "muted")], v: assignment.autoSelected ? "auto-selected" : "configured" },
 							],
 						}),
 					);
 				} else {
 					children.push(
 						text(info.name, { role: "omp.picker.title" }),
-						text([span("Not assigned; no available model fits this role.", "muted")], { wrap: "word" }),
+						text([span("未分配；没有可用模型适合此角色。", "muted")], { wrap: "word" }),
 					);
 				}
 				const chain = chainList(row.role);
@@ -3859,14 +3863,14 @@ export class ModelHubComponent implements Component {
 			}
 			case "newRole":
 				children.push(
-					text("New role", { role: "omp.picker.title" }),
-					text([span("Name a custom role, then pick the model it runs on.", "muted")], { wrap: "word" }),
+					text("新建角色", { role: "omp.picker.title" }),
+					text([span("命名自定义角色，然后选择它运行的模型。", "muted")], { wrap: "word" }),
 				);
 				break;
 			case "newFallback":
 				children.push(
-					text("New fallback chain", { role: "omp.picker.title" }),
-					text([span("Pick the model (or provider) a new retry fallback chain protects.", "muted")], {
+					text("新建备用链", { role: "omp.picker.title" }),
+					text([span("选择新重试备用链所保护的模型（或服务商）。", "muted")], {
 						wrap: "word",
 					}),
 				);
@@ -3897,7 +3901,7 @@ export class ModelHubComponent implements Component {
 			for (const model of this.#registry.getAll("all")) {
 				if (model.provider === entry.providerId) ids.push(`- \`${model.id}\``);
 			}
-			children.push(node("section", { head: `${catalogCount} models in catalog` }, [md(ids.join("\n"))]));
+			children.push(node("section", { head: `${catalogCount} 个目录模型` }, [md(ids.join("\n"))]));
 		}
 		return children;
 	}
@@ -4031,7 +4035,7 @@ export class ModelHubComponent implements Component {
 					"row",
 					{ gap: "sm", align: "center" },
 					[
-						text([span(`${strip.model.id} limit:`, "accent")]),
+						text([span(`${strip.model.id} 上限：`, "accent")]),
 						col([strip.input], { grow: 1 }),
 						text([span(notice.text, notice.style)], { wrap: "word" }),
 					],
@@ -4043,9 +4047,9 @@ export class ModelHubComponent implements Component {
 				"row",
 				{ gap: "sm", align: "center" },
 				[
-					text([span(preset ? "Preset name:" : "New role name:", "accent")]),
+					text([span(preset ? "预设名称：" : "新角色名称：", "accent")]),
 					col([strip.input], { grow: 1 }),
-					text([span("(letters, digits, - and _)", "dim")]),
+					text([span("（字母、数字、- 和 _）", "dim")]),
 				],
 				preset ? "presetName" : "roleName",
 			);

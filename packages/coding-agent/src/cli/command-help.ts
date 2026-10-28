@@ -1,181 +1,181 @@
 import type { CommandMetadata } from "@oh-my-pi/pi-utils/cli";
 
 export const acpHelp = {
-	description: "Run omp as an ACP (Agent Client Protocol) server over stdio",
+	description: "以 ACP（Agent Client Protocol）服务器形式通过 stdio 运行 omp",
 } satisfies CommandMetadata;
 
-export const agentsHelp = { description: "Manage bundled task agents" } satisfies CommandMetadata;
+export const agentsHelp = { description: "管理内置任务代理" } satisfies CommandMetadata;
 
 export const anonymizeHelp = {
 	description:
-		"Write a shareable copy of a session and its subagents: turn contents redacted, metadata kept, paths and literals replaced by consistent mock tokens",
+		"写出会话及其子代理的可分享副本：回合内容脱敏、保留元数据、路径与字面量替换为一致的模拟令牌",
 } satisfies CommandMetadata;
 
 export const authHelp = {
-	description: "Export or import stored provider credentials (API keys and OAuth logins) as JSON",
+	description: "以 JSON 导出或导入已存储的服务商凭据（API 密钥与 OAuth 登录）",
 } satisfies CommandMetadata;
 
 export const authBrokerHelp = {
-	description: "Manage the omp auth-broker (credential vault)",
+	description: "管理 omp 认证代理（凭据保险库）",
 } satisfies CommandMetadata;
 
 export const authGatewayHelp = {
 	description:
-		"Run an auth-gateway: an HTTP forward proxy backed by the configured broker, or JSON lines on stdio with your own credentials",
+		"运行认证网关：由已配置的凭据代理支撑的 HTTP 正向代理，或用你自己的凭据在 stdio 上输出 JSON 行",
 } satisfies CommandMetadata;
 
 export const benchHelp = {
 	description:
-		"Benchmark models: TTFT/prefill vs decode throughput with p50/p95, across chat, prefill, generation, and prompt-cache workloads, or single-user vs parallel load (--detailed)",
+		"评测模型：TTFT/预填充 vs 解码吞吐（p50/p95），覆盖聊天、预填充、生成与提示词缓存负载，或单用户 vs 并行负载（--detailed）",
 } satisfies CommandMetadata;
 
 export const browserRelayHelp = {
-	description: "Run the local CDP relay that lets the browser prelude drive your own Chrome tabs",
+	description: "运行本地 CDP 中继，让浏览器前奏驱动你自己的 Chrome 标签页",
 } satisfies CommandMetadata;
 
 export const cleanseHelp = {
-	description: "Detect and fix project diagnostics with weighted parallel subagents",
+	description: "用加权并行子代理检测并修复项目诊断问题",
 } satisfies CommandMetadata;
 
 export const collabHelp = {
 	description:
-		"List active local Collab host metadata without URLs; use collab link <instanceId|pid> to retrieve a control link (--view for view-only)",
+		"列出活动的本地协作主机元数据（不含 URL）；用 collab link <instanceId|pid> 获取控制链接（--view 为只读）",
 } satisfies CommandMetadata;
 
 export const clipHelp = {
-	description: "Upload a /record recording to live.omp.sh as a public clip and print its URL",
+	description: "把 /record 录像作为公开片段上传到 live.omp.sh 并打印其 URL",
 } satisfies CommandMetadata;
 
-export const commitHelp = { description: "Generate a commit message and update changelogs" } satisfies CommandMetadata;
+export const commitHelp = { description: "生成提交消息并更新变更日志" } satisfies CommandMetadata;
 
 export const completionsHelp = {
-	description: "Print a shell completion script (bash, zsh, or fish)",
+	description: "输出 shell 补全脚本（bash、zsh 或 fish）",
 } satisfies CommandMetadata;
 
 export const completeHelp = { hidden: true } satisfies CommandMetadata;
 
 export const compressHelp = {
-	description: "Rewrite a text file into the dense prompt register, reporting what it drops",
+	description: "把文本文件重写为密集的提示词语体，并报告丢弃了什么",
 } satisfies CommandMetadata;
 
-export const configHelp = { description: "Manage configuration settings" } satisfies CommandMetadata;
+export const configHelp = { description: "管理配置设置" } satisfies CommandMetadata;
 
 export const dryBalanceHelp = {
-	description: "Dry-run OAuth account balancing across random session ids",
+	description: "跨随机会话 ID 试运行 OAuth 账户均衡",
 } satisfies CommandMetadata;
 
 export const galleryHelp = {
-	description: "Preview tool, composer, and status-line renderers in a deterministic visual gallery",
+	description: "在确定性的可视化画廊中预览工具、输入框与状态栏渲染器",
 } satisfies CommandMetadata;
 
-export const gcHelp = { description: "Run storage garbage collection" } satisfies CommandMetadata;
+export const gcHelp = { description: "运行存储垃圾回收" } satisfies CommandMetadata;
 export const ifBenchHelp = {
 	description:
-		"Benchmark instruction following and working memory: one cached thread of glyph array actions with a moving cat-sound directive",
+		"评测指令遵循与工作记忆：一条缓存的线程，用字形数组动作与移动的猫叫声指令",
 } satisfies CommandMetadata;
 export const gitHelp = {
-	description: "Interactive fullscreen git UI: split diff viewer, staging sidebar, and commit composer",
+	description: "交互式全屏 Git 界面：分栏差异查看器、暂存侧边栏与提交编辑器",
 } satisfies CommandMetadata;
 
 export const findHelp = {
-	description: "Semantic search: describe a behavior, get the files and line ranges that implement it",
+	description: "语义搜索：描述一个行为，得到实现它的文件与行范围",
 } satisfies CommandMetadata;
 
-export const grepHelp = { description: "Test grep tool" } satisfies CommandMetadata;
+export const grepHelp = { description: "测试 grep 工具" } satisfies CommandMetadata;
 
 export const grievancesHelp = {
-	description: "View, clean, or push reported tool issues (auto-QA grievances)",
+	description: "查看、清理或推送已上报的工具问题（自动 QA 申诉）",
 } satisfies CommandMetadata;
 
 export const loginHelp = {
-	description: "Log in to a model provider (terminal counterpart of /login)",
+	description: "登录模型服务商（/login 的终端版本）",
 } satisfies CommandMetadata;
 
 export const imagesHelp = {
-	description: "Inspect, diagnose, probe, and purge image publication backends",
+	description: "检查、诊断、探测并清理图像发布后端",
 } satisfies CommandMetadata;
 
 export const installHelp = {
-	description: "Install or link an extension package (alias of `plugin install`/`plugin link`)",
+	description: "安装或链接扩展包（`plugin install`/`plugin link` 的别名）",
 } satisfies CommandMetadata;
 
-export const joinHelp = { description: "Join a shared collab session (same as /join)" } satisfies CommandMetadata;
+export const joinHelp = { description: "加入共享协作会话（同 /join）" } satisfies CommandMetadata;
 
-export const modelsHelp = { description: "List, search, and refresh available models" } satisfies CommandMetadata;
+export const modelsHelp = { description: "列出、搜索并刷新可用模型" } satisfies CommandMetadata;
 
-export const pluginHelp = { description: "Manage plugins (install, uninstall, list, etc.)" } satisfies CommandMetadata;
+export const pluginHelp = { description: "管理插件（安装、卸载、列出等）" } satisfies CommandMetadata;
 
 export const playHelp = {
-	description: "Replay a /record session recording in the terminal (space pauses, q quits)",
+	description: "在终端中回放 /record 会话录像（空格暂停，q 退出）",
 } satisfies CommandMetadata;
 
 export const predictHelp = {
-	description: "Type a prompt and compare every word-completion engine's ghost text live",
+	description: "输入提示词，实时对比每个单词补全引擎的幽灵文本",
 } satisfies CommandMetadata;
 
 export const psHelp = {
-	description: "List and control daemon-supervised background processes (logs, stop, kill, restart)",
+	description: "列出并控制由守护进程监管的后台进程（日志、停止、终止、重启）",
 } satisfies CommandMetadata;
 
 export const readHelp = {
-	description: "Show what the read tool will return for a path, URL, or internal URI",
+	description: "显示 read 工具对某个路径、URL 或内部 URI 会返回什么",
 } satisfies CommandMetadata;
 export const renderHelp = {
-	description: "Draw a session's entire thread through the production transcript pipeline (with repaint timing)",
+	description: "通过生产环境的会话记录管线绘制一个会话的完整线程（含重绘耗时）",
 } satisfies CommandMetadata;
 
 export const sayHelp = {
-	description: "Synthesize text with the local TTS engine and play it through the speakers",
+	description: "用本地 TTS 引擎合成文本并通过扬声器播放",
 } satisfies CommandMetadata;
 
-export const searchHelp = { description: "Test web search providers" } satisfies CommandMetadata;
+export const searchHelp = { description: "测试网络搜索服务商" } satisfies CommandMetadata;
 
 export const sessionHelp = {
-	description: "Hand a session to another machine: pack it, unpack it, or mark the local copy moved",
+	description: "把会话交给另一台机器：打包、解包，或将本地副本标记为已移走",
 } satisfies CommandMetadata;
 
 export const shareHelp = {
-	description: "Share a saved session via an encrypted link (same as /share)",
+	description: "通过加密链接共享已保存的会话（同 /share）",
 } satisfies CommandMetadata;
 
 export const setupHelp = {
-	description: "Run onboarding setup or install dependencies for optional features",
+	description: "运行引导设置，或安装可选功能的依赖",
 } satisfies CommandMetadata;
 
-export const shellHelp = { description: "Interactive shell console" } satisfies CommandMetadata;
+export const shellHelp = { description: "交互式 Shell 控制台" } satisfies CommandMetadata;
 
 export const skillHelp = {
-	description: "Install, search, publish, and manage skills on the Skillshare registry (skills.omp.sh)",
+	description: "在 Skillshare 注册表 (skills.omp.sh) 上安装、搜索、发布与管理技能",
 } satisfies CommandMetadata;
 
-export const sshHelp = { description: "Manage SSH host configurations" } satisfies CommandMetadata;
+export const sshHelp = { description: "管理 SSH 主机配置" } satisfies CommandMetadata;
 
-export const statsHelp = { description: "View usage statistics" } satisfies CommandMetadata;
+export const statsHelp = { description: "查看用量统计" } satisfies CommandMetadata;
 
 export const streamHelp = {
-	description: "Broadcast local omp session screens and chat to your public live channel",
+	description: "把本地 omp 会话画面与聊天广播到你的公开直播频道",
 } satisfies CommandMetadata;
 
 export const tinyModelsHelp = {
-	description: "Download tiny local models (session titles, memory, word completion)",
+	description: "下载本地微型模型（会话标题、记忆、单词补全）",
 } satisfies CommandMetadata;
 
-export const tokenHelp = { description: "Get the API key or OAuth token for a provider" } satisfies CommandMetadata;
+export const tokenHelp = { description: "获取某个服务商的 API 密钥或 OAuth 令牌" } satisfies CommandMetadata;
 
 export const toksHelp = {
-	description: "Count a file or text with every embedded offline tokenizer (OpenAI, Claude, Qwen, …)",
+	description: "用每个内置离线分词器（OpenAI、Claude、Qwen……）统计文件或文本的令牌数",
 } satisfies CommandMetadata;
 
 export const ttsrHelp = {
-	description: "Inspect and test Time-Traveling Stream Rules (TTSR)",
+	description: "检查并测试时间旅行流规则 (TTSR)",
 } satisfies CommandMetadata;
 
-export const updateHelp = { description: "Check for and install updates" } satisfies CommandMetadata;
+export const updateHelp = { description: "检查并安装更新" } satisfies CommandMetadata;
 
 export const usageHelp = {
-	description: "Show provider usage limits for every authenticated account",
+	description: "显示每个已认证账户的服务商用量限制",
 } satisfies CommandMetadata;
 
 export const worktreeHelp = {
-	description: "Add, list, or clear git worktrees (clone-first when enabled)",
+	description: "添加、列出或清理 git 工作树（启用时优先克隆）",
 } satisfies CommandMetadata;

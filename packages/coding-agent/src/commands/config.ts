@@ -13,23 +13,23 @@ export default class Config extends Command {
 	static description = commandHelp.description;
 	static args = {
 		action: Args.string({
-			description: "Config action",
+			description: "配置操作",
 			required: false,
 			options: ACTIONS,
 		}),
 		key: Args.string({
-			description: "Setting key",
+			description: "设置键",
 			required: false,
 		}),
 		value: Args.string({
-			description: "Value (for set/reset)",
+			description: "值（用于 set/reset）",
 			required: false,
 			multiple: true,
 		}),
 	};
 
 	static flags = {
-		json: Flags.boolean({ description: "Output JSON" }),
+		json: Flags.boolean({ description: "输出 JSON" }),
 	};
 
 	async run(): Promise<void> {

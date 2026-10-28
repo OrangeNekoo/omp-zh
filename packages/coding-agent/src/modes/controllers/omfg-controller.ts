@@ -35,7 +35,7 @@ interface GenerateCandidateOptions {
 type SaveCandidateResult = { kind: "saved" | "aborted" | "rejected" } | { kind: "amend"; feedback: string };
 
 const MAX_ATTEMPTS = 3;
-const PROJECT_OPTION = "This project (.omp/rules)";
+const PROJECT_OPTION = "此项目（.omp/rules）";
 const GLOBAL_OPTION = "Global — all projects (~/.omp/agent/rules)";
 const AMEND_OPTION = "Amend with feedback…";
 /** Keep /omfg prompts in the composer slot: a picker sheet would cover the candidate rule above it. */
@@ -69,13 +69,13 @@ export class OmfgController {
 	async start(complaint: string): Promise<void> {
 		const trimmedComplaint = complaint.trim();
 		if (!trimmedComplaint) {
-			this.ctx.showStatus("Usage: /omfg <complaint>");
+			this.ctx.showStatus("用法：/omfg <complaint>");
 			return;
 		}
 
 		const model = this.ctx.session.model;
 		if (!model) {
-			this.ctx.showError("No active model available for /omfg.");
+			this.ctx.showError("/omfg 没有可用的模型。");
 			return;
 		}
 
@@ -106,8 +106,8 @@ export class OmfgController {
 				if (!candidate.validated) {
 					request.component.setStatus("confirming", "Couldn't confirm a conversation match.");
 					const shouldSave = await this.ctx.showHookConfirm(
-						"Validation",
-						"Couldn't confirm this rule matches the conversation. Save anyway?",
+						"校验",
+						"无法确认此规则与当前对话匹配。仍要保存吗？",
 						OMFG_DIALOG,
 					);
 					if (!this.#isActiveRequest(request)) return;
@@ -217,7 +217,7 @@ export class OmfgController {
 		for (;;) {
 			request.component.setStatus("saving", "Choose where to save or amend the TTSR rule…");
 			const location = await this.ctx.showHookSelector(
-				"Save TTSR rule where?",
+				"TTSR 规则保存到哪里？",
 				[PROJECT_OPTION, GLOBAL_OPTION, AMEND_OPTION],
 				OMFG_DIALOG,
 			);
@@ -243,8 +243,8 @@ export class OmfgController {
 			const target = this.#resolveTarget(location, candidate.rule.name);
 			if (await Bun.file(target.filePath).exists()) {
 				const shouldOverwrite = await this.ctx.showHookConfirm(
-					"Overwrite TTSR rule?",
-					`${shortenPath(target.filePath)} already exists. Overwrite it?`,
+					"覆盖 TTSR 规则？",
+					`${shortenPath(target.filePath)} 已存在。要覆盖吗？`,
 					OMFG_DIALOG,
 				);
 				if (!this.#isActiveRequest(request)) return { kind: "aborted" };

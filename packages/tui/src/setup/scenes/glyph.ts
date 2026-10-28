@@ -12,7 +12,7 @@ import type { SetupScene, SetupSceneController, SetupSceneHost } from "./types";
 const GLYPH_PRESETS = ["nerd", "unicode", "ascii"] as const satisfies readonly SymbolPreset[];
 
 const GLYPH_LABELS: Readonly<Record<SymbolPreset, string>> = {
-	nerd: "Nerd Font",
+	nerd: "Nerd 字体",
 	unicode: "Unicode",
 	ascii: "ASCII",
 };
@@ -85,7 +85,7 @@ class GlyphSceneController implements SetupSceneController {
 		if (!this.#step) {
 			this.#step = new WizardStep({
 				kind: "choice",
-				intro: new Text(theme.fg("muted", "If a row shows boxes, tofu, or misaligned icons, pick another."), 0, 0),
+				intro: new Text(theme.fg("muted", "如果某行显示方块、豆腐块或图标错位，请换一个选项。"), 0, 0),
 				content: this.#selectList,
 				minContentLines: GLYPH_ITEMS.length,
 				fitContent: () => {
@@ -101,7 +101,7 @@ class GlyphSceneController implements SetupSceneController {
 	describe(): NativeNode {
 		return this.#native.get([this.#selectList], () =>
 			col(
-				[text([span("If a row shows boxes, tofu, or misaligned icons, pick another.", "muted")]), this.#selectList],
+				[text([span("如果某行显示方块、豆腐块或图标错位，请换一个选项。", "muted")]), this.#selectList],
 				{ gap: "sm", role: "omp.setup.glyph" },
 			),
 		);
@@ -135,7 +135,7 @@ class GlyphSceneController implements SetupSceneController {
  */
 export const glyphSetupScene: SetupScene = {
 	id: "glyph-mode",
-	title: "Choose glyph mode",
+	title: "选择字形模式",
 	minVersion: 1,
 	shouldRun: () => !TERMINAL.glyphProtocol,
 	mount: host => new GlyphSceneController(host),
