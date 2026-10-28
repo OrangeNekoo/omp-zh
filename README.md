@@ -335,7 +335,8 @@ PI_CONFIG_DIR=.omp-zh omp-zh
 
 上游每天都有提交。若把汉化结果当一次性改动，上游一动就会冲突。本仓库把汉化拆成「词典 + 确定性重写器」，同步时在**上游最新源码上重放**，冲突面收敛到词典条目本身。
 
-工作流：`.github/workflows/zh-sync.yml`，每天 UTC 03:17 或手动触发。
+工作流：`.github/workflows/zh-sync.yml`，**仅手动触发**（`workflow_dispatch`）。本仓库的
+Actions 已在仓库设置里整体禁用，因此即使手动点也不会执行；同步一律在本地按下列步骤手工跑。
 
 流程：
 
@@ -347,17 +348,20 @@ PI_CONFIG_DIR=.omp-zh omp-zh
    用硬编码路径会让日后新增的 fork 文件在同步中被静默删除
 4. 工作区切换到上游提交，并清除旧翻译结果
 5. 还原上述自有文件，并**逐个校验存在性**（还原漏一步就会把删除动作提交上去）
-6. 依次执行五个重写器：
+6. 依次执行重写器（顺序有意义，后者依赖前者产出的中文文案）：
    - `bun i18n/translate.ts` — 词典翻译
-   - `bun i18n/translate-hints.ts` — `${键位} to 动作` 拼接提示
+   - `bun i18n/translate-hints.ts` — `${键位} to 动作` 拼接提示（整短语查表）
    - `bun i18n/apply-cli-name.ts` — 重新套用 `omp-zh` 改名
    - `bun i18n/patch-report-keys.ts` — 面板解析比较跟随译文
+   - `bun i18n/patch-label-compare.ts` — 选择器回传值的比较改为中英双认
+   - `bun i18n/patch-runtime-text.ts` — 运行时拼接文案（更新横幅、MCP 计数、表头）
    - `bun i18n/patch-gitignore.ts` — 补回本 fork 的忽略项
 7. 依次通过闸门：
-   - 提取器命中数 ≥ 1000（当前实际约 1637；规则半失效时也能拦住，且该步开 `pipefail`）
+   - 提取器命中数 ≥ 1000（当前实际约 1643；规则半失效时也能拦住，且该步开 `pipefail`）
    - 分组名校验 `bun i18n/check-groups.ts`
    - `omp-zh --version` 必须输出 `omp-zh/*`
-   - 两个翻译器二次运行必须为 0 替换（幂等）
+   - 重写器二次运行必须为 0 处改动（幂等）
+   - 标签比较闸门 `bun i18n/check-label-compare.ts`（防止「标签已译、比较仍英文」的静默失效）
    - `packages/utils`、`packages/tui`、`packages/coding-agent` 类型检查
 8. 用 `git commit-tree` 造「fork main + 上游」的双父提交，推送回 `main`
    （这样 main 的历史包含上游提交，下一次的「是否已包含」判断才成立，推送也始终是快进）
