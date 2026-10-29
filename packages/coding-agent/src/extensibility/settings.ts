@@ -173,3 +173,16 @@ export const cfgExtensionHandlersModeControl = register({
 			"允许扩展通过 ctx.sessionModes.set() 进入与退出 plan、vibe、goal、loop 模式；读取模式状态始终可用",
 	},
 });
+
+export const cfgExtensionAssistantTextRenderers = register({
+	id: "extensionRenderers.assistantText",
+	type: "boolean",
+	default: false,
+	ui: {
+		tab: "tools",
+		group: "扩展",
+		label: "扩展回复渲染器",
+		description:
+			"允许扩展改变助手回复的绘制方式、原地重绘回复，并接收对其自身链接的点击；会话、导出与模型上下文仍保留回复的原始内容",
+	},
+});

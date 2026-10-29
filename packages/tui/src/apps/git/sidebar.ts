@@ -1680,7 +1680,7 @@ export class Sidebar {
 		const deletions = head.files.reduce((sum, file) => sum + (file.deletions ?? 0), 0);
 		const count = `${head.files.length} file${head.files.length === 1 ? "" : "s"}`;
 		rows.push({
-			text: ` ${theme.bold(count)} ${theme.fg("dim", `in ${head.shortSha}`)}  ${theme.fg("success", `+${additions}`)} ${theme.fg("error", `−${deletions}`)}`,
+			text: ` ${theme.bold(count)} ${theme.fg("dim", `在 ${head.shortSha}`)}  ${theme.fg("success", `+${additions}`)} ${theme.fg("error", `−${deletions}`)}`,
 		});
 		rows.push(this.#viewToggleRow(width));
 		rows.push(...this.#entryRows(head.files, "commit"));

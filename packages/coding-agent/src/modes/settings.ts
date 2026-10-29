@@ -469,8 +469,8 @@ export const cfgTuiRenderSvg = register({
 export const cfgTuiAutoGraph = register({
 	id: "tui.autoGraph",
 	type: "enum",
-	values: ["smart", "always", "off"] as const,
-	default: "always",
+	values: ["auto", "smart", "always", "off"] as const,
+	default: "auto",
 	ui: {
 		tab: "appearance",
 		group: "显示",
@@ -478,6 +478,11 @@ export const cfgTuiAutoGraph = register({
 		description:
 			"在支持图形显示的终端上，用你的主题配色在代理回答的数值表格下方绘制图表",
 		options: [
+			{
+				value: "auto",
+				label: "自动",
+				description: "当 judge 角色解析为原生 TypeSafe jev 模型时智能判定，否则总是",
+			},
 			{
 				value: "smart",
 				label: "智能",
@@ -580,7 +585,7 @@ export const cfgTuiMouse = register({
 		label: "鼠标点击聚焦",
 		get description() {
 			const shift = formatKeyHint("shift");
-			return `在主会话中捕获鼠标点击，让运行中的子代理卡片与 HUD 行可点击聚焦，并高亮悬停目标。启用后原生文本选择变为 ${shift}+拖动，滚轮滚动变为 ${shift}+滚轮`;
+			return `在主会话中捕获鼠标点击，使活动的子代理卡片与 HUD 行在点击时获得焦点，并在目标上显示悬停高亮；点击扩展持有的链接会传递给对应扩展（链接提示键可在不用鼠标时选取它们）。开启后原生文本选择变为 ${shift}+拖动，滚轮滚动变为 ${shift}+滚轮`;
 		},
 	},
 });
@@ -706,6 +711,26 @@ export const cfgDisplayCacheMissMarker = register({
 		description: "在提示词缓存未命中（丢失）的助手回合之后显示一条分隔线",
 	},
 });
+
+export const cfgDisplayAdvisorCollapsedLines = register({
+	id: "display.advisorCollapsedLines",
+	type: "number",
+	default: 0,
+	ui: {
+		tab: "appearance",
+		group: "显示",
+		label: "顾问折叠行数",
+		description:
+			"折叠的顾问卡片在标题下最多显示多少行备注（0 表示保留完整预览；用工具输出开关展开）",
+		options: [
+			{ value: "0", label: "不限制", description: "默认。" },
+			{ value: "1", label: "1 行" },
+			{ value: "2", label: "2 行" },
+			{ value: "3", label: "3 行" },
+			{ value: "5", label: "5 行" },
+		],
+	},
+});
 effect(
 	combine({
 		hideToolActivity: cfgDisplayHideToolActivity,
@@ -714,6 +739,7 @@ effect(
 		cacheMissMarker: cfgDisplayCacheMissMarker,
 		showTokenUsage: cfgDisplayShowTokenUsage,
 		showTurnTime: cfgDisplayShowTurnTime,
+		advisorCollapsedLines: cfgDisplayAdvisorCollapsedLines,
 	}),
 	setChatTranscriptDisplayPreferences,
 );

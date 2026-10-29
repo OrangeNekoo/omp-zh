@@ -16,7 +16,7 @@ export const launchHelp = {
 	},
 	flags: {
 		model: Flags.string({
-			description: '要使用的模型（模糊匹配："opus"、"gpt-5.2" 或 "openai/gpt-5.2"）',
+			description: '要使用的模型（模糊匹配："opus"、"gpt-5.2"；带服务商时精确匹配："openai/gpt-5.2"）',
 		}),
 		smol: Flags.string({ description: "用于轻量任务的快速模型（或 PI_SMOL_MODEL 环境变量）" }),
 		slow: Flags.string({ description: "用于深度分析的慢速/推理模型（或 PI_SLOW_MODEL 环境变量）" }),

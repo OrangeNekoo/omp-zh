@@ -4,7 +4,7 @@
 
 import { Args, Command, Flags } from "@oh-my-pi/pi-utils/cli";
 import { configHelp as commandHelp } from "../cli/command-help";
-import { type ConfigAction, type ConfigCommandArgs, runConfigCommand } from "../cli/config-cli";
+import { type ConfigAction, type ConfigCommandArgs, type ConfigScope, runConfigCommand } from "../cli/config-cli";
 import { initTheme } from "@oh-my-pi/pi-tui/theme";
 
 const ACTIONS: ConfigAction[] = ["list", "get", "set", "reset", "path", "init-xdg"];
@@ -30,6 +30,11 @@ export default class Config extends Command {
 
 	static flags = {
 		json: Flags.boolean({ description: "输出 JSON" }),
+		scope: Flags.string({
+			description:
+				'使用 list 时：只显示 "global"（代理目录下的 config.yml）或 "project"（<cwd>/.omp）层设置的键，按原样输出',
+			options: ["global", "project"],
+		}),
 	};
 
 	async run(): Promise<void> {
@@ -43,6 +48,7 @@ export default class Config extends Command {
 			value,
 			flags: {
 				json: flags.json,
+				scope: flags.scope as ConfigScope | undefined,
 			},
 		};
 

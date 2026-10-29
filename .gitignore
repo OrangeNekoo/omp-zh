@@ -63,7 +63,7 @@ pi-*.html
 .close_issue.sh
 
 # Generated files
-packages/coding-agent/src/export/html/tool-views.generated.js
+packages/coding-agent/export-assets/
 packages/natives/npm/
 /runs/
 sdk/python/omp-rpc/src/omp_rpc.egg-info/
@@ -101,6 +101,5 @@ i18n/pending.json
 i18n/report.json
 # 本地 omp 配置（每台机器不同）
 /.omp/config.yml
-
 # 原生插件的安装标记（由 bun i18n/fetch-native.ts 写入）
 packages/natives/native/pi_natives.version

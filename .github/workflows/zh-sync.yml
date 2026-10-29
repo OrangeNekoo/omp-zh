@@ -63,7 +63,10 @@ jobs:
            id: upstream
            run: |
               git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
-              git fetch --no-tags --depth=1 upstream "${{ inputs.upstream_ref || 'main' }}"
+              # 取完整历史，而不是 --depth=1：下面的自有文件清单要用
+              # `git log <sha> -- <path>` 区分「本 fork 新增」与「上游删除了旧文件」，
+              # 浅克隆只有单个提交，会把上游删除的路径误判成 fork 新增并还原回来。
+              git fetch --no-tags upstream "${{ inputs.upstream_ref || 'main' }}"
               sha=$(git rev-parse FETCH_HEAD)
               echo "sha=$sha" >> "$GITHUB_OUTPUT"
               echo "上游提交：$sha"
@@ -81,21 +84,39 @@ jobs:
 
          # 本 fork 自有文件，分两类：
          #
-         # 1. **上游没有的路径**（`--diff-filter=A`）：本 fork 新增的文件，
-         #    例如 i18n/ 目录。清单动态计算而不是硬编码——写死的路径会让
-         #    日后新增的 fork 文件在同步中被静默删除，删除动作还会被一起提交。
+         # 1. **上游从未有过的路径**（`--diff-filter=A` 且上游历史里查不到）：
+         #    本 fork 新增的文件，例如 i18n/ 目录。清单动态计算而不是硬编码——
+         #    写死的路径会让日后新增的 fork 文件在同步中被静默删除，
+         #    删除动作还会被一起提交。
          # 2. **上游有、但本 fork 有意改写**的路径：显式列出（见 FORK_MODIFIED）。
          #
          # 早先的写法用 `--diff-filter=AM` 对比两个提交，把「上游有、我们版本
          # 陈旧」的文件也算进自有清单，还原时用陈旧副本覆盖上游的新版本——
          # 上游对 docs/、CI 配置等文件的更新因此被静默回退。只增不减。
+         #
+         # `--diff-filter=A` 还有一个同类陷阱：上游**删除**了某个旧文件后，
+         # fork 里那份就在差异中显示为「新增」。若照单还原，等于每次同步都
+         # 复活上游已删的路径（曾把 pi-walker 的陈旧 tests/examples、
+         # THIRD-PARTY-NOTICES.txt、infra/ 旧脚本一起带回来，其中 Rust
+         # tests 还会让 `cargo test` 编译失败）。因此逐个查上游历史：
+         # 历史上出现过该路径，就说明是上游删除，不是 fork 新增。
          - name: Back up fork-owned files
            if: steps.check.outputs.need_sync == 'true'
            run: |
               mkdir -p /tmp/fork-owned
-              # 上游没有、本 fork 新增的路径。
+              # 上游当前没有、本 fork 有的路径（候选）。
               git diff --name-only --diff-filter=A "${{ steps.upstream.outputs.sha }}" main -- . \
-                 ':(exclude)packages' > /tmp/fork-added.txt
+                 ':(exclude)packages' > /tmp/fork-added-raw.txt
+              # 剔除上游删除的旧路径：上游历史里曾出现过的都不算 fork 新增。
+              : > /tmp/fork-added.txt
+              while IFS= read -r file; do
+                 [ -n "$file" ] || continue
+                 if [ -n "$(git log --format=%H -n 1 "${{ steps.upstream.outputs.sha }}" -- "$file")" ]; then
+                    echo "上游已删除，跳过：$file"
+                    continue
+                 fi
+                 echo "$file" >> /tmp/fork-added.txt
+              done < /tmp/fork-added-raw.txt
               # 上游有、本 fork 有意改写的路径。
               cat > /tmp/fork-modified.txt <<'MODIFIED'
               README.md

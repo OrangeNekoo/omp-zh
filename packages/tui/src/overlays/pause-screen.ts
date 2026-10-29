@@ -306,13 +306,13 @@ export class PauseScreenComponent implements Component, OverlayFocusOwner {
 				...(outstanding
 					? [
 							keyed(
-								text([span(`Unsettled turns: ${snapshot.unsettledTurns}`, "muted")], {
+								text([span(`未结算回合：${snapshot.unsettledTurns}`, "muted")], {
 									role: "omp.pause.unsettled-turn-count",
 								}),
 								"unsettled-turns",
 							),
 							keyed(
-								text([span(`Unfinished jobs: ${snapshot.unfinishedJobs}`, "muted")], {
+								text([span(`未完成任务：${snapshot.unfinishedJobs}`, "muted")], {
 									role: "omp.pause.unfinished-job-count",
 								}),
 								"unfinished-jobs",

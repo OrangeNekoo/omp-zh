@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- Removed the Bun event-loop workarounds `EventLoopKeepalive`, `YieldGate`, `yieldIfDue`, and `ExponentialYield` (`@oh-my-pi/pi-agent-core/utils/yield`); the agent loop no longer inserts cooperative sleeps while streaming or between tool calls
+
+### Added
+
+- `PI_INTENT_DESC` replaces the schema description of the injected `i` intent field
+- `AgentTool.approvalRestrictionPaths` reports paths a call reads, so restricted folders cover them without the approval being remembered per path ([#17133](https://github.com/can1357/oh-my-pi/pull/17133) by [@iliaal](https://github.com/iliaal))
+- Added `Agent.logContext`, fields added to every log record written during the agent's runs ([#16587](https://github.com/can1357/oh-my-pi/pull/16587) by [@will-bogusz](https://github.com/will-bogusz))
+
+## [18.13.3] - 2026-10-28
+
+### Changed
+
+- Updated Bun engine requirement to ≥1.4.4
+
+### Fixed
+
+- Fixed chat-completions context estimates counting past thinking that the request drops (no reasoning replay), which triggered compaction far below the threshold ([#15797](https://github.com/can1357/oh-my-pi/issues/15797), [#17231](https://github.com/can1357/oh-my-pi/pull/17231) by [@ghisguth](https://github.com/ghisguth))
+
 ## [18.13.2] - 2026-10-27
 
 ### Added

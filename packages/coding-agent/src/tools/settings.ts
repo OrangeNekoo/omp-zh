@@ -867,6 +867,19 @@ export const cfgAskEnabled = register({
 	},
 });
 
+export const cfgOutEnabled = register({
+	id: "out.enabled",
+	type: "boolean",
+	default: true,
+	ui: {
+		tab: "tools",
+		group: "可用工具",
+		label: "Out",
+		description:
+			"允许代理在任务中途通过写入 out:// 回复，像普通回复一样显示且不结束其回合。未设置时：交互式 TUI 开启，print、RPC 与 ACP 关闭",
+	},
+});
+
 // Tool execution
 export const cfgToolsIntentTracing = register({
 	id: "tools.intentTracing",
@@ -1042,6 +1055,19 @@ export const cfgToolsXdevInlineDevices = register({
 		label: "xd:// 内联设备",
 		description:
 			"当 xd:// Prompt Docs 为 Built-ins Only 时，将名称匹配这些 glob 模式的动态设备内联（例如 mcp__context_mode_*）。Catalog Only 会忽略此设置。",
+	},
+});
+
+export const cfgToolsXdevNotices = register({
+	id: "tools.xdevNotices",
+	type: "boolean",
+	default: true,
+	ui: {
+		tab: "tools",
+		group: "发现与 MCP",
+		label: "xd:// 挂载通知",
+		description:
+			"Show an `xd://: mounted …` notice when MCP or extension tools are mounted or unmounted. The model still learns of the change with its next prompt.",
 	},
 });
 

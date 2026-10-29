@@ -252,6 +252,19 @@ export const cfgTaskBatch = register({
 	},
 });
 
+export const cfgTaskFile = register({
+	id: "task.file",
+	type: "boolean",
+	default: false,
+	ui: {
+		tab: "tasks",
+		group: "子代理",
+		label: "从文件读取任务指令",
+		description:
+			"允许 task 工具从文件读取子代理指令（taskFile），并记录其路径与 SHA-256。",
+	},
+});
+
 export const cfgTaskStructured = register({
 	id: "task.structured",
 	type: "boolean",

@@ -784,6 +784,19 @@ export const cfgRetryFallbackOn = register({
 	},
 });
 
+export const cfgRetryRateLimitWalksChain = register({
+	id: "retry.rateLimitWalksChain",
+	type: "boolean",
+	default: false,
+	ui: {
+		tab: "model",
+		group: "重试与备用",
+		label: "限流时走降级链",
+		description:
+			"遇到速率限制时，对于思考内容由失败模型签名的回合，不要阻塞 retry.fallbackChains 的遍历。关闭（默认）时，此类回合会继续重试被限流的模型，直到耗尽 retry.maxRetries 才进入降级链。",
+	},
+});
+
 export const cfgRetryUsageAwareFallback = register({
 	id: "retry.usageAwareFallback",
 	type: "boolean",
@@ -892,6 +905,7 @@ export const cfgRetry = combine({
 	waitForUsageReset: cfgRetryWaitForUsageReset,
 	modelFallback: cfgRetryModelFallback,
 	fallbackOn: cfgRetryFallbackOn,
+	rateLimitWalksChain: cfgRetryRateLimitWalksChain,
 	usageAwareFallback: cfgRetryUsageAwareFallback,
 	usageReservePct: cfgRetryUsageReservePct,
 	usageReservePolicy: cfgRetryUsageReservePolicy,
@@ -1134,7 +1148,7 @@ export const cfgProvidersOpenaiWebsockets = register({
 export const cfgProvidersOpenaiLiveSteering = register({
 	id: "providers.openaiLiveSteering",
 	type: "boolean",
-	default: true,
+	default: false,
 	ui: {
 		tab: "providers",
 		group: "协议",
